@@ -1,0 +1,35 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/app/profile/profile_state.h"
+
+#import "base/test/task_environment.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
+
+using ProfileStateTest = PlatformTest;
+
+// Tests that a newly created ProfileState has no -browserState.
+TEST_F(ProfileStateTest, initializer) {
+  ProfileState* state = [[ProfileState alloc] init];
+  EXPECT_EQ(state.browserState, nullptr);
+}
+
+// Tests that -browserState uses a weak pointer.
+TEST_F(ProfileStateTest, browserState) {
+  base::test::TaskEnvironment task_environment;
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      TestChromeBrowserState::Builder().Build();
+
+  ProfileState* state = [[ProfileState alloc] init];
+  EXPECT_EQ(state.browserState, nullptr);
+
+  state.browserState = browser_state.get();
+  EXPECT_EQ(state.browserState, browser_state.get());
+
+  // Destroy the BrowserState and check that the property becomes null.
+  browser_state.reset();
+  EXPECT_EQ(state.browserState, nullptr);
+}

@@ -12,6 +12,8 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 
+class ChromeBrowserState;
+
 @interface PushNotificationDelegate
     : NSObject <UNUserNotificationCenterDelegate, AppStateObserver>
 

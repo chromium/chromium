@@ -54,6 +54,8 @@
 #import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/post_restore_app_agent.h"
+#import "ios/chrome/app/profile/profile_controller.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
 #import "ios/chrome/app/search_engine_choice_app_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
@@ -347,6 +349,9 @@ void MainControllerAuthenticationServiceDelegate::
   // Variable backing metricsMediator property.
   __weak MetricsMediator* _metricsMediator;
 
+  // Holds the ProfileController for all loaded profiles.
+  std::map<std::string, ProfileController*> _profileControllers;
+
   WindowConfigurationRecorder* _windowConfigurationRecorder;
 
   // Handler for the startup tasks, deferred or not.
@@ -487,22 +492,24 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // Start recording field trial info.
   [[PreviousSessionInfo sharedInstance] beginRecordingFieldTrials];
 
-  // TODO(crbug.com/324417250): Remove mainBrowserState from appState.
-  self.appState.mainBrowserState =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLastUsedBrowserStateDeprecatedDoNotUse();
-
   std::vector<ChromeBrowserState*> loadedBrowserStates =
       GetApplicationContext()
           ->GetChromeBrowserStateManager()
           ->GetLoadedBrowserStates();
   CHECK(!loadedBrowserStates.empty());
-
-  // Initialize and set all loaded browser states.
   for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
     [self initializeBrowserState:chromeBrowserState];
   }
+
+  // TODO(crbug.com/343166723): Support having multiple profiles.
+  ChromeBrowserState* browserState =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLastUsedBrowserStateDeprecatedDoNotUse();
+  auto iterator = _profileControllers.find(browserState->GetBrowserStateName());
+  DCHECK(iterator != _profileControllers.end());
+
+  self.appState.mainProfile = iterator->second.state;
 
   // Give tests a chance to prepare for testing.
   tests_hook::SetUpTestsIfPresent();
@@ -534,7 +541,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [NSURLCache setSharedURLCache:[EmptyNSURLCache emptyNSURLCache]];
 
   // TODO(crbug.com/325616341): Update PostRestoreAppAgent for multi-identity.
-  ChromeBrowserState* chromeBrowserState = self.appState.mainBrowserState;
+  ChromeBrowserState* chromeBrowserState =
+      self.appState.mainProfile.browserState;
   [self.appState
       addAgent:
           [[PostRestoreAppAgent alloc]
@@ -705,6 +713,13 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
 - (void)initializeBrowserState:(ChromeBrowserState*)browserState {
   DCHECK(!browserState->IsOffTheRecord());
+
+  ProfileController* controller = [[ProfileController alloc] init];
+  controller.state.browserState = browserState;
+  auto insertion_result = _profileControllers.insert(
+      std::make_pair(browserState->GetBrowserStateName(), controller));
+  DCHECK(insertion_result.second);
+
   search_engines::UpdateSearchEngineCountryCodeIfNeeded(
       browserState->GetPrefs());
 
@@ -1290,8 +1305,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // Deferred tasks.
   [self scheduleMemoryDebuggingTools];
   [StartupTasks
-      scheduleDeferredBrowserStateInitialization:self.appState
-                                                     .mainBrowserState];
+      scheduleDeferredBrowserStateInitialization:self.appState.mainProfile
+                                                     .browserState];
   [self sendQueuedFeedback];
   [self scheduleSpotlightResync];
   [self scheduleDeleteTempDownloadsDirectory];

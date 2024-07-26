@@ -13,11 +13,11 @@
 #import "ios/chrome/browser/ui/scoped_iphone_portrait_only/iphone_portrait_only_manager.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 
-class ChromeBrowserState;
 @class CommandDispatcher;
 @class SceneState;
 @class MemoryWarningHelper;
 @class MetricsMediator;
+@class ProfileState;
 @protocol StartupInformation;
 
 namespace base {
@@ -54,9 +54,9 @@ enum class PostCrashAction {
 // Most features should use the browser-level dispatcher instead.
 @property(nonatomic, strong) CommandDispatcher* appCommandDispatcher;
 
-// The ChromeBrowserState associated with the main (non-OTR) browsing mode.
+// The ProfileState associated with the main Profile.
 // TODO(crbug.com/324417250) remove this property.
-@property(nonatomic, assign) ChromeBrowserState* mainBrowserState;
+@property(nonatomic, weak) ProfileState* mainProfile;
 
 // Container for startup information.
 @property(nonatomic, weak) id<StartupInformation> startupInformation;

@@ -43,6 +43,7 @@
 #import "ios/chrome/app/application_mode.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
@@ -1005,16 +1006,14 @@ void OnListFamilyMembersResponse(
 - (void)startUpChromeUI {
   DCHECK(!self.browserViewWrangler);
   DCHECK(_sceneURLLoadingService.get());
-  DCHECK(self.sceneState.appState.mainBrowserState);
+  DCHECK(self.sceneState.appState.mainProfile.browserState);
 
   SceneState* sceneState = self.sceneState;
 
-  // TODO(b/326184192): startUpChromeUI should use the browser state associated
-  // to the scene.
+  // TODO(crbug.com/353683683): do not use appState but instead use
+  // only profileState which should be set in SceneState initializer.
   ChromeBrowserState* browserState =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLastUsedBrowserStateDeprecatedDoNotUse();
+      self.sceneState.appState.mainProfile.browserState;
   self.browserViewWrangler =
       [[BrowserViewWrangler alloc] initWithBrowserState:browserState
                                              sceneState:sceneState
