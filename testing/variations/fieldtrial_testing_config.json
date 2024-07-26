@@ -11339,21 +11339,6 @@
             ]
         }
     ],
-    "IOSDisableFullscreenStudy": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "enable_features": [
-                        "DisableFullscreenScrolling"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSDockingPromo": [
         {
             "platforms": [
