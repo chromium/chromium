@@ -99,13 +99,13 @@ void ChromeViewsDelegate::SaveWindowPlacement(const views::Widget* window,
   window_preferences.Set("bottom", bounds.bottom());
   window_preferences.Set("maximized", show_state == ui::SHOW_STATE_MAXIMIZED);
 
-  // TODO: Remove this block as these preferences have been long unused. Cleanup
-  // removal code by 2025.
-
-  window_preferences.Remove("work_area_left");
-  window_preferences.Remove("work_area_top");
-  window_preferences.Remove("work_area_right");
-  window_preferences.Remove("work_area_bottom");
+  gfx::Rect work_area(display::Screen::GetScreen()
+                          ->GetDisplayNearestView(window->GetNativeView())
+                          .work_area());
+  window_preferences.Set("work_area_left", work_area.x());
+  window_preferences.Set("work_area_top", work_area.y());
+  window_preferences.Set("work_area_right", work_area.right());
+  window_preferences.Set("work_area_bottom", work_area.bottom());
 }
 
 bool ChromeViewsDelegate::GetSavedWindowPlacement(
