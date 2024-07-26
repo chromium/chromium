@@ -23,7 +23,7 @@ namespace {
 
 // Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
 PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
-  return anchor_bounds.bottom() + kPickerViewMaxSize.height() <=
+  return anchor_bounds.bottom() + kPickerViewMaxHeight <=
                  display::Screen::GetScreen()
                      ->GetDisplayMatching(anchor_bounds)
                      .work_area()
@@ -39,7 +39,7 @@ views::Widget::InitParams CreateInitParams(
   const PickerLayoutType layout_type = GetLayoutType(anchor_bounds);
   auto picker_view = std::make_unique<PickerView>(delegate, layout_type,
                                                   trigger_event_timestamp);
-  picker_view->SetSize(kPickerViewMaxSize);
+  picker_view->SetSize(gfx::Size(kPickerViewWidth, kPickerViewMaxHeight));
 
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,

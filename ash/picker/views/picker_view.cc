@@ -206,7 +206,7 @@ PickerView::PickerView(PickerViewDelegate* delegate,
                        const base::TimeTicks trigger_event_timestamp)
     : performance_metrics_(trigger_event_timestamp), delegate_(delegate) {
   SetShowCloseButton(false);
-  SetPreferredSize(kPickerViewMaxSize);
+  SetPreferredSize(gfx::Size(kPickerViewWidth, kPickerViewMaxHeight));
   SetProperty(views::kElementIdentifierKey, kPickerElementId);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -620,15 +620,15 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
 
   zero_state_view_ =
       main_container_view_->AddPage(std::make_unique<PickerZeroStateView>(
-          this, delegate_->GetAvailableCategories(), kPickerViewMaxSize.width(),
+          this, delegate_->GetAvailableCategories(), kPickerViewWidth,
           delegate_->GetAssetFetcher(), &submenu_controller_));
   category_results_view_ =
       main_container_view_->AddPage(std::make_unique<PickerSearchResultsView>(
-          this, kPickerViewMaxSize.width(), delegate_->GetAssetFetcher(),
+          this, kPickerViewWidth, delegate_->GetAssetFetcher(),
           &submenu_controller_));
   search_results_view_ =
       main_container_view_->AddPage(std::make_unique<PickerSearchResultsView>(
-          this, kPickerViewMaxSize.width(), delegate_->GetAssetFetcher(),
+          this, kPickerViewWidth, delegate_->GetAssetFetcher(),
           &submenu_controller_));
 
   SetActivePage(zero_state_view_);
@@ -637,7 +637,7 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
 void PickerView::AddEmojiBarView() {
   emoji_bar_view_ =
       AddChildViewAt(std::make_unique<PickerEmojiBarView>(
-                         this, kPickerViewMaxSize.width(),
+                         this, kPickerViewWidth,
                          /*is_gifs_enabled*/ delegate_->IsGifsEnabled()),
                      0);
   ResetEmojiBarToZeroState();
