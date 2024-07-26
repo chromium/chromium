@@ -25,7 +25,7 @@ class DataTypeManagerObserver;
 class DataTypeManagerImpl : public DataTypeManager,
                             public ModelLoadManagerDelegate {
  public:
-  DataTypeManagerImpl(const ModelTypeController::TypeMap* controllers,
+  DataTypeManagerImpl(ModelTypeController::TypeVector controllers,
                       const DataTypeEncryptionHandler* encryption_handler,
                       DataTypeManagerObserver* observer);
 
@@ -46,12 +46,17 @@ class DataTypeManagerImpl : public DataTypeManager,
   void PurgeForMigration(ModelTypeSet undesired_types) override;
 
   void Stop(SyncStopMetadataFate metadata_fate) override;
+
+  ModelTypeSet GetRegisteredDataTypes() const override;
+  ModelTypeSet GetDataTypesForTransportOnlyMode() const override;
   ModelTypeSet GetActiveDataTypes() const override;
   ModelTypeSet GetPurgedDataTypes() const override;
   ModelTypeSet GetActiveProxyDataTypes() const override;
   ModelTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   ModelTypeSet GetDataTypesWithPermanentErrors() const override;
+
   State state() const override;
+  const ModelTypeController::TypeMap& GetControllerMap() const override;
 
   // `ModelLoadManagerDelegate` implementation.
   void OnAllDataTypesReadyForConfigure() override;
@@ -129,7 +134,7 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // Map of all data type controllers that are available for sync.
   // This list is determined at startup by various command line flags.
-  const raw_ptr<const ModelTypeController::TypeMap> controllers_;
+  const ModelTypeController::TypeMap controllers_;
 
   // DataTypeManager must have only one observer -- the SyncServiceImpl that
   // created it and manages its lifetime.

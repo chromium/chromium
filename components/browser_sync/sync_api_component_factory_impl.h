@@ -34,7 +34,7 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
 
   // SyncApiComponentFactory implementation:
   std::unique_ptr<syncer::DataTypeManager> CreateDataTypeManager(
-      const syncer::ModelTypeController::TypeMap* controllers,
+      syncer::ModelTypeController::TypeVector controllers,
       const syncer::DataTypeEncryptionHandler* encryption_handler,
       syncer::DataTypeManagerObserver* observer) override;
   std::unique_ptr<syncer::SyncEngine> CreateSyncEngine(

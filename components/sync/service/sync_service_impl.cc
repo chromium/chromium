@@ -174,18 +174,6 @@ EngineComponentsFactory::Switches EngineSwitchesFromCommandLine() {
   return factory_switches;
 }
 
-ModelTypeController::TypeMap BuildModelTypeControllerMap(
-    ModelTypeController::TypeVector controllers) {
-  ModelTypeController::TypeMap type_map;
-  for (std::unique_ptr<ModelTypeController>& controller : controllers) {
-    DCHECK(controller);
-    ModelType type = controller->type();
-    DCHECK_EQ(0U, type_map.count(type));
-    type_map[type] = std::move(controller);
-  }
-  return type_map;
-}
-
 std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory(
     const std::string& user_agent,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -346,22 +334,19 @@ void SyncServiceImpl::Initialize() {
 
   observers_.emplace();
 
-  // TODO(mastiz): The controllers map should be provided as argument.
-  model_type_controllers_ = BuildModelTypeControllerMap(
-      sync_client_->CreateModelTypeControllers(this));
+  // TODO(crbug.com/335688372): The controllers map should be provided as
+  // argument.
+  data_type_manager_ =
+      sync_client_->GetSyncApiComponentFactory()->CreateDataTypeManager(
+          sync_client_->CreateModelTypeControllers(this), &crypto_, this);
 
   // It's safe to pass a raw ptr, since SyncServiceImpl outlives
   // SyncUserSettingsImpl.
   user_settings_ = std::make_unique<SyncUserSettingsImpl>(
-      /*delegate=*/this, &crypto_, &sync_prefs_, GetRegisteredDataTypes());
+      /*delegate=*/this, &crypto_, &sync_prefs_,
+      data_type_manager_->GetRegisteredDataTypes());
 
   sync_prefs_observation_.Observe(&sync_prefs_);
-
-  // TODO(crbug.com/40901755): Ideally the DataTypeManager would get injected,
-  // instead of being constructed via the factory.
-  data_type_manager_ =
-      sync_client_->GetSyncApiComponentFactory()->CreateDataTypeManager(
-          &model_type_controllers_, &crypto_, this);
 
   if (!IsLocalSyncEnabled()) {
     auth_manager_->RegisterForAuthNotifications();
@@ -497,7 +482,7 @@ void SyncServiceImpl::StartSyncingWithServer() {
 }
 
 ModelTypeSet SyncServiceImpl::GetRegisteredDataTypesForTest() const {
-  return GetRegisteredDataTypes();
+  return data_type_manager_->GetRegisteredDataTypes();
 }
 
 bool SyncServiceImpl::HasAnyDatatypeErrorForTest(ModelTypeSet types) const {
@@ -741,8 +726,6 @@ void SyncServiceImpl::Shutdown() {
       ResetEngine(ResetEngineReason::kShutdown);
   data_type_manager_.reset();
   engine.reset();
-
-  model_type_controllers_.clear();
 
   crypto_.StopObservingTrustedVaultClient();
 
@@ -1538,8 +1521,11 @@ SyncClient* SyncServiceImpl::GetSyncClientForTest() {
 void SyncServiceImpl::ReportDataTypeErrorForTest(ModelType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_IS_TEST();
-  CHECK(model_type_controllers_.find(type) != model_type_controllers_.end());
-  model_type_controllers_[type]->ReportBridgeErrorForTest();  // IN-TEST
+  CHECK(data_type_manager_->GetControllerMap().find(type) !=
+        data_type_manager_->GetControllerMap().end());
+  data_type_manager_->GetControllerMap()
+      .find(type)
+      ->second->ReportBridgeErrorForTest();  // IN-TEST
 }
 
 void SyncServiceImpl::AddObserver(SyncServiceObserver* observer) {
@@ -1562,6 +1548,12 @@ bool SyncServiceImpl::HasObserver(const SyncServiceObserver* observer) const {
 
 ModelTypeSet SyncServiceImpl::GetPreferredDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Some questionable callers exercise this function after Shutdown(). The
+  // semantics aren't clear, but for cases like GetUploadToGoogleState() a
+  // sensible behavior is to return an empty set.
+  if (!data_type_manager_) {
+    return ModelTypeSet();
+  }
   ModelTypeSet types = user_settings_->GetPreferredDataTypes();
   // SyncUserSettings already filters out UserSelectableTypes that aren't
   // supported in transport mode. However, there are two reasons why the
@@ -1571,7 +1563,8 @@ ModelTypeSet SyncServiceImpl::GetPreferredDataTypes() const {
   // 2) Some ModelTypes implement additional preconditions in
   //    ShouldRunInTransportOnlyMode() (e.g. related to passphrase type).
   if (UseTransportOnlyMode()) {
-    types = Intersection(types, GetModelTypesForTransportOnlyMode());
+    types = Intersection(
+        types, data_type_manager_->GetDataTypesForTransportOnlyMode());
   }
   return types;
 }
@@ -1710,31 +1703,6 @@ bool SyncServiceImpl::UseTransportOnlyMode() const {
   return !IsSyncFeatureEnabled() && !IsLocalSyncEnabled();
 }
 
-ModelTypeSet SyncServiceImpl::GetRegisteredDataTypes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ModelTypeSet registered_types;
-  // The |model_type_controllers_| are determined by command-line flags;
-  // that's effectively what controls the values returned here.
-  for (const auto& [type, controller] : model_type_controllers_) {
-    registered_types.Put(type);
-  }
-  return registered_types;
-}
-
-ModelTypeSet SyncServiceImpl::GetModelTypesForTransportOnlyMode() const {
-  // Control types (in practice, NIGORI) are always supported. This special case
-  // is necessary because the NIGORI controller isn't in
-  // `model_type_controllers_`.
-  ModelTypeSet allowed_types = ControlTypes();
-  // Collect the types from all controllers that support transport-only mode.
-  for (const auto& [type, controller] : model_type_controllers_) {
-    if (controller->ShouldRunInTransportOnlyMode()) {
-      allowed_types.Put(type);
-    }
-  }
-  return allowed_types;
-}
-
 void SyncServiceImpl::UpdateDataTypesForInvalidations() {
   // Wait for configuring data types. This is needed to consider proxy types
   // which become known during configuration.
@@ -1808,7 +1776,8 @@ base::Value::List SyncServiceImpl::GetTypeStatusMapForDebugging() const {
                                 .Set("state", "State");
   result.Append(std::move(type_status_header));
 
-  for (const auto& [type, controller] : model_type_controllers_) {
+  for (const auto& [type, controller] :
+       data_type_manager_->GetControllerMap()) {
     base::Value::Dict type_status;
     type_status.Set("name", ModelTypeToDebugString(type));
 
@@ -1872,7 +1841,8 @@ base::Value::List SyncServiceImpl::GetTypeStatusMapForDebugging() const {
 
 void SyncServiceImpl::GetEntityCountsForDebugging(
     base::RepeatingCallback<void(const TypeEntitiesCount&)> callback) const {
-  for (const auto& [type, controller] : model_type_controllers_) {
+  for (const auto& [type, controller] :
+       data_type_manager_->GetControllerMap()) {
     controller->GetTypeEntitiesCount(callback);
   }
 }
@@ -2070,8 +2040,8 @@ void SyncServiceImpl::GetAllNodesForDebugging(
       new GetAllNodesRequestHelper(all_types, std::move(callback));
 
   for (ModelType type : all_types) {
-    const auto dtc_iter = model_type_controllers_.find(type);
-    if (dtc_iter == model_type_controllers_.end()) {
+    const auto dtc_iter = data_type_manager_->GetControllerMap().find(type);
+    if (dtc_iter == data_type_manager_->GetControllerMap().end()) {
       // We should have no data type controller only for Nigori.
       DCHECK_EQ(type, NIGORI);
       engine_->GetNigoriNodeForDebugging(base::BindOnce(
@@ -2413,8 +2383,8 @@ void SyncServiceImpl::RecordMemoryUsageAndCountsHistograms() {
   CHECK(engine_);
   ModelTypeSet active_types = GetActiveDataTypes();
   for (ModelType type : active_types) {
-    auto dtc_it = model_type_controllers_.find(type);
-    if (dtc_it != model_type_controllers_.end()) {
+    auto dtc_it = data_type_manager_->GetControllerMap().find(type);
+    if (dtc_it != data_type_manager_->GetControllerMap().end()) {
       dtc_it->second->RecordMemoryUsageAndCountsHistograms();
     } else if (type == NIGORI) {
       // DTC for NIGORI is stored in the engine on sync thread.
@@ -2474,9 +2444,8 @@ void SyncServiceImpl::GetTypesWithUnsyncedData(
     return;
   }
 
-  // NIGORI currently isn't supported, because its controller isn't in
-  // `model_type_controllers_`. If needed, support could be added via
-  // SyncEngine.
+  // NIGORI currently isn't supported, because its controller isn't managed by
+  // DataTypeManager. If needed, support could be added via SyncEngine.
   CHECK(!requested_types.Has(NIGORI));
 
   if (requested_types.empty()) {
@@ -2489,8 +2458,8 @@ void SyncServiceImpl::GetTypesWithUnsyncedData(
       requested_types, std::move(callback));
 
   for (ModelType type : requested_types) {
-    auto it = model_type_controllers_.find(type);
-    if (it == model_type_controllers_.end()) {
+    auto it = data_type_manager_->GetControllerMap().find(type);
+    if (it == data_type_manager_->GetControllerMap().end()) {
       // This should be rare, but can happen e.g. if a requested type is
       // disabled via feature flag.
       helper->OnReceivedResultForType(type, /*has_unsynced_data=*/false);
@@ -2530,7 +2499,8 @@ void SyncServiceImpl::GetLocalDataDescriptions(
           types.size(), base::BindOnce(&JoinAllTypesAndLocalDataDescriptions)
                             .Then(std::move(callback)));
   for (ModelType type : types) {
-    model_type_controllers_.at(type)
+    data_type_manager_->GetControllerMap()
+        .at(type)
         ->GetModelTypeLocalDataBatchUploader()
         ->GetLocalDataDescription(
             base::BindOnce(&JoinTypeAndLocalDataDescription, type)
@@ -2565,7 +2535,8 @@ void SyncServiceImpl::TriggerLocalDataMigration(ModelTypeSet types) {
 
   types.RetainAll(GetModelTypesWithLocalDataBatchUploader());
   for (ModelType type : types) {
-    model_type_controllers_.at(type)
+    data_type_manager_->GetControllerMap()
+        .at(type)
         ->GetModelTypeLocalDataBatchUploader()
         ->TriggerLocalDataMigration();
   }
@@ -2573,7 +2544,8 @@ void SyncServiceImpl::TriggerLocalDataMigration(ModelTypeSet types) {
 
 ModelTypeSet SyncServiceImpl::GetModelTypesWithLocalDataBatchUploader() const {
   ModelTypeSet types;
-  for (const auto& [type, controller] : model_type_controllers_) {
+  for (const auto& [type, controller] :
+       data_type_manager_->GetControllerMap()) {
     if (controller->GetModelTypeLocalDataBatchUploader()) {
       types.Put(type);
     }

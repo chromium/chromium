@@ -28,6 +28,18 @@ namespace syncer {
 
 namespace {
 
+ModelTypeController::TypeMap BuildControllerMap(
+    ModelTypeController::TypeVector controllers) {
+  ModelTypeController::TypeMap type_map;
+  for (std::unique_ptr<ModelTypeController>& controller : controllers) {
+    CHECK(controller);
+    ModelType type = controller->type();
+    CHECK_EQ(0U, type_map.count(type));
+    type_map[type] = std::move(controller);
+  }
+  return type_map;
+}
+
 DataTypeStatusTable::TypeErrorMap GenerateCryptoErrorsForTypes(
     ModelTypeSet encrypted_types) {
   DataTypeStatusTable::TypeErrorMap crypto_errors;
@@ -101,26 +113,25 @@ base::queue<ModelTypeSet> PrioritizeTypes(const ModelTypeSet& types) {
 }  // namespace
 
 DataTypeManagerImpl::DataTypeManagerImpl(
-    const ModelTypeController::TypeMap* controllers,
+    ModelTypeController::TypeVector controllers,
     const DataTypeEncryptionHandler* encryption_handler,
     DataTypeManagerObserver* observer)
-    : controllers_(controllers),
+    : controllers_(BuildControllerMap(std::move(controllers))),
       observer_(observer),
       encryption_handler_(encryption_handler),
-      model_load_manager_(controllers, this) {
+      model_load_manager_(&controllers_, this) {
   DCHECK(observer_);
 
   // This class does not really handle NIGORI (whose controller lives on a
   // different thread).
-  DCHECK_EQ(controllers_->count(NIGORI), 0u);
+  DCHECK_EQ(controllers_.count(NIGORI), 0u);
 
   // Check if any of the controllers are already in a FAILED state, and if so,
   // mark them accordingly in the status table.
   DataTypeStatusTable::TypeErrorMap existing_errors;
-  for (const auto& [type, controller] : *controllers_) {
+  for (const auto& [type, controller] : controllers_) {
     ModelTypeController::State state = controller->state();
     CHECK(state == ModelTypeController::NOT_RUNNING ||
-          state == ModelTypeController::STOPPING ||
           state == ModelTypeController::FAILED)
         << " actual=" << ModelTypeController::StateToString(state) << " for "
         << ModelTypeToDebugString(type);
@@ -143,7 +154,7 @@ void DataTypeManagerImpl::ClearMetadataWhileStoppedExceptFor(
     ModelTypeSet types) {
   CHECK_EQ(state_, STOPPED);
 
-  for (const auto& [type, controller] : *controllers_) {
+  for (const auto& [type, controller] : controllers_) {
     if (!types.Has(type)) {
       controller->Stop(CLEAR_METADATA, base::DoNothing());
     }
@@ -185,7 +196,7 @@ void DataTypeManagerImpl::Configure(ModelTypeSet preferred_types,
   // Add types with controllers.
   // TODO(crbug.com/40901755): `preferred_types` should already only contain
   // types with controllers. Can we CHECK() this instead?
-  for (const auto& [type, controller] : *controllers_) {
+  for (const auto& [type, controller] : controllers_) {
     allowed_types.Put(type);
   }
 
@@ -204,7 +215,7 @@ void DataTypeManagerImpl::DataTypePreconditionChanged(ModelType type) {
     return;
   }
 
-  switch (controllers_->find(type)->second->GetPreconditionState()) {
+  switch (controllers_.find(type)->second->GetPreconditionState()) {
     case ModelTypeController::PreconditionState::kPreconditionsMet:
       if (preferred_types_.Has(type)) {
         // Only reconfigure if the type is both ready and desired. This will
@@ -291,8 +302,8 @@ void DataTypeManagerImpl::ConfigureImpl(ModelTypeSet preferred_types,
 
 void DataTypeManagerImpl::ConnectDataTypes() {
   for (ModelType type : preferred_types_without_errors_) {
-    auto dtc_iter = controllers_->find(type);
-    if (dtc_iter == controllers_->end()) {
+    auto dtc_iter = controllers_.find(type);
+    if (dtc_iter == controllers_.end()) {
       continue;
     }
     ModelTypeController* dtc = dtc_iter->second.get();
@@ -410,7 +421,7 @@ void DataTypeManagerImpl::Restart() {
   // Check for new data type errors. This can happen if the controller
   // encountered an error while it was NOT_RUNNING or STOPPING.
   DataTypeStatusTable::TypeErrorMap existing_errors;
-  for (const auto& [type, controller] : *controllers_) {
+  for (const auto& [type, controller] : controllers_) {
     if (controller->state() == ModelTypeController::FAILED) {
       existing_errors[type] =
           SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
@@ -487,8 +498,8 @@ void DataTypeManagerImpl::UpdatePreconditionErrors() {
 }
 
 bool DataTypeManagerImpl::UpdatePreconditionError(ModelType type) {
-  auto iter = controllers_->find(type);
-  if (iter == controllers_->end()) {
+  auto iter = controllers_.find(type);
+  if (iter == controllers_.end()) {
     return false;
   }
 
@@ -769,6 +780,29 @@ void DataTypeManagerImpl::NotifyDone(ConfigureStatus status) {
   observer_->OnConfigureDone(result);
 }
 
+ModelTypeSet DataTypeManagerImpl::GetRegisteredDataTypes() const {
+  ModelTypeSet registered_types;
+  // The `controllers_` are determined by command-line flags; that's effectively
+  // what controls the values returned here.
+  for (const auto& [type, controller] : controllers_) {
+    registered_types.Put(type);
+  }
+  return registered_types;
+}
+
+ModelTypeSet DataTypeManagerImpl::GetDataTypesForTransportOnlyMode() const {
+  // Control types (in practice, NIGORI) are always supported. This special case
+  // is necessary because the NIGORI controller isn't in `controllers_`.
+  ModelTypeSet allowed_types = ControlTypes();
+  // Collect the types from all controllers that support transport-only mode.
+  for (const auto& [type, controller] : controllers_) {
+    if (controller->ShouldRunInTransportOnlyMode()) {
+      allowed_types.Put(type);
+    }
+  }
+  return allowed_types;
+}
+
 ModelTypeSet DataTypeManagerImpl::GetActiveDataTypes() const {
   if (state_ != CONFIGURED) {
     return ModelTypeSet();
@@ -792,7 +826,7 @@ ModelTypeSet DataTypeManagerImpl::GetDataTypesWithPermanentErrors() const {
 ModelTypeSet DataTypeManagerImpl::GetPurgedDataTypes() const {
   ModelTypeSet purged_types;
 
-  for (const auto& [type, controller] : *controllers_) {
+  for (const auto& [type, controller] : controllers_) {
     if (controller->state() == ModelTypeController::NOT_RUNNING) {
       purged_types.Put(type);
     }
@@ -810,6 +844,11 @@ ModelTypeSet DataTypeManagerImpl::GetActiveProxyDataTypes() const {
 
 DataTypeManager::State DataTypeManagerImpl::state() const {
   return state_;
+}
+
+const ModelTypeController::TypeMap& DataTypeManagerImpl::GetControllerMap()
+    const {
+  return controllers_;
 }
 
 ModelTypeSet DataTypeManagerImpl::GetEnabledTypes() const {

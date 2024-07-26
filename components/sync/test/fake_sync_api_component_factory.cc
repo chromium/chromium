@@ -4,6 +4,8 @@
 
 #include "components/sync/test/fake_sync_api_component_factory.h"
 
+#include <utility>
+
 #include "base/test/bind.h"
 #include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/test/fake_sync_engine.h"
@@ -37,11 +39,11 @@ void FakeSyncApiComponentFactory::AllowFakeEngineInitCompletion(bool allow) {
 
 std::unique_ptr<DataTypeManager>
 FakeSyncApiComponentFactory::CreateDataTypeManager(
-    const ModelTypeController::TypeMap* controllers,
+    ModelTypeController::TypeVector controllers,
     const DataTypeEncryptionHandler* encryption_handler,
     DataTypeManagerObserver* observer) {
   auto data_type_manager = std::make_unique<TestDataTypeManagerImpl>(
-      controllers, encryption_handler, observer);
+      std::move(controllers), encryption_handler, observer);
   last_created_data_type_manager_ = data_type_manager->AsWeakPtr();
   return data_type_manager;
 }

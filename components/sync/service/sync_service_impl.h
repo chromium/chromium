@@ -33,7 +33,6 @@
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/data_type_manager_observer.h"
 #include "components/sync/service/data_type_status_table.h"
-#include "components/sync/service/model_type_controller.h"
 #include "components/sync/service/sync_client.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service.h"
@@ -309,14 +308,6 @@ class SyncServiceImpl : public SyncService,
 
   bool UseTransportOnlyMode() const;
 
-  // Returns the set of data types that are supported in principle, possibly
-  // influenced by command-line options.
-  ModelTypeSet GetRegisteredDataTypes() const;
-
-  // Returns the ModelTypes allowed in transport-only mode (i.e. those that are
-  // not tied to sync-the-feature).
-  ModelTypeSet GetModelTypesForTransportOnlyMode() const;
-
   void UpdateDataTypesForInvalidations();
 
   // Shuts down and destroys the engine. |reset_reason| specifies the reason for
@@ -474,9 +465,6 @@ class SyncServiceImpl : public SyncService,
   // Tracks the set of failed data types (those that encounter an error
   // or must delay loading for some reason).
   DataTypeStatusTable::TypeErrorMap data_type_error_map_;
-
-  // List of available data type controllers.
-  ModelTypeController::TypeMap model_type_controllers_;
 
   CreateHttpPostProviderFactory create_http_post_provider_factory_cb_;
 

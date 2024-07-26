@@ -50,11 +50,11 @@ SyncApiComponentFactoryImpl::~SyncApiComponentFactoryImpl() = default;
 
 std::unique_ptr<DataTypeManager>
 SyncApiComponentFactoryImpl::CreateDataTypeManager(
-    const syncer::ModelTypeController::TypeMap* controllers,
+    syncer::ModelTypeController::TypeVector controllers,
     const syncer::DataTypeEncryptionHandler* encryption_handler,
     DataTypeManagerObserver* observer) {
-  return std::make_unique<DataTypeManagerImpl>(controllers, encryption_handler,
-                                               observer);
+  return std::make_unique<DataTypeManagerImpl>(std::move(controllers),
+                                               encryption_handler, observer);
 }
 
 std::unique_ptr<syncer::SyncEngine>

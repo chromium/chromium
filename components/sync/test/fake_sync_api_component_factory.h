@@ -42,7 +42,7 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
 
   // SyncApiComponentFactory overrides.
   std::unique_ptr<DataTypeManager> CreateDataTypeManager(
-      const ModelTypeController::TypeMap* controllers,
+      ModelTypeController::TypeVector controllers,
       const DataTypeEncryptionHandler* encryption_handler,
       DataTypeManagerObserver* observer) override;
   std::unique_ptr<SyncEngine> CreateSyncEngine(

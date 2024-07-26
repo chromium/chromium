@@ -30,7 +30,7 @@ class SyncApiComponentFactory {
   virtual ~SyncApiComponentFactory() = default;
 
   virtual std::unique_ptr<DataTypeManager> CreateDataTypeManager(
-      const ModelTypeController::TypeMap* controllers,
+      ModelTypeController::TypeVector controllers,
       const DataTypeEncryptionHandler* encryption_handler,
       DataTypeManagerObserver* observer) = 0;
 

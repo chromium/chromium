@@ -91,6 +91,14 @@ class DataTypeManager {
   // |CLEAR_METADATA|, clears sync data for all datatypes.
   virtual void Stop(SyncStopMetadataFate metadata_fate) = 0;
 
+  // Returns the set of data types that are supported in principle, possibly
+  // influenced by command-line options.
+  virtual ModelTypeSet GetRegisteredDataTypes() const = 0;
+
+  // Returns the ModelTypes allowed in transport-only mode (i.e. those that are
+  // not tied to sync-the-feature).
+  virtual ModelTypeSet GetDataTypesForTransportOnlyMode() const = 0;
+
   // Get the set of current active data types (those chosen or configured by the
   // user which have not also encountered a runtime error). Note that during
   // configuration, this will the the empty set. Once the configuration
@@ -116,6 +124,11 @@ class DataTypeManager {
 
   // The current state of the data type manager.
   virtual State state() const = 0;
+
+  // Exposes direct access to underlying controllers. Avoid using if possible,
+  // as DataTypeManager usually offers higher-level APIs.
+  // TODO(crbug.com/40901755): Remove this getter.
+  virtual const ModelTypeController::TypeMap& GetControllerMap() const = 0;
 };
 
 }  // namespace syncer
