@@ -352,6 +352,7 @@ IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
 
   sm_.ExpectSpeechPattern("Edit text");
   sm_.ExpectSpeechPattern("window");
+  sm_.ExpectSpeechPattern("Turn on Caps Lock");
   sm_.Replay();
 }
 
