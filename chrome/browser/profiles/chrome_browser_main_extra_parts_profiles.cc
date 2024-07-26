@@ -132,6 +132,7 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator_factory.h"
+#include "chrome/browser/policy/cloud/user_fm_registration_token_uploader_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
@@ -1080,6 +1081,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   policy::UserPolicyOidcSigninServiceFactory::GetInstance();
 #endif
   policy::UserCloudPolicyInvalidatorFactory::GetInstance();
+  policy::UserFmRegistrationTokenUploaderFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   policy::UserNetworkConfigurationUpdaterFactory::GetInstance();
 #endif
