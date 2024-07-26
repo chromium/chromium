@@ -3995,6 +3995,12 @@
       status: "stable",
     },
     {
+      // Feature for optimizing SVG transform changes. This is a kill switch in
+      // case we encounter issues with these optimizations.
+      name: "SvgTransformOptimization",
+      status: "stable",
+    },
+    {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
       status: "experimental",
     },

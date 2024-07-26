@@ -115,8 +115,12 @@ void SVGResources::UpdateEffects(LayoutObject& object,
       (style.HasFilter() || (old_style && old_style->HasFilter()))) {
     // We either created one above, or had one already.
     DCHECK(GetClient(object));
-    object.SetNeedsPaintPropertyUpdate();
-    GetClient(object)->MarkFilterDataDirty();
+    if (RuntimeEnabledFeatures::SvgTransformOptimizationEnabled()) {
+      GetClient(object)->InvalidateFilterData();
+    } else {
+      object.SetNeedsPaintPropertyUpdate();
+      GetClient(object)->MarkFilterDataDirty();
+    }
   }
   if (!old_style || !had_client)
     return;

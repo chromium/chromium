@@ -2157,17 +2157,8 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
     MarkAncestorChainForFlagsUpdate();
   }
 
-  // If the (current)color changes and a filter is applied that uses it, the
-  // filter needs to be updated.
-  const ComputedStyle& new_style = GetLayoutObject().StyleRef();
-  if (diff.TextDecorationOrColorChanged()) {
-    if (new_style.HasFilter() && new_style.Filter().UsesCurrentColor()) {
-      GetLayoutObject().SetNeedsPaintPropertyUpdate();
-      SetFilterOnEffectNodeDirty();
-    }
-  }
-
   // HasNonContainedAbsolutePositionDescendant depends on position changes.
+  const ComputedStyle& new_style = GetLayoutObject().StyleRef();
   if (!old_style || old_style->GetPosition() != new_style.GetPosition())
     MarkAncestorChainForFlagsUpdate();
 

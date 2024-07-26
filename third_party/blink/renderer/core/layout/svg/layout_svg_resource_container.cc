@@ -330,11 +330,11 @@ void LayoutSVGResourceContainer::InvalidateCache() {
 static inline void RemoveFromCacheAndInvalidateDependencies(
     LayoutObject& object,
     bool needs_layout) {
-  // TODO(fs): Do we still need this? (If bounds are invalidated on a leaf
-  // LayoutObject, we will propagate that during the required layout and
-  // invalidate effects of self and any ancestors at that time.)
-  if (object.IsSVG())
-    SVGResourceInvalidator(object).InvalidateEffects();
+  if (!RuntimeEnabledFeatures::SvgTransformOptimizationEnabled()) {
+    if (object.IsSVG()) {
+      SVGResourceInvalidator(object).InvalidateEffects();
+    }
+  }
 
   LayoutSVGResourceContainer::InvalidateDependentElements(object, needs_layout);
 }
