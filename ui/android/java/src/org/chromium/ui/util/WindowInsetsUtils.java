@@ -15,11 +15,17 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 
 import java.util.List;
 
 /** Helper functions for working with WindowInsets and Rects. */
 public final class WindowInsetsUtils {
+    private static final String TAG = "WindowInsetsUtils";
+
+    private static Size sDefaultFrame;
+    private static List<Rect> sDefaultBoundingRects;
+
     /** Private constructor to stop instantiation. */
     private WindowInsetsUtils() {}
 
@@ -115,19 +121,41 @@ public final class WindowInsetsUtils {
         return widestUnoccludedRect;
     }
 
-    // TODO (crbug/351389242): Remove method and call directly when Android V testing is supported.
     /** See {@link WindowInsets#getFrame()} for details. */
     @SuppressWarnings("NewApi")
     public static Size getFrameFromInsets(WindowInsets windowInsets) {
-        return windowInsets != null ? windowInsets.getFrame() : new Size(0, 0);
+        // This invocation is wrapped in a try-catch block to allow backporting of the #getFrame()
+        // API on pre-V devices. On pre-V devices not supporting this API, a default value will be
+        // cached on the first failure and returned subsequently.
+        if (sDefaultFrame != null) return sDefaultFrame;
+        try {
+            if (windowInsets != null) {
+                return windowInsets.getFrame();
+            }
+        } catch (NoSuchMethodError e) {
+            Log.w(TAG, e.toString());
+            sDefaultFrame = new Size(0, 0);
+        }
+        return sDefaultFrame;
     }
 
-    // TODO (crbug/351389242): Remove method and call directly when Android V testing is supported.
     /** See {@link WindowInsets#getBoundingRects(int)} for details. */
     @SuppressWarnings("NewApi")
     public static List<Rect> getBoundingRectsFromInsets(
             WindowInsets windowInsets, @InsetsType int insetType) {
-        return windowInsets != null ? windowInsets.getBoundingRects(insetType) : List.of();
+        // This invocation is wrapped in a try-catch block to allow backporting of the
+        // #getBoundingRects() API on pre-V devices. On pre-V devices not supporting this API, a
+        // default value will be cached on the first failure and returned subsequently.
+        if (sDefaultBoundingRects != null) return sDefaultBoundingRects;
+        try {
+            if (windowInsets != null) {
+                return windowInsets.getBoundingRects(insetType);
+            }
+        } catch (NoSuchMethodError e) {
+            Log.w(TAG, e.toString());
+            sDefaultBoundingRects = List.of();
+        }
+        return sDefaultBoundingRects;
     }
 
     private static void forEachRect(Region region, Callback<Rect> rectConsumer) {

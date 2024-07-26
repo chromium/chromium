@@ -490,7 +490,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mDragDropTouchObserver = null;
         }
 
-        if (mAppHeaderCoordinator != null && VERSION.SDK_INT >= VERSION_CODES.VANILLA_ICE_CREAM) {
+        if (mAppHeaderCoordinator != null && VERSION.SDK_INT >= VERSION_CODES.R) {
             mAppHeaderCoordinator.destroy();
             mAppHeaderCoordinator = null;
         }
@@ -1178,7 +1178,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mToolbarManager.getTabStripHeightSupplier().addObserver(mOnTabStripHeightChangedCallback);
     }
 
-    @SuppressWarnings("NewApi") // Android V check is done via helper method.
+    @SuppressWarnings("NewApi") // OS version check is done via helper method.
     private void initAppHeaderCoordinator(Bundle savedInstanceState) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         if (!ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)) {
