@@ -27,7 +27,7 @@ import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {Route, routes} from '../router.js';
 
 import {getTemplate} from './facegaze_actions_card.html.js';
-import {FACE_GAZE_GESTURE_TO_MACROS_PREF, FACEGAZE_ACTION_ASSIGN_GESTURE_EVENT_NAME, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeCommandPair, FaceGazeUtils} from './facegaze_constants.js';
+import {FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACE_GAZE_GESTURE_TO_MACROS_PREF, FACEGAZE_ACTION_ASSIGN_GESTURE_EVENT_NAME, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeCommandPair, FaceGazeUtils} from './facegaze_constants.js';
 
 const FaceGazeActionsCardElementBase = DeepLinkingMixin(RouteObserverMixin(
     WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)))));
@@ -787,8 +787,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
   private getGestureToConfidencePref_(gestureName: FacialGesture):
       chrome.settingsPrivate.PrefObject<number> {
-    const gesturesToConfidence =
-        this.get('prefs.settings.a11y.face_gaze.gestures_to_confidence.value');
+    const gesturesToConfidence = this.get(FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF);
     let confidence = 60;  // Default.
     if (gestureName in gesturesToConfidence) {
       confidence = gesturesToConfidence[gestureName];
@@ -878,8 +877,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   private updateGesturesToConfidencePref(
       gestureName: string, confidence: number): void {
     this.setPrefDictEntry(
-        'settings.a11y.face_gaze.gestures_to_confidence', gestureName,
-        confidence);
+        FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, gestureName, confidence);
   }
 
   private onAssignGestureButtonClick_(): void {
@@ -969,15 +967,6 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
               unassignIndex}.gesture`);
     }
 
-    // TODO(b:341770796): This logic will need to be updated once the gesture
-    // threshold becomes part of the setting.
-    // We will have to:
-    // 1. Remove the gesture from the previously set action if there is one
-    // (logic exists above)
-    // 2. Check to see if there is a matching gesture/action pair for which we
-    // need to update the gesture threshold.
-    // If there is a matching pair, then update the existing item instead of
-    // pushing a new one.
     const updateIndex = this.commandPairs_.findIndex(
         (item: FaceGazeCommandPair) => item.equals(newCommandPair));
     if (updateIndex < 0) {

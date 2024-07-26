@@ -25,6 +25,7 @@
 
 <template is="dom-if" if="[[showAddActionDialog_]]" restamp>
   <facegaze-actions-add-dialog
+      prefs="{{prefs}}"
       on-facegaze-command-pair-added="onCommandPairAdded_"
       on-close="onAddActionDialogClose_">
   </facegaze-actions-add-dialog>

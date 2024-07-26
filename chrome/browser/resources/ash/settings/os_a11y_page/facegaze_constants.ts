@@ -8,6 +8,12 @@ import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names
 export const FACE_GAZE_GESTURE_TO_MACROS_PREF =
     'prefs.settings.a11y.face_gaze.gestures_to_macros.value';
 
+export const FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT =
+    'settings.a11y.face_gaze.gestures_to_confidence';
+
+export const FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF =
+    `prefs.${FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT}.value`;
+
 // Currently supported macros in FaceGaze.
 export const FaceGazeActions: MacroName[] = [
   MacroName.MOUSE_CLICK_LEFT,
