@@ -15,6 +15,7 @@
 #include "media/base/decoder_factory.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 
@@ -125,7 +126,9 @@ void DefaultDecoderFactory::CreateVideoDecoders(
 #endif
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  video_decoders->push_back(std::make_unique<FFmpegVideoDecoder>(media_log));
+  if (IsBuiltInVideoCodec(VideoCodec::kH264)) {
+    video_decoders->push_back(std::make_unique<FFmpegVideoDecoder>(media_log));
+  }
 #endif
 }
 

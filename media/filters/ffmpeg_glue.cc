@@ -12,6 +12,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "media/base/container_names.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 
 namespace media {
@@ -149,19 +150,16 @@ const char* FFmpegGlue::GetAllowedAudioDecoders() {
 
 // static
 const char* FFmpegGlue::GetAllowedVideoDecoders() {
-  static const base::NoDestructor<std::string> kAllowedVideoCodecs([]() {
   // This should match the configured lists in //third_party/ffmpeg.
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-    std::vector<std::string> allowed_decoders;
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    allowed_decoders.push_back("h264");
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-    return base::JoinString(allowed_decoders, ",");
+  //
+  // Note: We don't check IsBuiltInVideoCodec(VideoCodec::kH264) here since
+  // unfortunately ffmpeg will refuse to extract metadata for H264 when the H264
+  // decoder is compiled in if we disable it here.
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  return "h264";
 #else
-    return std::string();
-#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  }());
-  return kAllowedVideoCodecs->c_str();
+  return "";
+#endif
 }
 
 bool FFmpegGlue::OpenContext(bool is_local_file) {

@@ -21,6 +21,7 @@
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_frame.h"
@@ -120,7 +121,8 @@ static void ReleaseVideoBufferImpl(void* opaque, uint8_t* data) {
 
 // static
 bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
-  return avcodec_find_decoder(VideoCodecToCodecID(codec)) != nullptr;
+  // We only build support for H.264.
+  return codec == VideoCodec::kH264 && IsBuiltInVideoCodec(codec);
 }
 
 FFmpegVideoDecoder::FFmpegVideoDecoder(MediaLog* media_log)

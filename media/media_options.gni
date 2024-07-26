@@ -221,7 +221,8 @@ declare_args() {
   # This flag gives the option to override that decision in case there are no
   # hardware decoders. To do so, you will also need to update ffmpeg build files
   # in order to define which decoders to build in.
-  enable_ffmpeg_video_decoders = media_use_ffmpeg && !is_android
+  enable_ffmpeg_video_decoders =
+      media_use_ffmpeg && (!is_android || current_cpu != "arm")
 }
 
 declare_args() {

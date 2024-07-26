@@ -30,6 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/base/test_data_util.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/media_buildflags.h"
@@ -900,13 +901,13 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
 
 // High 10-bit Profile is supported when using ClearKey if it is supported for
 // clear content on this platform.
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  EXPECT_PROPRIETARY(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
-                                            video_mp4_hi10p_codecs()));
-#else
-  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
-                                            video_mp4_hi10p_codecs()));
-#endif
+  if (media::IsBuiltInVideoCodec(media::VideoCodec::kH264)) {
+    EXPECT_PROPRIETARY(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
+                                              video_mp4_hi10p_codecs()));
+  } else {
+    EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
+                                              video_mp4_hi10p_codecs()));
+  }
 
   // Non-video MP4 codecs.
   EXPECT_UNSUPPORTED(

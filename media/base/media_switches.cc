@@ -1111,6 +1111,17 @@ BASE_FEATURE(kAVDColorSpaceChanges,
              "AVDColorSpaceChanges",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether FFmpeg supports decoding H.264 video in software. Has no effect if
+// BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) is false.
+BASE_FEATURE(kBuiltInH264Decoder,
+             "BuiltInH264Decoder",
+#if BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
 #if BUILDFLAG(IS_ANDROID)
 // Should we allow video playback to use an overlay if it's not needed for
 // security?  Normally, we'd always want to allow this, except as part of the

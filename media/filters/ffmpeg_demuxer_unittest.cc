@@ -302,6 +302,7 @@ class FFmpegDemuxerTest : public testing::Test {
   // Fixture members.
 
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_{kBuiltInH264Decoder};
 
   // TODO(wolenetz): Consider expanding MediaLog verification coverage here
   // using StrictMock<MockMediaLog> for all FFmpegDemuxerTests. See

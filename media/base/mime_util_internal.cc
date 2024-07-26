@@ -948,15 +948,15 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
       case H264PROFILE_MAIN:
       case H264PROFILE_HIGH:
         break;
-// HIGH10PROFILE is supported through fallback to the ffmpeg decoder
-// which is not available on Android, or if FFMPEG is not used.
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+      // Only supported on some hardware and via ffmpeg.
       case H264PROFILE_HIGH10PROFILE:
-        // FFmpeg is not generally used for encrypted videos, so we do not
-        // know whether 10-bit is supported.
-        ambiguous_platform_support = is_encrypted;
-        break;
-#endif
+        if (IsBuiltInVideoCodec(VideoCodec::kH264)) {
+          // FFmpeg is not generally used for encrypted videos, so we do not
+          // know whether 10-bit is supported.
+          ambiguous_platform_support = is_encrypted;
+          break;
+        }
+        [[fallthrough]];
       default:
         ambiguous_platform_support = true;
     }
