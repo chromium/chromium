@@ -7,6 +7,7 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace internal {
 // Exposed for tests.
@@ -193,6 +194,9 @@ class AbandonedPageLoadMetricsObserver
   virtual bool IsAllowedToLogMetrics() const;
   virtual const base::flat_map<std::string, NavigationMilestone>&
   GetCustomUserTimingMarkNames() const;
+  virtual bool IsAllowedToLogUKM() const;
+  virtual void AddSRPMetricsToUKMIfNeeded(
+      ukm::builders::AbandonedSRPNavigation& builder) {}
 
   // Gets LCP and records UMA if it's valid. This is called from `OnComplete()`
   // and `FlushMetricsOnAppEnterBackground()` because LCP is finalized when the

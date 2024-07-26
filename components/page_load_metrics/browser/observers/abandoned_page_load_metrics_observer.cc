@@ -14,7 +14,6 @@
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -212,6 +211,11 @@ bool AbandonedPageLoadMetricsObserver::IsAllowedToLogMetrics() const {
   return true;
 }
 
+bool AbandonedPageLoadMetricsObserver::IsAllowedToLogUKM() const {
+  // UKM logging is not triggered by default, to avoid hitting the entry limit.
+  return false;
+}
+
 std::string AbandonedPageLoadMetricsObserver::GetHistogramPrefix() const {
   return internal::kAbandonedPageLoadMetricsHistogramPrefix;
 }
@@ -339,9 +343,13 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
         milestone);
   }
 
+  if (!IsAllowedToLogUKM()) {
+    return;
+  }
+
   ukm::SourceId source_id =
       ukm::ConvertToSourceId(navigation_id_, ukm::SourceIdType::NAVIGATION_ID);
-  ukm::builders::AbandonedNavigation builder(source_id);
+  ukm::builders::AbandonedSRPNavigation builder(source_id);
   builder.SetAbandonReason(static_cast<int>(abandon_reason));
   builder.SetLastMilestoneBeforeAbandon(static_cast<int>(milestone));
 
@@ -462,6 +470,8 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
       builder.SetAFTEndTime(loading_milestone.second.InMilliseconds());
     }
   }
+
+  AddSRPMetricsToUKMIfNeeded(builder);
 
   // TODO(https://crbug.com/347706997): Record more milestones, including
   // loading milestones.

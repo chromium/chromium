@@ -18,11 +18,11 @@ be describing additional metrics about the same event.
 
 <ukm-configuration>
 
-<event name="AbandonedNavigation" singular="True">
+<event name="AbandonedSRPNavigation" singular="True">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    Metrics recorded each time a navigation/page load is abandoned.
+    Metrics recorded each time a SRP navigation/page load is abandoned.
   </summary>
   <metric name="AbandonReason">
     <summary>
@@ -75,6 +75,12 @@ be describing additional metrics about the same event.
     <summary>
       The time when the DidCommit IPC for the navigation is received, relative
       to navigation start.
+    </summary>
+  </metric>
+  <metric name="DidRequestNonSRP">
+    <summary>
+      Whether the navigation involves non-SRP URL (which later redirected to
+      SRP).
     </summary>
   </metric>
   <metric name="DOMContentLoadedTime">
@@ -158,6 +164,12 @@ be describing additional metrics about the same event.
     <summary>
       The time when the final renderer process for the navigation is
       initialized, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="RTT">
+    <summary>
+      The network connection RTT when the abandonment happens, in milliseconds.
+      This is useful to see if the navigation happens on a slow network.
     </summary>
   </metric>
 </event>
