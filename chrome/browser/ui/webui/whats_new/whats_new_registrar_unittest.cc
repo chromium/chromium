@@ -10,6 +10,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/user_education/webui/whats_new_registry.h"
+#include "components/user_education/webui/whats_new_storage_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -32,6 +34,23 @@ void RegisterWhatsNewEditionsForTests(whats_new::WhatsNewRegistry* registry) {
       whats_new::WhatsNewEdition(&kTestEdition, "mickeyburks@chromium.org"));
 }
 
+class MockWhatsNewStorageService : public whats_new::WhatsNewStorageService {
+ public:
+  MockWhatsNewStorageService() = default;
+  MOCK_METHOD(const base::Value::List&, ReadModuleData, (), (const override));
+  MOCK_METHOD(const base::Value::Dict&, ReadEditionData, (), (const, override));
+  MOCK_METHOD(std::optional<std::string_view>,
+              FindEditionForCurrentVersion,
+              (),
+              (const, override));
+  MOCK_METHOD(bool, IsUsedEdition, (const std::string_view), (const, override));
+  MOCK_METHOD(void, SetModuleEnabled, (const std::string_view), (override));
+  MOCK_METHOD(void, ClearModule, (const std::string_view), (override));
+  MOCK_METHOD(void, SetEditionUsed, (const std::string_view), (override));
+  MOCK_METHOD(void, ClearEdition, (const std::string_view), (override));
+  MOCK_METHOD(void, Reset, (), (override));
+};
+
 }  // namespace
 
 TEST(WhatsNewRegistrarTest, CheckModuleHistograms) {
@@ -44,7 +63,8 @@ TEST(WhatsNewRegistrarTest, CheckModuleHistograms) {
     ASSERT_TRUE(variants.has_value());
   }
 
-  whats_new::WhatsNewRegistry registry;
+  whats_new::WhatsNewRegistry registry(
+      std::make_unique<MockWhatsNewStorageService>());
   RegisterWhatsNewModules(&registry);
   RegisterWhatsNewModulesForTests(&registry);
   const auto& modules = registry.modules();
@@ -72,7 +92,8 @@ TEST(WhatsNewRegistrarTest, CheckModuleActions) {
     ASSERT_EQ(1U, suffixes.size());
   }
 
-  whats_new::WhatsNewRegistry registry;
+  whats_new::WhatsNewRegistry registry(
+      std::make_unique<MockWhatsNewStorageService>());
   RegisterWhatsNewModules(&registry);
   RegisterWhatsNewModulesForTests(&registry);
   const auto& modules = registry.modules();
@@ -99,7 +120,8 @@ TEST(WhatsNewRegistrarTest, CheckEditionActions) {
     ASSERT_EQ(1U, suffixes.size());
   }
 
-  whats_new::WhatsNewRegistry registry;
+  whats_new::WhatsNewRegistry registry(
+      std::make_unique<MockWhatsNewStorageService>());
   RegisterWhatsNewEditions(&registry);
   RegisterWhatsNewEditionsForTests(&registry);
   const auto& editions = registry.editions();

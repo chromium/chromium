@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_EDUCATION_WEBUI_WHATS_NEW_REGISTRY_H_
 #define COMPONENTS_USER_EDUCATION_WEBUI_WHATS_NEW_REGISTRY_H_
 
+#include "components/user_education/webui/whats_new_storage_service.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
 namespace whats_new {
@@ -16,9 +17,7 @@ class WhatsNewModule {
   WhatsNewModule(const base::Feature* feature,
                  std::string owner,
                  std::optional<BrowserCommand> browser_command = std::nullopt)
-      : feature_(feature),
-        owner_(owner),
-        browser_command_(browser_command) {
+      : feature_(feature), owner_(owner), browser_command_(browser_command) {
     CHECK(feature);
   }
   WhatsNewModule(WhatsNewModule&& other) noexcept = default;
@@ -36,6 +35,9 @@ class WhatsNewModule {
   // Return true if the feature has been enabled by default.
   // This indicates the feature has recently rolled out to all users.
   bool HasRolledFeature() const;
+
+  // Return true if the feature is enabled.
+  bool IsFeatureEnabled() const;
 
   // Get the name of the feature for this module.
   const char* GetFeatureName() const;
@@ -57,9 +59,8 @@ class WhatsNewEdition : public WhatsNewModule {
 
 class WhatsNewRegistry {
  public:
-  WhatsNewRegistry();
-  WhatsNewRegistry(WhatsNewRegistry&& other) noexcept;
-  WhatsNewRegistry& operator=(WhatsNewRegistry&& other) noexcept = default;
+  explicit WhatsNewRegistry(
+      std::unique_ptr<WhatsNewStorageService> storage_service);
   ~WhatsNewRegistry();
 
   // Register a module to be shown on the What's New Page.
@@ -77,10 +78,21 @@ class WhatsNewRegistry {
   // Used to send enabled-by-default flags to server-side router.
   const std::vector<std::string_view> GetRolledFeatureNames() const;
 
+  // Set a "used version" for an edition.
+  void SetEditionUsed(const std::string_view edition);
+
+  // Cleanup data from storage for housekeeping.
+  void ClearUnregisteredModules();
+  void ClearUnregisteredEditions();
+
+  // Resets all stored data for manual testing.
+  void ResetData();
+
   const std::vector<WhatsNewModule>& modules() { return modules_; }
   const std::vector<WhatsNewEdition>& editions() { return editions_; }
 
  private:
+  std::unique_ptr<WhatsNewStorageService> storage_service_;
   std::vector<WhatsNewModule> modules_;
   std::vector<WhatsNewEdition> editions_;
 };

@@ -9814,6 +9814,7 @@ test("unit_tests") {
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
       "../browser/ui/webui/whats_new/whats_new_handler_unittest.cc",
       "../browser/ui/webui/whats_new/whats_new_registrar_unittest.cc",
+      "../browser/ui/webui/whats_new/whats_new_storage_service_impl_unittest.cc",
       "../browser/ui/webui/whats_new/whats_new_util_unittest.cc",
     ]
 

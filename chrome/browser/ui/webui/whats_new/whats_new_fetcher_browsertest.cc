@@ -16,7 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
 // Enabled through feature list.
 BASE_FEATURE(kTestModuleEnabled,
              "TestModuleEnabled",
@@ -37,18 +36,6 @@ BASE_FEATURE(kTestModuleEnabledByDefault,
 BASE_FEATURE(kTestModuleDisabledByDefault,
              "TestModuleDisabledByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-class GlobalFeaturesOverride : public GlobalFeatures {
- public:
-  GlobalFeaturesOverride() = default;
-
- protected:
-  std::unique_ptr<whats_new::WhatsNewRegistry> CreateWhatsNewRegistry()
-      override {
-    return std::make_unique<whats_new::WhatsNewRegistry>();
-  }
-};
-
 }  // namespace
 
 class WhatsNewFetcherBrowserTest : public InteractiveBrowserTest {
@@ -57,16 +44,8 @@ class WhatsNewFetcherBrowserTest : public InteractiveBrowserTest {
     feature_list_.InitWithFeatures({user_education::features::kWhatsNewVersion2,
                                     kTestModuleEnabled, kTestModule2Enabled},
                                    {kTestModuleDisabled});
-    GlobalFeatures::ReplaceGlobalFeaturesForTesting(
-        base::BindRepeating(&WhatsNewFetcherBrowserTest::CreateGlobalFeatures,
-                            base::Unretained(this)));
   }
-  ~WhatsNewFetcherBrowserTest() override {
-    GlobalFeatures::ReplaceGlobalFeaturesForTesting(base::NullCallback());
-  }
-  std::unique_ptr<GlobalFeatures> CreateGlobalFeatures() {
-    return std::make_unique<GlobalFeaturesOverride>();
-  }
+  ~WhatsNewFetcherBrowserTest() override = default;
 
   whats_new::WhatsNewRegistry* GetRegistry() {
     return g_browser_process->GetFeatures()->whats_new_registry();
