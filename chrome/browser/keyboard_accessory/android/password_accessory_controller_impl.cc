@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -45,6 +47,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/plus_addresses/features.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/render_frame_host.h"
@@ -250,6 +253,14 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
   footer_commands_to_add.emplace_back(
       manage_passwords_title, autofill::AccessoryAction::MANAGE_PASSWORDS);
 
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
+    footer_commands_to_add.emplace_back(
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
+        autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+  }
+
   bool has_suggestions = !info_to_add.empty() || !passkeys_to_add.empty();
   AccessorySheetData data = autofill::CreateAccessorySheetData(
       autofill::AccessoryTabType::PASSWORDS, GetTitle(has_suggestions, origin),
@@ -415,6 +426,18 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
         }
       }
       return;
+    case autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET: {
+      if (auto* client = autofill::ContentAutofillClient::FromWebContents(
+              &GetWebContents())) {
+        client->OfferPlusAddressCreation(
+            client->GetLastCommittedPrimaryMainFrameOrigin(),
+            base::BindOnce(
+                &PasswordAccessoryControllerImpl::OnPlusAddressCreated,
+                weak_ptr_factory_.GetWeakPtr()));
+        GetManualFillingController()->Hide();
+      }
+      return;
+    }
     default:
       NOTREACHED_IN_MIGRATION()
           << "Unhandled selected action: " << static_cast<int>(selected_action);
@@ -706,6 +729,17 @@ void PasswordAccessoryControllerImpl::FillSelection(
 
 void PasswordAccessoryControllerImpl::AllPasswordsSheetDismissed() {
   all_passords_bottom_sheet_controller_.reset();
+}
+
+void PasswordAccessoryControllerImpl::OnPlusAddressCreated(
+    const std::string& plus_address) {
+  password_manager::PasswordManagerDriver* driver =
+      driver_supplier_.Run(&GetWebContents());
+  if (!driver) {
+    return;
+  }
+  driver->FillIntoFocusedField(/*is_password=*/false,
+                               base::UTF8ToUTF16(plus_address));
 }
 
 bool PasswordAccessoryControllerImpl::IsSecureSite() const {

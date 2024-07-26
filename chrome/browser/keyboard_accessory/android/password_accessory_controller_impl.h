@@ -181,6 +181,11 @@ class PasswordAccessoryControllerImpl
   // the Bottom Sheet view is destroyed.
   void AllPasswordsSheetDismissed();
 
+  // Fills `plus_address` into the currently focused field. Called when the
+  // manually triggered plus address creation bottom sheet is accepted by the
+  // user.
+  void OnPlusAddressCreated(const std::string& plus_address);
+
   content::WebContents& GetWebContents() const;
 
   // Keeps track of credentials which are stored for all origins in this tab.

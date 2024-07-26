@@ -19,13 +19,15 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
-#include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_controller_impl.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -42,6 +44,7 @@
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/plus_addresses/features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webauthn/android/cred_man_support.h"
@@ -182,6 +185,15 @@ class MockPasswordManagerDriver
               (override));
 };
 
+class MockAutofillClient : public autofill::TestContentAutofillClient {
+ public:
+  using autofill::TestContentAutofillClient::TestContentAutofillClient;
+  MOCK_METHOD(void,
+              OfferPlusAddressCreation,
+              (const url::Origin&, autofill::PlusAddressCallback),
+              (override));
+};
+
 std::u16string password_for_str(const std::u16string& user) {
   return l10n_util::GetStringFUTF16(
       IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_DESCRIPTION, user);
@@ -229,6 +241,11 @@ std::u16string cross_device_passkeys_str() {
 std::u16string select_passkey_str() {
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSKEY);
+}
+
+std::u16string generate_plus_address_str() {
+  return l10n_util::GetStringUTF16(
+      IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID);
 }
 
 // Creates a AccessorySheetDataBuilder object with a "Manage passwords..."
@@ -331,6 +348,10 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     return webauthn_credentials_delegate_.get();
   }
 
+  MockAutofillClient& autofill_client() {
+    return *autofill_client_injector_[web_contents()];
+  }
+
  protected:
   virtual PasswordStoreInterface* CreateInternalAccountPasswordStore() {
     mock_account_password_store_ =
@@ -364,6 +385,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   MockPasswordManagerDriver mock_driver_;
   std::unique_ptr<password_manager::MockWebAuthnCredentialsDelegate>
       webauthn_credentials_delegate_;
+  autofill::TestAutofillClientInjector<NiceMock<MockAutofillClient>>
+      autofill_client_injector_;
 };
 
 TEST_F(PasswordAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
@@ -852,6 +875,28 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
   EXPECT_EQ(controller()->GetSheetData(), std::move(data_builder).Build());
 }
 
+// Verify that the action to open plus address creation bottom sheet is appended
+// when the corresponding feature flag is enabled.
+TEST_F(PasswordAccessoryControllerTest,
+       AppendsPlusAddressManualFallbackActions) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
+
+  CreateSheetController();
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+          .AppendFooterCommand(generate_plus_address_str(),
+                               autofill::AccessoryAction::
+                                   CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
+          .Build());
+}
+
 TEST_F(PasswordAccessoryControllerTest,
        RecordsAccessoryImpressionsForBlocklisted) {
   CreateSheetController();
@@ -1270,6 +1315,34 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectHybridPasskeyOption) {
 
   controller()->OnOptionSelected(
       autofill::AccessoryAction::CROSS_DEVICE_PASSKEY);
+}
+
+// Verify that the plus address creation bottom sheet is opened when the
+// corresponding action is triggered.
+TEST_F(PasswordAccessoryControllerTest,
+       TriggersPlusAddressCreationBottomSheet) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
+
+  CreateSheetController();
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+
+  const std::string plus_address = "example@gmail.com";
+  EXPECT_CALL(autofill_client(), OfferPlusAddressCreation)
+      .WillOnce([&plus_address](const url::Origin&,
+                                autofill::PlusAddressCallback callback) {
+        std::move(callback).Run(plus_address);
+      });
+  EXPECT_CALL(*driver(), FillIntoFocusedField(/*is_password=*/false,
+                                              base::UTF8ToUTF16(plus_address)));
+  // Manual filling sheet is expected to be hidden when the plus address
+  // creation bottom sheet is opened.
+  EXPECT_CALL(mock_manual_filling_controller_, Hide());
+
+  controller()->OnOptionSelected(
+      autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
 }
 
 // Verify that when WebAuthnCredentialsDelegate::SelectPasskey can be invoked

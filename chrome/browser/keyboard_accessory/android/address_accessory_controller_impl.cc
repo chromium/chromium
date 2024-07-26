@@ -146,16 +146,17 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
       autofill::ShowAutofillProfileSettings(&GetWebContents());
       return;
     case AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET: {
-      auto* client = ContentAutofillClient::FromWebContents(&GetWebContents());
-      client->OfferPlusAddressCreation(
-          client->GetLastCommittedPrimaryMainFrameOrigin(),
-          base::BindOnce(
-              &AddressAccessoryControllerImpl::OnPlusAddressCreated,
-              weak_ptr_factory_.GetWeakPtr(),
-              GetManualFillingController()->GetLastFocusedFieldId()));
-      // TODO: crbug.com/327838324 - Confirm with the UX that the manual filling
-      // sheet should be closed after the bottom sheet is closed.
-      GetManualFillingController()->Hide();
+      if (auto* client =
+              ContentAutofillClient::FromWebContents(&GetWebContents())) {
+        client->OfferPlusAddressCreation(
+            client->GetLastCommittedPrimaryMainFrameOrigin(),
+            base::BindOnce(
+                &AddressAccessoryControllerImpl::OnPlusAddressCreated,
+                weak_ptr_factory_.GetWeakPtr(),
+                GetManualFillingController()->GetLastFocusedFieldId()));
+        GetManualFillingController()->Hide();
+      }
+
       return;
     }
     case AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET: {
