@@ -46,6 +46,7 @@ import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupEvent;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -105,6 +106,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         mTab1 = prepareTab(TAB_ID_1, ROOT_ID_1);
         mTab2 = prepareTab(TAB_ID_2, ROOT_ID_2);
         Mockito.doReturn(TOKEN_1).when(mTab1).getTabGroupId();
+        Mockito.doReturn(TOKEN_1).when(mTab2).getTabGroupId();
 
         when(mTabGroupModelFilter.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTabGroupModelFilter.isTabInTabGroup(mTab2)).thenReturn(true);
@@ -146,16 +148,34 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testDidSelectTabRemote() {
         // Stub the bare minimum.
         SavedTabGroup savedGroup = new SavedTabGroup();
-        savedGroup.creatorCacheGuid = "remote_device";
+        String remoteGuid = "remote_device";
+        savedGroup.creatorCacheGuid = remoteGuid;
+        savedGroup.lastUpdaterCacheGuid = remoteGuid;
+        SavedTabGroupTab savedTab1 = new SavedTabGroupTab();
+        SavedTabGroupTab savedTab2 = new SavedTabGroupTab();
+        savedTab2.localId = TAB_ID_2;
+        savedGroup.savedTabs.add(savedTab1);
+        savedGroup.savedTabs.add(savedTab2);
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedGroup);
+        when(mTabGroupSyncService.isRemoteDevice(remoteGuid)).thenReturn(true);
 
-        String action = "TabGroups.Sync.SelectedTabInRemotelyCreatedGroup";
-        assertEquals(0, mActionTester.getActionCount(action));
+        List<String> actions =
+                List.of(
+                        "TabGroups.Sync.SelectedTabInRemotelyCreatedGroup",
+                        "MobileCrossDeviceTabJourney",
+                        "TabGroups.Sync.SelectedRemotelyUpdatedTabInSession");
+        for (String action : actions) {
+            assertEquals(
+                    "Expected no actions for " + action, 0, mActionTester.getActionCount(action));
+        }
         mTabModelObserverCaptor
                 .getValue()
-                .didSelectTab(mTab1, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
-        verify(mTabGroupSyncService).onTabSelected(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1));
-        assertEquals(1, mActionTester.getActionCount(action));
+                .didSelectTab(mTab2, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
+        verify(mTabGroupSyncService).onTabSelected(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_2));
+        for (String action : actions) {
+            assertEquals(
+                    "Expected one action for " + action, 1, mActionTester.getActionCount(action));
+        }
     }
 
     @Test
@@ -163,13 +183,18 @@ public class TabGroupSyncLocalObserverUnitTest {
         // Stub the bare minimum.
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.creatorCacheGuid = TestTabGroupSyncService.LOCAL_DEVICE_CACHE_GUID;
+        SavedTabGroupTab savedTab1 = new SavedTabGroupTab();
+        SavedTabGroupTab savedTab2 = new SavedTabGroupTab();
+        savedTab2.localId = TAB_ID_2;
+        savedGroup.savedTabs.add(savedTab1);
+        savedGroup.savedTabs.add(savedTab2);
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedGroup);
 
         String action = "TabGroups.Sync.SelectedTabInLocallyCreatedGroup";
         assertEquals(0, mActionTester.getActionCount(action));
         mTabModelObserverCaptor
                 .getValue()
-                .didSelectTab(mTab1, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
+                .didSelectTab(mTab2, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
         assertEquals(1, mActionTester.getActionCount(action));
     }
 
