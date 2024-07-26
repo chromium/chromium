@@ -16,6 +16,8 @@
 #include "google_apis/youtube_music/youtube_music_api_request_types.h"
 #include "google_apis/youtube_music/youtube_music_api_requests.h"
 #include "google_apis/youtube_music/youtube_music_api_response_types.h"
+#include "net/base/network_change_notifier.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::youtube_music {
 
@@ -73,16 +75,66 @@ GetPayloadPlaybackState(const PlaybackState player_state) {
     default:
       return google_apis::youtube_music::ReportPlaybackRequestPayload::
           PlaybackState::kUnspecified;
-  };
+  }
+}
+
+// Returns connection type to report to the YouTube Music API server.
+// Definitions can be found at:
+//   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/reports/playback#connectiontype
+google_apis::youtube_music::ReportPlaybackRequestPayload::ConnectionType
+GetNetworkConnectionType() {
+  switch (net::NetworkChangeNotifier::GetConnectionType()) {
+    case net::NetworkChangeNotifier::CONNECTION_UNKNOWN:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kUnspecified;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kWired;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI:
+      if (net::NetworkChangeNotifier::GetConnectionCost() ==
+          net::NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_METERED) {
+        return google_apis::youtube_music::ReportPlaybackRequestPayload::
+            ConnectionType::kWifiMetered;
+      } else {
+        return google_apis::youtube_music::ReportPlaybackRequestPayload::
+            ConnectionType::kWifi;
+      }
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kCellular2g;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kCellular3g;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kCellular4g;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kNone;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_BLUETOOTH:
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kDisco;
+
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_5G:
+      // TODO(yongshun): ChromeOS does not detect 5G sub types yet (standalone
+      // cellular connection or non-standalone cellular connection). Update to
+      // use `kCellular5gSa` or `kCellular5gNsa` once it can differentiate.
+      return google_apis::youtube_music::ReportPlaybackRequestPayload::
+          ConnectionType::kActiveUncategorized;
+  }
 }
 
 std::unique_ptr<google_apis::youtube_music::ReportPlaybackRequestPayload>
 CreateReportPlaybackRequestPayload(const std::string& playback_reporting_token,
                                    const PlaybackData& playback_data) {
   base::Time current_time = base::Time::Now();
-  // TODO(b/350510885): Retrieve network connectivity type from the system.
-  auto connection_type = google_apis::youtube_music::
-      ReportPlaybackRequestPayload::ConnectionType::kUnspecified;
   std::optional<google_apis::youtube_music::ReportPlaybackRequestPayload::
                     WatchTimeSegment>
       watch_time_segment = std::nullopt;
@@ -96,7 +148,7 @@ CreateReportPlaybackRequestPayload(const std::string& playback_reporting_token,
   }
   google_apis::youtube_music::ReportPlaybackRequestPayload::Params param(
       playback_reporting_token, current_time, base::TimeDelta(),
-      base::TimeDelta(), connection_type,
+      base::TimeDelta(), GetNetworkConnectionType(),
       GetPayloadPlaybackState(playback_data.state), watch_time_segment);
   return std::make_unique<
       google_apis::youtube_music::ReportPlaybackRequestPayload>(param);
