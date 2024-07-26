@@ -73,7 +73,7 @@ TlmFieldDebugAnnotation::TlmFieldDebugAnnotation(
     std::string_view name,
     perfetto::protos::pbzero::DebugAnnotation_Decoder& annotation)
     : TlmFieldBase(name) {
-  CHECK_NE(Name(), nullptr);
+  CHECK_NE(Name().data(), nullptr);
 
   if (annotation.has_bool_value()) {
     in_type_ = 4 /* TlgInUINT8 */;
