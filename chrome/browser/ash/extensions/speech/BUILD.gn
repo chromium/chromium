@@ -17,6 +17,8 @@ static_library("speech") {
     "speech_recognition_private_recognizer.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/public/cpp",
     "//base",

@@ -18,6 +18,8 @@ static_library("mahi") {
     "mahi_manager_impl.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",

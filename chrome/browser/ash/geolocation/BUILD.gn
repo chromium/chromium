@@ -12,6 +12,8 @@ static_library("geolocation") {
     "system_geolocation_source.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",

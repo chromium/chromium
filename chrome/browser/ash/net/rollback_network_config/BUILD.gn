@@ -16,6 +16,8 @@ static_library("rollback_network_config") {
     "rollback_onc_util.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//chrome/browser:browser_process",

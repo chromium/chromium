@@ -51,6 +51,7 @@ static_library("ui") {
     "//ash",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/customization",
     "//chrome/browser/ash/login/oobe_quick_start",
     "//chrome/browser/ui/ash/keyboard",

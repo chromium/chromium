@@ -17,6 +17,8 @@ static_library("virtual_tasks") {
     "ms365_virtual_task.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/webui/file_manager:constants",
     "//base",

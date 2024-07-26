@@ -16,6 +16,7 @@ static_library("reporting") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash:lock_unlock_event_proto",
     "//chrome/browser/ash:login_logout_event_proto",
     "//chrome/browser/profiles:profile",

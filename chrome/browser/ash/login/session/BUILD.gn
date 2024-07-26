@@ -21,6 +21,7 @@ static_library("session") {
   public_deps = [
     "//ash/components/arc",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/base",
     "//chrome/browser/ash/hats",
     "//chrome/browser/ash/release_notes",

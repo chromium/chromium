@@ -158,6 +158,7 @@ static_library("input_method") {
     "//ash/public/cpp",
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/keyboard",
     "//chromeos/ash/services/ime/public/cpp:structs",

@@ -26,6 +26,7 @@ static_library("demo_mode") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/dbus/power",
     "//components/component_updater/ash",

@@ -13,6 +13,8 @@ static_library("dns_over_https") {
     "templates_uri_resolver_impl.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//base",

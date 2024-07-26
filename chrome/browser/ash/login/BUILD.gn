@@ -92,6 +92,7 @@ static_library("login") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/login/oobe_quick_start",
     "//chrome/browser/ash/login/oobe_quick_start/connectivity",

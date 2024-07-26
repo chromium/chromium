@@ -16,6 +16,8 @@ static_library("users_private") {
     "users_private_delegate_factory.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//chrome/browser:browser_process",

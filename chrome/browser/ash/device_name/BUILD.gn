@@ -19,6 +19,8 @@ static_library("device_name") {
     "device_name_validator.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//base",

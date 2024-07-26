@@ -20,6 +20,7 @@ static_library("extensions") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
     "//components/session_manager/core",

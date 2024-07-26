@@ -37,6 +37,7 @@ static_library("saml") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/login/auth",
     "//components/account_id",

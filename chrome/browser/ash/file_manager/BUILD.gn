@@ -103,6 +103,7 @@ static_library("file_manager") {
   public_deps = [
     "//ash/components/arc/mojom",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/services/file_util/public/cpp",
     "//chromeos/ash/components/dbus/cros_disks",

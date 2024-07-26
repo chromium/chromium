@@ -60,6 +60,7 @@ static_library("fileapi") {
     "//ash/components/arc/mojom",
     "//base",
     "//base:i18n",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/drivefs/mojom",
     "//components/account_id",

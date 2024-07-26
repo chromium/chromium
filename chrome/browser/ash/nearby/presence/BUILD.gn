@@ -12,6 +12,8 @@ static_library("presence") {
     "nearby_presence_service_factory.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//base",

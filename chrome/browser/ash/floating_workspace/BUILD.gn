@@ -18,6 +18,8 @@ static_library("floating_workspace") {
     "floating_workspace_util.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",

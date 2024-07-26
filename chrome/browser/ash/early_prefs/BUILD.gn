@@ -16,6 +16,7 @@ static_library("early_prefs") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/early_prefs:writer",
     "//components/keyed_service/content",
     "//components/keyed_service/core",

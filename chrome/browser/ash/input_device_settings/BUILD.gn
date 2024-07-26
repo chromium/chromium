@@ -16,6 +16,7 @@ static_library("input_device_settings") {
     "//ash/public/cpp",
     "//ash/public/mojom:input_device_settings",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
   ]
 
   deps = [

@@ -53,6 +53,8 @@ static_library("guest_os") {
     "vm_sk_forwarding_native_message_host.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     ":guest_os_diagnostics_mojom",
     "//ash/components/arc",

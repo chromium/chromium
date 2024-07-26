@@ -14,6 +14,8 @@ static_library("os_feedback") {
     "os_feedback_screenshot_manager.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",

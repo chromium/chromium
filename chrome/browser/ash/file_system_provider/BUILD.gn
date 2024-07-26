@@ -65,6 +65,8 @@ static_library("file_system_provider") {
     "watcher.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//base",

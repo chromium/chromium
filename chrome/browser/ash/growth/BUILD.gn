@@ -30,6 +30,8 @@ static_library("growth") {
     "update_user_pref_action_performer.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",

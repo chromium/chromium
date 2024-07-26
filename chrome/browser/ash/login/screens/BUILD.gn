@@ -165,6 +165,7 @@ static_library("screens") {
     "//ash",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/app_discovery_service",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/base",

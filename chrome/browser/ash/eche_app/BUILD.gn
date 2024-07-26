@@ -20,6 +20,7 @@ static_library("eche_app") {
   public_deps = [
     "//ash/webui/eche_app_ui",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/profiles:profile",
     "//ui/gfx",

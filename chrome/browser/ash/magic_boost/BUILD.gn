@@ -16,6 +16,8 @@ static_library("magic_boost") {
     "magic_boost_state_ash.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",

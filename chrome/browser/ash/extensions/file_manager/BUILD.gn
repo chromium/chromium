@@ -68,6 +68,8 @@ static_library("file_manager") {
     "system_notification_manager.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/components/arc",
