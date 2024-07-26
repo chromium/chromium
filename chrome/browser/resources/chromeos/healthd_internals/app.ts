@@ -198,7 +198,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
     }
 
     this.dataManager.setupFetchDataRequests(
-        this.$.settingsDialog.getHealthdDataPollingCycle() * 1000);
+        this.$.settingsDialog.getHealthdDataPollingCycle());
   }
 
   private openSettingsDialog() {

@@ -52,9 +52,9 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
 
     this.$.uiUpdateIntervalSlider.initSlider(1, 5, 1);
     this.$.uiUpdateIntervalSlider.initTitle('UI update interval (second)');
-    this.$.dataPollingCycleSlider.initSlider(1, 5, 1);
+    this.$.dataPollingCycleSlider.initSlider(100, 5000, 100);
     this.$.dataPollingCycleSlider.initTitle(
-        'Healthd data polling cycle (second)');
+        'Healthd data polling cycle (millisecond)');
     this.$.dataRetentionDurationSlider.initSlider(1, 12, 1);
     this.$.dataRetentionDurationSlider.initTitle(
         'Data retention duration for line charts (hour)');
@@ -62,8 +62,8 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
 
   // UI update interval. Default: 3 seconds.
   private uiUpdateInterval: number = 3;
-  // Healthd data polling cycle. Default: 3 seconds.
-  private dataPollingCycle: number = 3;
+  // Healthd data polling cycle. Default: 1000 milliseconds.
+  private dataPollingCycle: number = 1000;
   // Data retention duration for line charts. Default: 6 hours.
   private dataRetentionDuration: number = 6;
 
@@ -79,7 +79,7 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
     return this.uiUpdateInterval;
   }
 
-  // Get the Healthd data polling cycle in seconds.
+  // Get the Healthd data polling cycle in milliseconds.
   getHealthdDataPollingCycle(): number {
     return this.dataPollingCycle;
   }
