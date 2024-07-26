@@ -430,17 +430,6 @@ void DocumentSpeculationRules::DocumentReferrerPolicyChanged() {
 }
 
 void DocumentSpeculationRules::DocumentBaseURLChanged() {
-  // Replace every existing rule set with a new copy that is parsed using the
-  // updated document base URL.
-  for (Member<SpeculationRuleSet>& rule_set : rule_sets_) {
-    SpeculationRuleSet::Source* source = rule_set->source();
-    rule_set = SpeculationRuleSet::Parse(
-        source, GetSupplementable()->GetExecutionContext());
-    // There should not be any parsing errors as these rule sets have already
-    // been parsed once without errors, and an updated base URL should not cause
-    // new errors. There may however still be warnings.
-    DCHECK(rule_set);
-  }
   if (initialized_)
     InvalidateAllLinks();
   QueueUpdateSpeculationCandidates();

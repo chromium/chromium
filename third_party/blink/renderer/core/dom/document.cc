@@ -4635,6 +4635,11 @@ void Document::UpdateBaseURL() {
       anchor.InvalidateCachedVisitedLinkHash();
   }
 
+  for (Element* element : *scripts()) {
+    auto* script = To<HTMLScriptElement>(element);
+    script->Loader()->DocumentBaseURLChanged();
+  }
+
   if (auto* document_rules = DocumentSpeculationRules::FromIfExists(*this)) {
     document_rules->DocumentBaseURLChanged();
   }

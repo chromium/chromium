@@ -2674,13 +2674,16 @@ TEST_F(DocumentRulesTest, BaseURLChanged) {
 
   AddAnchor(*document.body(), "https://foo.com/bar");
   AddAnchor(*document.body(), "/bart");
-  String speculation_script = R"(
-    {"prefetch": [
-      {"source": "document", "where": {"href_matches": "/bar*"}}
-    ]}
-  )";
-  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
-                                      speculation_script);
+
+  HTMLScriptElement* speculation_script;
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    speculation_script = InsertSpeculationRules(page_holder.GetDocument(),
+                                                R"(
+      {"prefetch": [
+        {"source": "document", "where": {"href_matches": "/bar*"}}
+      ]}
+    )");
+  });
   const auto& candidates = speculation_host.candidates();
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar"),
                                   KURL("https://foo.com/bart")));
@@ -2692,6 +2695,11 @@ TEST_F(DocumentRulesTest, BaseURLChanged) {
   // "https://bar.com/bar*" and doesn't match. "/bart" is resolved to
   // "https://bar.com/bart" and matches with "https://bar.com/bar*".
   EXPECT_THAT(candidates, HasURLs("https://bar.com/bart"));
+
+  // Test that removing the script causes the candidates to be removed.
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      [&]() { speculation_script->remove(); });
+  EXPECT_EQ(candidates.size(), 0u);
 }
 
 TEST_F(DocumentRulesTest, TargetHintFromLink) {
