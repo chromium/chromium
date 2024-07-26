@@ -5485,6 +5485,8 @@ static_library("ui") {
       "webauthn/authenticator_request_window.cc",
       "webauthn/authenticator_request_window.h",
       "webauthn/hover_list_model.h",
+      "webauthn/passkey_deleted_confirmation_controller.cc",
+      "webauthn/passkey_deleted_confirmation_controller.h",
       "webauthn/passkey_saved_confirmation_controller.cc",
       "webauthn/passkey_saved_confirmation_controller.h",
       "webauthn/sheet_models.cc",

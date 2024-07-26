@@ -59,6 +59,7 @@ PasswordFormMetricsRecorder::BubbleDismissalReason GetBubbleDismissalReason(
     case metrics_util::CLICKED_MANAGE_PASSWORD:
     case metrics_util::CLICKED_PASSWORDS_DASHBOARD:
     case metrics_util::AUTO_SIGNIN_TOAST_TIMEOUT:
+    case metrics_util::CLICKED_GOT_IT:
       break;
 
     // These should not reach here:
@@ -926,6 +927,8 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
     case metrics_util::AUTOMATIC_RELAUNCH_CHROME_BUBBLE:
     case metrics_util::AUTOMATIC_DEFAULT_STORE_CHANGED_BUBBLE:
     case metrics_util::AUTOMATIC_PASSKEY_SAVED_CONFIRMATION:
+    case metrics_util::AUTOMATIC_PASSKEY_DELETED_CONFIRMATION:
+    case metrics_util::MANUAL_PASSKEY_DELETED_CONFIRMATION:
       // Do nothing.
       return;
 

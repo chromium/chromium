@@ -244,6 +244,7 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
       case ManagePasswordsReferrer::kOmniboxPedalSuggestion:
       case ManagePasswordsReferrer::kManagePasswordDetailsBubble:
       case ManagePasswordsReferrer::kPasskeySavedConfirmationBubble:
+      case ManagePasswordsReferrer::kPasskeyDeletedConfirmationBubble:
         NOTREACHED_NORETURN();
     }
 
