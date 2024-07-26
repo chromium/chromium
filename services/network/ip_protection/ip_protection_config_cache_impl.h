@@ -49,10 +49,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   void SetIpProtectionProxyListManagerForTesting(
       std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager)
       override;
+  IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
+      override;
   bool IsProxyListAvailable() override;
   void QuicProxiesFailed() override;
   std::vector<net::ProxyChain> GetProxyChainList() override;
   void RequestRefreshProxyList() override;
+  void GeoChangeObserved(const std::string& geo_id) override;
 
   // `NetworkChangeNotifier::NetworkChangeObserver` implementation.
   void OnNetworkChanged(
@@ -69,6 +72,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   std::map<IpProtectionProxyLayer,
            std::unique_ptr<IpProtectionTokenCacheManager>>
       ipp_token_cache_managers_;
+
+  // Most current geo.
+  std::string current_geo_id_;
 
   // If true, this class will try to connect to IP Protection proxies via QUIC.
   // Once this value becomes false, it stays false until a network change or

@@ -437,6 +437,11 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyFallbackToDirect;
 // value, 0, is not sent.
 NET_EXPORT extern const base::FeatureParam<int> kIpPrivacyDebugExperimentArm;
 
+// Caches tokens by geo allowing for tokens to be preserved on network/geo
+// changes. The default value of this feature is false which maintains existing
+// behavior by default.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyCacheTokensByGeo;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).

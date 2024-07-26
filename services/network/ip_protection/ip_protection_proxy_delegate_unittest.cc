@@ -90,6 +90,11 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
     NOTREACHED_NORETURN();
   }
 
+  IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
+      override {
+    NOTREACHED_NORETURN();
+  }
+
   std::vector<net::ProxyChain> GetProxyChainList() override {
     return *proxy_list_;
   }
@@ -107,6 +112,8 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
       std::move(on_force_refresh_proxy_list_).Run();
     }
   }
+
+  void GeoChangeObserved(const std::string& geo_id) override {}
 
   // Set the proxy list returned from `ProxyList()`.
   void SetProxyList(std::vector<net::ProxyChain> proxy_list) {

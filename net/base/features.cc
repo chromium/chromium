@@ -431,6 +431,11 @@ const base::FeatureParam<int> kIpPrivacyDebugExperimentArm{
     /*name=*/"IpPrivacyDebugExperimentArm",
     /*default_value=*/0};
 
+const base::FeatureParam<bool> kIpPrivacyCacheTokensByGeo{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyCacheTokensByGeo",
+    /*default_value=*/false};
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).

@@ -31,11 +31,28 @@ constexpr char kEmptyTokenCacheHistogram[] =
 
 class MockIpProtectionTokenCacheManager : public IpProtectionTokenCacheManager {
  public:
-  bool IsAuthTokenAvailable() override { return auth_token_.has_value(); }
+  bool IsAuthTokenAvailable() override {
+    return IsAuthTokenAvailable(current_geo_id_);
+  }
+
+  bool IsAuthTokenAvailable(const std::string& geo_id) override {
+    return auth_token_.has_value();
+  }
 
   void InvalidateTryAgainAfterTime() override {}
 
+  std::string CurrentGeo() const override { return current_geo_id_; }
+
+  void SetCurrentGeo(const std::string& geo_id) override {
+    current_geo_id_ = geo_id;
+  }
+
   std::optional<BlindSignedAuthToken> GetAuthToken() override {
+    return GetAuthToken(current_geo_id_);
+  }
+
+  std::optional<BlindSignedAuthToken> GetAuthToken(
+      const std::string& geo_id) override {
     return std::move(auth_token_);
   }
 
@@ -45,6 +62,7 @@ class MockIpProtectionTokenCacheManager : public IpProtectionTokenCacheManager {
 
  private:
   std::optional<BlindSignedAuthToken> auth_token_;
+  std::string current_geo_id_;
 };
 
 class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
@@ -59,6 +77,9 @@ class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
 
   void RequestRefreshProxyList() override {
     if (on_force_refresh_proxy_list_) {
+      if (!geo_id_to_change_on_refresh_.empty()) {
+        SetCurrentGeo(geo_id_to_change_on_refresh_);
+      }
       std::move(on_force_refresh_proxy_list_).Run();
     }
   }
@@ -68,14 +89,20 @@ class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
     proxy_list_ = std::move(proxy_list);
   }
 
+  // Set the geo id returned from `GeoId()`.
+  void SetCurrentGeo(const std::string& geo_id) { geo_id_ = geo_id; }
+
   void SetOnRequestRefreshProxyList(
-      base::OnceClosure on_force_refresh_proxy_list) {
+      base::OnceClosure on_force_refresh_proxy_list,
+      std::string geo_id = "") {
+    geo_id_to_change_on_refresh_ = geo_id;
     on_force_refresh_proxy_list_ = std::move(on_force_refresh_proxy_list);
   }
 
  private:
   std::optional<std::vector<net::ProxyChain>> proxy_list_;
   std::string geo_id_;
+  std::string geo_id_to_change_on_refresh_;
   base::OnceClosure on_force_refresh_proxy_list_;
 };
 
@@ -275,6 +302,88 @@ TEST_F(IpProtectionConfigCacheImplTest, RefreshProxyListOnNetworkChange) {
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(refresh_requested);
+}
+
+// Simulates a geo change detected in the IppProxyListManager.
+TEST_F(IpProtectionConfigCacheImplTest,
+       GeoChangeObservedInIppProxyListManager) {
+  // Set up IppProxyListManager to have a "new" geo.
+  auto ipp_proxy_list_manager_ =
+      std::make_unique<MockIpProtectionProxyListManager>();
+  bool refresh_requested = false;
+  ipp_proxy_list_manager_->SetOnRequestRefreshProxyList(
+      base::BindLambdaForTesting([&]() { refresh_requested = true; }));
+  ipp_proxy_list_manager_->SetProxyList({MakeChain({"a-proxy"})});
+  std::string new_geo_signal = "US,US-NY,NEW YORK CITY";
+  ipp_proxy_list_manager_->SetCurrentGeo(new_geo_signal);
+  ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
+      std::move(ipp_proxy_list_manager_));
+
+  // Set up `IppTokenCacheManager` to have an "old geo"
+  auto ipp_token_cache_manager_ =
+      std::make_unique<MockIpProtectionTokenCacheManager>();
+  ipp_token_cache_manager_->SetCurrentGeo("US,US-MA,BOSTON");
+  ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
+      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager_));
+
+  // Simulate that the new geo signal in the Proxy List Manager resulted in a
+  // call to observe a geo change.
+  ipp_config_cache_->GeoChangeObserved(new_geo_signal);
+
+  EXPECT_EQ(
+      ipp_config_cache_->GetIpProtectionProxyListManagerForTesting()->GeoId(),
+      new_geo_signal);
+  EXPECT_EQ(ipp_config_cache_
+                ->GetIpProtectionTokenCacheManagerForTesting(
+                    IpProtectionProxyLayer::kProxyA)
+                ->CurrentGeo(),
+            new_geo_signal);
+
+  // Since the new geo matches the geo of the proxy list manager, it should not
+  // refresh the proxy list.
+  EXPECT_FALSE(refresh_requested);
+}
+
+// Simulates a geo change detected in the IppTokenCacheManager.
+TEST_F(IpProtectionConfigCacheImplTest,
+       GeoChangeObservedInIppTokenCacheManager) {
+  // Set up `IppTokenCacheManager` to have an "new geo"
+  std::string new_geo_signal = "US,US-MA,BOSTON";
+  auto ipp_token_cache_manager_ =
+      std::make_unique<MockIpProtectionTokenCacheManager>();
+  ipp_token_cache_manager_->SetCurrentGeo(new_geo_signal);
+  ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
+      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager_));
+
+  // Set up IppProxyListManager to have a "old" geo.
+  auto ipp_proxy_list_manager_ =
+      std::make_unique<MockIpProtectionProxyListManager>();
+  bool refresh_requested = false;
+  ipp_proxy_list_manager_->SetOnRequestRefreshProxyList(
+      base::BindLambdaForTesting([&]() { refresh_requested = true; }),
+      new_geo_signal);
+  ipp_proxy_list_manager_->SetProxyList({MakeChain({"a-proxy"})});
+  ipp_proxy_list_manager_->SetCurrentGeo("US,US-NY,NEW YORK CITY");
+  ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
+      std::move(ipp_proxy_list_manager_));
+
+  // Simulate that the new geo signal in the token cache manager resulted in a
+  // call to observe a geo change.
+  ipp_config_cache_->GeoChangeObserved(new_geo_signal);
+
+  EXPECT_EQ(ipp_config_cache_
+                ->GetIpProtectionTokenCacheManagerForTesting(
+                    IpProtectionProxyLayer::kProxyA)
+                ->CurrentGeo(),
+            new_geo_signal);
+
+  EXPECT_EQ(
+      ipp_config_cache_->GetIpProtectionProxyListManagerForTesting()->GeoId(),
+      new_geo_signal);
+
+  // Since the new geo matches the geo of the proxy list manager, it should not
+  // refresh the proxy list.
   EXPECT_TRUE(refresh_requested);
 }
 

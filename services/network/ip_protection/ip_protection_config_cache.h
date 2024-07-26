@@ -58,6 +58,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
   virtual void SetIpProtectionProxyListManagerForTesting(
       std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager) = 0;
 
+  // Fetch the proxy chain list manager.
+  virtual IpProtectionProxyListManager*
+  GetIpProtectionProxyListManagerForTesting() = 0;
+
   // Check whether a proxy chain list is available.
   virtual bool IsProxyListAvailable() = 0;
 
@@ -73,6 +77,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
   // Request a refresh of the proxy chain list. Call this when it's likely that
   // the proxy chain list is out of date.
   virtual void RequestRefreshProxyList() = 0;
+
+  // Callback function used by `IpProtectionProxyListManager` and
+  // `IpProtectionTokenCacheManager` to signal a geo change.
+  virtual void GeoChangeObserved(const std::string& geo_id) = 0;
 };
 
 }  // namespace network

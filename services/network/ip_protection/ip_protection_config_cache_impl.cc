@@ -10,6 +10,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "ip_protection_proxy_list_manager.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
@@ -81,11 +82,11 @@ IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
 
     ipp_token_cache_managers_[IpProtectionProxyLayer::kProxyA] =
         std::make_unique<IpProtectionTokenCacheManagerImpl>(
-            config_getter_.get(), IpProtectionProxyLayer::kProxyA);
+            this, config_getter_.get(), IpProtectionProxyLayer::kProxyA);
 
     ipp_token_cache_managers_[IpProtectionProxyLayer::kProxyB] =
         std::make_unique<IpProtectionTokenCacheManagerImpl>(
-            config_getter_.get(), IpProtectionProxyLayer::kProxyB);
+            this, config_getter_.get(), IpProtectionProxyLayer::kProxyB);
   }
 
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
@@ -143,6 +144,11 @@ void IpProtectionConfigCacheImpl::SetIpProtectionProxyListManagerForTesting(
   ipp_proxy_list_manager_ = std::move(ipp_proxy_list_manager);
 }
 
+IpProtectionProxyListManager*
+IpProtectionConfigCacheImpl::GetIpProtectionProxyListManagerForTesting() {
+  return ipp_proxy_list_manager_.get();
+}
+
 bool IpProtectionConfigCacheImpl::IsProxyListAvailable() {
   return (ipp_proxy_list_manager_ != nullptr)
              ? ipp_proxy_list_manager_->IsProxyListAvailable()
@@ -173,6 +179,21 @@ void IpProtectionConfigCacheImpl::RequestRefreshProxyList() {
   if (ipp_proxy_list_manager_ != nullptr) {
     ipp_proxy_list_manager_->RequestRefreshProxyList();
   }
+}
+
+void IpProtectionConfigCacheImpl::GeoChangeObserved(const std::string& geo_id) {
+  if (ipp_proxy_list_manager_ != nullptr &&
+      ipp_proxy_list_manager_->GeoId() != geo_id) {
+    RequestRefreshProxyList();
+  }
+
+  for (auto& [_, token_manager] : ipp_token_cache_managers_) {
+    if (token_manager->CurrentGeo() != geo_id) {
+      token_manager->SetCurrentGeo(geo_id);
+    }
+  }
+
+  current_geo_id_ = geo_id;
 }
 
 void IpProtectionConfigCacheImpl::OnNetworkChanged(
