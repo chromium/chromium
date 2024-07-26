@@ -65,7 +65,6 @@ android_resources("java_resources") {
     "android/java/res/drawable/quick_delete_cookies_40dp.xml",
     "android/java/res/drawable/quick_delete_dialog_history_icon_40dp.xml",
     "android/java/res/drawable/quick_delete_dialog_tab_icon_40dp.xml",
-    "android/java/res/drawable/quick_delete_trash_bin_icon_24dp.xml",
     "android/java/res/layout/quick_delete_dialog.xml",
     "android/java/res/values/dimens.xml",
     "android/java/res/values/styles.xml",
