@@ -375,6 +375,14 @@ bool PickerView::DoPseudoFocusedAction() {
     // TODO: b/351920494 - Insert the first new result instead of doing nothing.
     return false;
   }
+
+  if (auto* submenu_view =
+          views::AsViewClass<PickerItemWithSubmenuView>(pseudo_focused_view_)) {
+    submenu_view->ShowSubmenu();
+    SetPseudoFocusedView(submenu_controller_.GetSubmenuView()->GetTopItem());
+    return true;
+  }
+
   return pseudo_focused_view_ == nullptr
              ? false
              : DoPickerPseudoFocusedActionOnView(pseudo_focused_view_);

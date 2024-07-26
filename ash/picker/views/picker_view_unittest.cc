@@ -1625,6 +1625,25 @@ TEST_F(PickerViewTest, RightArrowKeyShowsSubmenu) {
             nullptr);
 }
 
+TEST_F(PickerViewTest, EnterKeyShowsSubmenu) {
+  FakePickerViewDelegate delegate({
+      .zero_state_suggested_results =
+          {PickerSearchResult::NewWindow(
+               PickerSearchResult::NewWindowData::Type::kDoc),
+           PickerSearchResult::NewWindow(
+               PickerSearchResult::NewWindowData::Type::kSheet)},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_NE(GetPickerViewFromWidget(*widget)
+                ->submenu_controller_for_testing()
+                .GetSubmenuView(),
+            nullptr);
+}
+
 TEST_F(PickerViewTest, LeftArrowKeyClosesSubmenu) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results =
