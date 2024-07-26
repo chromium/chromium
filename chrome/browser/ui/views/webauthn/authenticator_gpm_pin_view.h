@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_PIN_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_PIN_VIEW_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/webauthn/pin_textfield.h"
@@ -26,12 +28,12 @@ class AuthenticatorGPMPinView : public views::View,
    public:
     virtual void OnPinChanged(std::u16string pin) = 0;
     virtual void PinCharTyped(bool is_digit) = 0;
+    virtual std::u16string GetPinAccessibleName() = 0;
   };
 
   explicit AuthenticatorGPMPinView(int pin_digits_count,
                                    bool ui_disabled,
                                    const std::u16string& pin,
-                                   bool is_pin_creation,
                                    Delegate* delegate);
 
   AuthenticatorGPMPinView(const AuthenticatorGPMPinView&) = delete;

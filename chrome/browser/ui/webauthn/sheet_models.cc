@@ -1774,6 +1774,22 @@ void AuthenticatorGpmPinSheetModel::SetPin(std::u16string pin) {
   }
 }
 
+std::u16string AuthenticatorGpmPinSheetModel::GetAccessibleName() const {
+  std::u16string pin_digits_typed_str = base::NumberToString16(
+      std::min(static_cast<int>(pin_.length()) + 1, pin_digits_count_));
+
+  switch (mode_) {
+    case Mode::kPinCreate:
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_GPM_CREATE_SIX_DIGIT_PIN_ACCESSIBILITY_WITH_FOCUSED_DIGIT,
+          pin_digits_typed_str);
+    case Mode::kPinEntry:
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_GPM_ENTER_SIX_DIGIT_PIN_ACCESSIBILITY_WITH_FOCUSED_DIGIT,
+          GetRelyingPartyIdString(dialog_model()), pin_digits_typed_str);
+  }
+}
+
 bool AuthenticatorGpmPinSheetModel::FullPinTyped() const {
   return static_cast<int>(pin_.length()) == pin_digits_count_;
 }
@@ -1811,6 +1827,19 @@ void AuthenticatorGpmArbitraryPinSheetModel::SetPin(std::u16string pin) {
   pin_ = std::move(pin);
   if (accept_button_enabled != IsAcceptButtonEnabled()) {
     dialog_model()->OnButtonsStateChanged();
+  }
+}
+
+std::u16string AuthenticatorGpmArbitraryPinSheetModel::GetAccessibleName()
+    const {
+  switch (mode_) {
+    case Mode::kPinCreate:
+      return l10n_util::GetStringUTF16(
+          IDS_WEBAUTHN_GPM_CREATE_ALPHANUMERIC_PIN_ACCESSIBILITY);
+    case Mode::kPinEntry:
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_GPM_ENTER_ALPHANUMERIC_PIN_ACCESSIBILITY_WITH_WEBSITE,
+          GetRelyingPartyIdString(dialog_model()));
   }
 }
 
