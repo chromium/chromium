@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
@@ -111,7 +113,7 @@ void FormFetcherImpl::Fetch() {
   // even if the fetches return synchronously (which is the case in tests).
   wait_counter_++;
   // Clears the flag since it will be outdated after this fetch is finished.
-  were_grouped_credentials_availible_ = false;
+  grouped_credentials_form_type_ = std::nullopt;
   PasswordStoreInterface* profile_password_store =
       client_->GetProfilePasswordStore();
   if (!profile_password_store) {
@@ -225,6 +227,34 @@ const PasswordForm* FormFetcherImpl::GetPreferredMatch() const {
   return &(*best_matches_.begin());
 }
 
+std::optional<PasswordFormMetricsRecorder::MatchedFormType>
+FormFetcherImpl::GetPreferredOrPotentialMatchedFormType() const {
+  const PasswordForm* preferred_match = GetPreferredMatch();
+  if (!preferred_match) {
+    return grouped_credentials_form_type_;
+  }
+  switch (password_manager_util::GetMatchType(CHECK_DEREF(preferred_match))) {
+    case password_manager_util::GetLoginMatchType::kExact:
+      return PasswordFormMetricsRecorder::MatchedFormType::kExactMatch;
+    case password_manager_util::GetLoginMatchType::kAffiliated:
+      return affiliations::IsValidAndroidFacetURI(
+                 CHECK_DEREF(preferred_match).signon_realm)
+                 ? PasswordFormMetricsRecorder::MatchedFormType::kAffiliatedApp
+                 : PasswordFormMetricsRecorder::MatchedFormType::
+                       kAffiliatedWebsites;
+    case password_manager_util::GetLoginMatchType::kPSL:
+      return PasswordFormMetricsRecorder::MatchedFormType::kPublicSuffixMatch;
+    case password_manager_util::GetLoginMatchType::kGrouped:
+      // Reaching this block implies the `FormFetched` is configured to include
+      // grouped credentials in the result set.
+      return affiliations::IsValidAndroidFacetURI(
+                 CHECK_DEREF(preferred_match).signon_realm)
+                 ? PasswordFormMetricsRecorder::MatchedFormType::kGroupedApp
+                 : PasswordFormMetricsRecorder::MatchedFormType::
+                       kGroupedWebsites;
+  }
+}
+
 std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   // Create the copy without the "HTTPS migration" activated. If it was needed,
   // then it was done by |this| already.
@@ -258,10 +288,6 @@ FormFetcherImpl::GetProfileStoreBackendError() const {
 std::optional<PasswordStoreBackendError>
 FormFetcherImpl::GetAccountStoreBackendError() const {
   return account_store_backend_error_;
-}
-
-bool FormFetcherImpl::WereGroupedCredentialsAvailable() const {
-  return were_grouped_credentials_availible_;
 }
 
 void FormFetcherImpl::FindMatchesAndNotifyConsumers(
@@ -357,15 +383,28 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
   std::vector<PasswordForm> results =
       GetLoginsOrEmptyListOnFailure(std::move(results_or_error));
   if (filter_grouped_credentials_) {
-    auto grouped_credentials_count =
-        std::erase_if(results, [](const auto& form) {
-          return form.match_type == PasswordForm::MatchType::kGrouped;
-        });
-    // If users is using two password stores this code will executed twice.
-    // Meaning that if either one of them had grouped credentials, the value
-    // should be maintained.
-    were_grouped_credentials_availible_ =
-        were_grouped_credentials_availible_ || grouped_credentials_count > 0;
+    std::erase_if(results, [this](const auto& form) {
+      if (form.match_type == PasswordForm::MatchType::kGrouped) {
+        // To achieve consistency for
+        // `FormFetcher::GetPreferredOrPotentialMatchFormType()`, grouped
+        // website credentials are prioritized over grouped application
+        // credentials if both are available.
+        if (affiliations::IsValidAndroidFacetURI(form.signon_realm)) {
+          // To prioritize grouped website credentials, assign
+          // `grouped_credentials_form_type_` to `kGroupedApp` only if the
+          // member variable was not initialized before.
+          if (!grouped_credentials_form_type_) {
+            grouped_credentials_form_type_ =
+                PasswordFormMetricsRecorder::MatchedFormType::kGroupedApp;
+          }
+        } else {
+          grouped_credentials_form_type_ =
+              PasswordFormMetricsRecorder::MatchedFormType::kGroupedWebsites;
+        }
+        return true;
+      }
+      return false;
+    });
   }
 
   DCHECK_EQ(State::WAITING, state_);

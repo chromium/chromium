@@ -252,8 +252,15 @@ class PasswordFormMetricsRecorder
     kAffiliatedWebsites = 3,
     // A credential exists for another entity, which is grouped with the current
     // domain by the AffiliationService through a grouping affiliation.
-    kGrouped = 4,
-    kMaxValue = kGrouped,
+    kGrouped_Obsolete = 4,
+    // A credential exists for an Android application, which is grouped with the
+    // current domain by the AffiliationService through the grouping
+    // affiliations.
+    kGroupedApp = 5,
+    // A credential exists for a website, which is grouped with the current
+    // domain by the AffiliationService through the grouping affiliations.
+    kGroupedWebsites = 6,
+    kMaxValue = kGroupedWebsites,
   };
 
   // This metric records the user experience with the passwords filling. The
@@ -439,9 +446,7 @@ class PasswordFormMetricsRecorder
   void RecordFirstFillingResult(int32_t result);
   void RecordFirstWaitForUsernameReason(WaitForUsernameReason reason);
   void RecordMatchedFormType(const PasswordForm& form);
-  void RecordPotentialPreferredMatch(
-      const PasswordForm* preferred_match,
-      const bool were_grouped_credentials_availible);
+  void RecordPotentialPreferredMatch(std::optional<MatchedFormType> form_type);
 
   // Calculates FillingAssistance metrics for |submitted_form|.
   void CalculateFillingAssistanceMetric(

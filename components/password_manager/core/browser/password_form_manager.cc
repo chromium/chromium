@@ -1165,8 +1165,7 @@ void PasswordFormManager::FillNow() {
   if (parsed_observed_form_->HasPasswordElement() &&
       !parsed_observed_form_->IsSingleUsername()) {
     metrics_recorder_->RecordPotentialPreferredMatch(
-        form_fetcher_->GetPreferredMatch(),
-        form_fetcher_->WereGroupedCredentialsAvailable());
+        form_fetcher_->GetPreferredOrPotentialMatchedFormType());
   }
 
   SendFillInformationToRenderer(

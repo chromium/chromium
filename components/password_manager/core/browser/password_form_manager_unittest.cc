@@ -2024,6 +2024,9 @@ TEST_P(PasswordFormManagerTest, RecordsExactMatch) {
   CreateFormManager(observed_form_);
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
+  fetcher_->set_preferred_or_potential_matched_form_type(
+      PasswordFormMetricsRecorder::MatchedFormType::kExactMatch);
+
   form_manager_->Fill();
 
   histogram_tester.ExpectUniqueSample(
@@ -2039,6 +2042,9 @@ TEST_P(PasswordFormManagerTest, RecordsPSLMatch) {
   base::HistogramTester histogram_tester;
   CreateFormManager(observed_form_);
   SetNonFederatedAndNotifyFetchCompleted({psl_saved_match_});
+
+  fetcher_->set_preferred_or_potential_matched_form_type(
+      PasswordFormMetricsRecorder::MatchedFormType::kPublicSuffixMatch);
 
   form_manager_->Fill();
 
@@ -2062,6 +2068,8 @@ TEST_P(PasswordFormManagerTest, RecordsAffiliatedWebsiteMatch) {
       GURL("https://affiliated.domain.com/a/ServiceLogin");
   affiliated_website_form.signon_realm = "https://affiliated.domain.com/";
   affiliated_website_form.match_type = PasswordForm::MatchType::kAffiliated;
+  fetcher_->set_preferred_or_potential_matched_form_type(
+      PasswordFormMetricsRecorder::MatchedFormType::kAffiliatedWebsites);
   SetNonFederatedAndNotifyFetchCompleted({affiliated_website_form});
 
   form_manager_->Fill();
@@ -2084,6 +2092,8 @@ TEST_P(PasswordFormManagerTest, RecordsAffiliatedAndroidAppMatch) {
   affiliated_app_form.action = GURL("android://hash@com.example.android/");
   affiliated_app_form.signon_realm = "android://hash@com.example.android/";
   affiliated_app_form.match_type = PasswordForm::MatchType::kAffiliated;
+  fetcher_->set_preferred_or_potential_matched_form_type(
+      PasswordFormMetricsRecorder::MatchedFormType::kAffiliatedApp);
   SetNonFederatedAndNotifyFetchCompleted({affiliated_app_form});
 
   form_manager_->Fill();
@@ -2103,8 +2113,9 @@ TEST_P(PasswordFormManagerTest, RecordsGroupedWebsiteMatch) {
 
   // Grouped credentials are ignored by the form fetched and are not returned to
   // the consumers. The only way to detect them is via the
-  // `FormFetched::WereGroupedCredentialsAvailable()` API.
-  fetcher_->set_were_grouped_credentials_available(true);
+  // `FormFetched::GetPreferredOrPotentialMatchedFormType()` API.
+  fetcher_->set_preferred_or_potential_matched_form_type(
+      PasswordFormMetricsRecorder::MatchedFormType::kGroupedWebsites);
   SetNonFederatedAndNotifyFetchCompleted({});
 
   form_manager_->Fill();
@@ -2114,7 +2125,29 @@ TEST_P(PasswordFormManagerTest, RecordsGroupedWebsiteMatch) {
   histogram_tester.ExpectTotalCount("PasswordManager.MatchedFormType", 0);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PotentialBestMatchFormType",
-      PasswordFormMetricsRecorder::MatchedFormType::kGrouped, 1);
+      PasswordFormMetricsRecorder::MatchedFormType::kGroupedWebsites, 1);
+}
+
+TEST_P(PasswordFormManagerTest, RecordsGroupedAppMatch) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  base::HistogramTester histogram_tester;
+  CreateFormManager(observed_form_);
+
+  // Grouped credentials are ignored by the form fetched and are not returned to
+  // the consumers. The only way to detect them is via the
+  // `FormFetched::GetPreferredOrPotentialMatchedFormType()` API.
+  fetcher_->set_preferred_or_potential_matched_form_type(
+      PasswordFormMetricsRecorder::MatchedFormType::kGroupedApp);
+  SetNonFederatedAndNotifyFetchCompleted({});
+
+  form_manager_->Fill();
+
+  // `PasswordManager.MatchedFormType` metric is not recorded for the grouped
+  // credentials. It is only recorded when the best match is available.
+  histogram_tester.ExpectTotalCount("PasswordManager.MatchedFormType", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PotentialBestMatchFormType",
+      PasswordFormMetricsRecorder::MatchedFormType::kGroupedApp, 1);
 }
 
 TEST_P(PasswordFormManagerTest, RecordsNoMatchesWhenNoCredentialsFetched) {

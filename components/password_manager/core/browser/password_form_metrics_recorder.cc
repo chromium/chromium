@@ -593,50 +593,22 @@ void PasswordFormMetricsRecorder::RecordMatchedFormType(
       match_type = FormMatchType::kPublicSuffixMatch;
       break;
     case password_manager_util::GetLoginMatchType::kGrouped:
-      match_type = FormMatchType::kGrouped;
-      break;
+      // Grouped credentials are never filled on page load.
+      NOTREACHED_NORETURN();
   }
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.MatchedFormType", match_type);
 }
 
 void PasswordFormMetricsRecorder::RecordPotentialPreferredMatch(
-    const PasswordForm* preferred_match,
-    const bool were_grouped_credentials_availible) {
+    std::optional<MatchedFormType> form_type) {
+  if (!form_type) {
+    return;
+  }
   if (std::exchange(recorded_potential_preferred_matched_password_type, true)) {
     return;
   }
-
-  using FormMatchType =
-      password_manager::PasswordFormMetricsRecorder::MatchedFormType;
-  FormMatchType match_type;
-
-  if (!preferred_match) {
-    if (were_grouped_credentials_availible) {
-      UMA_HISTOGRAM_ENUMERATION("PasswordManager.PotentialBestMatchFormType",
-                                FormMatchType::kGrouped);
-    }
-    return;
-  }
-
-  switch (password_manager_util::GetMatchType(CHECK_DEREF(preferred_match))) {
-    case password_manager_util::GetLoginMatchType::kExact:
-      match_type = FormMatchType::kExactMatch;
-      break;
-    case password_manager_util::GetLoginMatchType::kAffiliated:
-      match_type = affiliations::IsValidAndroidFacetURI(
-                       CHECK_DEREF(preferred_match).signon_realm)
-                       ? FormMatchType::kAffiliatedApp
-                       : FormMatchType::kAffiliatedWebsites;
-      break;
-    case password_manager_util::GetLoginMatchType::kPSL:
-      match_type = FormMatchType::kPublicSuffixMatch;
-      break;
-    case password_manager_util::GetLoginMatchType::kGrouped:
-      match_type = FormMatchType::kGrouped;
-      break;
-  }
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.PotentialBestMatchFormType",
-                            match_type);
+                            form_type.value());
 }
 
 void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
