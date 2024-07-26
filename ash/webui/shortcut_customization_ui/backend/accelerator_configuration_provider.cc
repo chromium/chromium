@@ -458,6 +458,8 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
       return !::features::IsAccessibilityMouseKeysEnabled();
     case kToggleSnapGroupWindowsMinimizeAndRestore:
       return true;
+    case kTogglePicker:
+      return !ash::features::IsPickerUpdateEnabled();
   }
 
   return false;
