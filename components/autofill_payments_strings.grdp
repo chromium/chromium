@@ -194,7 +194,7 @@
   </message>
   <if expr="not is_ios and not is_android">
     <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging.">
-      Your card details are encrypted when they’re saved in your Google Account and used to pay online
+      Pay faster when your card is saved. Card details are encrypted in your Google Account.
     </message>
     <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE" desc="Explanation of the benefit of credit card upload save on Desktop, using convenience-focused messaging.">
       Save this card to use online with Google Pay for purchases across your devices
