@@ -16,13 +16,11 @@ namespace webnn::tflite {
 ContextImplCrOS::ContextImplCrOS(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
-    mojom::CreateContextOptionsPtr options,
-    base::UnguessableToken context_handle)
+    mojom::CreateContextOptionsPtr options)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GraphBuilderTflite::GetContextProperties(),
-                       std::move(options),
-                       std::move(context_handle)) {}
+                       std::move(options)) {}
 
 ContextImplCrOS::~ContextImplCrOS() = default;
 
@@ -102,12 +100,12 @@ void ContextImplCrOS::CreateGraphImpl(
                                 std::move(callback));
 }
 
-std::unique_ptr<WebNNBufferImpl> ContextImplCrOS::CreateBufferImpl(
+void ContextImplCrOS::CreateBufferImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
-    const base::UnguessableToken& buffer_handle) {
-  return BufferImplTflite::Create(std::move(receiver), this,
-                                  std::move(buffer_info), buffer_handle);
+    CreateBufferImplCallback callback) {
+  std::move(callback).Run(BufferImplTflite::Create(std::move(receiver), this,
+                                                   std::move(buffer_info)));
 }
 
 }  // namespace webnn::tflite

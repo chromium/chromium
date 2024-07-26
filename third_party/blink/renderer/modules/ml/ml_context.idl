@@ -92,7 +92,7 @@ typedef record<DOMString, MLBuffer> MLNamedBuffers;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] MLBuffer createBuffer(MLBufferDescriptor descriptor);
+  ] Promise<MLBuffer> createBuffer(MLBufferDescriptor descriptor);
 
   // TODO(crbug.com/328105506): enable partial MLBuffer reads/writes.
   // TODO(crbug.com/40278771): consider moving arguments into a dictonary 

@@ -5,9 +5,13 @@
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 
 #include "base/numerics/checked_math.h"
+#include "base/types/expected_macros.h"
+#include "base/types/pass_key.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
+#include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink-forward.h"
@@ -16,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_concat_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_lost_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
@@ -30,7 +35,9 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -149,13 +156,18 @@ void MLContext::OnLost(uint32_t custom_reason, const std::string& description) {
 }
 
 void MLContext::CreateWebNNBuffer(
-    mojo::PendingAssociatedReceiver<webnn::mojom::blink::WebNNBuffer> receiver,
     webnn::mojom::blink::BufferInfoPtr buffer_info,
-    const base::UnguessableToken& buffer_handle) {
-  CHECK(context_remote_.is_bound());
+    webnn::mojom::blink::WebNNContext::CreateBufferCallback callback) {
+  if (!context_remote_.is_bound()) {
+    std::move(callback).Run(webnn::mojom::blink::CreateBufferResult::NewError(
+        webnn::mojom::blink::Error::New(
+            webnn::mojom::blink::Error::Code::kUnknownError,
+            "Context is lost.")));
+    return;
+  }
   // Use `WebNNContext` to create `WebNNBuffer` message pipe.
-  context_remote_->CreateBuffer(std::move(receiver), std::move(buffer_info),
-                                buffer_handle);
+  context_remote_->CreateBuffer(std::move(buffer_info),
+                                WTF::BindOnce(std::move(callback)));
 }
 
 const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
@@ -232,26 +244,50 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   return op_support_limits;
 }
 
-MLBuffer* MLContext::createBuffer(ScriptState* script_state,
-                                  const MLBufferDescriptor* descriptor,
-                                  ExceptionState& exception_state) {
+ScriptPromise<MLBuffer> MLContext::createBuffer(
+    ScriptState* script_state,
+    const MLBufferDescriptor* descriptor,
+    ExceptionState& exception_state) {
   ScopedMLTrace scoped_trace("MLContext::createBuffer");
-  // Remote context gets automatically unbound when the execution context
-  // destructs.
-  if (!context_remote_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Context is lost.");
-    return nullptr;
-  }
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
-    return nullptr;
+    return EmptyPromise();
   }
 
-  return MLBuffer::Create(std::move(scoped_trace),
-                          ExecutionContext::From(script_state), this,
-                          descriptor, exception_state);
+  if (!base::FeatureList::IsEnabled(
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Not implemented");
+    return EmptyPromise();
+  }
+
+  // TODO(crbug.com/343638938): Decide whether it is valid to create an empty
+  // MLBuffer.
+  ASSIGN_OR_RETURN(webnn::OperandDescriptor validated_descriptor,
+                   webnn::OperandDescriptor::Create(
+                       FromBlinkDataType(descriptor->dataType().AsEnum()),
+                       descriptor->dimensions()),
+                   [&exception_state](std::string error) {
+                     exception_state.ThrowTypeError(String(error));
+                     return ScriptPromise<MLBuffer>{};
+                   });
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLBuffer>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+
+  // TODO(crbug.com/343638938): Pass real buffer usages.
+  auto buffer_info = webnn::mojom::blink::BufferInfo::New(
+      validated_descriptor, webnn::MLBufferUsage());
+
+  // Create `WebNNBuffer` message pipe with `WebNNContext` mojo interface.
+  CreateWebNNBuffer(
+      std::move(buffer_info),
+      WTF::BindOnce(&MLContext::DidCreateWebNNBuffer, WrapPersistent(this),
+                    std::move(scoped_trace), WrapPersistent(resolver),
+                    std::move(validated_descriptor)));
+  return promise;
 }
 
 void MLContext::writeBuffer(
@@ -427,6 +463,31 @@ void MLContext::dispatch(ScriptState* script_state,
 
   return graph->Dispatch(std::move(scoped_trace), inputs, outputs,
                          exception_state);
+}
+
+void MLContext::DidCreateWebNNBuffer(
+    ScopedMLTrace scoped_trace,
+    ScriptPromiseResolver<blink::MLBuffer>* resolver,
+    webnn::OperandDescriptor validated_descriptor,
+    webnn::mojom::blink::CreateBufferResultPtr result) {
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
+
+  if (result->is_error()) {
+    const auto& create_buffer_error = result->get_error();
+    resolver->RejectWithDOMException(
+        WebNNErrorCodeToDOMExceptionCode(create_buffer_error->code),
+        create_buffer_error->message);
+    return;
+  }
+
+  auto* buffer = MakeGarbageCollected<MLBuffer>(
+      resolver->GetExecutionContext(), this, std::move(validated_descriptor),
+      std::move(result->get_success()), base::PassKey<MLContext>());
+
+  resolver->Resolve(buffer);
 }
 
 }  // namespace blink

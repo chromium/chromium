@@ -71,9 +71,9 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                                          const MLNamedArrayBufferViews& outputs,
                                          ExceptionState& exception_state);
 
-  MLBuffer* createBuffer(ScriptState* script_state,
-                         const MLBufferDescriptor* descriptor,
-                         ExceptionState& exception_state);
+  ScriptPromise<MLBuffer> createBuffer(ScriptState* script_state,
+                                       const MLBufferDescriptor* descriptor,
+                                       ExceptionState& exception_state);
 
   // Writes data specified by array buffer view from offset in elements.
   void writeBuffer(ScriptState* script_state,
@@ -122,10 +122,10 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
       ExceptionState& exception_state);
 
   // Creates platform specific buffer described by `buffer_info`.
-  void CreateWebNNBuffer(mojo::PendingAssociatedReceiver<
-                             webnn::mojom::blink::WebNNBuffer> receiver,
-                         webnn::mojom::blink::BufferInfoPtr buffer_info,
-                         const base::UnguessableToken& buffer_handle);
+  void CreateWebNNBuffer(
+      webnn::mojom::blink::BufferInfoPtr buffer_info,
+      webnn::mojom::blink::WebNNContext::CreateBufferCallback callback);
+
   const MLOpSupportLimits* opSupportLimits(ScriptState* script_state);
 
  private:
@@ -147,6 +147,11 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                         unsigned src_data_type_size_bytes,
                         std::optional<uint64_t> src_element_count,
                         ExceptionState& exception_state);
+
+  void DidCreateWebNNBuffer(ScopedMLTrace scoped_trace,
+                            ScriptPromiseResolver<blink::MLBuffer>* resolver,
+                            webnn::OperandDescriptor validated_descriptor,
+                            webnn::mojom::blink::CreateBufferResultPtr result);
 
   V8MLDeviceType device_type_;
   V8MLPowerPreference power_preference_;

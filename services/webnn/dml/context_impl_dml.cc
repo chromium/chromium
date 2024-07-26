@@ -33,6 +33,17 @@ namespace webnn::dml {
 
 using Microsoft::WRL::ComPtr;
 
+namespace {
+
+void HandleBufferCreationFailure(
+    const std::string& error_message,
+    WebNNContextImpl::CreateBufferImplCallback callback) {
+  std::move(callback).Run(base::unexpected(
+      CreateError(mojom::Error::Code::kUnknownError, error_message)));
+}
+
+}  // namespace
+
 // The context properties follow the supported feature level on the platform.
 // https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history
 //
@@ -108,13 +119,11 @@ ContextImplDml::ContextImplDml(
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
     std::unique_ptr<CommandRecorder> command_recorder,
-    const gpu::GpuFeatureInfo& gpu_feature_info,
-    base::UnguessableToken context_handle)
+    const gpu::GpuFeatureInfo& gpu_feature_info)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GetProperties(adapter->max_supported_feature_level()),
-                       std::move(options),
-                       std::move(context_handle)),
+                       std::move(options)),
       adapter_(std::move(adapter)),
       command_recorder_(std::move(command_recorder)),
       gpu_feature_info_(gpu_feature_info) {
@@ -139,17 +148,19 @@ void ContextImplDml::CreateGraphImpl(
           gpu::DML_EXECUTION_DISABLE_META_COMMANDS));
 }
 
-std::unique_ptr<WebNNBufferImpl> ContextImplDml::CreateBufferImpl(
+void ContextImplDml::CreateBufferImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
-    const base::UnguessableToken& buffer_handle) {
+    CreateBufferImplCallback callback) {
   // DML requires resources to be in multiple of 4 bytes.
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
   constexpr uint64_t kDMLBufferAlignment = 4ull;
   if (std::numeric_limits<uint64_t>::max() - kDMLBufferAlignment <
       static_cast<uint64_t>(buffer_info->descriptor.PackedByteLength())) {
     LOG(ERROR) << "[WebNN] Buffer is too large to create.";
-    return nullptr;
+    HandleBufferCreationFailure("Failed to create buffer.",
+                                std::move(callback));
+    return;
   }
 
   const uint64_t aligned_buffer_byte_size = base::bits::AlignUp(
@@ -176,17 +187,18 @@ std::unique_ptr<WebNNBufferImpl> ContextImplDml::CreateBufferImpl(
   }
 
   if (FAILED(hr)) {
+    HandleBufferCreationFailure("Failed to create buffer.",
+                                std::move(callback));
     HandleContextLostOrCrash("Failed to create the external buffer.", hr);
-    return nullptr;
+    return;
   }
 
   // The receiver bound to WebNNBufferImpl.
   //
   // Safe to use ContextImplDml* because this context owns the buffer
   // being connected and that context cannot destruct before the buffer.
-  return std::make_unique<BufferImplDml>(std::move(receiver), std::move(buffer),
-                                         this, std::move(buffer_info),
-                                         buffer_handle);
+  std::move(callback).Run(std::make_unique<BufferImplDml>(
+      std::move(receiver), std::move(buffer), this, std::move(buffer_info)));
 }
 
 void ContextImplDml::ReadBuffer(

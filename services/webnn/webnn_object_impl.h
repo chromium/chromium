@@ -12,7 +12,7 @@ namespace webnn {
 
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNObjectImpl {
  public:
-  explicit WebNNObjectImpl(const base::UnguessableToken& handle);
+  WebNNObjectImpl();
   virtual ~WebNNObjectImpl();
 
   WebNNObjectImpl(const WebNNObjectImpl&) = delete;

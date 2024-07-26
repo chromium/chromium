@@ -546,14 +546,20 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
         std::make_unique<FakeWebNNGraphBuilder>(*helper_), std::move(receiver));
   }
 
-  void CreateBuffer(
-      mojo::PendingAssociatedReceiver<blink_mojom::WebNNBuffer> receiver,
-      blink_mojom::BufferInfoPtr buffer_info,
-      const base::UnguessableToken& buffer_handle) override {
+  void CreateBuffer(blink_mojom::BufferInfoPtr buffer_info,
+                    CreateBufferCallback callback) override {
+    mojo::PendingAssociatedRemote<blink_mojom::WebNNBuffer> blink_remote;
+    auto blink_receiver = blink_remote.InitWithNewEndpointAndPassReceiver();
+    base::UnguessableToken buffer_handle = base::UnguessableToken::Create();
     context_helper_.ConnectWebNNBufferImpl(
         buffer_handle, std::make_unique<FakeWebNNBuffer>(
-                           context_helper_, std::move(receiver), buffer_handle,
-                           std::move(buffer_info)));
+                           context_helper_, std::move(blink_receiver),
+                           buffer_handle, std::move(buffer_info)));
+
+    auto success = blink_mojom::CreateBufferSuccess::New(
+        std::move(blink_remote), std::move(buffer_handle));
+    std::move(callback).Run(
+        blink_mojom::CreateBufferResult::NewSuccess(std::move(success)));
   }
 
   // TODO(crbug.com/354741414): Fix this dangling pointer.
@@ -723,8 +729,15 @@ MLBuffer* CreateMLBufferForOperand(V8TestingScope& scope,
   desc->setDataType(operand->dataType());
   desc->setDimensions(operand->shape());
 
-  MLBuffer* ml_buffer = ml_context->createBuffer(scope.GetScriptState(), desc,
-                                                 scope.GetExceptionState());
+  ScriptPromiseTester tester(
+      scope.GetScriptState(),
+      ml_context->createBuffer(scope.GetScriptState(), desc,
+                               scope.GetExceptionState()));
+  tester.WaitUntilSettled();
+  CHECK(tester.IsFulfilled());
+
+  MLBuffer* ml_buffer = V8ToObject<MLBuffer>(&scope, tester.Value());
+
   ml_context->writeBuffer(
       scope.GetScriptState(), ml_buffer,
       MaybeShared<DOMArrayBufferView>(array_buffer_view.Get()),
@@ -1227,13 +1240,18 @@ TEST_F(MLGraphTest, CreateWebNNBufferTest) {
   desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
   desc->setDimensions({2, 2});
 
-  MLBuffer* ml_buffer =
-      ml_context->createBuffer(script_state, desc, scope.GetExceptionState());
+  ScriptPromiseTester buffer_tester(
+      script_state,
+      ml_context->createBuffer(script_state, desc, scope.GetExceptionState()));
+  buffer_tester.WaitUntilSettled();
+  EXPECT_TRUE(buffer_tester.IsFulfilled());
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
     GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
   }
+
+  MLBuffer* ml_buffer = V8ToObject<MLBuffer>(&scope, buffer_tester.Value());
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
   EXPECT_EQ(ml_buffer->dataType(), desc->dataType());
@@ -1259,13 +1277,18 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
   desc->setDataType(V8MLOperandDataType::Enum::kUint8);
   desc->setDimensions(kBufferShape);
 
-  MLBuffer* ml_buffer =
-      ml_context->createBuffer(script_state, desc, scope.GetExceptionState());
+  ScriptPromiseTester buffer_tester(
+      script_state,
+      ml_context->createBuffer(script_state, desc, scope.GetExceptionState()));
+  buffer_tester.WaitUntilSettled();
+  EXPECT_TRUE(buffer_tester.IsFulfilled());
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
     GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
   }
+
+  MLBuffer* ml_buffer = V8ToObject<MLBuffer>(&scope, buffer_tester.Value());
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
 
@@ -1347,13 +1370,18 @@ TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
   desc->setDataType(V8MLOperandDataType::Enum::kUint8);
   desc->setDimensions({2, 2});
 
-  MLBuffer* ml_buffer =
-      ml_context->createBuffer(script_state, desc, scope.GetExceptionState());
+  ScriptPromiseTester buffer_tester(
+      script_state,
+      ml_context->createBuffer(script_state, desc, scope.GetExceptionState()));
+  buffer_tester.WaitUntilSettled();
+  EXPECT_TRUE(buffer_tester.IsFulfilled());
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
     GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
   }
+
+  MLBuffer* ml_buffer = V8ToObject<MLBuffer>(&scope, buffer_tester.Value());
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
 
@@ -1384,23 +1412,29 @@ TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
   desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
   desc->setDimensions({2, 2});
 
-  MLBuffer* ml_buffer =
-      ml_context->createBuffer(script_state, desc, scope.GetExceptionState());
+  ScriptPromiseTester create_buffer_tester(
+      script_state,
+      ml_context->createBuffer(script_state, desc, scope.GetExceptionState()));
+  create_buffer_tester.WaitUntilSettled();
+  EXPECT_TRUE(create_buffer_tester.IsFulfilled());
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
     GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
   }
 
+  MLBuffer* ml_buffer =
+      V8ToObject<MLBuffer>(&scope, create_buffer_tester.Value());
+
   ASSERT_THAT(ml_buffer, testing::NotNull());
 
   ml_buffer->destroy();
 
-  ScriptPromiseTester buffer_tester(
+  ScriptPromiseTester read_buffer_tester(
       script_state, ml_context->readBuffer(script_state, ml_buffer,
                                            scope.GetExceptionState()));
-  buffer_tester.WaitUntilSettled();
-  EXPECT_TRUE(buffer_tester.IsRejected());
+  read_buffer_tester.WaitUntilSettled();
+  EXPECT_TRUE(read_buffer_tester.IsRejected());
 }
 
 TEST_F(MLGraphTest, WebNNGraphDispatchTest) {

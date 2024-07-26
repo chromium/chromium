@@ -14,12 +14,8 @@ BufferImplDml::BufferImplDml(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
     ContextImplDml* context,
-    mojom::BufferInfoPtr buffer_info,
-    const base::UnguessableToken& buffer_handle)
-    : WebNNBufferImpl(std::move(receiver),
-                      context,
-                      std::move(buffer_info),
-                      buffer_handle),
+    mojom::BufferInfoPtr buffer_info)
+    : WebNNBufferImpl(std::move(receiver), context, std::move(buffer_info)),
       buffer_(std::move(buffer)) {}
 
 BufferImplDml::~BufferImplDml() = default;

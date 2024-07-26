@@ -17,48 +17,20 @@
 
 namespace blink {
 
-// static
-MLBuffer* MLBuffer::Create(ScopedMLTrace scoped_trace,
-                           ExecutionContext* execution_context,
-                           MLContext* ml_context,
-                           const MLBufferDescriptor* descriptor,
-                           ExceptionState& exception_state) {
-  CHECK(execution_context);
-  CHECK(ml_context);
-  CHECK(descriptor);
-
-  // TODO(crbug.com/343638938): Decide whether it is valid to create an empty
-  // MLBuffer.
-
-  ASSIGN_OR_RETURN(webnn::OperandDescriptor validated_descriptor,
-                   webnn::OperandDescriptor::Create(
-                       FromBlinkDataType(descriptor->dataType().AsEnum()),
-                       descriptor->dimensions()),
-                   [&exception_state](std::string error) {
-                     exception_state.ThrowTypeError(String(error));
-                     return nullptr;
-                   });
-
-  auto* buffer = MakeGarbageCollected<MLBuffer>(
-      execution_context, ml_context, std::move(validated_descriptor));
-  scoped_trace.AddStep("MLBuffer::Create");
-
-  // Create `WebNNBuffer` message pipe with `WebNNContext` mojo interface.
-  ml_context->CreateWebNNBuffer(
-      buffer->remote_buffer_.BindNewEndpointAndPassReceiver(
-          execution_context->GetTaskRunner(TaskType::kMachineLearning)),
-      buffer->GetMojoBufferInfo(), buffer->handle());
-
-  return buffer;
-}
-
-MLBuffer::MLBuffer(ExecutionContext* execution_context,
-                   MLContext* context,
-                   webnn::OperandDescriptor descriptor)
+MLBuffer::MLBuffer(
+    ExecutionContext* execution_context,
+    MLContext* context,
+    webnn::OperandDescriptor descriptor,
+    webnn::mojom::blink::CreateBufferSuccessPtr create_buffer_success,
+    base::PassKey<MLContext> /*pass_key*/)
     : ml_context_(context),
       descriptor_(std::move(descriptor)),
-      webnn_handle_(base::UnguessableToken::Create()),
-      remote_buffer_(execution_context) {}
+      webnn_handle_(std::move(create_buffer_success->buffer_handle)),
+      remote_buffer_(execution_context) {
+  remote_buffer_.Bind(
+      std::move(create_buffer_success->buffer_remote),
+      execution_context->GetTaskRunner(TaskType::kMachineLearning));
+}
 
 MLBuffer::~MLBuffer() = default;
 
@@ -141,13 +113,6 @@ void MLBuffer::WriteBufferImpl(base::span<const uint8_t> src_data,
 
   // Copy src data.
   remote_buffer_->WriteBuffer(src_data);
-}
-
-webnn::mojom::blink::BufferInfoPtr MLBuffer::GetMojoBufferInfo() const {
-  return webnn::mojom::blink::BufferInfo::New(
-      descriptor_,
-      // TODO(crbug.com/343638938): Pass real buffer usages.
-      webnn::MLBufferUsage());
 }
 
 }  // namespace blink

@@ -19,13 +19,11 @@ namespace webnn::coreml {
 ContextImplCoreml::ContextImplCoreml(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
-    mojom::CreateContextOptionsPtr options,
-    base::UnguessableToken context_handle)
+    mojom::CreateContextOptionsPtr options)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GraphBuilderCoreml::GetContextProperties(),
-                       std::move(options),
-                       std::move(context_handle)) {}
+                       std::move(options)) {}
 
 ContextImplCoreml::~ContextImplCoreml() = default;
 
@@ -43,14 +41,14 @@ void ContextImplCoreml::CreateGraphImpl(
       options().Clone(), properties(), std::move(callback));
 }
 
-std::unique_ptr<WebNNBufferImpl> ContextImplCoreml::CreateBufferImpl(
+void ContextImplCoreml::CreateBufferImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
-    const base::UnguessableToken& buffer_handle) {
+    CreateBufferImplCallback callback) {
   // TODO(crbug.com/40278771): Implement MLBuffer for CoreML. Involve
   // an IPC security reviewer.
-  NOTIMPLEMENTED();
-  return {};
+  std::move(callback).Run(base::unexpected(mojom::Error::New(
+      mojom::Error::Code::kNotSupportedError, "Failed to create buffer.")));
 }
 
 }  // namespace webnn::coreml

@@ -42,11 +42,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
 
+  using CreateBufferImplCallback = base::OnceCallback<void(
+      base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr>)>;
+
   WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                    WebNNContextProviderImpl* context_provider,
                    ContextProperties properties,
-                   mojom::CreateContextOptionsPtr options,
-                   base::UnguessableToken context_handle);
+                   mojom::CreateContextOptionsPtr options);
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
@@ -108,10 +110,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void CreateGraphBuilder(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraphBuilder> receiver)
       override;
-  void CreateBuffer(
-      mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
-      mojom::BufferInfoPtr buffer_info,
-      const base::UnguessableToken& buffer_handle) override;
+  void CreateBuffer(mojom::BufferInfoPtr buffer_info,
+                    CreateBufferCallback callback) override;
 
   // This method will be called by `CreateGraph()` after the graph info is
   // validated. A backend subclass should implement this method to build and
@@ -130,11 +130,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   // This method will be called by `CreateBuffer()` after the buffer info is
   // validated. A backend subclass should implement this method to create and
-  // initialize a platform specific buffer.
-  virtual std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
+  // initialize a platform specific buffer asynchronously.
+  virtual void CreateBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
-      const base::UnguessableToken& buffer_handle) = 0;
+      CreateBufferImplCallback callback) = 0;
+
+  void DidCreateWebNNBufferImpl(
+      CreateBufferCallback callback,
+      mojo::PendingAssociatedRemote<mojom::WebNNBuffer> remote,
+      base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr> result);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

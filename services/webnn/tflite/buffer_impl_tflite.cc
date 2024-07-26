@@ -17,40 +17,34 @@
 
 namespace webnn::tflite {
 
-std::unique_ptr<WebNNBufferImpl> BufferImplTflite::Create(
+// static
+base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr>
+BufferImplTflite::Create(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     WebNNContextImpl* context,
-    mojom::BufferInfoPtr buffer_info,
-    const base::UnguessableToken& buffer_handle) {
+    mojom::BufferInfoPtr buffer_info) {
   size_t size = buffer_info->descriptor.PackedByteLength();
 
   // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
   if (!base::IsValueInRangeForNumericType<int>(size)) {
     LOG(ERROR) << "[WebNN] Buffer is too large to create.";
-    return nullptr;
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to create buffer."));
   }
 
   auto state = base::MakeRefCounted<BufferState>(size);
-  if (!state) {
-    return nullptr;
-  }
-
   return std::make_unique<BufferImplTflite>(
-      std::move(receiver), context, std::move(buffer_info), buffer_handle,
-      std::move(state), base::PassKey<BufferImplTflite>());
+      std::move(receiver), context, std::move(buffer_info), std::move(state),
+      base::PassKey<BufferImplTflite>());
 }
 
 BufferImplTflite::BufferImplTflite(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     WebNNContextImpl* context,
     mojom::BufferInfoPtr buffer_info,
-    const base::UnguessableToken& buffer_handle,
     scoped_refptr<BufferState> state,
     base::PassKey<BufferImplTflite>)
-    : WebNNBufferImpl(std::move(receiver),
-                      context,
-                      std::move(buffer_info),
-                      buffer_handle),
+    : WebNNBufferImpl(std::move(receiver), context, std::move(buffer_info)),
       state_(std::move(state)) {}
 
 BufferImplTflite::~BufferImplTflite() {

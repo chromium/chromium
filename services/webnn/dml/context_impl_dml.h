@@ -31,8 +31,7 @@ class ContextImplDml final : public WebNNContextImpl {
                  WebNNContextProviderImpl* context_provider,
                  mojom::CreateContextOptionsPtr options,
                  std::unique_ptr<CommandRecorder> command_recorder,
-                 const gpu::GpuFeatureInfo& gpu_feature_info,
-                 base::UnguessableToken context_handle);
+                 const gpu::GpuFeatureInfo& gpu_feature_info);
 
   ContextImplDml(const WebNNContextImpl&) = delete;
   ContextImplDml& operator=(const ContextImplDml&) = delete;
@@ -64,10 +63,10 @@ class ContextImplDml final : public WebNNContextImpl {
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       CreateGraphImplCallback callback) override;
 
-  std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
+  void CreateBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
-      const base::UnguessableToken& buffer_handle) override;
+      CreateBufferImplCallback callback) override;
 
   // Begins recording commands needed for context operations.
   // If recording failed, calling this function will recreate the recorder to

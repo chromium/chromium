@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_COREML_CONTEXT_IMPL_COREML_H_
 
 #include "base/memory/weak_ptr.h"
+#include "services/webnn/webnn_buffer_impl.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
@@ -22,11 +23,9 @@ namespace webnn::coreml {
 class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
     : public WebNNContextImpl {
  public:
-  ContextImplCoreml(
-      mojo::PendingReceiver<mojom::WebNNContext> receiver,
-      WebNNContextProviderImpl* context_provider,
-      mojom::CreateContextOptionsPtr options,
-      base::UnguessableToken context_handle);
+  ContextImplCoreml(mojo::PendingReceiver<mojom::WebNNContext> receiver,
+                    WebNNContextProviderImpl* context_provider,
+                    mojom::CreateContextOptionsPtr options);
 
   ContextImplCoreml(const WebNNContextImpl&) = delete;
   ContextImplCoreml& operator=(const ContextImplCoreml&) = delete;
@@ -42,10 +41,10 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       CreateGraphImplCallback callback) override;
 
-  std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
+  void CreateBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
-      const base::UnguessableToken& buffer_handle) override;
+      CreateBufferImplCallback callback) override;
 
   base::WeakPtrFactory<ContextImplCoreml> weak_factory_{this};
 };

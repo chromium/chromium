@@ -107,12 +107,8 @@ class FakeWebNNBufferImpl final : public WebNNBufferImpl {
   explicit FakeWebNNBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       WebNNContextImpl* context,
-      mojom::BufferInfoPtr buffer_info,
-      const base::UnguessableToken& buffer_handle)
-      : WebNNBufferImpl(std::move(receiver),
-                        context,
-                        std::move(buffer_info),
-                        buffer_handle) {}
+      mojom::BufferInfoPtr buffer_info)
+      : WebNNBufferImpl(std::move(receiver), context, std::move(buffer_info)) {}
   ~FakeWebNNBufferImpl() override = default;
 
  private:
@@ -126,15 +122,12 @@ class FakeWebNNBufferImpl final : public WebNNBufferImpl {
 // creating graph message.
 class FakeWebNNContextImpl final : public WebNNContextImpl {
  public:
-  FakeWebNNContextImpl(
-      mojo::PendingReceiver<mojom::WebNNContext> receiver,
-      WebNNContextProviderImpl* context_provider,
-      base::UnguessableToken context_handle)
+  FakeWebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
+                       WebNNContextProviderImpl* context_provider)
       : WebNNContextImpl(std::move(receiver),
                          context_provider,
                          GetContextPropertiesForTesting(),
-                         mojom::CreateContextOptions::New(),
-                         std::move(context_handle)) {}
+                         mojom::CreateContextOptions::New()) {}
   ~FakeWebNNContextImpl() override = default;
 
   // WebNNContextImpl:
@@ -153,12 +146,12 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
                                        std::move(callback));
   }
 
-  std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
+  void CreateBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
-      const base::UnguessableToken& buffer_handle) override {
-    return std::make_unique<FakeWebNNBufferImpl>(
-        std::move(receiver), this, std::move(buffer_info), buffer_handle);
+      CreateBufferImplCallback callback) override {
+    std::move(callback).Run(std::make_unique<FakeWebNNBufferImpl>(
+        std::move(receiver), this, std::move(buffer_info)));
   }
 
   base::WeakPtrFactory<FakeWebNNContextImpl> weak_factory_{this};
@@ -174,15 +167,13 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
       mojom::WebNNContextProvider::CreateWebNNContextCallback callback)
       override {
     mojo::PendingRemote<mojom::WebNNContext> remote;
-    base::UnguessableToken context_handle = base::UnguessableToken::Create();
     auto context_impl = std::make_unique<FakeWebNNContextImpl>(
-        remote.InitWithNewPipeAndPassReceiver(), context_provider_impl,
-        context_handle);
+        remote.InitWithNewPipeAndPassReceiver(), context_provider_impl);
     ContextProperties context_properties = context_impl->properties();
     // The receiver bound to FakeWebNNContext.
     auto success = mojom::CreateContextSuccess::New(
         std::move(remote), std::move(context_properties),
-        std::move(context_handle));
+        context_impl->handle());
     std::move(callback).Run(
         mojom::CreateContextResult::NewSuccess(std::move(success)));
     return context_impl;
@@ -238,38 +229,49 @@ bool ValidateInputsForComputing(
   return valid;
 }
 
-struct WebNNBufferInfo {
-  base::UnguessableToken buffer_handle;
-  OperandDataType data_type;
-  std::vector<uint32_t> shape;
-  bool create_buffer;
+struct CreateBufferSuccess {
+  std::optional<mojo::AssociatedRemote<mojom::WebNNBuffer>> webnn_buffer;
+  base::UnguessableToken webnn_handle;
 };
 
-WebNNBufferInfo CreateWebNNBufferInfo(OperandDataType data_type,
-                                      std::vector<uint32_t> shape,
-                                      bool create_buffer = true) {
-  return {base::UnguessableToken::Create(), data_type, std::move(shape),
-          create_buffer};
+CreateBufferSuccess CreateWebNNBuffer(
+    mojo::Remote<mojom::WebNNContext>& webnn_context,
+    OperandDataType data_type,
+    std::vector<uint32_t> shape) {
+  base::test::TestFuture<mojom::CreateBufferResultPtr> create_buffer_future;
+  webnn_context->CreateBuffer(
+      mojom::BufferInfo::New(*OperandDescriptor::Create(data_type, shape),
+                             MLBufferUsage()),
+      create_buffer_future.GetCallback());
+  mojom::CreateBufferResultPtr create_buffer_result =
+      create_buffer_future.Take();
+  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer;
+  webnn_buffer.Bind(
+      std::move(create_buffer_result->get_success()->buffer_remote));
+  return CreateBufferSuccess{
+      std::move(webnn_buffer),
+      std::move(create_buffer_result->get_success()->buffer_handle)};
 }
 
-// Converts inputs and outputs to MLBuffer then dispatches them.
-bool ValidateDispatch(mojom::GraphInfoPtr graph_info,
-                      base::flat_map<std::string, WebNNBufferInfo> inputs,
-                      base::flat_map<std::string, WebNNBufferInfo> outputs) {
-  // Creates WebNN Context mojo interface with the provider.
-  mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-  WebNNContextProviderImpl::CreateForTesting(
-      provider_remote.BindNewPipeAndPassReceiver());
-
+mojo::Remote<mojom::WebNNContext> CreateWebNNContext(
+    mojo::Remote<mojom::WebNNContextProvider>& webnn_context_provider) {
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
-  provider_remote->CreateWebNNContext(mojom::CreateContextOptions::New(),
-                                      create_context_future.GetCallback());
+  webnn_context_provider->CreateWebNNContext(
+      mojom::CreateContextOptions::New(), create_context_future.GetCallback());
   mojom::CreateContextResultPtr create_context_result =
       create_context_future.Take();
   mojo::Remote<mojom::WebNNContext> webnn_context;
   webnn_context.Bind(
       std::move(create_context_result->get_success()->context_remote));
+  return webnn_context;
+}
 
+// Converts inputs and outputs to MLBuffer then dispatches them.
+bool ValidateDispatch(
+    mojo::Remote<mojom::WebNNContext>& webnn_context,
+    mojom::GraphInfoPtr graph_info,
+    base::flat_map<std::string, CreateBufferSuccess> inputs,
+    base::flat_map<std::string, CreateBufferSuccess> outputs) {
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote;
   webnn_context->CreateGraphBuilder(
       graph_builder_remote.BindNewEndpointAndPassReceiver());
@@ -292,40 +294,16 @@ bool ValidateDispatch(mojom::GraphInfoPtr graph_info,
         valid = false;
       }));
 
-  // Create buffers for the inputs.
-  std::vector<mojo::AssociatedRemote<mojom::WebNNBuffer>> input_buffers(
-      inputs.size());
+  // Assign buffers for the inputs.
   base::flat_map<std::string, base::UnguessableToken> dispatch_inputs;
   for (const auto& [name, buffer_info] : inputs) {
-    if (buffer_info.create_buffer) {
-      mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer;
-      webnn_context->CreateBuffer(
-          webnn_buffer.BindNewEndpointAndPassReceiver(),
-          mojom::BufferInfo::New(*OperandDescriptor::Create(
-                                     buffer_info.data_type, buffer_info.shape),
-                                 MLBufferUsage()),
-          buffer_info.buffer_handle);
-      input_buffers.push_back(std::move(webnn_buffer));
-    }
-    dispatch_inputs.emplace(name, buffer_info.buffer_handle);
+    dispatch_inputs.emplace(name, buffer_info.webnn_handle);
   }
 
-  // Create buffers for the outputs.
-  std::vector<mojo::AssociatedRemote<mojom::WebNNBuffer>> output_buffers(
-      outputs.size());
+  // Assign buffers for the outputs.
   base::flat_map<std::string, base::UnguessableToken> dispatch_outputs;
   for (const auto& [name, buffer_info] : outputs) {
-    if (buffer_info.create_buffer) {
-      mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer;
-      webnn_context->CreateBuffer(
-          webnn_buffer.BindNewEndpointAndPassReceiver(),
-          mojom::BufferInfo::New(*OperandDescriptor::Create(
-                                     buffer_info.data_type, buffer_info.shape),
-                                 MLBufferUsage()),
-          buffer_info.buffer_handle);
-      output_buffers.push_back(std::move(webnn_buffer));
-    }
-    dispatch_outputs.emplace(name, buffer_info.buffer_handle);
+    dispatch_outputs.emplace(name, buffer_info.webnn_handle);
   }
 
   // Ensure CreateBuffer messages have a chance to finish before calling
@@ -6571,181 +6549,213 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   EXPECT_TRUE(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
                                                        builder.GetGraphInfo()));
 
+  mojo::Remote<mojom::WebNNContextProvider> provider_remote;
+  WebNNContextProviderImpl::CreateForTesting(
+      provider_remote.BindNewPipeAndPassReceiver());
+
   {
     // Validate the inputs match the expected.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
-    EXPECT_TRUE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                 std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    EXPECT_TRUE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                 std::move(inputs), std::move(outputs)));
   }
   {
     // Test the invalid inputs for invalid input size.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
   {
     // Test the invalid outputs for invalid output size.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
     outputs["a_different_output_name"] =
-        CreateWebNNBufferInfo(kDataType, kShape);
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+        CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
   {
     // Test the invalid inputs for invalid input name.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["a_different_input_name"] = {base::UnguessableToken::Create(),
-                                        kDataType, kShape};
-    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["a_different_input_name"] =
+        CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
   {
     // Test the invalid outputs for invalid input name.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
     outputs["a_different_output_name"] =
-        CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+        CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
   {
     // Test the invalid inputs for invalid first input shape.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, {2, 5});
-    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = CreateWebNNBuffer(webnn_context, kDataType, {2, 5});
+    inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
   {
     // Test the invalid inputs for invalid first input data type.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(OperandDataType::kInt8, kShape);
-    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] =
+        CreateWebNNBuffer(webnn_context, OperandDataType::kInt8, kShape);
+    inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
   {
     // Test the invalid outputs for invalid first output shape.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(kDataType, {3, 4});
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, {3, 4});
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
   {
     // Test the invalid inputs for invalid second input data type.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    inputs["rhs"] = CreateWebNNBufferInfo(OperandDataType::kInt32, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    inputs["rhs"] =
+        CreateWebNNBuffer(webnn_context, OperandDataType::kInt32, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
   {
     // Test the invalid outputs for invalid second output shape.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, {2, 5});
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, {2, 5});
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
   {
     // Test the inputs using the same buffer more than once.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    const WebNNBufferInfo& input_buffer =
-        CreateWebNNBufferInfo(kDataType, kShape);
-    inputs["lhs"] = input_buffer;
-    inputs["rhs"] = {input_buffer.buffer_handle, kDataType, kShape,
-                     /*create_buffer=*/false};
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
-    EXPECT_TRUE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                 std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    inputs["rhs"] = {/*webnn_buffer=*/std::nullopt, inputs["lhs"].webnn_handle};
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    EXPECT_TRUE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                 std::move(inputs), std::move(outputs)));
   }
   {
     // Test the invalid outputs when using the same buffer more than once.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    const WebNNBufferInfo& output_buffer =
-        CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output1"] = output_buffer;
-    outputs["output2"] = {output_buffer.buffer_handle, kDataType, kShape,
-                          /*create_buffer=*/false};
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = {/*webnn_buffer=*/std::nullopt,
+                          outputs["output1"].webnn_handle};
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
   {
     // Test the inputs and outputs are invalid when using the same buffer.
-    const WebNNBufferInfo& input_and_output_buffer = {
-        base::UnguessableToken::Create(), kDataType, kShape};
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = input_and_output_buffer;
-    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = input_and_output_buffer;
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = {/*webnn_buffer=*/std::nullopt,
+                          inputs["lhs"].webnn_handle};
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
   {
     // Test the inputs are invalid when using a invalid buffer.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape, false);
-    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = {/*webnn_buffer=*/std::nullopt,
+                     base::UnguessableToken::Create()};
+    inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
   {
     // Test the outputs are invalid when using a invalid buffer.
-    base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
-    base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
-    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape, false);
-    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
-                                  std::move(outputs)));
+    mojo::Remote<mojom::WebNNContext> webnn_context =
+        CreateWebNNContext(provider_remote);
+    base::flat_map<std::string, CreateBufferSuccess> inputs;
+    inputs["lhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    base::flat_map<std::string, CreateBufferSuccess> outputs;
+    outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
+    outputs["output2"] = {/*webnn_buffer=*/std::nullopt,
+                          base::UnguessableToken::Create()};
+    EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
+                                  std::move(inputs), std::move(outputs)));
   }
 }
 

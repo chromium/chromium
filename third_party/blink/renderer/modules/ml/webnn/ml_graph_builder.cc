@@ -2437,7 +2437,7 @@ void MLGraphBuilder::DidCreateWebNNGraph(
   remote_.reset();
 
   ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state) {
+  if (!script_state->ContextIsValid()) {
     return;
   }
 

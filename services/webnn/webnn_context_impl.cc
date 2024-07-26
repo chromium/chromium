@@ -25,11 +25,8 @@ WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     ContextProperties properties,
-    mojom::CreateContextOptionsPtr options,
-    base::UnguessableToken context_handle)
-    // TODO(crbug.com/345352987): pass token by value to WebNNObjectImpl.
-    : WebNNObjectImpl(std::move(context_handle)),
-      receiver_(this, std::move(receiver)),
+    mojom::CreateContextOptionsPtr options)
+    : receiver_(this, std::move(receiver)),
       context_provider_(context_provider),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)) {
@@ -77,30 +74,35 @@ void WebNNContextImpl::CreateGraphBuilder(
 }
 
 void WebNNContextImpl::CreateBuffer(
-    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
-    const base::UnguessableToken& buffer_handle) {
-  // The token is validated in mojo traits to be non-empty.
-  CHECK(!buffer_handle.is_empty());
+    mojom::WebNNContext::CreateBufferCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::PendingAssociatedRemote<mojom::WebNNBuffer> remote;
+  auto receiver = remote.InitWithNewEndpointAndPassReceiver();
+  CreateBufferImpl(
+      std::move(receiver), std::move(buffer_info),
+      base::BindOnce(&WebNNContextImpl::DidCreateWebNNBufferImpl, AsWeakPtr(),
+                     std::move(callback), std::move(remote)));
+}
 
-  // It is illegal to create the same buffer twice, a buffer is uniquely
-  // identified by its UnguessableToken.
-  if (buffer_impls_.contains(buffer_handle)) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+void WebNNContextImpl::DidCreateWebNNBufferImpl(
+    mojom::WebNNContext::CreateBufferCallback callback,
+    mojo::PendingAssociatedRemote<mojom::WebNNBuffer> remote,
+    base::expected<std::unique_ptr<WebNNBufferImpl>, mojom::ErrorPtr> result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(
+        mojom::CreateBufferResult::NewError(std::move(result.error())));
     return;
   }
 
-  // TODO(crbug.com/40278771): handle error using MLContext.
-  std::unique_ptr<WebNNBufferImpl> buffer_impl = CreateBufferImpl(
-      std::move(receiver), std::move(buffer_info), buffer_handle);
-  if (!buffer_impl) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
-    return;
-  }
+  auto success = mojom::CreateBufferSuccess::New(std::move(remote),
+                                                 result.value()->handle());
+  std::move(callback).Run(
+      mojom::CreateBufferResult::NewSuccess(std::move(success)));
 
   // Associates a `WebNNBuffer` instance with this context so the WebNN service
   // can access the implementation.
-  buffer_impls_.emplace(std::move(buffer_impl));
+  buffer_impls_.emplace(*std::move(result));
 }
 
 void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
