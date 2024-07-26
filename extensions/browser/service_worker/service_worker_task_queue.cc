@@ -671,6 +671,13 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     base::UmaHistogramBoolean(
         "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated",
         success);
+    if (!success) {
+      // TODO(crbug.com/346732739): Create a test for this if it is feasible.
+      base::UmaHistogramEnumeration(
+          "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated_"
+          "FailStatus",
+          status_code);
+    }
     if (g_test_observer) {
       g_test_observer->RegistrationMismatchMitigated(extension_id, success);
     }

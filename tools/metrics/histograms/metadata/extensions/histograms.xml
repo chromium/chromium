@@ -4643,6 +4643,22 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated_FailStatus"
+    enum="ServiceWorkerStatusCode" expires_after="2025-01-15">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    When a mitigation for a mismatched registration state between ExtensionPrefs
+    and the content service worker layer fails, this records the status that was
+    returned by the content service worker layer for the registration request
+    failure.
+
+    Emitted when
+    Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated is false.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ServiceWorkerBackground.RegistrationTime"
     units="ms" expires_after="2025-03-25">
   <owner>jlulejian@chromium.org</owner>
