@@ -147,7 +147,10 @@ static_library("printing") {
     deps += [ "//chrome/services/cups_proxy" ]
   }
 
-  public_deps = [ "//chromeos:chromeos_export" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos:chromeos_export",
+  ]
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/printing/enterprise",

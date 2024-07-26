@@ -18,6 +18,8 @@ static_library("dialogs") {
     "files_policy_warn_dialog.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/public/cpp",

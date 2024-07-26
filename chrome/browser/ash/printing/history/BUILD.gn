@@ -46,7 +46,10 @@ static_library("history") {
     "//printing/mojom:mojom",
   ]
 
-  public_deps = [ "//printing" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//printing",
+  ]
 }
 
 source_set("unit_tests") {

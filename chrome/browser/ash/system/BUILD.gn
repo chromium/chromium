@@ -40,6 +40,7 @@ static_library("system") {
     "//ash/public/cpp",
     "//base",
     "//base:i18n",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/geolocation",

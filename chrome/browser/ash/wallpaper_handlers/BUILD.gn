@@ -27,6 +27,7 @@ static_library("wallpaper_handlers") {
     "//ash/webui/personalization_app/mojom",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//content/public/browser",

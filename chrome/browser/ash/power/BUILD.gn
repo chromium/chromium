@@ -28,6 +28,8 @@ static_library("power") {
     "suspend_perf_reporter.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//base",

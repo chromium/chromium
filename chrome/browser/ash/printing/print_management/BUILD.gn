@@ -33,6 +33,7 @@ static_library("print_management") {
   public_deps = [
     "//ash/webui/print_management/backend",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/printing/history:print_job_info_proto",
     "//chrome/browser/profiles:profile",
     "//chromeos/components/print_management/mojom",

@@ -28,9 +28,13 @@ static_library("os_updates") {
     "//components/version_info",
   ]
 
-  # Current implementation unnecessarily exposes dbus to client targets.
-  # TODO: consider to remove the dependency.
-  public_deps = [ "//dbus" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+
+    # Current implementation unnecessarily exposes dbus to client targets.
+    # TODO: consider to remove the dependency.
+    "//dbus",
+  ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
 }

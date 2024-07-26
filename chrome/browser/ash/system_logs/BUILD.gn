@@ -60,6 +60,7 @@ static_library("system_logs") {
     "//ash",
     "//ash/keyboard/ui",
     "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/net/network_health",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",

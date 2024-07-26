@@ -13,13 +13,16 @@ static_library("quick_pair") {
     "quick_pair_browser_delegate_impl.cc",
     "quick_pair_browser_delegate_impl.h",
   ]
+
   public_deps = [
     "//ash/quick_pair/common",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/services/quick_pair/public/mojom",
     "//device/bluetooth",
     "//mojo/public/cpp/bindings",
   ]
+
   deps = [
     "//ash/constants",
     "//ash/quick_pair/feature_status_tracker",

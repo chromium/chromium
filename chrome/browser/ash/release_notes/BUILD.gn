@@ -13,11 +13,14 @@ static_library("release_notes") {
     "release_notes_storage.cc",
     "release_notes_storage.h",
   ]
+
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/components/network",
     "//components/session_manager/core",
   ]
+
   deps = [
     "//ash",
     "//ash/constants",

@@ -27,6 +27,8 @@ static_library("key_permissions") {
     "user_private_token_kpm_service_factory.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//chrome/browser:browser_process",

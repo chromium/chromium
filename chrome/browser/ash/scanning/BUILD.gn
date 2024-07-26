@@ -30,10 +30,12 @@ static_library("scanning") {
     "zeroconf_scanner_detector_utils.cc",
     "zeroconf_scanner_detector_utils.h",
   ]
+
   public_deps = [
     "//ash/webui/scanning",
     "//ash/webui/scanning/mojom",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chromeos:chromeos_export",
     "//chromeos/ash/components/dbus/dlcservice",
@@ -45,6 +47,7 @@ static_library("scanning") {
     "//net",
     "//services/device/wake_lock/power_save_blocker",
   ]
+
   deps = [
     "//ash/constants",
     "//base:i18n",

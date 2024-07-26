@@ -16,6 +16,8 @@ static_library("sparky") {
     "sparky_manager_service_factory.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",

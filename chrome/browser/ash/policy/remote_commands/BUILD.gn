@@ -46,6 +46,8 @@ static_library("remote_commands") {
     "user_commands_factory_ash.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/components/arc/mojom",

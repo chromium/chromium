@@ -16,6 +16,7 @@ static_library("recorder_app") {
 
   public_deps = [
     "//ash/webui/recorder_app_ui",
+    "//chrome/browser:browser_public_dependencies",
     "//components/soda:constants",
     "//content/public/browser",
   ]

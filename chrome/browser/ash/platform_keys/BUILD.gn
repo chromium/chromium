@@ -15,6 +15,8 @@ static_library("platform_keys") {
     "platform_keys_service_nss.cc",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants:constants",
     "//base",

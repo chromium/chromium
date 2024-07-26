@@ -46,7 +46,10 @@ static_library("enrollment") {
     "tpm_enrollment_key_signing_service.h",
   ]
 
-  public_deps = [ "//third_party/private_membership" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//third_party/private_membership",
+  ]
 
   deps = [
     "//ash/constants",
