@@ -28,7 +28,8 @@ namespace compose {
 //   - kTimerCanceled,
 //   - kWaitingForSegmentation,
 //   - kWaitingForProactiveNudgeRequest,
-//   - kShouldNotBeShown,
+//   - kBlockedBySegmentation,
+//   - kWaitingForSelectionNudge,
 //   - kShown
 //
 // Generally, states transition forward through the list (skipping states if
@@ -75,7 +76,8 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     kTimerCanceled,
     kWaitingForSegmentation,
     kWaitingForProactiveNudgeRequest,
-    kShouldNotBeShown,
+    kBlockedBySegmentation,
+    kWaitingForSelectionNudge,
     kShown
   };
 
@@ -126,15 +128,18 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   // `web_contents`.
   void StartObserving(content::WebContents* web_contents);
 
-  // If the current state is UNINITIALIZED, begins tracking the state of a form
-  // field, and updates the state to WAITING.
+  // If not already tracking the current field, starts in kShouldNotBeShown
+  // waiting for the selection nudge to trigger the popup. Will not show the
+  // proactive nudge.
   //
-  // If the current state is REQUESTED, updates the state to SHOWN.
+  // Returns true if the nudge should be shown.
+  bool OnlySelectionNudgeRequestedForFormField(Signals signal);
+
+  // If not already tracking the current field, starts in kWaitingForTimer. Used
+  // for both the proactive nudge and selection nudge as long as the proactive
+  // nudge is enabled.
   //
-  // If the state is not UNINITIALIZED or REQUESTED,
-  // ProactiveNudgeRequestedForFormField is a no-op.
-  //
-  // Returns true if the nudge can be shown immediately.
+  // Returns true if the nudge should be shown.
   bool ProactiveNudgeRequestedForFormField(Signals signals);
 
   // Returns whether or not the tracker is currently waiting.
@@ -173,7 +178,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   void BeginTimerCanceled();
   void BeginSegmentation();
   void BeginWaitingForProactiveNudgeRequest();
-  void BeginShouldNotBeShown();
+  void BeginBlockedBySegmentation();
   void BeginShown();
 
   void ShowTimerElapsed();
@@ -186,9 +191,23 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
       const segmentation_platform::TrainingRequestId training_request_id,
       ProactiveNudgeDerivedEngagement engagement);
 
+  // If the current state is UNINITIALIZED, begins tracking the state of a form
+  // field, and updates the state to kWaitingForTimer.
+  //
+  // If `only_enable_selection_nudge` is true the state is set to
+  // kShouldNotBeShown and we wait for a valid selection before showing the
+  // nudge.
+  //
+  // If the current state is kWaitingForProactiveNudgeRequest, updates the state
+  // to kShown.
+  //
+  // Returns true if the nudge has not been shown but can be.
+  bool NudgeRequestedForFormField(Signals signals,
+                                  bool only_enable_selection_nudge);
+
   std::unique_ptr<State> state_;
 
-  bool nudge_currently_requested = false;
+  bool nudge_currently_requested_ = false;
 
   // Map indicating if the classification result from the segmentation platform
   // allows the nudge to be shown for previously queried fields.
