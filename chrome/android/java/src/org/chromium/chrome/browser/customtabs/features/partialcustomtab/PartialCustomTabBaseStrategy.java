@@ -123,28 +123,6 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    // This should be kept in sync with the definition |CustomTabsResizeType2|
-    // in tools/metrics/histograms/enums.xml.
-    @IntDef({
-        ResizeType.MANUAL_EXPANSION,
-        ResizeType.MANUAL_MINIMIZATION,
-        ResizeType.AUTO_EXPANSION,
-        ResizeType.AUTO_MINIMIZATION,
-        ResizeType.COUNT
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ResizeType {
-        int MANUAL_EXPANSION = 0;
-        int MANUAL_MINIMIZATION = 1;
-        int AUTO_EXPANSION = 2;
-        int AUTO_MINIMIZATION = 3;
-
-        // Number of elements in the enum
-        int COUNT = 4;
-    }
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
     // This should be kept in sync with the definition |PcctDeviceSpec|
     // in tools/metrics/histograms/enums.xml.
     @IntDef({

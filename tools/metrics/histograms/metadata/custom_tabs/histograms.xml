@@ -618,16 +618,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.ResizeType2" enum="CustomTabsResizeType2"
-    expires_after="2024-09-01">
-  <owner>kgrosu@google.com</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    When a bottom-sheet Partial Custom Tab has been resized by the user log if
-    it is an expansion or a minimization of the tab.
-  </summary>
-</histogram>
-
 <histogram
     name="CustomTabs.RetainableSessionsV2.TimeBetweenLaunch{IdentifierType}"
     units="seconds" expires_after="2025-01-05">
@@ -711,17 +701,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the location of the share option in the Custom Tab. Recorded when
     the share option is added while the Custom Tab is being constructed.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.SideSheetResizeType" enum="CustomTabsResizeType2"
-    expires_after="2024-08-04">
-  <owner>kgrosu@google.com</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Resize type of the Partial Custom Tab that's either an expansion or
-    minimization. Recorded when the PCCT has been maximized/minimized by the
-    user.
   </summary>
 </histogram>
 

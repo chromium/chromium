@@ -44,7 +44,6 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -672,28 +671,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         if (mFinishRunnable != null) {
             mFinishRunnable.run();
             return;
-        }
-
-        int moveEndY = mActivity.getWindow().getAttributes().y;
-        int targetStatus = mTabAnimator.getTargetStatus();
-        if (mMoveStartY >= 0
-                && mMoveStartY != moveEndY
-                && (targetStatus == HeightStatus.TOP
-                        || targetStatus == HeightStatus.INITIAL_HEIGHT)) {
-            int resizeType;
-            if (mTabAnimator.wasAutoResized()) {
-                resizeType =
-                        targetStatus == HeightStatus.TOP
-                                ? ResizeType.AUTO_EXPANSION
-                                : ResizeType.AUTO_MINIMIZATION;
-            } else {
-                resizeType =
-                        targetStatus == HeightStatus.TOP
-                                ? ResizeType.MANUAL_EXPANSION
-                                : ResizeType.MANUAL_MINIMIZATION;
-            }
-            RecordHistogram.recordEnumeratedHistogram(
-                    "CustomTabs.ResizeType2", resizeType, ResizeType.COUNT);
         }
 
         hideSpinnerView();
