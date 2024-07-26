@@ -326,6 +326,12 @@
       permissions_policy_name: "magnetometer",
     },
     {
+      name: "MediaPlaybackWhileNotVisible",
+      permissions_policy_name: "media-playback-while-not-visible",
+      feature_default: "EnableForAll",
+      depends_on: ["MediaPlaybackWhileNotVisiblePermissionPolicy"],
+    },
+    {
       name: "Microphone",
       permissions_policy_name: "microphone",
     },

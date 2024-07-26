@@ -2610,6 +2610,10 @@
       status: "test",
     },
     {
+      name: "MediaPlaybackWhileNotVisiblePermissionPolicy",
+      status: "test",
+    },
+    {
       name: "MediaPreviewsOptOut",
       base_feature: "none",
       origin_trial_feature_name: "MediaPreviewsOptOutPersistent",

@@ -11394,6 +11394,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="118" label="SpeakerSelection"/>
   <int value="119" label="DeferredFetch"/>
   <int value="120" label="DigitalCredentialsGet"/>
+  <int value="121" label="MediaPlaybackWhileNotVisible"/>
 </enum>
 
 <enum name="FedCmContinueOnPopupResult">
