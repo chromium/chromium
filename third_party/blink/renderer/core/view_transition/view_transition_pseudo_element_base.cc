@@ -66,4 +66,9 @@ void ViewTransitionPseudoElementBase::Trace(Visitor* visitor) const {
   visitor->Trace(style_tracker_);
 }
 
+bool ViewTransitionPseudoElementBase::IsBoundTo(
+    const blink::ViewTransitionStyleTracker* tracker) const {
+  return style_tracker_.Get() == tracker;
+}
+
 }  // namespace blink

@@ -36,6 +36,7 @@ class DOMViewTransition;
 class Element;
 class LayoutObject;
 class PseudoElement;
+class ViewTransitionPseudoElementBase;
 
 class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
                                    public ExecutionContextLifecycleObserver,
@@ -250,6 +251,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   ViewTransitionTypeSet* Types();
 
   void InitTypes(const Vector<String>&);
+
+  // Returns true if `pseudo_element` is generated for this transition.
+  bool IsGeneratingPseudo(
+      const ViewTransitionPseudoElementBase& pseudo_element) const;
 
  private:
   friend class ViewTransitionTest;

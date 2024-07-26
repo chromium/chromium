@@ -217,6 +217,7 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/core/xml_names.h"
@@ -7889,6 +7890,13 @@ void Element::UpdateFirstLetterPseudoElement(
   }
 }
 
+void Element::ClearPseudoElement(PseudoId pseudo_id,
+                                 const AtomicString& view_transition_name) {
+  GetElementRareData()->SetPseudoElement(pseudo_id, nullptr,
+                                         view_transition_name);
+  GetDocument().GetStyleEngine().PseudoElementRemoved(*this);
+}
+
 PseudoElement* Element::UpdatePseudoElement(
     PseudoId pseudo_id,
     const StyleRecalcChange change,
@@ -7920,9 +7928,7 @@ PseudoElement* Element::UpdatePseudoElement(
       }
     }
     if (!generate_pseudo) {
-      GetElementRareData()->SetPseudoElement(pseudo_id, nullptr,
-                                             view_transition_name);
-      GetDocument().GetStyleEngine().PseudoElementRemoved(*this);
+      ClearPseudoElement(pseudo_id, view_transition_name);
       element = nullptr;
     }
   }
@@ -8235,7 +8241,7 @@ const ComputedStyle* Element::StyleForSearchTextPseudoElement(
 bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   if (pseudo_id == kPseudoIdViewTransition) {
     DCHECK_EQ(this, GetDocument().documentElement());
-    return !GetDocument().GetStyleEngine().ViewTransitionTags().empty();
+    return !!ViewTransitionUtils::GetTransition(GetDocument());
   }
   if (pseudo_id == kPseudoIdFirstLetter && IsSVGElement()) {
     return false;
@@ -9620,8 +9626,16 @@ void Element::RecalcTransitionPseudoTreeStyle(
 
   PseudoElement* old_transition_pseudo =
       GetPseudoElement(kPseudoIdViewTransition);
-  if (view_transition_names.empty() && !old_transition_pseudo) {
+  const auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
+  if (!transition && !old_transition_pseudo) {
     return;
+  }
+
+  if (transition && old_transition_pseudo &&
+      !transition->IsGeneratingPseudo(
+          To<ViewTransitionPseudoElementBase>(*old_transition_pseudo))) {
+    ClearPseudoElement(kPseudoIdViewTransition);
+    old_transition_pseudo = nullptr;
   }
 
   const StyleRecalcChange style_recalc_change;
@@ -9695,7 +9709,9 @@ void Element::RebuildTransitionPseudoLayoutTree(
     const Vector<AtomicString>& view_transition_names) {
   DCHECK_EQ(this, GetDocument().documentElement());
 
-  if (view_transition_names.empty()) {
+  const bool has_transition =
+      !!ViewTransitionUtils::GetTransition(GetDocument());
+  if (!has_transition) {
     DCHECK(!GetPseudoElement(kPseudoIdViewTransition));
     return;
   }

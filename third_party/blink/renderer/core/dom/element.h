@@ -1554,6 +1554,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SetElementFlag(ElementFlags, bool value = true);
   void ClearElementFlag(ElementFlags);
 
+  void ClearPseudoElement(
+      PseudoId,
+      const AtomicString& view_transition_name = g_null_atom);
+
   bool IsElementNode() const =
       delete;  // This will catch anyone doing an unnecessary check.
   bool IsDocumentFragment() const =
