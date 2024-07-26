@@ -81,6 +81,16 @@ class MockFetchContext : public FetchContext {
       ResourceRequest::RedirectStatus redirect_status) const override {
     return std::nullopt;
   }
+  std::optional<ResourceRequestBlockedReason> CheckAndEnforceCSPForRequest(
+      mojom::blink::RequestContextType,
+      network::mojom::RequestDestination request_destination,
+      const KURL& url,
+      const ResourceLoaderOptions& options,
+      ReportingDisposition reporting_disposition,
+      const KURL& url_before_redirects,
+      ResourceRequest::RedirectStatus redirect_status) const override {
+    return std::nullopt;
+  }
   void AddResourceTiming(
       mojom::blink::ResourceTimingInfoPtr resource_timing_info,
       const AtomicString& initiator_type) override {}

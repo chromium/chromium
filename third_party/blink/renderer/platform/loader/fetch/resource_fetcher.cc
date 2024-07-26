@@ -1193,6 +1193,7 @@ std::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
     const ResourceFactory& factory,
     WebScopedVirtualTimePauser& virtual_time_pauser) {
   ResourceRequest& resource_request = params.MutableResourceRequest();
+
   if (IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
       (resource_request.GetKnownTransparentPlaceholderImageIndex() !=
        kNotFound)) {
@@ -1201,6 +1202,18 @@ std::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
     // TODO(crbug.com/41496436): This breaks all observers which were notified
     // of the request previously, so we need additional work to expand to
     // generic data urls.
+
+    // We check the report-only and enforced headers here to ensure we report
+    // and block things we ought to block.
+    if (Context().CheckAndEnforceCSPForRequest(
+            resource_request.GetRequestContext(),
+            resource_request.GetRequestDestination(), params.Url(),
+            params.Options(), ReportingDisposition::kReport, params.Url(),
+            ResourceRequestHead::RedirectStatus::kNoRedirect) ==
+        ResourceRequestBlockedReason::kCSP) {
+      return ResourceRequestBlockedReason::kCSP;
+    }
+
     return std::nullopt;
   }
 
