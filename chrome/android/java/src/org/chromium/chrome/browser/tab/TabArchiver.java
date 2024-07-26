@@ -8,6 +8,8 @@ import static org.chromium.chrome.browser.tab.Tab.INVALID_TIMESTAMP;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
@@ -104,6 +106,7 @@ public class TabArchiver implements TabWindowManager.Observer {
                     (archivePersistedTabData) -> {
                         if (isArchivedTabEligibleForDeletion(archivePersistedTabData)) {
                             mArchivedTabModel.closeTab(tab);
+                            RecordUserAction.record("Tabs.ArchivedTabAutoDeleted");
                         }
                     });
         }
@@ -117,6 +120,7 @@ public class TabArchiver implements TabWindowManager.Observer {
         while (mArchivedTabModel.getCount() > 0) {
             Tab tab = mArchivedTabModel.getTabAt(0);
             unarchiveAndRestoreTab(regularTabCreator, tab);
+            RecordUserAction.record("Tabs.ArchivedTabRescued");
         }
     }
 
@@ -145,6 +149,7 @@ public class TabArchiver implements TabWindowManager.Observer {
                     archivePersistedTabData.setArchivedTimeMs(mClock.currentTimeMillis());
                 });
 
+        RecordUserAction.record("Tabs.TabArchived");
         return newTab;
     }
 
@@ -163,6 +168,7 @@ public class TabArchiver implements TabWindowManager.Observer {
         mArchivedTabModel.removeTab(tab);
         mAsyncTabParamsManager.add(tab.getId(), new TabReparentingParams(tab, null));
         tabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
+        RecordUserAction.record("Tabs.ArchivedTabRestored");
     }
 
     // TabWindowManager.Observer implementation.
@@ -196,17 +202,28 @@ public class TabArchiver implements TabWindowManager.Observer {
         TabState tabState = TabStateExtractor.from(tab);
         if (tabState.contentsState == null) return false;
 
-        return isTimestampWithinTargetHours(
-                tab.getTimestampMillis(), mTabArchiveSettings.getArchiveTimeDeltaHours());
+        long timestampMillis = tab.getTimestampMillis();
+        int tabAgeDays = timestampMillisToDays(timestampMillis);
+        boolean result =
+                isTimestampWithinTargetHours(
+                        timestampMillis, mTabArchiveSettings.getArchiveTimeDeltaHours());
+        RecordHistogram.recordCount1000Histogram(
+                "Tabs.TabEligibleForArchive.AfterNDays", tabAgeDays);
+        return result;
     }
 
     private boolean isArchivedTabEligibleForDeletion(
             ArchivePersistedTabData archivePersistedTabData) {
         if (archivePersistedTabData == null) return false;
 
-        return isTimestampWithinTargetHours(
-                archivePersistedTabData.getArchivedTimeMs(),
-                mTabArchiveSettings.getAutoDeleteTimeDeltaHours());
+        long archivedTimeMillis = archivePersistedTabData.getArchivedTimeMs();
+        int tabAgeDays = timestampMillisToDays(archivedTimeMillis);
+        boolean result =
+                isTimestampWithinTargetHours(
+                        archivedTimeMillis, mTabArchiveSettings.getAutoDeleteTimeDeltaHours());
+        RecordHistogram.recordCount1000Histogram(
+                "Tabs.TabEligibleForAutoDeletion.AfterNDays", tabAgeDays);
+        return result;
     }
 
     private boolean isTimestampWithinTargetHours(long timestampMillis, int targetHours) {
@@ -214,5 +231,11 @@ public class TabArchiver implements TabWindowManager.Observer {
 
         long ageHours = TimeUnit.MILLISECONDS.toHours(mClock.currentTimeMillis() - timestampMillis);
         return ageHours >= targetHours;
+    }
+
+    private int timestampMillisToDays(long timestampMillis) {
+        if (timestampMillis == INVALID_TIMESTAMP) return (int) INVALID_TIMESTAMP;
+
+        return (int) TimeUnit.MILLISECONDS.toDays(mClock.currentTimeMillis() - timestampMillis);
     }
 }

@@ -34,6 +34,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
@@ -83,6 +85,7 @@ public class TabArchiverTest {
     private TabCreator mRegularTabCreator;
     private TabArchiveSettings mTabArchiveSettings;
     private SharedPreferencesManager mSharedPrefs;
+    private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() throws Exception {
@@ -119,6 +122,7 @@ public class TabArchiverTest {
                                         TabWindowManagerSingleton.getInstance(),
                                         mTabArchiveSettings,
                                         mClock));
+        mUserActionTester = new UserActionTester();
     }
 
     @After
@@ -142,6 +146,7 @@ public class TabArchiverTest {
         assertEquals(0, mArchivedTabModel.getCount());
 
         runOnUiThreadBlocking(() -> mTabArchiver.archiveAndRemoveTab(mRegularTabModel, tab));
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.TabArchived"));
 
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
@@ -154,6 +159,7 @@ public class TabArchiverTest {
                 () ->
                         mTabArchiver.unarchiveAndRestoreTab(
                                 mRegularTabCreator, mArchivedTabModel.getTabAt(0)));
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.ArchivedTabRestored"));
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
@@ -196,7 +202,7 @@ public class TabArchiverTest {
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
                                         .get()));
-
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.TabArchived"));
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
     }
@@ -228,7 +234,10 @@ public class TabArchiverTest {
 
         assertEquals(3, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
-
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Tabs.TabEligibleForArchive.AfterNDays", 0, 0)
+                        .build();
         // Send an event, similar to how TabWindowManager would.
         runOnUiThreadBlocking(
                 () ->
@@ -237,6 +246,7 @@ public class TabArchiverTest {
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
                                         .get()));
+        watcher.assertExpected();
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(2, mArchivedTabModel.getCount());
     }
@@ -274,7 +284,9 @@ public class TabArchiverTest {
         assertEquals(1, mArchivedTabModel.getCount());
 
         Tab archivedTab = mArchivedTabModel.getTabAt(0);
-
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabEligibleForAutoDeletion.AfterNDays", 0);
         runOnUiThreadBlocking(
                 () -> {
                     mTabArchiveSettings.setAutoDeleteEnabled(true);
@@ -285,6 +297,7 @@ public class TabArchiverTest {
         assertEquals(1, mRegularTabModel.getCount());
         CriteriaHelper.pollInstrumentationThread(() -> mArchivedTabModel.getCount() == 0);
         CriteriaHelper.pollInstrumentationThread(() -> archivedTab.isDestroyed());
+        watcher.assertExpected();
 
         runOnUiThreadBlocking(
                 () -> {

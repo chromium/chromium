@@ -41040,6 +41040,33 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Tabs.ArchivedTabAutoDeleted">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when an archived tab is deleted. This happens when the tab's last
+    archived tab exceeds the limit for auto-deletion.
+  </description>
+</action>
+
+<action name="Tabs.ArchivedTabRescued">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when an archived tab was rescued. This happens when the feature
+    flag is turned off while there are still archived tabs.
+  </description>
+</action>
+
+<action name="Tabs.ArchivedTabRestored">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when an archived tab is restored. This happens when a user manually
+    restores the tab through the archived tabs dialog.
+  </description>
+</action>
+
 <action name="Tabs.ArchivedTabsDialogIphClicked">
   <owner>wylieb@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
@@ -41121,6 +41148,15 @@ should be able to be added at any place in this file.
   <owner>clank-tab-dev@google.com</owner>
   <description>
     Recorded when the select tabs menu item is clicked by a user.
+  </description>
+</action>
+
+<action name="Tabs.TabArchived">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a tab is archived. This happens when a tab's last used time
+    exceeds the limit for archived tabs.
   </description>
 </action>
 
