@@ -58,21 +58,19 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   cc::UIResourceBitmap GetBitmap(cc::UIResourceId uid,
                                  bool resource_lost) override;
 
-  // When `this` is actively taken out of the `NavigationEntry` by
-  // `NavigationEntryScreenshotCache`, we set the `cache_` to null, because
-  // `NavigationEntryScreenshotCache::RemoveScreenshot` is responsible for
-  // untracking `this` and updates the metadata.
-  // Else, this remains set to the cache that tracks `this` when
-  // `NavigationEntryScreenshotCache::SetScreenshot` is called, so that when
-  // the `NavigationEntry` is destroyed, `this`'s tracking cache is notified.
-  void set_cache(NavigationEntryScreenshotCache* cache) { cache_ = cache; }
-  bool is_cached() { return cache_ != nullptr; }
+  // Sets the `cache` managing the memory for this screenshot. When set, the
+  // screenshot is stored on its associated NavigationEntry and is guaranteed to
+  // not be displayed in the UI.
+  //
+  // Returns the memory occupied by the bitmap in bytes.
+  size_t SetCache(NavigationEntryScreenshotCache* cache);
+
+  // Returns true if the screenshot is being managed by a cache. This is not the
+  // case when it's being displayed in the UI.
+  bool is_cached() const { return cache_ != nullptr; }
 
   // Returns the size of the bounds of the bitmap.
   gfx::Size GetDimensions() const;
-
-  // Returns the memory occupied by the bitmap.
-  size_t SizeInBytes() const;
 
   int navigation_entry_id() const { return navigation_entry_id_; }
 

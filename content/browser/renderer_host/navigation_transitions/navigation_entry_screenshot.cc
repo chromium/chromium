@@ -21,7 +21,7 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(const SkBitmap& bitmap,
 
 NavigationEntryScreenshot::~NavigationEntryScreenshot() {
   if (cache_) {
-    cache_->OnNavigationEntryGone(navigation_entry_id_, SizeInBytes());
+    cache_->OnNavigationEntryGone(navigation_entry_id_);
   }
 }
 
@@ -32,12 +32,15 @@ cc::UIResourceBitmap NavigationEntryScreenshot::GetBitmap(cc::UIResourceId uid,
   return bitmap_;
 }
 
-gfx::Size NavigationEntryScreenshot::GetDimensions() const {
-  return bitmap_.GetSize();
+size_t NavigationEntryScreenshot::SetCache(
+    NavigationEntryScreenshotCache* cache) {
+  CHECK(!cache_ || !cache);
+  cache_ = cache;
+  return bitmap_.SizeInBytes();
 }
 
-size_t NavigationEntryScreenshot::SizeInBytes() const {
-  return bitmap_.SizeInBytes();
+gfx::Size NavigationEntryScreenshot::GetDimensions() const {
+  return bitmap_.GetSize();
 }
 
 SkBitmap NavigationEntryScreenshot::GetBitmapForTesting() const {
