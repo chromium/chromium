@@ -1041,6 +1041,7 @@ Shell::~Shell() {
   accessibility_delegate_.reset();
   accessibility_focus_ring_controller_.reset();
   policy_recommendation_restorer_.reset();
+  active_session_auth_controller_.reset();
   ime_controller_.reset();
   back_gesture_event_handler_.reset();
 
