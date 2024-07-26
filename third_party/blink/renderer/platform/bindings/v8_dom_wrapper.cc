@@ -39,7 +39,8 @@ namespace blink {
 
 v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(ScriptState* script_state,
                                                   const WrapperTypeInfo* type) {
-  RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),
+  auto* isolate = script_state->GetIsolate();
+  RUNTIME_CALL_TIMER_SCOPE(isolate,
                            RuntimeCallStats::CounterId::kCreateWrapper);
 
   const V8WrapperInstantiationScope scope(script_state);
@@ -47,7 +48,7 @@ v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(ScriptState* script_state,
   v8::Local<v8::Object> wrapper;
   auto* per_context_data = script_state->PerContextData();
   if (LIKELY(per_context_data)) {
-    wrapper = per_context_data->CreateWrapperFromCache(type);
+    wrapper = per_context_data->CreateWrapperFromCache(isolate, type);
     CHECK(!wrapper.IsEmpty());
   } else {
     // The context is detached, but still accessible.
@@ -56,7 +57,7 @@ v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(ScriptState* script_state,
     // V8PerContextData::createWrapperFromCache, though there is no need to
     // cache resulting objects or their constructors.
     const DOMWrapperWorld& world = script_state->World();
-    wrapper = type->GetV8ClassTemplate(script_state->GetIsolate(), world)
+    wrapper = type->GetV8ClassTemplate(isolate, world)
                   .As<v8::FunctionTemplate>()
                   ->InstanceTemplate()
                   ->NewInstance(scope.GetContext())

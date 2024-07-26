@@ -101,10 +101,11 @@ ALWAYS_INLINE bool CanExternalize(v8::Local<v8::String> v8_string,
 //
 // Returns a nullptr if there was no previous externalization.
 ALWAYS_INLINE StringResourceBase* GetExternalizedString(
+    v8::Isolate* isolate,
     v8::Local<v8::String> v8_string) {
   v8::String::Encoding encoding;
   v8::String::ExternalStringResourceBase* resource =
-      v8_string->GetExternalStringResourceBase(&encoding);
+      v8_string->GetExternalStringResourceBase(isolate, &encoding);
   if (LIKELY(!!resource)) {
     // Inheritance:
     // - V8 side: v8::String::ExternalStringResourceBase
@@ -192,7 +193,8 @@ StringType ToBlinkString(v8::Isolate* isolate,
   // Check for an already externalized string first as this is a very
   // common case for all platforms with the one exception being super short
   // strings on for platforms with v8 pointer compression.
-  StringResourceBase* string_resource = GetExternalizedString(v8_string);
+  StringResourceBase* string_resource =
+      GetExternalizedString(isolate, v8_string);
   if (string_resource)
     return StringTraits<StringType>::FromStringResource(string_resource);
 
@@ -229,7 +231,8 @@ StringView ToBlinkStringView(v8::Isolate* isolate,
   // percent. This includes moving the StringTraits<>::FromStringResource() call
   // into GetExternalizedString() as it becomes impossible for the calling code
   // to satisfy all RVO constraints.
-  StringResourceBase* string_resource = GetExternalizedString(v8_string);
+  StringResourceBase* string_resource =
+      GetExternalizedString(isolate, v8_string);
   if (string_resource) {
     return StringTraits<AtomicString>::FromStringResource(string_resource)
         .Impl();

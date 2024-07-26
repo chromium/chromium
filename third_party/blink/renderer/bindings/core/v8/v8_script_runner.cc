@@ -877,8 +877,8 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
 
   probe::CallFunction probe(context, isolate->GetCurrentContext(), function,
                             depth);
-  v8::MaybeLocal<v8::Value> result =
-      function->Call(isolate->GetCurrentContext(), receiver, argc, argv);
+  v8::MaybeLocal<v8::Value> result = function->Call(
+      isolate, isolate->GetCurrentContext(), receiver, argc, argv);
   CHECK(!isolate->IsDead());
 
   if (!depth)

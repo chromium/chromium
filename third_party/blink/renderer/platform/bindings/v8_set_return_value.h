@@ -337,7 +337,8 @@ void V8SetReturnValue(const CallbackInfo& info,
   }
   V8ReturnValue::SetWrapper(
       info, wrappable,
-      V8ReturnValue::GetReceiver(info)->GetCreationContextChecked());
+      V8ReturnValue::GetReceiver(info)->GetCreationContextChecked(
+          info.GetIsolate()));
 }
 
 template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
@@ -352,7 +353,8 @@ void V8SetReturnValue(const CallbackInfo& info,
   }
   V8ReturnValue::SetWrapper(
       info, wrappable,
-      V8ReturnValue::GetReceiver(info)->GetCreationContextChecked());
+      V8ReturnValue::GetReceiver(info)->GetCreationContextChecked(
+          info.GetIsolate()));
 }
 
 template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
@@ -369,7 +371,8 @@ void V8SetReturnValue(const CallbackInfo& info,
   }
   V8ReturnValue::SetWrapper(
       info, wrappable,
-      V8ReturnValue::GetReceiver(info)->GetCreationContextChecked());
+      V8ReturnValue::GetReceiver(info)->GetCreationContextChecked(
+          info.GetIsolate()));
 }
 
 template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
@@ -384,7 +387,8 @@ void V8SetReturnValue(const CallbackInfo& info,
   }
   V8ReturnValue::SetWrapper(
       info, wrappable,
-      V8ReturnValue::GetReceiver(info)->GetCreationContextChecked());
+      V8ReturnValue::GetReceiver(info)->GetCreationContextChecked(
+          info.GetIsolate()));
 }
 
 template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
