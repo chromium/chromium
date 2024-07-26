@@ -1338,6 +1338,10 @@ TEST_F(PlusAddressSuggestionsTest, NoSuggestionsWhenDisabled) {
 // Tests that the only password form on which create suggestions are offered on
 // click is a signup form, but that filling suggestions are always offered.
 TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordForms) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPlusAddressOfferCreationOnSingleUsernameForms);
+
   const PlusProfile profile = test::CreatePlusProfile();
   const url::Origin origin = OriginFromFacet(profile.facet);
   auto get_suggestions_for_form_type = [&](PasswordFormType type,
@@ -1354,6 +1358,50 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordForms) {
   EXPECT_TRUE(get_suggestions_for_form_type(kChangePasswordForm, IsEmpty()));
   EXPECT_TRUE(get_suggestions_for_form_type(kResetPasswordForm, IsEmpty()));
   EXPECT_TRUE(get_suggestions_for_form_type(kSingleUsernameForm, IsEmpty()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSignupForm, IsSingleCreatePlusAddressSuggestion()));
+
+  service().SavePlusProfile(profile);
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kLoginForm, IsSingleFillPlusAddressSuggestion(profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kChangePasswordForm,
+      IsSingleFillPlusAddressSuggestion(profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kResetPasswordForm,
+      IsSingleFillPlusAddressSuggestion(profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSingleUsernameForm,
+      IsSingleFillPlusAddressSuggestion(profile.plus_address)));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSignupForm, IsSingleFillPlusAddressSuggestion(profile.plus_address)));
+}
+
+// Tests that plus address creation is offered on signup forms and single
+// username forms if `kPlusAddressOfferCreationOnSingleUsernameForms` is
+// enabled.
+TEST_F(PlusAddressSuggestionsTest,
+       SuggestionsOnPasswordFormWithSingleUsernameCreationEnabled) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressOfferCreationOnSingleUsernameForms};
+
+  const PlusProfile profile = test::CreatePlusProfile();
+  const url::Origin origin = OriginFromFacet(profile.facet);
+  auto get_suggestions_for_form_type = [&](PasswordFormType type,
+                                           const auto& matcher) {
+    return ExpectServiceToReturnSuggestions(
+        origin,
+        /*is_off_the_record=*/false, type,
+        /*focused_field_value=*/u"",
+        AutofillSuggestionTriggerSource::kFormControlElementClicked, matcher);
+  };
+
+  using enum PasswordFormType;
+  EXPECT_TRUE(get_suggestions_for_form_type(kLoginForm, IsEmpty()));
+  EXPECT_TRUE(get_suggestions_for_form_type(kChangePasswordForm, IsEmpty()));
+  EXPECT_TRUE(get_suggestions_for_form_type(kResetPasswordForm, IsEmpty()));
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      kSingleUsernameForm, IsSingleCreatePlusAddressSuggestion()));
   EXPECT_TRUE(get_suggestions_for_form_type(
       kSignupForm, IsSingleCreatePlusAddressSuggestion()));
 
