@@ -782,6 +782,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Autofill"/>
   <int value="2" label="Icognito"/>
   <int value="3" label="Device Lock Page"/>
+  <int value="4" label="Settings Batch Upload"/>
 </enum>
 
 <enum name="DeviceLockDialogAction">

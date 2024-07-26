@@ -3825,7 +3825,8 @@ const char kReplaceSyncPromosWithSignInPromosFeatures[] =
     "SyncEnableWalletOfferInTransportMode,"
     "EnablePasswordsAccountStorageForNonSyncingUsers,"
     "HideSettingsSignInPromo,"
-    "FeedBottomSyncStringRemoval";
+    "FeedBottomSyncStringRemoval,"
+    "EnableBatchUploadFromSettings";
 
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},

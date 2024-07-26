@@ -271,6 +271,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         (BatchUploadCardPreference)
                                 findPreference(PREF_BATCH_UPLOAD_CARD_PREFERENCE);
                 mBatchUploadCardPreference.initialize(
+                        getActivity(),
                         profile,
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
             }
@@ -542,6 +543,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @Override
     public void onResume() {
         super.onResume();
+        // This is necessary to refresh the batch upload card if the user leaves Chrome open on the
+        // settings screen, changes their screen lock settings, and then returns to Chrome.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS)) {
+            mBatchUploadCardPreference.hideBatchUploadCardAndUpdate();
+        }
         updateSyncPreferences();
     }
 
