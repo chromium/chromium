@@ -941,6 +941,12 @@ BASE_FEATURE(kAutofillServerCommunication,
 BASE_FEATURE(kAutofillShowTypePredictions,
              "AutofillShowTypePredictions",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// This variation controls whether the verbose version of the feature is used.
+// In this version more information is attached to the respective DOM element,
+// such as aria labels and descriptions and select element options values and
+// texts.
+const base::FeatureParam<bool> kAutofillShowTypePredictionsVerboseParam{
+    &kAutofillShowTypePredictions, "verbose", false};
 
 // Autofill upload throttling limits uploading a form to the Autofill server
 // more than once over a `kAutofillUploadThrottlingPeriodInDays` period.
