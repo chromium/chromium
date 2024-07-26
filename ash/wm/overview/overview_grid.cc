@@ -3270,7 +3270,12 @@ void OverviewGrid::OnBirchBarLayoutChanged(
     return;
   }
 
-  if (MaybeUpdateBirchBarWidgetBounds() && scoped_overview_wallpaper_clipper_) {
+  if (!MaybeUpdateBirchBarWidgetBounds()) {
+    return;
+  }
+
+  // Animate wallpaper clipping.
+  if (scoped_overview_wallpaper_clipper_) {
     // Perform wallpaper clipping animations according to relayout reason.
     using AnimationType = ScopedOverviewWallpaperClipper::AnimationType;
     using RelayoutReason = BirchBarView::RelayoutReason;

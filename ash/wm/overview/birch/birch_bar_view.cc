@@ -356,6 +356,9 @@ void BirchBarView::RemoveChip(BirchItem* removed_item,
   BirchChipButtonBase* removing_chip = *iter;
   chips_.erase(iter);
 
+  // Shut down the chip to avoid dangling ptr.
+  removing_chip->Shutdown();
+
   // The removing chip should stop processing events and not be focusable.
   removing_chip->SetCanProcessEventsWithinSubtree(false);
   removing_chip->SetFocusBehavior(views::View::FocusBehavior::NEVER);
