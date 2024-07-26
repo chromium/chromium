@@ -66,7 +66,7 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
                     // should trigger a new snapshot. This isn't ideal, though.
                     // TODO (crbug.com/331692414) Remove once the edge-to-edge adjustment to the
                     // bottom controls height / padding is refactored.
-                    if (EdgeToEdgeUtils.isEnabled() && mLayoutChanged) {
+                    if (EdgeToEdgeUtils.isLegacyWebsiteOptInEnabled() && mLayoutChanged) {
                         return true;
                     }
 

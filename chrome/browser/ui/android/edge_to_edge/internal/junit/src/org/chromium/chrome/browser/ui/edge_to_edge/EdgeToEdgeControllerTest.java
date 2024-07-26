@@ -79,18 +79,24 @@ import org.chromium.ui.base.WindowAndroid;
 public class EdgeToEdgeControllerTest {
 
     private static final int TOP_INSET = 113;
+    private static final int TOP_INSET_LANDSCAPE = 98;
     private static final int BOTTOM_INSET = 59;
+    private static final int BOTTOM_INSET_LANDSCAPE = 54;
+    private static final int BOTTOM_KEYBOARD_INSET = 150;
     private static final Insets NAVIGATION_BAR_INSETS = Insets.of(0, 0, 0, BOTTOM_INSET);
     private static final Insets STATUS_BAR_INSETS = Insets.of(0, TOP_INSET, 0, 0);
     private static final Insets SYSTEM_INSETS = Insets.of(0, TOP_INSET, 0, BOTTOM_INSET);
-    private static final Insets IME_INSETS = Insets.of(0, 0, 0, 0);
+    private static final Insets SYSTEM_INSETS_LANDSCAPE =
+            Insets.of(0, TOP_INSET_LANDSCAPE, 0, BOTTOM_INSET_LANDSCAPE);
+    private static final Insets IME_INSETS_NO_KEYBOARD = Insets.of(0, 0, 0, 0);
+    private static final Insets IME_INSETS_KEYBOARD = Insets.of(0, 0, 0, BOTTOM_KEYBOARD_INSET);
 
     private static final WindowInsetsCompat SYSTEM_BARS_WINDOW_INSETS =
             new WindowInsetsCompat.Builder()
                     .setInsets(WindowInsetsCompat.Type.navigationBars(), NAVIGATION_BAR_INSETS)
                     .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
                     .setInsets(WindowInsetsCompat.Type.systemBars(), SYSTEM_INSETS)
-                    .setInsets(WindowInsetsCompat.Type.ime(), IME_INSETS)
+                    .setInsets(WindowInsetsCompat.Type.ime(), IME_INSETS_NO_KEYBOARD)
                     .build();
 
     private Activity mActivity;
@@ -186,11 +192,47 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void drawEdgeToEdge_ToEdgeAndToNormal() {
-        mEdgeToEdgeControllerImpl.drawToEdge(true);
+        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowInsets= */ false);
         assertToEdgeExpectations();
 
-        mEdgeToEdgeControllerImpl.drawToEdge(false);
+        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowInsets= */ false);
         assertToNormalExpectations();
+    }
+
+    @Test
+    public void drawEdgeToEdge_UpdateWindowInsets_toNormal() {
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowInsets= */ false);
+        verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(BOTTOM_INSET));
+
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS_LANDSCAPE);
+        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowInsets= */ true);
+        verify(mOsWrapper)
+                .setPadding(
+                        any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(BOTTOM_INSET_LANDSCAPE));
+
+        mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(IME_INSETS_KEYBOARD);
+        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowInsets= */ true);
+        verify(mOsWrapper)
+                .setPadding(
+                        any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(BOTTOM_KEYBOARD_INSET));
+    }
+
+    @Test
+    public void drawEdgeToEdge_UpdateWindowInsets_toEdge() {
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowInsets= */ false);
+        verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(0));
+
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS_LANDSCAPE);
+        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowInsets= */ true);
+        verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(0));
+
+        mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(IME_INSETS_KEYBOARD);
+        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowInsets= */ true);
+        verify(mOsWrapper)
+                .setPadding(
+                        any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(BOTTOM_KEYBOARD_INSET));
     }
 
     /** Test nothing is done when the Feature is not enabled. */
@@ -335,13 +377,7 @@ public class EdgeToEdgeControllerTest {
         // Check the Navigation Bar color, as an indicator that we really changed the window.
         assertNotEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
         // Pad the top and the bottom to keep it all normal.
-        verify(mOsWrapper, times(2))
-                .setPadding(
-                        any(),
-                        eq(0),
-                        intThat(Matchers.greaterThan(0)),
-                        eq(0),
-                        intThat(Matchers.greaterThan(0)));
+        verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(BOTTOM_INSET));
     }
 
     /** Test that we update WebContentsObservers when a Tab changes WebContents. */

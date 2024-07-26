@@ -10,7 +10,6 @@ import android.view.Window;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.BuildInfo;
@@ -55,21 +54,41 @@ public class EdgeToEdgeUtils {
     }
 
     /**
-     * @return True if the draw edge to edge infrastructure is on.
+     * Whether the draw edge to edge infrastructure is on. When this is enabled, Chrome will start
+     * drawing edge to edge on start up.
      */
     public static boolean isEnabled() {
+        return isLegacyWebsiteOptInEnabled()
+                || isEdgeToEdgeBottomChinEnabled()
+                || isFullWebEdgeToEdgeOptInEnabled();
+    }
+
+    /**
+     * Whether drawing website opt-in is enabled.
+     *
+     * <p>When enabled, Chrome will add bottom padding to the root view if the current tab / UI is
+     * not a tab with `viewport-fit=cover`. Additionally, bottom attached UI will be padded to avoid
+     * drawing into the bottom navigation bar region.
+     *
+     * @deprecated This method will be removed. External references should use {@link #isEnabled()}.
+     */
+    public static boolean isLegacyWebsiteOptInEnabled() {
         return ChromeFeatureList.sDrawEdgeToEdge.isEnabled();
     }
 
     /**
-     * @return True if the edge-to-edge bottom chin is enabled.
+     * Whether the edge-to-edge bottom chin is enabled.
+     *
+     * <p>When enabled, Chrome will replace the OS navigation bar with a thin "Chin" layer in the
+     * browser controls and can be scrolled off the screen on web pages.
      */
     public static boolean isEdgeToEdgeBottomChinEnabled() {
         return ChromeFeatureList.sEdgeToEdgeBottomChin.isEnabled();
     }
 
     /**
-     * @return True if the edge-to-edge bottom chin is enabled.
+     * Whether drawing the website that has `viewport-fit=cover` fully edge to edge, removing the
+     * bottom chin.
      */
     public static boolean isFullWebEdgeToEdgeOptInEnabled() {
         return ChromeFeatureList.sDrawWebEdgeToEdge.isEnabled();
@@ -125,21 +144,11 @@ public class EdgeToEdgeUtils {
      * @return whether we should draw ToEdge based only on the given Tab and the viewport-fit value
      *     from the tracking data of the Display Cutout Controller.
      */
-    public static boolean shouldDrawToEdge(
+    static boolean shouldDrawToEdge(
             boolean isPageOptedIntoEdgeToEdge, @LayoutType int layoutType, int bottomInset) {
-        return isPageOptedIntoEdgeToEdge
+        return (isLegacyWebsiteOptInEnabled() && isPageOptedIntoEdgeToEdge)
                 || (isEdgeToEdgeBottomChinEnabled()
                         && isBottomChinAllowed(layoutType, bottomInset));
-    }
-
-    /**
-     * @return whether we should draw ToEdge based on the given Tab and a ToEdge preference boolean.
-     */
-    static boolean shouldDrawToEdge(Tab tab, boolean wantsToEdge) {
-        // The calling infrastructure has already checked the device configuration: mobile vs tablet
-        // and whether the Gesture Navigation is appropriately enabled or not.
-        if (alwaysDrawToEdgeForTabKind(tab)) return true;
-        return wantsToEdge;
     }
 
     /**
@@ -170,7 +179,7 @@ public class EdgeToEdgeUtils {
             return true;
         }
         // TODO (crbug.com/353724310) Refactor flag check to the E2E web opt-in flag
-        return ChromeFeatureList.sDrawEdgeToEdge.isEnabled() && getWasViewportFitCover(tab);
+        return isLegacyWebsiteOptInEnabled() && getWasViewportFitCover(tab);
     }
 
     /**
@@ -204,20 +213,5 @@ public class EdgeToEdgeUtils {
         SafeAreaInsetsTracker safeAreaInsetsTracker =
                 DisplayCutoutController.getSafeAreaInsetsTracker(tab);
         return safeAreaInsetsTracker == null ? false : safeAreaInsetsTracker.isViewportFitCover();
-    }
-
-    /**
-     * Decides whether to draw the given Tab ToEdge or not.
-     *
-     * @param tab The {@link Tab} to be drawn.
-     * @return {@code true} if it's OK to draw this Tab under system bars.
-     */
-    static boolean alwaysDrawToEdgeForTabKind(@Nullable Tab tab) {
-        boolean isNative = tab == null || tab.isNativePage();
-        if (isNative) {
-            // Check the flag for ToEdge on all native pages.
-            return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
-        }
-        return ChromeFeatureList.sDrawWebEdgeToEdge.isEnabled();
     }
 }

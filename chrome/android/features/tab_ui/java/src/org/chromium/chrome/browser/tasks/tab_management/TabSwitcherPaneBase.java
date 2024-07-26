@@ -38,7 +38,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -58,6 +57,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -323,7 +323,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                     Rect finalRect;
 
                     Rect recyclerViewRect = coordinator.getRecyclerViewRect();
-                    if (ChromeFeatureList.sDrawEdgeToEdge.isEnabled()) {
+                    if (EdgeToEdgeUtils.isEnabled()) {
                         // Extend the recyclerViewRect to include the bottom nav bar area on
                         // edge-to-edge to align the animation with the start / end state.
                         Rect rootViewRect = new Rect();

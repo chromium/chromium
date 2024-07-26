@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.hasTappableBottomBar;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isEnabled;
 
 import android.app.Activity;
 import android.os.Build;
@@ -53,6 +55,7 @@ public class EdgeToEdgeControllerFactory {
             BrowserControlsStateProvider browserControlsStateProvider,
             LayoutManager layoutManager) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
+        assert isEnabled();
         return new EdgeToEdgeControllerImpl(
                 activity,
                 windowAndroid,
@@ -78,6 +81,7 @@ public class EdgeToEdgeControllerFactory {
             EdgeToEdgeController edgeToEdgeController,
             NavigationBarColorProvider navigationBarColorProvider,
             BottomControlsStacker bottomControlsStacker) {
+        assert isEdgeToEdgeBottomChinEnabled();
         return new EdgeToEdgeBottomChinCoordinator(
                 layoutManager,
                 edgeToEdgeController,
@@ -115,12 +119,7 @@ public class EdgeToEdgeControllerFactory {
         // from qualifying devices.
         if (android.os.Build.VERSION.SDK_INT < VERSION_CODES.R) return false;
 
-        boolean atLeastOneE2EFeatureEnabled =
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
-                        || EdgeToEdgeUtils.isFullWebEdgeToEdgeOptInEnabled()
-                        || EdgeToEdgeUtils.isEnabled();
-
-        return atLeastOneE2EFeatureEnabled
+        return EdgeToEdgeUtils.isEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
                 && !BuildInfo.getInstance().isAutomotive
                 // TODO(https://crbug.com/325356134) use UiUtils#isGestureNavigationMode instead.
