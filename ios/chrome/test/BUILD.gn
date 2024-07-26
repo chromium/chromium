@@ -375,6 +375,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/content_suggestions/safety_check:unit_tests",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:unit_tests",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption:unit_tests",
+    "//ios/chrome/browser/ui/first_run/default_browser:unit_tests",
     "//ios/chrome/browser/ui/first_run/omnibox_position:unit_tests",
     "//ios/chrome/browser/ui/first_run/omnibox_position/promo:unit_tests",
     "//ios/chrome/browser/ui/first_run/tos:unit_tests",

@@ -8,16 +8,21 @@ source_set("default_browser") {
     "default_browser_screen_coordinator.mm",
   ]
   deps = [
+    ":default_browser_mediator",
     ":default_browser_ui",
     "//base",
     "//components/feature_engagement/public",
+    "//components/segmentation_platform/public",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/common/ui/promo_style",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -28,6 +33,8 @@ source_set("default_browser_ui") {
     "default_browser_screen_view_controller.mm",
   ]
   deps = [
+    ":default_browser_mediator",
+    "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/shared/public/features",
@@ -39,4 +46,42 @@ source_set("default_browser_ui") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("default_browser_mediator") {
+  sources = [
+    "default_browser_screen_consumer.h",
+    "default_browser_screen_mediator.h",
+    "default_browser_screen_mediator.mm",
+  ]
+  deps = [
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser",
+    "//ios/chrome/browser/shared/public/features",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "default_browser_screen_mediator_unittest.mm" ]
+  deps = [
+    ":default_browser_mediator",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
+    "//components/sync_device_info:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
 }

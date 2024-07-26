@@ -6,14 +6,16 @@
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_DEFAULT_BROWSER_DEFAULT_BROWSER_SCREEN_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 @protocol FirstRunScreenDelegate;
 
 // Coordinator to present the default browser screen.
-@interface DefaultBrowserScreenCoordinator : ChromeCoordinator
+@interface DefaultBrowserScreenCoordinator
+    : ChromeCoordinator <PromoStyleViewControllerDelegate>
 
-// Initiates a DefaultBrowserCoordinator with `navigationController`,
-// `browser` and `delegate`.
+// Initializes a DefaultBrowserScreenCoordinator with `navigationController`,
+// `browser`, and `delegate`.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser

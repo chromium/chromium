@@ -6,26 +6,23 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 
-@interface DefaultBrowserScreenCoordinator () <PromoStyleViewControllerDelegate>
-
-// Default browser screen view controller.
-@property(nonatomic, strong) DefaultBrowserScreenViewController* viewController;
-
-// First run screen delegate.
-@property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
-
-@end
-
-@implementation DefaultBrowserScreenCoordinator
-
+@implementation DefaultBrowserScreenCoordinator {
+  DefaultBrowserScreenViewController* _viewController;
+  DefaultBrowserScreenMediator* _mediator;
+  __weak id<FirstRunScreenDelegate> _delegate;
+}
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
@@ -33,9 +30,8 @@
                                          browser:(Browser*)browser
                                         delegate:(id<FirstRunScreenDelegate>)
                                                      delegate {
-  self = [super initWithBaseViewController:navigationController
-                                   browser:browser];
-  if (self) {
+  if (self = [super initWithBaseViewController:navigationController
+                                       browser:browser]) {
     _baseNavigationController = navigationController;
     _delegate = delegate;
   }
@@ -45,24 +41,45 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  [super start];
+
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                 first_run::kDefaultBrowserScreenStart);
   default_browser::NotifyDefaultBrowserFREPromoShown(
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState()));
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
 
-  self.viewController = [[DefaultBrowserScreenViewController alloc] init];
-  self.viewController.delegate = self;
+  _viewController = [[DefaultBrowserScreenViewController alloc] init];
+  _viewController.delegate = self;
+  _viewController.modalInPresentation = YES;
 
   BOOL animated = self.baseNavigationController.topViewController != nil;
-  [self.baseNavigationController setViewControllers:@[ self.viewController ]
+  [self.baseNavigationController setViewControllers:@[ _viewController ]
                                            animated:animated];
-  self.viewController.modalInPresentation = YES;
+
+  if (IsSegmentedDefaultBrowserPromoEnabled()) {
+    segmentation_platform::SegmentationPlatformService* segmentationService =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetForBrowserState(browserState);
+
+    segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetDispatcherForBrowserState(browserState);
+
+    _mediator = [[DefaultBrowserScreenMediator alloc]
+           initWithSegmentationService:segmentationService
+        deviceSwitcherResultDispatcher:dispatcher];
+    _mediator.consumer = _viewController;
+  }
 }
 
 - (void)stop {
-  self.delegate = nil;
-  self.viewController = nil;
+  _viewController.delegate = nil;
+  _viewController = nil;
+  _delegate = nil;
+  _mediator.consumer = nil;
+  _mediator = nil;
+
   [super stop];
 }
 
@@ -78,7 +95,7 @@
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
       completionHandler:nil];
-  [self.delegate screenWillFinishPresenting];
+  [_delegate screenWillFinishPresenting];
 }
 
 - (void)didTapSecondaryActionButton {
@@ -89,7 +106,7 @@
   base::UmaHistogramEnumeration(
       first_run::kFirstRunStageHistogram,
       first_run::kDefaultBrowserScreenCompletionWithoutSettings);
-  [self.delegate screenWillFinishPresenting];
+  [_delegate screenWillFinishPresenting];
 }
 
 @end

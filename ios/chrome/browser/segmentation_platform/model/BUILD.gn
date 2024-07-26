@@ -65,6 +65,18 @@ source_set("ukm_client") {
   ]
 }
 
+source_set("segmented_default_browser") {
+  sources = [
+    "segmented_default_browser_utils.h",
+    "segmented_default_browser_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

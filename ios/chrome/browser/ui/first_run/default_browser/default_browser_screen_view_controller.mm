@@ -28,15 +28,16 @@
 #else
   self.bannerName = kChromiumDefaultBrowserScreenBannerImage;
 #endif
-  self.titleText = l10n_util::GetNSString(
-      UseIPadTailoredStringForDefaultBrowserPromo()
-          ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
-          : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE);
-  self.subtitleText = l10n_util::GetNSString(
-      UseIPadTailoredStringForDefaultBrowserPromo()
-          ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
-          : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE);
-
+  if (!IsSegmentedDefaultBrowserPromoEnabled()) {
+    self.titleText = l10n_util::GetNSString(
+        UseIPadTailoredStringForDefaultBrowserPromo()
+            ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
+            : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE);
+    self.subtitleText = l10n_util::GetNSString(
+        UseIPadTailoredStringForDefaultBrowserPromo()
+            ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
+            : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE);
+  }
   self.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_PRIMARY_ACTION);
 
@@ -69,6 +70,16 @@
   ]];
 
   [super viewDidLoad];
+}
+
+#pragma mark - DefaultBrowserScreenConsumer
+
+- (void)setPromoTitle:(NSString*)titleText {
+  self.titleText = titleText;
+}
+
+- (void)setPromoSubtitle:(NSString*)subtitleText {
+  self.subtitleText = subtitleText;
 }
 
 @end
