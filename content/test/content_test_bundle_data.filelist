@@ -5385,8 +5385,6 @@ data/accessibility/mac/attributes/chrome-ax-node-id-expected.txt
 data/accessibility/mac/attributes/chrome-ax-node-id.html
 data/accessibility/mac/description/aria-description-in-axcustomcontent-expected.txt
 data/accessibility/mac/description/aria-description-in-axcustomcontent.html
-data/accessibility/mac/description/aria-description-in-axhelp-expected.txt
-data/accessibility/mac/description/aria-description-in-axhelp.html
 data/accessibility/mac/methods/accessibility-column-header-ui-elements-expected.txt
 data/accessibility/mac/methods/accessibility-column-header-ui-elements.html
 data/accessibility/mac/methods/accessibility-custom-content-expected-mac-before-11.txt

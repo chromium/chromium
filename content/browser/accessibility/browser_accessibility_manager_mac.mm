@@ -621,15 +621,6 @@ bool BrowserAccessibilityManagerMac::ShouldFireLoadCompleteNotification() {
     return false;
   }
 
-  // On MacOS 10.15, firing AXLoadComplete causes focus to move to the
-  // webpage and read content, despite the "Automatically speak the webpage"
-  // checkbox in Voiceover utility being unchecked. The checkbox is
-  // unchecked by default in 10.15 so we don't fire AXLoadComplete events to
-  // support the default behavior.
-  if (base::mac::MacOSMajorVersion() < 11) {
-    return false;
-  }
-
   // Voiceover moves focus to the web content when it receives an
   // AXLoadComplete event. On Chrome's new tab page, focus should stay
   // in the omnibox, so we purposefully do not fire the AXLoadComplete

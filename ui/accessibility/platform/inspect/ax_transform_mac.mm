@@ -41,11 +41,9 @@ base::Value AXNSObjectToBaseValue(id value, const AXTreeIndexerMac* indexer) {
   }
 
   // AXCustomContent
-  if (@available(macOS 11.0, *)) {
-    if (AXCustomContent* custom_content =
-            base::apple::ObjCCast<AXCustomContent>(value)) {
-      return base::Value(AXCustomContentToBaseValue(custom_content));
-    }
+  if (AXCustomContent* custom_content =
+          base::apple::ObjCCast<AXCustomContent>(value)) {
+    return base::Value(AXCustomContentToBaseValue(custom_content));
   }
 
   // NSDictionary

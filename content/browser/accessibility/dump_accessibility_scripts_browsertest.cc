@@ -474,14 +474,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, ChromeAXNodeId) {
   RunTypedTest<kMacAttributes>("chrome-ax-node-id.html");
 }
 
-// Before macOS 11 aria-description must be exposed in AXHelp, and since macOS
-// 11, it should only be exposed in AXCustomContent.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AriaDescription) {
-  if (base::mac::MacOSMajorVersion() >= 11) {
-    RunTypedTest<kMacDescription>("aria-description-in-axcustomcontent.html");
-  } else {
-    RunTypedTest<kMacDescription>("aria-description-in-axhelp.html");
-  }
+  RunTypedTest<kMacDescription>("aria-description-in-axcustomcontent.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {

@@ -250,11 +250,9 @@ component("platform") {
       ]
 
       frameworks = [
+        "Accessibility.framework",
         "AppKit.framework",
         "Foundation.framework",
-      ]
-      weak_frameworks = [
-        "Accessibility.framework",  # macOS 11
       ]
     }
 
