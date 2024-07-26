@@ -994,7 +994,7 @@
   },
   {
     "name": "block-insecure-private-network-requests",
-    "owners": [ "lyf@chromium.org", "phao@chromium.org", "chrome-security-owp-team@google.com" ],
+    "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
     "expiry_milestone": 130
   },
   {
@@ -7369,27 +7369,27 @@
   },
   {
     "name": "private-network-access-ignore-navigation-errors",
-    "owners": [ "phao@chromium.org", "chrome-security-owp-team@google.com" ],
+    "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
     "expiry_milestone": 130
   },
   {
     "name": "private-network-access-ignore-worker-errors",
-    "owners": [ "phao@chromium.org", "chrome-security-owp-team@google.com" ],
+    "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
     "expiry_milestone": 130
   },
   {
     "name": "private-network-access-permission-prompt",
-    "owners": [ "lyf@chromium.org", "chrome-security-owp-team@google.com" ],
+    "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
     "expiry_milestone": 126
   },
   {
     "name": "private-network-access-preflight-short-timeout",
-    "owners": [ "lyf@chromium.org", "chrome-security-owp-team@google.com" ],
+    "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
     "expiry_milestone": 130
   },
   {
     "name": "private-network-access-respect-preflight-results",
-    "owners": [ "lyf@chromium.org", "phao@chromium.org", "chrome-security-owp-team@google.com" ],
+    "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
     "expiry_milestone": 130
   },
   {
