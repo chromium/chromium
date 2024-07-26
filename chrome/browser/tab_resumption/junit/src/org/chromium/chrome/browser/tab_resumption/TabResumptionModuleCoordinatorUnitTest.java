@@ -118,7 +118,7 @@ public class TabResumptionModuleCoordinatorUnitTest extends TestSupportExtended 
         Assert.assertEquals(
                 "Continue with these tabs", mModel.get(TabResumptionModuleProperties.TITLE));
         Assert.assertEquals(
-                "Hide continue with these tabs",
+                "Hide continue with these tabs card",
                 mCoordinator.getModuleContextMenuHideText(mContext));
 
         SuggestionBundle bundle2 = mModel.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE);
@@ -139,7 +139,8 @@ public class TabResumptionModuleCoordinatorUnitTest extends TestSupportExtended 
         Assert.assertEquals(
                 "Continue with this tab", mModel.get(TabResumptionModuleProperties.TITLE));
         Assert.assertEquals(
-                "Hide continue with this tab", mCoordinator.getModuleContextMenuHideText(mContext));
+                "Hide continue with this tab card",
+                mCoordinator.getModuleContextMenuHideText(mContext));
 
         SuggestionBundle bundle1 = mModel.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE);
         Assert.assertNotNull(bundle1);
