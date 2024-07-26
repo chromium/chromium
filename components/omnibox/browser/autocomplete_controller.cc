@@ -1572,6 +1572,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
       // to a typical search.
       match.answer.reset();
       match.answer_template.reset();
+      match.answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
       match.associated_keyword = std::make_unique<AutocompleteMatch>(
           keyword_provider_->CreateVerbatimMatch(exact_keyword, exact_keyword,
                                                  input_));

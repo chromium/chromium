@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/suggestion_answer.h"
@@ -187,7 +188,15 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       // Search match.
       // If additional descriptive text exists with a search, treat as search
       // with immediate answer, such as Weather in Boston: 53 degrees.
-      if (match.answer) {
+      if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+          match.answer_template) {
+        omnibox::FormattedString subhead =
+            match.answer_template->answers(0).subhead();
+        description = base::UTF8ToUTF16(
+            subhead.has_a11y_text() ? subhead.a11y_text() : subhead.text());
+        has_description = true;
+        message = IDS_ACC_AUTOCOMPLETE_QUICK_ANSWER;
+      } else if (match.answer) {
         description = match.answer->second_line().AccessibleText();
         has_description = true;
         message = IDS_ACC_AUTOCOMPLETE_QUICK_ANSWER;

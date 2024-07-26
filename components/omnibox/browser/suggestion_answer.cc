@@ -42,6 +42,9 @@ static constexpr char kAnswerJsonNumLines[] = "ln";
 static constexpr char kAnswerJsonImage[] = "i";
 static constexpr char kAnswerJsonImageData[] = "d";
 
+constexpr char kAnswerUsedUmaHistogramName[] =
+    "Omnibox.SuggestionUsed.AnswerInSuggest";
+
 void AppendWithSpace(const SuggestionAnswer::TextField* text,
                      std::u16string* output) {
   if (!text) {
@@ -202,6 +205,11 @@ bool ParseJsonToAnswerData(const base::Value::Dict& answer_json,
     answer_data->mutable_image()->set_url(*image_url);
   }
   return true;
+}
+
+void LogAnswerUsed(omnibox::AnswerType answer_type) {
+  UMA_HISTOGRAM_ENUMERATION(kAnswerUsedUmaHistogramName, answer_type,
+                            omnibox::AnswerType_MAX);
 }
 
 }  // namespace omnibox::answer_data_parser
@@ -542,22 +550,6 @@ void SuggestionAnswer::InterpretTextTypes() {
 bool SuggestionAnswer::IsExceptedFromLineReversal() const {
   return type() == omnibox::ANSWER_TYPE_DICTIONARY;
 }
-
-// static
-void SuggestionAnswer::LogAnswerUsed(
-    const std::optional<SuggestionAnswer>& answer) {
-  auto answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
-  if (answer) {
-    answer_type = static_cast<omnibox::AnswerType>(answer->type());
-  }
-  DCHECK_NE(-1, answer_type);  // just in case; |type_| is init'd to -1
-  UMA_HISTOGRAM_ENUMERATION(kAnswerUsedUmaHistogramName, answer_type,
-                            omnibox::AnswerType_MAX);
-}
-
-// static
-const char SuggestionAnswer::kAnswerUsedUmaHistogramName[] =
-    "Omnibox.SuggestionUsed.AnswerInSuggest";
 
 #if BUILDFLAG(IS_ANDROID)
 namespace {

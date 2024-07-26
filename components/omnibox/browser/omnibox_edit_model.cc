@@ -2498,7 +2498,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
 
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
-  SuggestionAnswer::LogAnswerUsed(match.answer);
+  omnibox::answer_data_parser::LogAnswerUsed(match.answer_type);
   if (!last_omnibox_focus_.is_null()) {
     // Only record focus to open time when a focus actually happened (as
     // opposed to, say, dragging a link onto the omnibox).
