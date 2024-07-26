@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
                          "document.body.appendChild(iframe);",
                          same_origin_referrer_page)));
     ASSERT_EQ(1U, current_frame_host()->child_count());
-    WaitForLoadStop(web_contents());
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
     FrameTreeNode* first_iframe_node =
         current_frame_host()->child_at(current_frame_host()->child_count() - 1);
     EXPECT_EQ(network::mojom::ReferrerPolicy::kSameOrigin,
@@ -278,6 +278,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
                        "iframe.srcdoc = 'hello world';"
                        "iframe.name = 'second';"
                        "parent.document.body.appendChild(iframe);"));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
     ASSERT_EQ(2U, current_frame_host()->child_count());
     FrameTreeNode* second_iframe_node =
         current_frame_host()->child_at(current_frame_host()->child_count() - 1);
@@ -299,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
     // the initiator, the second iframe.
     ASSERT_TRUE(ExecJs(second_iframe_node->current_frame_host(),
                        "window.open('about:blank', 'first');"));
-    WaitForLoadStop(web_contents());
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(network::mojom::ReferrerPolicy::kOrigin,
               first_iframe_node->current_frame_host()
                   ->policy_container_host()
@@ -319,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
     ASSERT_TRUE(
         ExecJs(second_iframe_node->current_frame_host(),
                JsReplace("document.location.href = $1", no_referrer_page)));
-    WaitForLoadStop(web_contents());
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
               second_iframe_node->current_frame_host()
                   ->policy_container_host()

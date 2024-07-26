@@ -2580,6 +2580,7 @@ IN_PROC_BROWSER_TEST_F(BaseUrlInheritanceIframeTest,
                      "base.href = 'https://example.com'; "
                      "document.head.appendChild(base); "
                      "window.top.window[1].location.href = 'about:blank';"));
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   // Make sure second child inherited base url from the first child.
   EXPECT_EQ(GURL("https://example.com"),
             GetFrameBaseUrl(child2->current_frame_host()));

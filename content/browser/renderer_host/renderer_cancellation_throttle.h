@@ -60,8 +60,10 @@ class CONTENT_EXPORT RendererCancellationThrottle : public NavigationThrottle {
 
  private:
   NavigationThrottle::ThrottleCheckResult WillProcessResponse() override;
+  NavigationThrottle::ThrottleCheckResult WillCommitWithoutUrlLoader() override;
   const char* GetNameForLogging() override;
 
+  NavigationThrottle::ThrottleCheckResult WaitForRendererCancellationIfNeeded();
   void OnTimeout();
   void RestartTimeout();
 
