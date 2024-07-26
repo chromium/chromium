@@ -626,11 +626,20 @@ class AccountSelectionViewBinder {
      * @param key The key of the property to be bound.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
+        // Reuse the same header from previous dialog if button mode verify sheet.
+        if (model.get(HeaderProperties.RP_MODE) == RpMode.BUTTON
+                && (model.get(HeaderProperties.TYPE) == HeaderProperties.HeaderType.VERIFY
+                        || model.get(HeaderProperties.TYPE)
+                                == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN)) {
+            return;
+        }
+
         if (key == HeaderProperties.RP_FOR_DISPLAY
                 || key == HeaderProperties.IDP_FOR_DISPLAY
                 || key == HeaderProperties.TYPE
                 || key == HeaderProperties.RP_CONTEXT
-                || key == HeaderProperties.RP_MODE) {
+                || key == HeaderProperties.RP_MODE
+                || key == HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER) {
             Resources resources = view.getResources();
             TextView headerTitleText = view.findViewById(R.id.header_title);
             TextView headerSubtitleText = view.findViewById(R.id.header_subtitle);
@@ -642,7 +651,8 @@ class AccountSelectionViewBinder {
                             headerType,
                             model.get(HeaderProperties.RP_FOR_DISPLAY),
                             model.get(HeaderProperties.IDP_FOR_DISPLAY),
-                            model.get(HeaderProperties.RP_MODE));
+                            model.get(HeaderProperties.RP_MODE),
+                            model.get(HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER));
             if (!subtitle.isEmpty()) {
                 headerTitleText.setPadding(
                         /* left= */ 0, /* top= */ 12, /* right= */ 0, /* bottom= */ 0);
@@ -710,11 +720,6 @@ class AccountSelectionViewBinder {
         } else if (key == HeaderProperties.RP_BRAND_ICON) {
             // RP icon is not shown in widget mode.
             if (model.get(HeaderProperties.RP_MODE) == RpMode.WIDGET) return;
-
-            // Reuse the same icons from previous dialog if button mode verify sheet.
-            if (model.get(HeaderProperties.TYPE) == HeaderProperties.HeaderType.VERIFY
-                    || model.get(HeaderProperties.TYPE)
-                            == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) return;
 
             Bitmap brandIcon = model.get(HeaderProperties.RP_BRAND_ICON);
             ImageView headerIconView = (ImageView) view.findViewById(R.id.header_rp_icon);
@@ -817,12 +822,17 @@ class AccountSelectionViewBinder {
             HeaderProperties.HeaderType type,
             String rpUrl,
             String idpUrl,
-            @RpMode.EnumType int rpMode) {
-        if (rpMode == RpMode.BUTTON) {
-            return rpUrl;
-        } else {
-            return "";
+            @RpMode.EnumType int rpMode,
+            Boolean isMultipleAccountChooser) {
+        if (rpMode == RpMode.WIDGET) return "";
+
+        if (isMultipleAccountChooser) {
+            return String.format(
+                    resources.getString(
+                            R.string.account_selection_button_mode_sheet_choose_an_account),
+                    rpUrl);
         }
+        return rpUrl;
     }
 
     private AccountSelectionViewBinder() {}

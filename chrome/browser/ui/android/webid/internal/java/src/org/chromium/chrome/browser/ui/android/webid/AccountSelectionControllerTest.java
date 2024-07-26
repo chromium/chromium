@@ -22,7 +22,9 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ACCOUNT;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_FOR_DISPLAY;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_FOR_DISPLAY;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_MODE;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
 import android.graphics.Bitmap;
@@ -86,7 +88,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
     }
 
     @Test
-    public void testShowAccountSignInHeader() {
+    public void testSingleAccountSignInHeader() {
         doAnswer(
                         new Answer<Void>() {
                             @Override
@@ -119,6 +121,46 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
         assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
         assertNotNull(headerModel.get(IDP_BRAND_ICON));
+        assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
+        assertFalse(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
+    }
+
+    @Test
+    public void testMultipleAccountsSignInHeader() {
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                Callback<Bitmap> callback =
+                                        (Callback<Bitmap>) invocation.getArguments()[1];
+
+                                Bitmap brandIcon =
+                                        Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+                                brandIcon.eraseColor(Color.RED);
+                                callback.onResult(brandIcon);
+                                return null;
+                            }
+                        })
+                .when(mMockImageFetcher)
+                .fetchImage(any(), any(Callback.class));
+
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(mAnaAccount, mBobAccount),
+                mIdpMetadata,
+                mClientIdMetadata,
+                /* isAutoReauthn= */ false,
+                RpContext.SIGN_IN,
+                /* requestPermission= */ true);
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
+        assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
+        assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
+        assertNotNull(headerModel.get(IDP_BRAND_ICON));
+        assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
+        assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
     }
 
     @Test

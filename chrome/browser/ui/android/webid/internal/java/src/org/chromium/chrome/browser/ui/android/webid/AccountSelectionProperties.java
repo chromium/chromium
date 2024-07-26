@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialToken
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -85,6 +86,8 @@ class AccountSelectionProperties {
         static final ReadableIntPropertyKey RP_CONTEXT = new ReadableIntPropertyKey("rp_context");
         static final ReadableObjectPropertyKey<Integer> RP_MODE =
                 new ReadableObjectPropertyKey<>("rp_mode");
+        static final ReadableBooleanPropertyKey IS_MULTIPLE_ACCOUNT_CHOOSER =
+                new ReadableBooleanPropertyKey("is_multiple_account_chooser");
 
         static final PropertyKey[] ALL_KEYS = {
             CLOSE_ON_CLICK_LISTENER,
@@ -94,7 +97,8 @@ class AccountSelectionProperties {
             RP_BRAND_ICON,
             TYPE,
             RP_CONTEXT,
-            RP_MODE
+            RP_MODE,
+            IS_MULTIPLE_ACCOUNT_CHOOSER
         };
 
         private HeaderProperties() {}

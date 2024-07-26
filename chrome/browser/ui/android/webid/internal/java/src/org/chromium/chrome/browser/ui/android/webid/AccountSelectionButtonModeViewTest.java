@@ -125,50 +125,25 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
     }
 
     @Test
-    public void testVerifyingRpContextDisplayed() {
+    public void testMultipleAccountsSubtitleDisplayed() {
         for (RpContextEntry rpContext : mRpContexts) {
             mModel.set(
                     ItemProperties.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.VERIFY)
+                            .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
                             .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                             .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
                             .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
+                            .with(HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER, true)
                             .build());
             assertEquals(View.VISIBLE, mContentView.getVisibility());
-            TextView title = mContentView.findViewById(R.id.header_title);
             TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
 
             assertEquals(
-                    "Incorrect title",
-                    mResources.getString(rpContext.mTitleId, "idp.org"),
-                    title.getText().toString());
-            assertEquals("Incorrect subtitle", "example.org", subtitle.getText());
-        }
-    }
-
-    @Test
-    public void testVerifyingAutoReauthnRpContextDisplayed() {
-        for (RpContextEntry rpContext : mRpContexts) {
-            mModel.set(
-                    ItemProperties.HEADER,
-                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.VERIFY)
-                            .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
-                            .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
-                            .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
-                            .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
-                            .build());
-            assertEquals(View.VISIBLE, mContentView.getVisibility());
-            TextView title = mContentView.findViewById(R.id.header_title);
-            TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
-
-            assertEquals(
-                    "Incorrect title",
-                    mResources.getString(rpContext.mTitleId, "idp.org"),
-                    title.getText().toString());
-            assertEquals("Incorrect subtitle", "example.org", subtitle.getText());
+                    "Incorrect subtitle",
+                    "Choose an account to continue on example.org",
+                    subtitle.getText());
         }
     }
 
