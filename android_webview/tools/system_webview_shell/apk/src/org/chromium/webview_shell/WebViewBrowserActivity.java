@@ -206,8 +206,13 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             }
             return true;
         } else if (itemId == R.id.menu_get_cookie) {
-            String cookie = CookieManager.getInstance().getCookie(mWebView.getUrl());
-            Log.w(TAG, "GetCookie: " + cookie);
+            String url = mWebView.getUrl();
+            if (url != null) {
+                String cookie = CookieManager.getInstance().getCookie(url);
+                Log.w(TAG, "GetCookie: " + cookie);
+            } else {
+                Toast.makeText(this, "Error: Url is not set", Toast.LENGTH_SHORT).show();
+            }
             return true;
         } else if (itemId == R.id.menu_enable_tracing) {
             mEnableTracing = !mEnableTracing;
