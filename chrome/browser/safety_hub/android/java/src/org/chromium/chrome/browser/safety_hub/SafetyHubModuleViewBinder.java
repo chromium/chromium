@@ -523,14 +523,9 @@ public class SafetyHubModuleViewBinder {
     }
 
     private static void updateBrowserStateModule(CardPreference preference, PropertyModel model) {
-        for (@SafetyHubModuleProperties.ModuleOption
-                int i = SafetyHubModuleProperties.ModuleOption.OPTION_FIRST;
-                i < SafetyHubModuleProperties.ModuleOption.NUM_ENTRIES;
-                i++) {
-            if (getModuleState(model, i) < SafetyHubModuleProperties.ModuleState.INFO) {
-                preference.setVisible(false);
-                return;
-            }
+        if (!isBrowserStateSafe(model)) {
+            preference.setVisible(false);
+            return;
         }
 
         preference.setTitle(R.string.safety_hub_safe_browser_state_title);
@@ -614,7 +609,19 @@ public class SafetyHubModuleViewBinder {
         }
     }
 
-    private static @SafetyHubModuleProperties.ModuleState int getModuleState(
+    static boolean isBrowserStateSafe(PropertyModel model) {
+        for (@SafetyHubModuleProperties.ModuleOption
+                int i = SafetyHubModuleProperties.ModuleOption.OPTION_FIRST;
+                i < SafetyHubModuleProperties.ModuleOption.NUM_ENTRIES;
+                i++) {
+            if (getModuleState(model, i) < SafetyHubModuleProperties.ModuleState.INFO) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static @SafetyHubModuleProperties.ModuleState int getModuleState(
             PropertyModel model, @SafetyHubModuleProperties.ModuleOption int option) {
         switch (option) {
             case SafetyHubModuleProperties.ModuleOption.ACCOUNT_PASSWORDS:

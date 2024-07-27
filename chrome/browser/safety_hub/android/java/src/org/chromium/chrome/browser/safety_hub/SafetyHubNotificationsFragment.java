@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordNotificationsInteraction;
+
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.NotificationsModuleInteractions;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -62,9 +65,12 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
                         public void onAction(Object actionData) {
                             mNotificationPermissionReviewBridge.bulkAllowNotificationPermissions(
                                     (List<NotificationPermissions>) actionData);
+                            recordNotificationsInteraction(
+                                    NotificationsModuleInteractions.UNDO_BLOCK_ALL);
                         }
                     },
                     notificationPermissionsList);
+            recordNotificationsInteraction(NotificationsModuleInteractions.BLOCK_ALL);
         }
     }
 
@@ -88,8 +94,10 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
                         mNotificationPermissionReviewBridge
                                 .undoIgnoreOriginForNotificationPermissionReview(
                                         (String) actionData);
+                        recordNotificationsInteraction(NotificationsModuleInteractions.UNDO_IGNORE);
                     }
                 });
+        recordNotificationsInteraction(NotificationsModuleInteractions.IGNORE);
     }
 
     @Override
@@ -106,14 +114,17 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
                     public void onAction(Object actionData) {
                         mNotificationPermissionReviewBridge.allowNotificationPermissionForOrigin(
                                 (String) actionData);
+                        recordNotificationsInteraction(NotificationsModuleInteractions.UNDO_RESET);
                     }
                 });
+        recordNotificationsInteraction(NotificationsModuleInteractions.RESET);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.safety_hub_subpage_menu_item) {
             launchSiteSettingsActivity(SiteSettingsCategory.Type.NOTIFICATIONS);
+            recordNotificationsInteraction(NotificationsModuleInteractions.GO_TO_SETTINGS);
             return true;
         }
         return false;

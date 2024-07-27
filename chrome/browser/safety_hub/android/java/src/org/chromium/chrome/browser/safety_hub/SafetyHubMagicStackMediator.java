@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordExternalInteractions;
+
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.ExternalInteractions;
 import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -150,9 +153,11 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                         R.color.default_green));
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
-                (view) ->
-                        SettingsLauncherFactory.createSettingsLauncher()
-                                .launchSettingsActivity(mContext, SafetyHubFragment.class));
+                (view) -> {
+                    SettingsLauncherFactory.createSettingsLauncher()
+                            .launchSettingsActivity(mContext, SafetyHubFragment.class);
+                    recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
+                });
     }
 
     private void bindSafeBrowsingView(@NonNull String summary) {
@@ -176,9 +181,11 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                         R.color.default_icon_color_accent1_baseline));
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
-                (view) ->
-                        SettingsLauncherFactory.createSettingsLauncher()
-                                .launchSettingsActivity(
-                                        mContext, SafeBrowsingSettingsFragment.class));
+                (view) -> {
+                    SettingsLauncherFactory.createSettingsLauncher()
+                            .launchSettingsActivity(mContext, SafeBrowsingSettingsFragment.class);
+                    recordExternalInteractions(
+                            ExternalInteractions.OPEN_SAFE_BROWSING_FROM_MAGIC_STACK);
+                });
     }
 }

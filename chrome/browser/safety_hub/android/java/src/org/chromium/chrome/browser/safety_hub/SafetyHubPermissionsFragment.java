@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordRevokedPermissionsInteraction;
+
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -12,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.Preference;
 
+import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.PermissionsModuleInteractions;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
@@ -60,9 +63,12 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
                         public void onAction(Object actionData) {
                             mUnusedSitePermissionsBridge.restoreRevokedPermissionsReviewList(
                                     (PermissionsData[]) actionData);
+                            recordRevokedPermissionsInteraction(
+                                    PermissionsModuleInteractions.UNDO_ACKNOWLEDGE_ALL);
                         }
                     },
                     permissionsDataList);
+            recordRevokedPermissionsInteraction(PermissionsModuleInteractions.ACKNOWLEDGE_ALL);
         }
     }
 
@@ -82,9 +88,12 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
                         public void onAction(Object actionData) {
                             mUnusedSitePermissionsBridge.undoRegrantPermissions(
                                     (PermissionsData) actionData);
+                            recordRevokedPermissionsInteraction(
+                                    PermissionsModuleInteractions.UNDO_ALLOW_AGAIN);
                         }
                     },
                     permissionsData);
+            recordRevokedPermissionsInteraction(PermissionsModuleInteractions.ALLOW_AGAIN);
         }
         return false;
     }
@@ -98,6 +107,7 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.safety_hub_subpage_menu_item) {
             launchSettingsActivity(SiteSettings.class);
+            recordRevokedPermissionsInteraction(PermissionsModuleInteractions.GO_TO_SETTINGS);
             return true;
         }
         return false;
