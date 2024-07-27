@@ -104,14 +104,14 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kAuto:
     case Length::kNone:
       return unresolvable_length_result;
+    case Length::kFlex:
+      NOTREACHED_IN_MIGRATION() << "Should only be used for grid.";
+      return unresolvable_length_result;
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
       NOTREACHED_IN_MIGRATION()
-          << "These should only be used for viewport definitions";
-      [[fallthrough]];
-    default:
-      NOTREACHED_IN_MIGRATION();
+          << "Should only be used for viewport definitions.";
       return unresolvable_length_result;
   }
 }
@@ -124,7 +124,8 @@ LayoutUnit ResolveBlockLengthInternal(
     const Length* auto_length,
     LayoutUnit override_available_size,
     const LayoutUnit* override_percentage_resolution_size,
-    IntrinsicBlockSizeFunctionRef unresolvable_block_size_func) {
+    IntrinsicBlockSizeFunctionRef intrinsic_block_size_func,
+    LayoutUnit unresolvable_length_result) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   CHECK(!original_length.IsAuto() || auto_length);
@@ -139,7 +140,9 @@ LayoutUnit ResolveBlockLengthInternal(
               ? constraint_space.AvailableSize().block_size
               : override_available_size;
       if (available_size == kIndefiniteSize) {
-        return unresolvable_block_size_func();
+        return unresolvable_length_result == kIndefiniteSize
+                   ? intrinsic_block_size_func()
+                   : unresolvable_length_result;
       }
       DCHECK_GE(available_size, LayoutUnit());
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
@@ -155,7 +158,9 @@ LayoutUnit ResolveBlockLengthInternal(
               : constraint_space.PercentageResolutionBlockSize();
       if (length.HasPercent() &&
           percentage_resolution_size == kIndefiniteSize) {
-        return unresolvable_block_size_func();
+        return unresolvable_length_result == kIndefiniteSize
+                   ? intrinsic_block_size_func()
+                   : unresolvable_length_result;
       }
       LayoutUnit value = MinimumValueForLength(
           length, percentage_resolution_size,
@@ -163,8 +168,8 @@ LayoutUnit ResolveBlockLengthInternal(
             return ResolveBlockLengthInternal(
                 constraint_space, style, border_padding, length_to_evaluate,
                 auto_length, override_available_size,
-                override_percentage_resolution_size,
-                unresolvable_block_size_func);
+                override_percentage_resolution_size, intrinsic_block_size_func,
+                unresolvable_length_result);
           }});
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
@@ -173,11 +178,12 @@ LayoutUnit ResolveBlockLengthInternal(
         value += border_padding.BlockSum();
       return value;
     }
+    case Length::kContent:
     case Length::kMinContent:
     case Length::kMaxContent:
     case Length::kMinIntrinsic:
     case Length::kFitContent: {
-      LayoutUnit intrinsic_size = unresolvable_block_size_func();
+      const LayoutUnit intrinsic_size = intrinsic_block_size_func();
 #if DCHECK_IS_ON()
       // Due to how intrinsic_size is calculated, it should always include
       // border and padding. We cannot check for this if we are
@@ -187,21 +193,21 @@ LayoutUnit ResolveBlockLengthInternal(
           !constraint_space.HasBlockFragmentation())
         DCHECK_GE(intrinsic_size, border_padding.BlockSum());
 #endif  // DCHECK_IS_ON()
-      return intrinsic_size;
+      return intrinsic_size == kIndefiniteSize ? unresolvable_length_result
+                                               : intrinsic_size;
     }
     case Length::kAuto:
-    case Length::kContent:
     case Length::kNone:
-      return unresolvable_block_size_func();
+      return unresolvable_length_result;
+    case Length::kFlex:
+      NOTREACHED_IN_MIGRATION() << "Should only be used for grid.";
+      return unresolvable_length_result;
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
       NOTREACHED_IN_MIGRATION()
-          << "These should only be used for viewport definitions";
-      [[fallthrough]];
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return border_padding.BlockSum();
+          << "Should only be used for viewport definitions.";
+      return unresolvable_length_result;
   }
 }
 

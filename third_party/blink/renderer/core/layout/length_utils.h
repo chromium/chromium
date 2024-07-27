@@ -87,7 +87,8 @@ CORE_EXPORT LayoutUnit ResolveBlockLengthInternal(
     const Length* auto_length,
     LayoutUnit override_available_size,
     const LayoutUnit* override_percentage_resolution_size,
-    IntrinsicBlockSizeFunctionRef unresolvable_block_size_func);
+    IntrinsicBlockSizeFunctionRef intrinsic_block_size_func,
+    LayoutUnit unresolvable_length_result);
 
 // Used for resolving min inline lengths, (|ComputedStyle::MinLogicalWidth|).
 inline LayoutUnit ResolveMinInlineLength(
@@ -140,12 +141,11 @@ inline LayoutUnit ResolveMinBlockLength(
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
     const LayoutUnit* override_percentage_resolution_size = nullptr) {
-  LayoutUnit border_padding_sum = border_padding.BlockSum();
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
       /* auto_length */ &Length::Auto(), override_available_size,
-      override_percentage_resolution_size,
-      [border_padding_sum]() { return border_padding_sum; });
+      override_percentage_resolution_size, []() { return kIndefiniteSize; },
+      border_padding.BlockSum());
 }
 
 // Used for resolving max block lengths, (|ComputedStyle::MaxLogicalHeight|).
@@ -161,7 +161,8 @@ inline LayoutUnit ResolveMaxBlockLength(
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
       /* auto_length */ &Length::Auto(), override_available_size,
-      override_percentage_resolution_size, []() { return LayoutUnit::Max(); });
+      override_percentage_resolution_size, []() { return kIndefiniteSize; },
+      LayoutUnit::Max());
 }
 
 // Used for resolving main block lengths, (|ComputedStyle::LogicalHeight|).
@@ -177,7 +178,7 @@ inline LayoutUnit ResolveMainBlockLength(
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length, auto_length,
       override_available_size, override_percentage_resolution_size,
-      [intrinsic_size]() { return intrinsic_size; });
+      [intrinsic_size]() { return intrinsic_size; }, kIndefiniteSize);
 }
 
 inline LayoutUnit ResolveMainBlockLength(
@@ -192,7 +193,7 @@ inline LayoutUnit ResolveMainBlockLength(
       constraint_space, style, border_padding, length, auto_length,
       override_available_size,
       /* override_percentage_resolution_size */ nullptr,
-      intrinsic_block_size_func);
+      intrinsic_block_size_func, kIndefiniteSize);
 }
 
 // Computes the min-block-size and max-block-size values for a node.
