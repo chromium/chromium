@@ -5137,16 +5137,6 @@ if (!is_android) {
         "//ui/webui/resources/cr_components/app_management:mojo_bindings",
         "//ui/wm/public",
         "//url",
-
-        # Gather browser tests from //c/b/ui/webui/ash subdirectories:
-        "//chrome/browser/ui/webui/ash/kerberos:browser_tests",
-        "//chrome/browser/ui/webui/ash/login:browser_tests",
-        "//chrome/browser/ui/webui/ash/login/testapi:browser_tests",
-        "//chrome/browser/ui/webui/ash/manage_mirrorsync:browser_tests",
-        "//chrome/browser/ui/webui/ash/office_fallback:browser_tests",
-        "//chrome/browser/ui/webui/ash/parent_access:browser_tests",
-        "//chrome/browser/ui/webui/ash/skyvault:browser_tests",
-        "//chrome/browser/ui/webui/ash/smb_shares:browser_tests",
       ]
     }
     if (safe_browsing_mode == 1) {
@@ -8839,15 +8829,6 @@ test("unit_tests") {
       "//ui/file_manager:resources_grit",
       "//ui/webui/resources/cr_components/app_management:unit_tests",
       "//ui/wm/public",
-
-      # Gather unit tests from //c/b/ui/webui/ash subdirectories:
-      "//chrome/browser/ui/webui/ash/emoji:unit_tests",
-      "//chrome/browser/ui/webui/ash/enterprise_reporting:unit_tests",
-      "//chrome/browser/ui/webui/ash/login:unit_tests",
-      "//chrome/browser/ui/webui/ash/mako:unit_tests",
-      "//chrome/browser/ui/webui/ash/parent_access:unit_tests",
-      "//chrome/browser/ui/webui/ash/print_preview_cros:unit_tests",
-      "//chrome/browser/ui/webui/ash/sensor_info:unit_tests",
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]

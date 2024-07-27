@@ -233,6 +233,15 @@ source_set("unit_tests") {
     "//ui/chromeos/resources:resources_grit",
     "//ui/gfx",
     "//ui/gfx:test_support",
+
+    # Gather unit tests from //c/b/ui/webui/ash subdirectories:
+    "//chrome/browser/ui/webui/ash/emoji:unit_tests",
+    "//chrome/browser/ui/webui/ash/enterprise_reporting:unit_tests",
+    "//chrome/browser/ui/webui/ash/login:unit_tests",
+    "//chrome/browser/ui/webui/ash/mako:unit_tests",
+    "//chrome/browser/ui/webui/ash/parent_access:unit_tests",
+    "//chrome/browser/ui/webui/ash/print_preview_cros:unit_tests",
+    "//chrome/browser/ui/webui/ash/sensor_info:unit_tests",
   ]
 }
 
@@ -262,5 +271,15 @@ source_set("browser_tests") {
     "//third_party/blink/public/common:headers",
     "//ui/aura",
     "//url",
+
+    # Gather browser tests from //c/b/ui/webui/ash subdirectories:
+    "//chrome/browser/ui/webui/ash/kerberos:browser_tests",
+    "//chrome/browser/ui/webui/ash/login:browser_tests",
+    "//chrome/browser/ui/webui/ash/login/testapi:browser_tests",
+    "//chrome/browser/ui/webui/ash/manage_mirrorsync:browser_tests",
+    "//chrome/browser/ui/webui/ash/office_fallback:browser_tests",
+    "//chrome/browser/ui/webui/ash/parent_access:browser_tests",
+    "//chrome/browser/ui/webui/ash/skyvault:browser_tests",
+    "//chrome/browser/ui/webui/ash/smb_shares:browser_tests",
   ]
 }
