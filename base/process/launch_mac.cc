@@ -252,8 +252,10 @@ Process LaunchProcess(const std::vector<std::string>& argv,
                                     ? options.real_path.value().c_str()
                                     : argv_cstr[0];
 
-  if (options.enable_cpu_security_mitigations) {
-    DPSXCHECK(posix_spawnattr_set_csm_np(attr.get(), POSIX_SPAWN_NP_CSM_ALL));
+  if (__builtin_available(macOS 11.0, *)) {
+    if (options.enable_cpu_security_mitigations) {
+      DPSXCHECK(posix_spawnattr_set_csm_np(attr.get(), POSIX_SPAWN_NP_CSM_ALL));
+    }
   }
 
   if (!options.current_directory.empty()) {
