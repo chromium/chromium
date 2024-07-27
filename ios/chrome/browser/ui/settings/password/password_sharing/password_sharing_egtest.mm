@@ -5,6 +5,7 @@
 #import "base/test/ios/wait_util.h"
 #import "build/branding_buildflags.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -40,6 +41,7 @@ using password_manager_test_utils::NavigationBarEditButton;
 using password_manager_test_utils::OpenPasswordManager;
 using password_manager_test_utils::PasswordDetailsShareButtonMatcher;
 using password_manager_test_utils::PasswordDetailsTableViewMatcher;
+using password_manager_test_utils::SaveExamplePasskeyToStore;
 using password_manager_test_utils::SavePasswordFormToProfileStore;
 
 // Matcher for Password Sharing First Run.
@@ -58,6 +60,18 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   return grey_accessibilityID(kPasswordPickerViewID);
 }
 
+GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
+  return [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(domain),
+                                          grey_accessibilityTrait(
+                                              UIAccessibilityTraitButton),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
+                                                  kScrollAmount)
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
+      performAction:grey_tap()];
+}
+
 // TODO(crbug.com/348484044): Re-enable the test suite on ipad on iOS 17.
 #define DISABLE_ON_IPAD_WITH_IOS_17                            \
   if (@available(iOS 17.0, *)) {                               \
@@ -74,6 +88,10 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 
 - (GREYElementInteraction*)saveExamplePasswordsToProfileStoreAndOpenDetails;
 
+- (GREYElementInteraction*)saveExamplePasskeyToStoreAndOpenDetails;
+
+- (GREYElementInteraction*)saveExamplePasskeyAndPasswordToStoreAndOpenDetails;
+
 @end
 
 @implementation PasswordSharingTestCase
@@ -86,16 +104,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 
   SavePasswordFormToProfileStore();
   OpenPasswordManager();
-
-  return [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"example.com"),
-                                          grey_accessibilityTrait(
-                                              UIAccessibilityTraitButton),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
-                                                  kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
-      performAction:grey_tap()];
+  return TapCredentialEntryWithDomain(@"example.com");
 }
 
 - (GREYElementInteraction*)saveExamplePasswordsToProfileStoreAndOpenDetails {
@@ -109,17 +118,30 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SavePasswordFormToProfileStore(/*password=*/@"password2",
                                  /*username=*/@"username2");
   OpenPasswordManager();
+  return TapCredentialEntryWithDomain(@"example.com, 2 accounts");
+}
 
-  return [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              @"example.com, 2 accounts"),
-                                          grey_accessibilityTrait(
-                                              UIAccessibilityTraitButton),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
-                                                  kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
-      performAction:grey_tap()];
+- (GREYElementInteraction*)saveExamplePasskeyToStoreAndOpenDetails {
+  // Mock successful reauth for opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  SaveExamplePasskeyToStore();
+  OpenPasswordManager();
+  return TapCredentialEntryWithDomain(@"example.com");
+}
+
+- (GREYElementInteraction*)saveExamplePasskeyAndPasswordToStoreAndOpenDetails {
+  // Mock successful reauth for opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  SaveExamplePasskeyToStore();
+  SavePasswordFormToProfileStore();
+  OpenPasswordManager();
+  return TapCredentialEntryWithDomain(@"example.com, 2 accounts");
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -134,6 +156,12 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   config.additional_args.push_back(
       std::string("-") + password_manager::kEnableShareButtonUnbranded);
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  if ([self isRunningTest:@selector(testShareButtonDisabledWithJustPasskeys)] ||
+      [self isRunningTest:@selector
+            (testShareButtonEnabledWithMixOfPasswordsAndPasskeys)]) {
+    config.features_enabled.push_back(syncer::kSyncWebauthnCredentials);
+  }
 
   return config;
 }
@@ -233,6 +261,24 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testShareButtonDisabledWithJustPasskeys {
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self saveExamplePasskeyToStoreAndOpenDetails];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_not(grey_enabled())];
+}
+
+- (void)testShareButtonEnabledWithMixOfPasswordsAndPasskeys {
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self saveExamplePasskeyAndPasswordToStoreAndOpenDetails];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_enabled()];
 }
 
 - (void)testFamilyPickerCancelFlow {

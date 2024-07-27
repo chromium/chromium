@@ -256,7 +256,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   // Share button should be hidden during editing.
   _shareButton.hidden = YES;
 
-  // If there are no passwords, proceed with editing without
+  // If there are no passwords or passkeys, proceed with editing without
   // reauthentication.
   if (![self hasAtLeastOnePasswordOrPasskey]) {
     [super editButtonPressed];
@@ -895,9 +895,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   _userEmail = userEmail;
 }
 
-- (void)setupRightShareButton:(BOOL)enabled {
-  SEL selector = enabled ? @selector(onShareButtonPressed)
-                         : @selector(onPolicyDisabledShareButtonPressed:);
+- (void)setupRightShareButton:(BOOL)policyEnabled {
+  SEL selector = policyEnabled ? @selector(onShareButtonPressed)
+                               : @selector(onPolicyDisabledShareButtonPressed:);
   UIBarButtonItem* shareButton = [[UIBarButtonItem alloc]
       initWithImage:DefaultSymbolWithPointSize(kShareSymbol,
                                                kSymbolActionPointSize)
@@ -905,6 +905,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
              target:self
              action:selector];
   shareButton.accessibilityIdentifier = kPasswordShareButtonID;
+  shareButton.enabled = [self hasAtLeastOnePassword];
   _shareButton = shareButton;
   self.navigationItem.rightBarButtonItems =
       @[ self.navigationItem.rightBarButtonItem, shareButton ];
@@ -1146,6 +1147,15 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 - (void)toggleNavigationBarRightButtonItem {
   self.navigationItem.rightBarButtonItem.enabled =
       self.shouldEnableEditDoneButton;
+}
+
+- (BOOL)hasAtLeastOnePassword {
+  for (CredentialDetails* credentialDetails in self.credentials) {
+    if (credentialDetails.password.length > 0) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 - (BOOL)hasAtLeastOnePasswordOrPasskey {
