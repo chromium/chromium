@@ -8732,7 +8732,7 @@
   {
     "name" : "toolbar-pinning",
     "owners": [ "corising@chromium.org", "josephjoopark@chromium.org", "tbergquist@chromium.org", "chrome-desktop-ui-sea@chromium.org" ],
-    "expiry_milestone" : 129
+    "expiry_milestone" : 135
   },
   {
     "name": "top-chrome-touch-ui",
