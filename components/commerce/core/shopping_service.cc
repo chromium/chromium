@@ -1594,7 +1594,8 @@ std::vector<DiscountInfo> ShoppingService::OptGuideResultToDiscountInfos(
 
       if (discount.has_offer_id()) {
         info.offer_id = discount.offer_id();
-      } else {
+      } else if (!commerce::kDiscountOnShoppyPage.Get()) {
+        // If kDiscountOnShoppyPage is on, offer_id is optional.
         continue;
       }
 
@@ -1611,15 +1612,20 @@ void ShoppingService::OnGetAllDiscountsFromOptGuide(
     const std::vector<DiscountsPair>& results) {
   DiscountsMap map;
   std::vector<std::string> urls_to_check_in_db;
-  for (auto res : results) {
-    if (res.second.size() > 0) {
-      map.insert(res);
+
+  for (const auto& discount_pair : results) {
+    const GURL& url = discount_pair.first;
+    const std::vector<DiscountInfo>& discount_infos = discount_pair.second;
+
+    if (discount_infos.empty()) {
+      urls_to_check_in_db.push_back(url.spec());
+    } else {
+      map.insert(discount_pair);
       base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
                                     DiscountsFetchResult::kInfoFromOptGuide);
-    } else {
-      urls_to_check_in_db.push_back(res.first.spec());
     }
   }
+
   if (discounts_storage_) {
     discounts_storage_->HandleServerDiscounts(
         urls_to_check_in_db, std::move(map), std::move(callback));

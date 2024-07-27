@@ -8,8 +8,10 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/history/core/browser/history_types.h"
@@ -40,9 +42,9 @@ const uint64_t kDiscountOfferId = 123456;
 const char kDeleteUrl1[] = "http://example.com/delete1";
 const char kDeleteUrl2[] = "http://example.com/delete2";
 
-commerce::DiscountsMap MockServerResults() {
+commerce::DiscountsMap MockServerResults(commerce::DiscountClusterType type) {
   commerce::DiscountInfo info;
-  info.cluster_type = commerce::DiscountClusterType::kOfferLevel;
+  info.cluster_type = type;
   info.id = kDiscountIdFromServer;
   info.type = commerce::DiscountType::kFreeListingWithCode;
   info.language_code = kDiscountLanguageCode;
@@ -51,7 +53,10 @@ commerce::DiscountsMap MockServerResults() {
   info.expiry_time_sec = kDiscountExpiryTime;
   info.is_merchant_wide = false;
   info.discount_code = kDiscountCode;
-  info.offer_id = kDiscountOfferId;
+
+  if (type == commerce::DiscountClusterType::kOfferLevel) {
+    info.offer_id = kDiscountOfferId;
+  }
 
   std::vector<commerce::DiscountInfo> infos;
   infos.push_back(info);
@@ -240,7 +245,8 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoUrlsToCheck) {
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
-      std::vector<std::string>(), MockServerResults(),
+      std::vector<std::string>(),
+      MockServerResults(commerce::DiscountClusterType::kOfferLevel),
       base::BindOnce(
           [](base::RunLoop* run_loop, const DiscountsMap& map) {
             ASSERT_EQ(1, (int)map.size());
@@ -272,7 +278,7 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_FailToLoad) {
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
       std::vector<std::string>{kDiscountsUrlToCheckInDb, kDiscountsUrlInDb},
-      MockServerResults(),
+      MockServerResults(commerce::DiscountClusterType::kOfferLevel),
       base::BindOnce(
           [](base::RunLoop* run_loop, const DiscountsMap& map) {
             ASSERT_EQ(1, (int)map.size());
@@ -305,7 +311,7 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsUnexpired) {
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
       std::vector<std::string>{kDiscountsUrlToCheckInDb, kDiscountsUrlInDb},
-      MockServerResults(),
+      MockServerResults(commerce::DiscountClusterType::kOfferLevel),
       base::BindOnce(
           [](base::RunLoop* run_loop, const DiscountsMap& map) {
             ASSERT_EQ(2, (int)map.size());
@@ -355,7 +361,7 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsExpired) {
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
       std::vector<std::string>{kDiscountsUrlToCheckInDb, kDiscountsUrlInDb},
-      MockServerResults(),
+      MockServerResults(commerce::DiscountClusterType::kOfferLevel),
       base::BindOnce(
           [](base::RunLoop* run_loop, const DiscountsMap& map) {
             ASSERT_EQ(1, (int)map.size());
@@ -390,7 +396,7 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_PartDiscountsExpired) {
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
       std::vector<std::string>{kDiscountsUrlToCheckInDb, kDiscountsUrlInDb},
-      MockServerResults(),
+      MockServerResults(commerce::DiscountClusterType::kOfferLevel),
       base::BindOnce(
           [](base::RunLoop* run_loop, const DiscountsMap& map) {
             ASSERT_EQ(2, (int)map.size());
@@ -435,7 +441,8 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_NoDiscountsFound) {
 
   base::RunLoop run_loop;
   storage_->HandleServerDiscounts(
-      std::vector<std::string>{kDiscountsUrlToCheckInDb}, MockServerResults(),
+      std::vector<std::string>{kDiscountsUrlToCheckInDb},
+      MockServerResults(commerce::DiscountClusterType::kOfferLevel),
       base::BindOnce(
           [](base::RunLoop* run_loop, const DiscountsMap& map) {
             ASSERT_EQ(1, (int)map.size());
@@ -512,6 +519,55 @@ TEST_F(DiscountsStorageTest,
           },
           &run_loop[1]));
   run_loop[1].Run();
+}
+
+TEST_F(DiscountsStorageTest,
+       TestHandleServerDiscounts_NotStoringPageLevelDiscounts_shoppyPageOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kEnableDiscountInfoApi, {{kDiscountOnShoppyPageParam, "true"}});
+
+  EXPECT_CALL(*proto_db_, InsertContent).Times(0);
+
+  base::RunLoop run_loop;
+  storage_->HandleServerDiscounts(
+      std::vector<std::string>(),
+      MockServerResults(commerce::DiscountClusterType::kPageLevel),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const DiscountsMap& map) {
+            ASSERT_EQ(1, (int)map.size());
+            auto discounts = map.find(GURL(kDiscountsUrlFromServer))->second;
+            ASSERT_EQ(1, (int)discounts.size());
+            ASSERT_EQ(kDiscountIdFromServer, discounts[0].id);
+
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(DiscountsStorageTest,
+       TestHandleServerDiscounts_NotStoringPageLevelDiscounts_shoppyPageOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kEnableDiscountInfoApi, {{kDiscountOnShoppyPageParam, "false"}});
+
+  EXPECT_CALL(*proto_db_, InsertContent).Times(0);
+
+  base::RunLoop run_loop;
+  storage_->HandleServerDiscounts(
+      std::vector<std::string>(),
+      MockServerResults(commerce::DiscountClusterType::kPageLevel),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const DiscountsMap& map) {
+            ASSERT_EQ(1, (int)map.size());
+            auto discounts = map.find(GURL(kDiscountsUrlFromServer))->second;
+            ASSERT_EQ(0, (int)discounts.size());
+
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
 }
 
 TEST_F(DiscountsStorageTest, TestOnURLsDeleted_DeleteAll) {
