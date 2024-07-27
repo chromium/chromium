@@ -71866,6 +71866,19 @@
       ]
      },
      "self-alignment": {
+      "block-justify-self.html": [
+       "1235a04a14e4329509b41621c1fa39c424390bf8",
+       [
+        null,
+        [
+         [
+          "/css/css-align/self-alignment/block-justify-self-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "self-align-safe-unsafe-flex-001.html": [
        "bb933b99d722d462b2b824d86fb15e825a598f5a",
        [
@@ -308960,6 +308973,10 @@
       ]
      },
      "self-alignment": {
+      "block-justify-self-ref.html": [
+       "862719986965da01ca6daf529ddb95c1f3bd206b",
+       []
+      ],
       "self-align-safe-unsafe-flex-001-ref.html": [
        "69d7f347087d7a298090a76762714268aa11930a",
        []
@@ -405436,7 +405453,7 @@
       []
      ],
      "utils_validation.js": [
-      "350e4548d6521f422f2154cae9417f24f2ee2e49",
+      "7e4369ac7da07d32bb99c09d6269add457d3f0fc",
       []
      ]
     }
@@ -411003,7 +411020,7 @@
     ],
     "BlobURL": {
      "cross-partition.tentative.https.html": [
-      "c75ce07d054eb79d048373ff003a3f385a813596",
+      "547905d1f6079b2bd3a9f156124cb6aeeaba58fb",
       [
        null,
        {
@@ -686851,7 +686868,7 @@
       ]
      ],
      "buffer.https.any.js": [
-      "eece969d8a3434b7278aa785b51d9d536bdab56b",
+      "f703371b3ac8ff88bf265437cf8b1932353262c1",
       [
        "webnn/conformance_tests/buffer.https.any.html?cpu",
        {
@@ -700798,7 +700815,7 @@
       ]
      ],
      "elementwise-logical.https.any.js": [
-      "25d7b59924cc4d5a2cff89ece5c5397f92d04c11",
+      "e5e5b5a5a81299c4d1faaeb95d383364437464e6",
       [
        "webnn/validation_tests/elementwise-logical.https.any.html",
        {
