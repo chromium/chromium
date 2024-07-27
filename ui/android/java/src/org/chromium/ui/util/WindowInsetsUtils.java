@@ -23,6 +23,9 @@ import java.util.List;
 public final class WindowInsetsUtils {
     private static final String TAG = "WindowInsetsUtils";
 
+    private static final Size DEFAULT_INSETS_FRAME = new Size(0, 0);
+    private static final List<Rect> DEFAULT_INSETS_BOUNDING_RECTS = List.of();
+
     private static Size sDefaultFrame;
     private static List<Rect> sDefaultBoundingRects;
 
@@ -129,12 +132,10 @@ public final class WindowInsetsUtils {
         // cached on the first failure and returned subsequently.
         if (sDefaultFrame != null) return sDefaultFrame;
         try {
-            if (windowInsets != null) {
-                return windowInsets.getFrame();
-            }
+            return windowInsets == null ? DEFAULT_INSETS_FRAME : windowInsets.getFrame();
         } catch (NoSuchMethodError e) {
             Log.w(TAG, e.toString());
-            sDefaultFrame = new Size(0, 0);
+            sDefaultFrame = DEFAULT_INSETS_FRAME;
         }
         return sDefaultFrame;
     }
@@ -148,12 +149,12 @@ public final class WindowInsetsUtils {
         // default value will be cached on the first failure and returned subsequently.
         if (sDefaultBoundingRects != null) return sDefaultBoundingRects;
         try {
-            if (windowInsets != null) {
-                return windowInsets.getBoundingRects(insetType);
-            }
+            return windowInsets == null
+                    ? DEFAULT_INSETS_BOUNDING_RECTS
+                    : windowInsets.getBoundingRects(insetType);
         } catch (NoSuchMethodError e) {
             Log.w(TAG, e.toString());
-            sDefaultBoundingRects = List.of();
+            sDefaultBoundingRects = DEFAULT_INSETS_BOUNDING_RECTS;
         }
         return sDefaultBoundingRects;
     }
