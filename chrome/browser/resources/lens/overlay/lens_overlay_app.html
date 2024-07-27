@@ -79,7 +79,7 @@
     height: 36px;
   }
 
-  .menu-item:hover {
+  .menu-item:focus, .menu-item:hover {
     background-color: rgba(var(--color-scrim-rgb), 0.05);
   }
 
@@ -185,24 +185,28 @@
     <div id="moreOptions">
       <cr-icon-button iron-icon="cr:more-vert" id="moreOptionsButton"
           class="action-button" on-click="onMoreOptionsButtonClick"
-          aria-label="$i18n{moreOptions}"
-          title="$i18n{moreOptions}">
+          role="button" aria-label="$i18n{moreOptions}"
+          aria-controls="moreOptionsMenu" aria-haspopup="menu"
+          aria-expanded="[[moreOptionsMenuVisible]]" title="$i18n{moreOptions}">
       </cr-icon-button>
-      <div id="moreOptionsMenu">
+      <div id="moreOptionsMenu" role="menu" aria-labelledby="moreOptionsButton">
         <div class="menu-item" on-click="onMyActivityClick"
-            aria-label="$i18n{myActivity}">
+            on-keydown="onMyActivityClick" role="menuitem" tabindex="0"
+            aria-labelledby="myActivity">
           <span class="menu-item-icon activity"></span>
           <span id="myActivity"
               class="menu-item-label">$i18n{myActivity}</span>
         </div>
         <div class="menu-item" on-click="onLearnMoreClick"
-            aria-label="$i18n{learnMore}">
+            on-keydown="onLearnMoreClick" role="menuitem" tabindex="0"
+            aria-labelledby="learnMore">
           <span class="menu-item-icon learn-more"></span>
           <span id="learnMore"
               class="menu-item-label">$i18n{learnMore}</span>
         </div>
         <div class="menu-item" on-click="onFeedbackClick"
-            aria-label="$i18n{sendFeedback}">
+            on-keydown="onFeedbackClick" role="menuitem" tabindex="0"
+            aria-labelledby="sendFeedback">
           <span class="menu-item-icon feedback"></span>
           <span id="sendFeedback"
               class="menu-item-label">$i18n{sendFeedback}</span>
