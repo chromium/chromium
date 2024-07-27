@@ -225,9 +225,9 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
 
   // Clear databases which are too old to process.
   DCHECK_LT(kDeprecatedVersionNumber, kVersionNumber);
-  if (!sql::MetaTable::RazeIfIncompatible(
+  if (sql::MetaTable::RazeIfIncompatible(
           db_.get(), /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
-          kVersionNumber)) {
+          kVersionNumber) == sql::RazeIfIncompatibleResult::kFailed) {
     return false;
   }
 

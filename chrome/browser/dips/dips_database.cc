@@ -230,9 +230,9 @@ sql::InitStatus DIPSDatabase::InitImpl() {
   }
   DCHECK(db_->is_open());
 
-  if (!sql::MetaTable::RazeIfIncompatible(
+  if (sql::MetaTable::RazeIfIncompatible(
           db_.get(), sql::MetaTable::kNoLowestSupportedVersion,
-          kLatestSchemaVersion)) {
+          kLatestSchemaVersion) == sql::RazeIfIncompatibleResult::kFailed) {
     return sql::INIT_FAILURE;
   }
 

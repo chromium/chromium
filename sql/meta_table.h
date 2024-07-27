@@ -16,6 +16,18 @@ namespace sql {
 
 class Database;
 
+// Denotes the result of MetaTable::RazeIfIncompatible().
+enum class RazeIfIncompatibleResult {
+  // Razing wasn't required as the DB version was compatible with the code.
+  kCompatible = 0,
+
+  // Razing was required, and it completed successfully.
+  kRazedSuccessfully = 1,
+
+  // An error occurred.
+  kFailed = 2,
+};
+
 // Creates and manages a table to store generic metadata. The features provided
 // are:
 // * An interface for storing multi-typed key-value data.
@@ -52,9 +64,6 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   // the latter, pass `kNoLowestSupportedVersion` for
   // `lowest_supported_version`.
   //
-  // Returns false if razing the database was necessary but failed or if
-  // determining the metadata version failed.
-  //
   // TODO(crbug.com/40777743): At this time the database is razed IFF meta
   // exists and contains a version row with the value not satisfying the
   // constraints. It may make sense to also raze if meta exists but has no
@@ -63,9 +72,10 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   // TODO(crbug.com/40777743): Folding this into Init() would allow enforcing
   // the version constraint, but Init() is often called in a transaction.
   static constexpr int kNoLowestSupportedVersion = 0;
-  [[nodiscard]] static bool RazeIfIncompatible(Database* db,
-                                               int lowest_supported_version,
-                                               int current_version);
+  [[nodiscard]] static RazeIfIncompatibleResult RazeIfIncompatible(
+      Database* db,
+      int lowest_supported_version,
+      int current_version);
 
   // Used to tuck some data into the meta table about mmap status. The value
   // represents how much data in bytes has successfully been read from the

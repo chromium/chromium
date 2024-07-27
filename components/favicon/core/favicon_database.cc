@@ -1017,9 +1017,9 @@ sql::InitStatus FaviconDatabase::InitImpl(const base::FilePath& db_name) {
 
   // Clear databases which are too old to process.
   DCHECK_LT(kDeprecatedVersionNumber, kCurrentVersionNumber);
-  if (!sql::MetaTable::RazeIfIncompatible(
+  if (sql::MetaTable::RazeIfIncompatible(
           &db_, /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
-          kCurrentVersionNumber)) {
+          kCurrentVersionNumber) == sql::RazeIfIncompatibleResult::kFailed) {
     return sql::INIT_FAILURE;
   }
 

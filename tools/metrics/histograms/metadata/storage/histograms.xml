@@ -771,6 +771,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.InterestGroup.InitializationResult"
+    enum="InterestGroupStorageInitializationResult" expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the result of database initialization, every time initialization is
+    attempted.
+  </summary>
+</histogram>
+
 <histogram name="Storage.InterestGroup.PerInterestGroup.NumAdComponents"
     units="ad components" expires_after="2025-01-05">
   <owner>caraitto@chromium.org</owner>
@@ -801,6 +811,33 @@ chromium-metrics-reviews@google.com.
     Records the number of interest groups loaded for a single group owner when
     running an ad auction. Recorded for each owner involved in a running ad
     auction.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.Upgrade{Outcome}{Version}Version"
+    units="version" expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the {Version} version number of database upgrades that {Outcome},
+    recorded each time the database upgrade has a &quot;{Outcome}&quot; outcome.
+  </summary>
+  <token key="Outcome">
+    <variant name="Failed" summary="fail"/>
+    <variant name="Succeeded" summary="succeed"/>
+  </token>
+  <token key="Version">
+    <variant name="End" summary="ending"/>
+    <variant name="Start" summary="starting"/>
+  </token>
+</histogram>
+
+<histogram name="Storage.InterestGroup.VacuumResult"
+    enum="InterestGroupStorageVacuumResult" expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the result of the vacuum operation, every time it is attempted.
   </summary>
 </histogram>
 

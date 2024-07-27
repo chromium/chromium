@@ -64,6 +64,43 @@ using auction_worklet::mojom::BiddingBrowserSignalsPtr;
 using auction_worklet::mojom::PreviousWinPtr;
 using SellerCapabilitiesType = blink::SellerCapabilitiesType;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(InterestGroupStorageInitializationResult)
+enum class InterestGroupStorageInitializationResult {
+  kSuccessAlreadyCurrent = 0,
+  kSuccessUpgraded = 1,
+  kSuccessCreateSchema = 2,
+  kSuccessCreateSchemaAfterIncompatibleRaze = 3,
+  kSuccessCreateSchemaAfterNoMetaTableRaze = 4,
+  kFailedCreateInMemory = 5,
+  kFailedCreateDirectory = 6,
+  kFailedCreateFile = 7,
+  kFailedToRazeIncompatible = 8,
+  kFailedToRazeNoMetaTable = 9,
+  kFailedMetaTableInit = 10,
+  kFailedCreateSchema = 11,
+  kFailedCreateSchemaAfterIncompatibleRaze = 12,
+  kFailedCreateSchemaAfterNoMetaTableRaze = 13,
+  kFailedUpgradeDB = 14,
+
+  kMaxValue = kFailedUpgradeDB,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:InterestGroupStorageInitializationResult)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(InterestGroupStorageVacuumResult)
+enum class InterestGroupStorageVacuumResult {
+  kSucceeded = 0,
+  kFailed = 1,
+
+  kMaxValue = kFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:InterestGroupStorageVacuumResult)
+
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("InterestGroups");
 
@@ -2554,6 +2591,157 @@ bool UpgradeV6SchemaToV7(sql::Database& db, sql::MetaTable& meta_table) {
   return true;
 }
 
+bool UpgradeDB(sql::Database& db,
+               const int db_version,
+               sql::MetaTable& meta_table,
+               const PassKey& pass_key) {
+  // Whether to vacuum the database after the upgrade. The vacuum must happen
+  // after the transaction is committed.
+  bool vacuum_db_post_upgrade = false;
+  {
+    sql::Transaction transaction(&db);
+    if (!transaction.Begin()) {
+      return false;
+    }
+    switch (db_version) {
+      case 6:
+        if (!UpgradeV6SchemaToV7(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 7:
+        if (!UpgradeV7SchemaToV8(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 8:
+        if (!UpgradeV8SchemaToV9(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 9:
+        if (!UpgradeV9SchemaToV10(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 10:
+        if (!UpgradeV10SchemaToV11(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 11:
+        if (!UpgradeV11SchemaToV12(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 12:
+        if (!UpgradeV12SchemaToV13(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 13:
+        if (!UpgradeV13SchemaToV14(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 14:
+        if (!UpgradeV14SchemaToV15(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 15:
+        if (!UpgradeV15SchemaToV16(db, meta_table, pass_key)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 16:
+        if (!UpgradeV16SchemaToV17(db, meta_table, pass_key)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 17:
+        if (!UpgradeV17SchemaToV18(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 18:
+        if (!UpgradeV18SchemaToV19(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 19:
+        if (!UpgradeV19SchemaToV20(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 20:
+        if (!UpgradeV20SchemaToV21(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 21:
+        if (!UpgradeV21SchemaToV22(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 22:
+        if (!UpgradeV22SchemaToV23(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 23:
+        if (!UpgradeV23SchemaToV24(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 24:
+        if (!UpgradeV24SchemaToV25(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 25:
+        vacuum_db_post_upgrade = true;
+        ABSL_FALLTHROUGH_INTENDED;
+      case 26:
+        vacuum_db_post_upgrade = true;
+        if (!UpgradeV26SchemaToV27(db, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 27:
+        if (!UpgradeV27SchemaToV28(db, meta_table)) {
+          return false;
+        }
+        if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
+          return false;
+        }
+    }
+    bool committed = transaction.Commit();
+    if (!committed) {
+      return false;
+    }
+    if (vacuum_db_post_upgrade) {
+      const bool vacuum_result = VacuumDB(db);
+      if (vacuum_result) {
+        base::UmaHistogramEnumeration(
+            "Storage.InterestGroup.VacuumResult",
+            InterestGroupStorageVacuumResult::kSucceeded);
+      } else {
+        DLOG(ERROR) << "Failed to vacuum: " << db.GetErrorMessage();
+        base::UmaHistogramEnumeration(
+            "Storage.InterestGroup.VacuumResult",
+            InterestGroupStorageVacuumResult::kFailed);
+      }
+    }
+
+    return true;
+  }
+
+  NOTREACHED_IN_MIGRATION();  // Only versions 6 up to the current version
+                              // should have passed RazeIfIncompatible.
+  return false;
+}
+
 bool RemoveJoinHistory(sql::Database& db,
                        const blink::InterestGroupKey& group_key) {
   sql::Statement remove_join_history(
@@ -4785,6 +4973,75 @@ sql::DatabaseOptions GetDatabaseOptions() {
           features::kFledgeEnableWALForInterestGroupStorage)};
 }
 
+void ReportCreateSchemaResult(
+    bool create_schema_result,
+    sql::RazeIfIncompatibleResult raze_if_incompatible_result,
+    bool missing_metatable_razed) {
+  if (create_schema_result) {
+    if (raze_if_incompatible_result ==
+        sql::RazeIfIncompatibleResult::kRazedSuccessfully) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.InitializationResult",
+          InterestGroupStorageInitializationResult::
+              kSuccessCreateSchemaAfterIncompatibleRaze);
+    } else if (missing_metatable_razed) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.InitializationResult",
+          InterestGroupStorageInitializationResult::
+              kSuccessCreateSchemaAfterNoMetaTableRaze);
+    } else {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.InitializationResult",
+          InterestGroupStorageInitializationResult::kSuccessCreateSchema);
+    }
+  } else {
+    if (raze_if_incompatible_result ==
+        sql::RazeIfIncompatibleResult::kRazedSuccessfully) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.InitializationResult",
+          InterestGroupStorageInitializationResult::
+              kFailedCreateSchemaAfterIncompatibleRaze);
+    } else if (missing_metatable_razed) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.InitializationResult",
+          InterestGroupStorageInitializationResult::
+              kFailedCreateSchemaAfterNoMetaTableRaze);
+    } else {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.InitializationResult",
+          InterestGroupStorageInitializationResult::kFailedCreateSchema);
+    }
+  }
+}
+
+void ReportUpgradeDBResult(bool upgrade_succeeded, int db_version) {
+  if (upgrade_succeeded) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.InitializationResult",
+        InterestGroupStorageInitializationResult::kSuccessUpgraded);
+    static_assert(kCurrentVersionNumber <= 100,
+                  "UmaHistogramExactLinear() only supports 100 buckets -- a "
+                  "new histogram is needed for larger versions.");
+    base::UmaHistogramExactLinear(
+        "Storage.InterestGroup.UpgradeSucceededStartVersion", db_version,
+        /*exclusive_max=*/101);
+    base::UmaHistogramExactLinear(
+        "Storage.InterestGroup.UpgradeSucceededEndVersion",
+        kCurrentVersionNumber,
+        /*exclusive_max=*/101);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.InitializationResult",
+        InterestGroupStorageInitializationResult::kFailedUpgradeDB);
+    base::UmaHistogramExactLinear(
+        "Storage.InterestGroup.UpgradeFailedStartVersion", db_version,
+        /*exclusive_max=*/101);
+    base::UmaHistogramExactLinear(
+        "Storage.InterestGroup.UpgradeFailedEndVersion", kCurrentVersionNumber,
+        /*exclusive_max=*/101);
+  }
+}
+
 }  // namespace
 
 constexpr base::TimeDelta InterestGroupStorage::kHistoryLength;
@@ -4850,6 +5107,9 @@ bool InterestGroupStorage::InitializeDB() {
     if (!db_->OpenInMemory()) {
       DLOG(ERROR) << "Failed to create in-memory interest group database: "
                   << db_->GetErrorMessage();
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.InitializationResult",
+          InterestGroupStorageInitializationResult::kFailedCreateInMemory);
       return false;
     }
   } else {
@@ -4857,11 +5117,17 @@ bool InterestGroupStorage::InitializeDB() {
 
     if (!base::CreateDirectory(dir)) {
       DLOG(ERROR) << "Failed to create directory for interest group database";
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.InitializationResult",
+          InterestGroupStorageInitializationResult::kFailedCreateDirectory);
       return false;
     }
     if (db_->Open(path_to_database_) == false) {
       DLOG(ERROR) << "Failed to open interest group database: "
                   << db_->GetErrorMessage();
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.InitializationResult",
+          InterestGroupStorageInitializationResult::kFailedCreateFile);
       return false;
     }
   }
@@ -4888,27 +5154,51 @@ bool InterestGroupStorage::InitializeSchema() {
     return false;
   }
 
-  if (!sql::MetaTable::RazeIfIncompatible(
+  sql::RazeIfIncompatibleResult raze_if_incompatible_result =
+      sql::MetaTable::RazeIfIncompatible(
           db_.get(), /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
-          kCurrentVersionNumber)) {
+          kCurrentVersionNumber);
+  if (raze_if_incompatible_result == sql::RazeIfIncompatibleResult::kFailed) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.InitializationResult",
+        InterestGroupStorageInitializationResult::kFailedToRazeIncompatible);
     return false;
   }
 
   sql::MetaTable meta_table;
+  bool missing_metatable_razed = false;
   bool has_metatable = meta_table.DoesTableExist(db_.get());
   if (!has_metatable && db_->DoesTableExist("interest_groups")) {
     // Existing DB with no meta table. We have no idea what version the schema
     // is so we should remove it and start fresh.
-    db_->Raze();
+    missing_metatable_razed = true;
+    // If the incompatible version raze happened and succeeded, it should have
+    // removed the interest_groups table.
+    CHECK_NE(raze_if_incompatible_result,
+             sql::RazeIfIncompatibleResult::kRazedSuccessfully);
+    if (!db_->Raze()) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.InitializationResult",
+          InterestGroupStorageInitializationResult::kFailedToRazeNoMetaTable);
+      return false;
+    }
   }
   const bool new_db = !has_metatable;
   if (!meta_table.Init(db_.get(), kCurrentVersionNumber,
                        kCompatibleVersionNumber)) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.InitializationResult",
+        InterestGroupStorageInitializationResult::kFailedMetaTableInit);
     return false;
   }
 
   if (new_db) {
-    return CreateV28Schema(*db_);
+    bool create_schema_result = CreateV28Schema(*db_);
+    ReportCreateSchemaResult(
+        /*create_schema_result=*/create_schema_result,
+        /*raze_if_incompatible_result=*/raze_if_incompatible_result,
+        /*missing_metatable_razed=*/missing_metatable_razed);
+    return create_schema_result;
   }
 
   const int db_version = meta_table.GetVersionNumber();
@@ -4918,149 +5208,19 @@ bool InterestGroupStorage::InitializeSchema() {
     // kCurrentVersionNumber >= meta_table.GetCompatibleVersionNumber
     // So DB is either the current database version or a future version that is
     // back-compatible with this version of Chrome.
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.InitializationResult",
+        InterestGroupStorageInitializationResult::kSuccessAlreadyCurrent);
     return true;
   }
-
-  // Whether to vacuum the database after the upgrade. The vacuum must happen
-  // after the transaction is committed.
-  bool vacuum_db_post_upgrade = false;
 
   // Older versions - should be migrated.
   // db_version < kCurrentVersionNumber
   // db_version > kDeprecatedVersionNumber
-  {
-    sql::Transaction transaction(db_.get());
-    if (!transaction.Begin()) {
-      return false;
-    }
-    switch (db_version) {
-      case 6:
-        if (!UpgradeV6SchemaToV7(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 7:
-        if (!UpgradeV7SchemaToV8(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 8:
-        if (!UpgradeV8SchemaToV9(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 9:
-        if (!UpgradeV9SchemaToV10(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 10:
-        if (!UpgradeV10SchemaToV11(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 11:
-        if (!UpgradeV11SchemaToV12(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 12:
-        if (!UpgradeV12SchemaToV13(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 13:
-        if (!UpgradeV13SchemaToV14(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 14:
-        if (!UpgradeV14SchemaToV15(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 15:
-        if (!UpgradeV15SchemaToV16(*db_, meta_table, PassKey())) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 16:
-        if (!UpgradeV16SchemaToV17(*db_, meta_table, PassKey())) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 17:
-        if (!UpgradeV17SchemaToV18(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 18:
-        if (!UpgradeV18SchemaToV19(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 19:
-        if (!UpgradeV19SchemaToV20(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 20:
-        if (!UpgradeV20SchemaToV21(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 21:
-        if (!UpgradeV21SchemaToV22(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 22:
-        if (!UpgradeV22SchemaToV23(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 23:
-        if (!UpgradeV23SchemaToV24(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 24:
-        if (!UpgradeV24SchemaToV25(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 25:
-        vacuum_db_post_upgrade = true;
-        ABSL_FALLTHROUGH_INTENDED;
-      case 26:
-        vacuum_db_post_upgrade = true;
-        if (!UpgradeV26SchemaToV27(*db_, meta_table)) {
-          return false;
-        }
-        ABSL_FALLTHROUGH_INTENDED;
-      case 27:
-        vacuum_db_post_upgrade = true;
-        if (!UpgradeV27SchemaToV28(*db_, meta_table)) {
-          return false;
-        }
-        if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
-          return false;
-        }
-    }
-    bool committed = transaction.Commit();
-    if (!committed) {
-      return false;
-    }
-    if (vacuum_db_post_upgrade && !VacuumDB(*db_)) {
-      DLOG(ERROR) << "Failed to vacuum: " << db_->GetErrorMessage();
-    }
-
-    return true;
-  }
-
-  NOTREACHED_IN_MIGRATION();  // Only versions 6 up to the current version
-                              // should have passed RazeIfIncompatible.
-  return false;
+  bool upgrade_succeeded = UpgradeDB(*db_, db_version, meta_table, PassKey());
+  ReportUpgradeDBResult(/*upgrade_succeeded=*/upgrade_succeeded,
+                        /*db_version=*/db_version);
+  return upgrade_succeeded;
 }
 
 std::optional<InterestGroupKanonUpdateParameter>

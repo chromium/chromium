@@ -127,9 +127,9 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
   // Clobber really old databases.
   static_assert(kDeprecatedVersionNumber < kCurrentVersionNumber,
                 "Deprecation version must be less than current");
-  if (!sql::MetaTable::RazeIfIncompatible(
+  if (sql::MetaTable::RazeIfIncompatible(
           &db_, /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
-          kCurrentVersionNumber)) {
+          kCurrentVersionNumber) == sql::RazeIfIncompatibleResult::kFailed) {
     LogInitResult(WebDatabaseInitResult::kCouldNotRazeIncompatibleVersion);
     return sql::INIT_FAILURE;
   }
