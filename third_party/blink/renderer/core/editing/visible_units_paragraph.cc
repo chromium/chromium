@@ -225,6 +225,9 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
              IsEditable(*next_node_iterator) != start_node_is_editable) {
         if (RuntimeEnabledFeatures::
                 HandleDeletionWithNonEditableContentAtBlockBoundaryEnabled()) {
+          if (!next_node_iterator->IsDescendantOf(highest_root)) {
+            break;
+          }
           candidate_node = next_node_iterator;
           candidate_type = PositionAnchorType::kAfterAnchor;
           next_node_iterator =
