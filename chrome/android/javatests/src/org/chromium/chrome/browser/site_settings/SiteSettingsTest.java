@@ -2575,6 +2575,9 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testAutorevokePermissionsSwitch() {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SiteSettings.PERMISSION_AUTOREVOCATION_HISTOGRAM_NAME, true);
         // Set the initial toggle state.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2603,6 +2606,7 @@ public class SiteSettingsTest {
                             UserPrefs.get(getBrowserContextHandle())
                                     .getBoolean(Pref.UNUSED_SITE_PERMISSIONS_REVOCATION_ENABLED));
                 });
+        histogramExpectation.assertExpected();
 
         settingsActivity.finish();
     }
