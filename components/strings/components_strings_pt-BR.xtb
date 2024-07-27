@@ -306,7 +306,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1559231233244409191">Papelão (triplo)</translation>
 <translation id="1559447966090556585">Receber notificações?</translation>
-<translation id="1559486004335285648">Preenchimento automático de informações de pagamento</translation>
+<translation id="1559486004335285648">Preencher informações de pagamento automaticamente?</translation>
 <translation id="1559528461873125649">Arquivo ou diretório não encontrado</translation>
 <translation id="1559572115229829303">&lt;p&gt;Não é possível estabelecer uma conexão particular com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque a data e hora do seu dispositivo (<ph name="DATE_AND_TIME" />) estão incorretas.&lt;/p&gt;
 
