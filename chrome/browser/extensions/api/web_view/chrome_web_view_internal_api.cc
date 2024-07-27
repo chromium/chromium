@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/strings/string_util.h"
-#include "chrome/browser/extensions/api/context_menus/context_menus_api.h"
 #include "chrome/browser/extensions/context_menu_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/chrome_web_view_internal.h"
