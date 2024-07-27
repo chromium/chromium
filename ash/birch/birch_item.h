@@ -20,6 +20,9 @@ class PrefRegistrySimple;
 namespace ash {
 
 // These values are used in metrics and should not be reordered or deleted.
+// If you are adding to this enum, please keep in sync with
+// tools/metrics/histograms/metadata/ash/enums.xml as well as metrics in
+// tools/metrics/histograms/metadata/ash/histograms.xml
 enum class BirchItemType {
   kTest = 0,          // Internal type used for testing.
   kCalendar = 1,      // Calendar event.
