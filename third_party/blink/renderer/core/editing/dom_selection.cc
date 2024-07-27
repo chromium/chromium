@@ -565,6 +565,67 @@ Range* DOMSelection::getRangeAt(unsigned index,
   return range;
 }
 
+// https://www.w3.org/TR/selection-api/#dom-selection-getcomposedranges
+const StaticRangeVector DOMSelection::getComposedRanges(
+    const HeapVector<Member<ShadowRoot>>& shadowRoots) const {
+  StaticRangeVector ranges;
+  // 1. If this is empty, return an empty array.
+  if (!IsAvailable()) {
+    return ranges;
+  }
+  TemporaryRange temp_range(this, PrimaryRangeOrNull());
+  Range* range = temp_range.GetRange();
+  if (!range) {
+    return ranges;
+  }
+  // 2. Otherwise, let startNode be start node of the range associated with
+  // this, and let startOffset be start offset of the range.
+  Node* startNode = range->startContainer();
+  unsigned startOffset = range->startOffset();
+  // 3. Rescope startNode and startOffset with listed shadow roots.
+  Rescope(startNode, startOffset, shadowRoots, /*isEnd=*/false);
+
+  // 4. Let endNode be end node of the range associated with this, and let
+  // endOffset be end offset of the range.
+  Node* endNode = range->endContainer();
+  unsigned endOffset = range->endOffset();
+  // 5. Rescope endNode and endOffset with listed shadow roots.
+  Rescope(endNode, endOffset, shadowRoots, /*isEnd=*/true);
+
+  // 6. Return an array consisting of new StaticRange whose start node is
+  // startNode, start offset is startOffset, end node is endNode, and end
+  // offset is endOffset.
+  ranges.push_back(MakeGarbageCollected<StaticRange>(
+      Selection().GetDocument(), startNode, startOffset, endNode, endOffset));
+  return ranges;
+}
+
+// If isEnd is false, rescope following spec step 3.
+// Else, Rescope following sepc step 5.
+// https://www.w3.org/TR/selection-api/#dom-selection-getcomposedranges
+void DOMSelection::Rescope(Node*& node,
+                           unsigned& offset,
+                           const HeapVector<Member<ShadowRoot>>& shadowRoots,
+                           bool isEnd) const {
+  // 3. & 5. While node is a node, node's root is a shadow root, and
+  // node's root is not a shadow-including inclusive ancestor of any of
+  // shadowRoots, repeat these steps:
+  while (node && node->ContainingShadowRoot() &&
+         !shadowRoots.Contains(node->ContainingShadowRoot())) {
+    Element* host = node->OwnerShadowHost();
+    if (!host) {
+      return;
+    }
+    // 1. Set node to node's root's host's parent.
+    node = host->parentNode();
+    // 2. Set offset to index of node's root's host.
+    offset = host->NodeIndex();
+    if (isEnd) {
+      offset += 1;
+    }
+  }
+}
+
 Range* DOMSelection::PrimaryRangeOrNull() const {
   return rangeCount() > 0 ? getRangeAt(0, ASSERT_NO_EXCEPTION) : nullptr;
 }

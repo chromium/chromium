@@ -4406,6 +4406,8 @@ enum WebFeature {
   kNoVarySearchPrerender = 5037,
   kV8AITextSession_Clone_Method = 5038,
   kGamepadHapticActuatorType = 5039,
+  kSelectionDirection = 5040,
+  kSelectionGetComposedRanges = 5041,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
