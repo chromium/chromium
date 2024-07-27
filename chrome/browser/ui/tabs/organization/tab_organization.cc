@@ -82,7 +82,12 @@ bool TabOrganization::IsValidForOrganizing() const {
     return false;
   }
 
-  // there must be at least 2 tabs that are valid for organization.
+  // There must be at least 1 tab that is new to the group.
+  if ((tab_datas_.size() - first_new_tab_index_) == 0) {
+    return false;
+  }
+
+  // There must be at least 2 tabs that are valid for organization.
   int valid_tab_count = 0;
   for (const std::unique_ptr<TabData>& tab_data : tab_datas_) {
     if (tab_data->IsValidForOrganizing(group_id_)) {
