@@ -91,17 +91,22 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
 
   hover_button->SetProperty(views::kBoxLayoutFlexKey,
                             views::BoxLayoutFlexSpecification());
+  hover_button->SetBorder(nullptr);
+
   views::BoxLayout::CrossAxisAlignment alignment =
       views::BoxLayout::CrossAxisAlignment::kCenter;
   if (orientation == views::BoxLayout::Orientation::kVertical) {
-    // Set the view to take the whole width of the bubble.
-    hover_button->SetPreferredSize(
-        gfx::Size(views::LayoutProvider::Get()->GetDistanceMetric(
-                      views::DISTANCE_BUBBLE_PREFERRED_WIDTH),
-                  GetPreferredSize().height()));
     hover_button->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
                                        views::style::STYLE_SECONDARY);
-    // This will place the sign in button at the horizontal end of the bubble.
+    const int hover_button_width =
+        views::LayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+    // Set the view to take the whole width of the bubble.
+    hover_button->SetPreferredSize(
+        gfx::Size(hover_button_width,
+                  hover_button->GetHeightForWidth(hover_button_width)));
+    // This will place the sign in button at
+    // the horizontal end of the bubble.
     alignment = views::BoxLayout::CrossAxisAlignment::kEnd;
   }
   button_layout->set_cross_axis_alignment(alignment);
@@ -109,7 +114,6 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
   views::Builder<BubbleSignInPromoSignInButtonView>(this)
       .SetLayoutManager(std::move(button_layout))
       .AddChildren(views::Builder<HoverButton>(std::move(hover_button))
-                       .SetBorder(std::unique_ptr<views::Border>(nullptr))
                        .SetEnabled(false),
                    views::Builder<views::MdTextButton>()
                        .SetText(button_text)

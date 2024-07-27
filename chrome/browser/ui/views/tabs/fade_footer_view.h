@@ -43,7 +43,6 @@ class FooterRow : public FadeWrapper<views::View, T> {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
-  int GetHeightForWidth(int width) const override;
 
   // FadeWrapper:
   void SetFade(double percent) override;

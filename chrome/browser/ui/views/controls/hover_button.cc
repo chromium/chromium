@@ -239,14 +239,6 @@ gfx::Size HoverButton::CalculatePreferredSize(
   return views::LabelButton::CalculatePreferredSize(available_size);
 }
 
-int HoverButton::GetHeightForWidth(int w) const {
-  if (label_wrapper_) {
-    return GetLayoutManager()->GetPreferredHeightForWidth(this, w);
-  }
-
-  return views::LabelButton::GetHeightForWidth(w);
-}
-
 void HoverButton::SetBorder(std::unique_ptr<views::Border> b) {
   LabelButton::SetBorder(std::move(b));
   PreferredSizeChanged();

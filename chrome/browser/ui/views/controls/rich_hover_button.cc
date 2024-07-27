@@ -238,10 +238,6 @@ gfx::Size RichHoverButton::CalculatePreferredSize(
   return Button::CalculatePreferredSize(available_size);
 }
 
-int RichHoverButton::GetHeightForWidth(int w) const {
-  return Button::GetHeightForWidth(w);
-}
-
 void RichHoverButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   return Button::OnBoundsChanged(previous_bounds);
 }
