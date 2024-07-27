@@ -92,6 +92,54 @@ enum class InterestGroupStorageInitializationResult {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
+// LINT.IfChange(InterestGroupStorageJSONDeserializationResult)
+enum class InterestGroupStorageJSONDeserializationResult {
+  kSucceeded = 0,
+  kFailed = 1,
+
+  kMaxValue = kFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:InterestGroupStorageJSONDeserializationResult)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(InterestGroupStorageJSONSerializationResult)
+enum class InterestGroupStorageJSONSerializationResult {
+  kSucceeded = 0,
+  kFailed = 1,
+
+  kMaxValue = kFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:InterestGroupStorageJSONSerializationResult)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(InterestGroupStorageProtoDeserializationResult)
+enum class InterestGroupStorageProtoDeserializationResult {
+  kSucceeded = 0,
+  kFailed = 1,
+
+  kMaxValue = kFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:InterestGroupStorageProtoDeserializationResult)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(InterestGroupStorageProtoSerializationResult)
+enum class InterestGroupStorageProtoSerializationResult {
+  kSucceeded = 0,
+  kFailed = 1,
+
+  kMaxValue = kFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:InterestGroupStorageProtoSerializationResult)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // LINT.IfChange(InterestGroupStorageVacuumResult)
 enum class InterestGroupStorageVacuumResult {
   kSucceeded = 0,
@@ -182,7 +230,16 @@ const int kDeprecatedVersionNumber = 5;
 std::string Serialize(base::ValueView value_view) {
   std::string json_output;
   JSONStringValueSerializer serializer(&json_output);
-  serializer.Serialize(value_view);
+  if (serializer.Serialize(value_view)) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.JSONSerializationResult",
+        InterestGroupStorageJSONSerializationResult::kSucceeded);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.JSONSerializationResult",
+        InterestGroupStorageJSONSerializationResult::kFailed);
+    // TODO(crbug.com/355010821): Consider bubbling out the failure.
+  }
   return json_output;
 }
 std::unique_ptr<base::Value> DeserializeValue(
@@ -191,8 +248,21 @@ std::unique_ptr<base::Value> DeserializeValue(
     return {};
   }
   JSONStringValueDeserializer deserializer(serialized_value);
-  return deserializer.Deserialize(/*error_code=*/nullptr,
-                                  /*error_message=*/nullptr);
+  std::unique_ptr<base::Value> result =
+      deserializer.Deserialize(/*error_code=*/nullptr,
+                               /*error_message=*/nullptr);
+  if (result) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.JSONDeserializationResult",
+        InterestGroupStorageJSONDeserializationResult::kSucceeded);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.JSONDeserializationResult",
+        InterestGroupStorageJSONDeserializationResult::kFailed);
+    // TODO(crbug.com/355010821): Consider bubbling out the failure.
+  }
+
+  return result;
 }
 
 std::string Serialize(const url::Origin& origin) {
@@ -334,7 +404,16 @@ std::string Serialize(
   AdProtos ad_protos =
       ads.has_value() ? GetAdProtosFromAds(ads.value()) : AdProtos();
 
-  ad_protos.SerializeToString(&serialized_ads);
+  if (ad_protos.SerializeToString(&serialized_ads)) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.AdProtos",
+        InterestGroupStorageProtoSerializationResult::kSucceeded);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.AdProtos",
+        InterestGroupStorageProtoSerializationResult::kFailed);
+    // TODO(crbug.com/355010821): Consider bubbling out the failure.
+  }
   return serialized_ads;
 }
 
@@ -363,6 +442,17 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
   AdProtos ad_protos;
 
   bool success = ad_protos.ParseFromString(serialized_ads);
+
+  if (success) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoDeserializationResult.AdProtos",
+        InterestGroupStorageProtoDeserializationResult::kSucceeded);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoDeserializationResult.AdProtos",
+        InterestGroupStorageProtoDeserializationResult::kFailed);
+    // TODO(crbug.com/355010821): Consider bubbling out the failure.
+  }
 
   if (not success || ad_protos.ads().empty()) {
     return std::nullopt;
@@ -1186,7 +1276,18 @@ bool UpgradeV26SchemaToV27(sql::Database& db, sql::MetaTable& meta_table) {
       ));
 
   copy_interest_groups.BindTime(0, base::Time::Min());
-  copy_interest_groups.BindBlob(1, KAnonKeyProtos().SerializeAsString());
+  std::string kanon_key_protos_str;
+  if (KAnonKeyProtos().SerializeToString(&kanon_key_protos_str)) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.KAnonKeyProtos",
+        InterestGroupStorageProtoSerializationResult::kSucceeded);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.KAnonKeyProtos",
+        InterestGroupStorageProtoSerializationResult::kFailed);
+    // TODO(crbug.com/355010821): Consider bubbling out the failure.
+  }
+  copy_interest_groups.BindBlob(1, kanon_key_protos_str);
 
   if (!copy_interest_groups.Run()) {
     return false;
@@ -1244,7 +1345,18 @@ bool UpgradeV26SchemaToV27(sql::Database& db, sql::MetaTable& meta_table) {
 
   for (auto [owner_name_pair, keys] : positive_keys) {
     move_positive_kanon_keys.Reset(true);
-    move_positive_kanon_keys.BindBlob(0, keys.SerializeAsString());
+    std::string keys_str;
+    if (keys.SerializeToString(&keys_str)) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.ProtoSerializationResult.KAnonKeyProtos",
+          InterestGroupStorageProtoSerializationResult::kSucceeded);
+    } else {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.ProtoSerializationResult.KAnonKeyProtos",
+          InterestGroupStorageProtoSerializationResult::kFailed);
+      // TODO(crbug.com/355010821): Consider bubbling out the failure.
+    }
+    move_positive_kanon_keys.BindBlob(0, keys_str);
     move_positive_kanon_keys.BindString(1, owner_name_pair.first);
     move_positive_kanon_keys.BindString(2, owner_name_pair.second);
     if (!move_positive_kanon_keys.Run()) {
@@ -1934,7 +2046,16 @@ bool UpgradeV15SchemaToV16(sql::Database& db,
       "FROM interest_groups"));
   // clang-format on
   std::string empty_ad_proto_value;
-  AdProtos().SerializeToString(&empty_ad_proto_value);
+  if (!AdProtos().SerializeToString(&empty_ad_proto_value)) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.AdProtos",
+        InterestGroupStorageProtoSerializationResult::kSucceeded);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.AdProtos",
+        InterestGroupStorageProtoSerializationResult::kFailed);
+    // TODO(crbug.com/355010821): Consider bubbling out the failure.
+  }
   kCopyInterestGroupTableWithEmptyAdPBsSql.BindBlob(0, empty_ad_proto_value);
   kCopyInterestGroupTableWithEmptyAdPBsSql.BindBlob(1, empty_ad_proto_value);
 
@@ -3004,7 +3125,16 @@ void PopulateInterestGroupFromQueryResult(sql::Statement& load,
   }
   group.last_k_anon_updated = load.ColumnTime(27);
   KAnonKeyProtos keys_proto;
-  keys_proto.ParseFromString(load.ColumnString(28));
+  if (keys_proto.ParseFromString(load.ColumnString(28))) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoDeserializationResult.KAnonKeyProtos",
+        InterestGroupStorageProtoDeserializationResult::kSucceeded);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoDeserializationResult.KAnonKeyProtos",
+        InterestGroupStorageProtoDeserializationResult::kFailed);
+    // TODO(crbug.com/355010821): Consider bubbling out the failure.
+  }
   group.hashed_kanon_keys =
       std::vector(keys_proto.keys().begin(), keys_proto.keys().end());
 }
@@ -3252,7 +3382,18 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
   KAnonKeyProtos key_proto;
   *key_proto.mutable_keys() = {positive_kanon_keys.begin(),
                                positive_kanon_keys.end()};
-  join_group.BindBlob(33, key_proto.SerializeAsString());
+  std::string key_proto_str;
+  if (key_proto.SerializeToString(&key_proto_str)) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.KAnonKeyProtos",
+        InterestGroupStorageProtoSerializationResult::kSucceeded);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.KAnonKeyProtos",
+        InterestGroupStorageProtoSerializationResult::kFailed);
+    // TODO(crbug.com/355010821): Consider bubbling out the failure.
+  }
+  join_group.BindBlob(33, key_proto_str);
 
   if (!join_group.Run()) {
     return std::nullopt;
@@ -3378,7 +3519,18 @@ bool DoStoreInterestGroupUpdate(
   KAnonKeyProtos key_proto;
   *key_proto.mutable_keys() = {positive_kanon_keys.begin(),
                                positive_kanon_keys.end()};
-  store_group.BindBlob(26, key_proto.SerializeAsString());
+  std::string key_proto_str;
+  if (key_proto.SerializeToString(&key_proto_str)) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.KAnonKeyProtos",
+        InterestGroupStorageProtoSerializationResult::kSucceeded);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.KAnonKeyProtos",
+        InterestGroupStorageProtoSerializationResult::kFailed);
+    // TODO(crbug.com/355010821): Consider bubbling out the failure.
+  }
+  store_group.BindBlob(26, key_proto_str);
 
   store_group.BindString(27, Serialize(group.owner));
   store_group.BindString(28, group.name);
@@ -3762,8 +3914,14 @@ bool DoUpdateKAnonymity(sql::Database& db,
       return false;
     }
     std::string k_anon_keys_str = get_existing_keys.ColumnString(1);
-    bool success = keys_to_insert.ParseFromString(k_anon_keys_str);
-    if (!success) {
+    if (keys_to_insert.ParseFromString(k_anon_keys_str)) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.ProtoDeserializationResult.KAnonKeyProtos",
+          InterestGroupStorageProtoDeserializationResult::kSucceeded);
+    } else {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.ProtoDeserializationResult.KAnonKeyProtos",
+          InterestGroupStorageProtoDeserializationResult::kFailed);
       return false;
     }
     existing_keys.insert(keys_to_insert.keys().begin(),
@@ -3783,7 +3941,18 @@ bool DoUpdateKAnonymity(sql::Database& db,
 
   set_values.Reset(true);
   set_values.BindTime(0, update_time_to_insert);
-  set_values.BindBlob(1, keys_to_insert.SerializeAsString());
+  std::string keys_to_insert_str;
+  if (keys_to_insert.SerializeToString(&keys_to_insert_str)) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.KAnonKeyProtos",
+        InterestGroupStorageProtoSerializationResult::kSucceeded);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.KAnonKeyProtos",
+        InterestGroupStorageProtoSerializationResult::kFailed);
+    // TODO(crbug.com/355010821): Consider bubbling out the failure.
+  }
+  set_values.BindBlob(1, keys_to_insert_str);
   set_values.BindString(2, Serialize(interest_group_key.owner));
   set_values.BindString(3, interest_group_key.name);
   set_values.BindTime(4, update_time);
@@ -4874,7 +5043,20 @@ bool DoSetBiddingAndAuctionServerKeys(
 
   insert_keys_statement.Reset(true);
   insert_keys_statement.BindString(0, Serialize(coordinator));
-  insert_keys_statement.BindBlob(1, key_protos.SerializeAsString());
+  std::string key_protos_str;
+  if (key_protos.SerializeToString(&key_protos_str)) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult."
+        "BiddingAndAuctionServerKeyProtos",
+        InterestGroupStorageProtoSerializationResult::kSucceeded);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult."
+        "BiddingAndAuctionServerKeyProtos",
+        InterestGroupStorageProtoSerializationResult::kFailed);
+    // TODO(crbug.com/355010821): Consider bubbling out the failure.
+  }
+  insert_keys_statement.BindBlob(1, key_protos_str);
   insert_keys_statement.BindTime(2, expiration);
   return insert_keys_statement.Run();
 }
@@ -4902,6 +5084,18 @@ DoGetBiddingAndAuctionServerKeys(sql::Database& db,
     std::string key_blob = keys_statement.ColumnString(1);
     BiddingAndAuctionServerKeyProtos key_protos;
     bool success = key_protos.ParseFromString(key_blob);
+    if (success) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.ProtoDeserializationResult."
+          "BiddingAndAuctionServerKeyProtos",
+          InterestGroupStorageProtoDeserializationResult::kSucceeded);
+    } else {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.ProtoDeserializationResult."
+          "BiddingAndAuctionServerKeyProtos",
+          InterestGroupStorageProtoDeserializationResult::kFailed);
+      // TODO(crbug.com/355010821): Consider bubbling out the failure.
+    }
 
     if (not success || key_protos.keys().empty()) {
       return {base::Time::Min(), {}};

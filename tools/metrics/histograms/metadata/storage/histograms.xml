@@ -55,6 +55,13 @@ chromium-metrics-reviews@google.com.
   <variant name="Web" summary="Web"/>
 </variants>
 
+<variants name="InterestGroupStorageProtoType">
+  <variant name="AdProtos" summary="AdProtos"/>
+  <variant name="BiddingAndAuctionServerKeyProtos"
+      summary="BiddingAndAuctionServerKeyProtos"/>
+  <variant name="KAnonKeyProtos" summary="KAnonKeyProtos"/>
+</variants>
+
 <histogram name="API.StorageAccess.AllowedRequests3" enum="StorageAccessResult"
     expires_after="2024-07-28">
   <owner>mkwst@chromium.org</owner>
@@ -781,6 +788,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.InterestGroup.JSONDeserializationResult"
+    enum="InterestGroupStorageJSONDeserializationResult"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the result of JSON deserialization, every time it is attempted.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.JSONSerializationResult"
+    enum="InterestGroupStorageJSONSerializationResult"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the result of JSON serialization, every time it is attempted.
+  </summary>
+</histogram>
+
 <histogram name="Storage.InterestGroup.PerInterestGroup.NumAdComponents"
     units="ad components" expires_after="2025-01-05">
   <owner>caraitto@chromium.org</owner>
@@ -812,6 +839,30 @@ chromium-metrics-reviews@google.com.
     running an ad auction. Recorded for each owner involved in a running ad
     auction.
   </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.ProtoDeserializationResult.{Type}"
+    enum="InterestGroupStorageProtoDeserializationResult"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the result of {Type} Proto deserialization, every time it is
+    attempted.
+  </summary>
+  <token key="Type" variants="InterestGroupStorageProtoType"/>
+</histogram>
+
+<histogram name="Storage.InterestGroup.ProtoSerializationResult.{Type}"
+    enum="InterestGroupStorageProtoSerializationResult"
+    expires_after="2025-01-05">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the result of {Type} Proto serialization, every time it is
+    attempted.
+  </summary>
+  <token key="Type" variants="InterestGroupStorageProtoType"/>
 </histogram>
 
 <histogram name="Storage.InterestGroup.Upgrade{Outcome}{Version}Version"
