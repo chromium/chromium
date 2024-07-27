@@ -30,11 +30,6 @@
 -org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNoNewTabForSameApp
 -org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNoNewTabForSameAppOnStart
 
-# crbug.com/351019207
--org.chromium.chrome.browser.omnibox.UrlBarTest.testAutocompletionChangesTriggerCorrectSuggestions
--org.chromium.chrome.browser.omnibox.UrlBarTest.testAutocorrectionChangesTriggerCorrectSuggestions
--org.chromium.chrome.browser.omnibox.UrlBarTest.testDelayedCompositionCorrectedWithAutocomplete
-
 # crbug.com/351025215
 -org.chromium.chrome.browser.share.share_sheet.ShareSheetTest.nothingFromDefaultRankingAvailable
 
