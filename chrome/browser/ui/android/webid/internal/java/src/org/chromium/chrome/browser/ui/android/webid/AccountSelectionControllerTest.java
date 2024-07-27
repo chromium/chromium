@@ -164,37 +164,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
     }
 
-    @Test
-    public void testBrandIconDownloadFails() {
-        doAnswer(
-                        new Answer<Void>() {
-                            @Override
-                            public Void answer(InvocationOnMock invocation) {
-                                Callback<Bitmap> callback =
-                                        (Callback<Bitmap>) invocation.getArguments()[1];
-                                callback.onResult(null);
-                                return null;
-                            }
-                        })
-                .when(mMockImageFetcher)
-                .fetchImage(any(), any(Callback.class));
-
-        mMediator.showAccounts(
-                mTestEtldPlusOne,
-                mTestEtldPlusOne2,
-                Arrays.asList(mAnaAccount),
-                mIdpMetadata,
-                mClientIdMetadata,
-                /* isAutoReauthn= */ false,
-                RpContext.SIGN_IN,
-                /* requestPermission= */ true);
-
-        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
-        // Brand icon should be transparent placeholder icon. This is useful so that the header text
-        // wrapping does not change in the case that the brand icon download succeeds.
-        assertNotNull(headerModel.get(IDP_BRAND_ICON));
-    }
-
     /**
      * Test that the FedCM account picker does not display the brand icon placeholder if the brand
      * icon URL is empty.

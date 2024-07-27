@@ -480,7 +480,11 @@ class AccountSelectionMediator {
             boolean isAutoReauthn,
             @RpContext.EnumType int rpContext,
             boolean requestPermission) {
-        showPlaceholderIcon(idpMetadata);
+        // On widget mode, show placeholder icon to preserve header text wrapping when icon is
+        // fetched.
+        if (mRpMode == RpMode.WIDGET) {
+            showPlaceholderIcon(idpMetadata);
+        }
         mSelectedAccount = null;
         if (accounts.size() == 1 && (isAutoReauthn || !idpMetadata.supportsAddAccount())) {
             mSelectedAccount = accounts.get(0);
