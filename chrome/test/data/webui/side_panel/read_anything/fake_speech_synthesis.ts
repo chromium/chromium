@@ -15,6 +15,7 @@ export class FakeSpeechSynthesis {
   canceledUtterances: SpeechSynthesisUtterance[];
   currentUtterance: SpeechSynthesisUtterance|undefined;
   private voices_: SpeechSynthesisVoice[] = [];
+  private maxSegments_: number|undefined;
 
 
   constructor() {
@@ -63,6 +64,10 @@ export class FakeSpeechSynthesis {
   }
 
   speak(utterance: SpeechSynthesisUtterance) {
+    if (this.maxSegments_ &&
+        this.maxSegments_ <= this.spokenUtterances.length) {
+      return;
+    }
     this.currentUtterance = utterance;
     this.paused = false;
     this.speaking = true;
@@ -101,6 +106,16 @@ export class FakeSpeechSynthesis {
 
   useLocalVoices() {
     this.shouldUseLocalVoices = true;
+  }
+
+  // Set the max number of segments the engine should speak before stopping.
+  // In tests the fake speech synthesis engine can iterate through all
+  // possible segments instantly, which makes it difficult to test correct
+  // behavior for next / previous button presses because all content on a
+  // page may have been "spoken" before the next / previous events are
+  // emitted.
+  setMaxSegments(maxSegments: number) {
+    this.maxSegments_ = maxSegments;
   }
 
   // These are currently unused in tests but need to be defined in order to be

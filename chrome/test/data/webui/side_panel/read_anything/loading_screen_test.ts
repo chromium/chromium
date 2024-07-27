@@ -39,6 +39,7 @@ suite('LoadingScreen', () => {
       isSpeechActive: true,
       isSpeechTreeInitialized: true,
       isAudioCurrentlyPlaying: true,
+      hasSpeechBeenTriggered: true,
     };
 
     app.showLoading();
@@ -46,6 +47,7 @@ suite('LoadingScreen', () => {
     assertFalse(app.speechPlayingState.isSpeechActive);
     assertFalse(app.speechPlayingState.isSpeechTreeInitialized);
     assertFalse(app.speechPlayingState.isAudioCurrentlyPlaying);
+    assertFalse(app.speechPlayingState.hasSpeechBeenTriggered);
   });
 
   test('selection on loading screen does nothing', async () => {

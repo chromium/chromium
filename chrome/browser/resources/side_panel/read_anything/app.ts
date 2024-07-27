@@ -91,11 +91,12 @@ export enum WordBoundaryMode {
 }
 
 export interface SpeechPlayingState {
-  // The first time the user presses `play` on a page, we initialize the tree
-  // traversal used for speech.
+  // If the speech tree for the current page has been initialized. This happens
+  // in updateContent before speech has been initiated by users but it can
+  // also be set to true via a play from selection.
   isSpeechTreeInitialized: boolean;
   // True when the user presses play, regardless of if audio has actually
-  // started yet.
+  // started yet. This will be false when speech is paused.
   isSpeechActive: boolean;
   // When `isSpeechActive` is false, this indicates how it became false. e.g.
   // via pause button click or because other speech settings were changed.
@@ -105,6 +106,12 @@ export interface SpeechPlayingState {
   // `isAudioCurrentlyPlaying` will tell us whether audio actually started
   // playing yet. This is a separate state because audio starting has a delay.
   isAudioCurrentlyPlaying: boolean;
+  // Indicates if speech has been triggered on the current page by a play
+  // button press. This will be true throughout the lifetime of reading
+  // the content on the page. It will only be reset when speech has completely
+  // stopped from reaching the end of content or changing pages. Pauses will
+  // not update it.
+  hasSpeechBeenTriggered: boolean;
 }
 
 export interface WordBoundaryState {
@@ -269,6 +276,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     isSpeechActive: false,
     pauseSource: PauseActionSource.DEFAULT,
     isAudioCurrentlyPlaying: false,
+    hasSpeechBeenTriggered: false,
   };
 
   private imagesEnabled: boolean;
@@ -582,10 +590,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // node id to call InitAXPosition in playSpeech. If it's not saved here,
     // we have to retrieve it through a DOM search such as createTreeWalker,
     // which can be computationally expensive.
-    // However, since updateContent may be called after speech starts playing,
-    // don't call InitAXPosition from here to avoid interrupting current speech.
     if (!this.firstTextNodeSetForReadAloud) {
       this.firstTextNodeSetForReadAloud = nodeId;
+      this.initializeSpeechTree();
     }
 
     const textContent = chrome.readingMode.getTextContent(nodeId);
@@ -1402,7 +1409,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.getSelection();
     const hasSelection =
         anchorNode !== focusNode || anchorOffset !== focusOffset;
-    if (this.speechPlayingState.isSpeechTreeInitialized &&
+    if (this.speechPlayingState.hasSpeechBeenTriggered &&
         !this.speechPlayingState.isSpeechActive) {
       const pausedFromButton = this.speechPlayingState.pauseSource ===
           PauseActionSource.BUTTON_CLICK;
@@ -1433,14 +1440,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         }
       }
 
-      // Update speechPlayingState, except for isSpeechTreeInitialized, which
-      // should only be set when initAxTree is called.
       this.speechPlayingState = {
         isSpeechTreeInitialized:
             this.speechPlayingState.isSpeechTreeInitialized,
         isSpeechActive: true,
         isAudioCurrentlyPlaying:
             this.speechPlayingState.isAudioCurrentlyPlaying,
+        hasSpeechBeenTriggered: this.speechPlayingState.hasSpeechBeenTriggered,
       };
 
       // Hide links when speech resumes. We only hide links when the page was
@@ -1467,14 +1473,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // speech played and without speech played. Counting resumes would
       // inflate the speech played number.
       this.logger_.logNewPage(/*speechPlayed=*/ true);
-      // Update speechPlayingState, except for isSpeechTreeInitialized, which
-      // should only be set when initAxTree is called.
       this.speechPlayingState = {
         isSpeechTreeInitialized:
             this.speechPlayingState.isSpeechTreeInitialized,
         isSpeechActive: true,
         isAudioCurrentlyPlaying:
             this.speechPlayingState.isAudioCurrentlyPlaying,
+        hasSpeechBeenTriggered: true,
       };
       // Hide links when speech begins playing.
       if (chrome.readingMode.linksEnabled) {
@@ -1483,7 +1488,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
       const playedFromSelection = hasSelection && this.playFromSelection();
       if (!playedFromSelection && this.firstTextNodeSetForReadAloud) {
-        this.initAxPositionForSpeech();
+        if (!this.speechPlayingState.isSpeechTreeInitialized) {
+          this.initializeSpeechTree();
+        }
         if (!this.highlightAndPlayMessage()) {
           // Ensure we're updating Read Aloud state if there's no text to speak.
           this.onSpeechFinished();
@@ -1492,7 +1499,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  initAxPositionForSpeech() {
+  initializeSpeechTree() {
     if (this.firstTextNodeSetForReadAloud) {
       // TODO(crbug.com/40927698): There should be a way to use AXPosition so
       // that this step can be skipped.
@@ -1503,6 +1510,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
             this.speechPlayingState.isAudioCurrentlyPlaying,
         isSpeechActive: this.speechPlayingState.isSpeechActive,
         isSpeechTreeInitialized: true,
+        hasSpeechBeenTriggered: this.speechPlayingState.hasSpeechBeenTriggered,
       };
     }
   }
@@ -1566,7 +1574,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Iterate through the page from the beginning until we get to the
     // selection. This is so clicking previous works before the selection and
     // so the previous highlights are properly set.
-    this.initAxPositionForSpeech();
+    this.initializeSpeechTree();
 
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.
@@ -2079,6 +2087,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       pauseSource: PauseActionSource.DEFAULT,
       isSpeechTreeInitialized: false,
       isAudioCurrentlyPlaying: false,
+      hasSpeechBeenTriggered: false,
     };
     this.previousHighlights_ = [];
     this.resetToDefaultWordBoundaryState();
@@ -2152,8 +2161,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private resetSpeechPostSettingChange_() {
-    // Don't call stopSpeech() if initAxPositionWithNode hasn't been called
-    if (!this.speechPlayingState.isSpeechTreeInitialized) {
+    // Don't call stopSpeech() if the speech tree hasn't been initialized or
+    // if speech hasn't been triggered yet.
+    if (!this.speechPlayingState.isSpeechTreeInitialized ||
+        !this.speechPlayingState.hasSpeechBeenTriggered) {
       return;
     }
 
@@ -2293,7 +2304,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // shouldn't happen often, so just skip selecting a new voice for now.
     // Another option would be to update the voice and the call
     // resetSpeechPostSettingsChange(), but that could be jarring.
-    if (this.speechPlayingState.isSpeechTreeInitialized) {
+    if (this.speechPlayingState.hasSpeechBeenTriggered) {
       return;
     }
 

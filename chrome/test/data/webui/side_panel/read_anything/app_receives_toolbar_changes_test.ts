@@ -318,8 +318,11 @@ suite('AppReceivesToolbarChanges', () => {
 
     test('by default is paused', () => {
       assertFalse(app.speechPlayingState.isSpeechActive);
-      assertFalse(app.speechPlayingState.isSpeechTreeInitialized);
       assertFalse(propagatedActiveState);
+      assertFalse(app.speechPlayingState.hasSpeechBeenTriggered);
+
+      // isSpeechTreeInitialized is set in updateContent
+      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
     });
 
 
@@ -327,6 +330,7 @@ suite('AppReceivesToolbarChanges', () => {
       emitPlayPause();
       assertTrue(app.speechPlayingState.isSpeechActive);
       assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+      assertTrue(app.speechPlayingState.hasSpeechBeenTriggered);
       assertTrue(propagatedActiveState);
     });
 
@@ -336,6 +340,7 @@ suite('AppReceivesToolbarChanges', () => {
 
       assertFalse(app.speechPlayingState.isSpeechActive);
       assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+      assertTrue(app.speechPlayingState.hasSpeechBeenTriggered);
       assertFalse(propagatedActiveState);
     });
 
