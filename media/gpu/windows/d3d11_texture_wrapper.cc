@@ -312,9 +312,9 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
         gpu::D3DImageBacking::Create(
             mailbox, DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
             size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-            usage, "VideoTexture", texture, std::move(dxgi_shared_handle_state),
-            caps, GL_TEXTURE_EXTERNAL_OES, array_slice,
-            /*use_update_subresource1=*/false, is_thread_safe);
+            usage, "VideoTexture", texture, /*dcomp_texture=*/nullptr,
+            std::move(dxgi_shared_handle_state), caps, GL_TEXTURE_EXTERNAL_OES,
+            array_slice, /*use_update_subresource1=*/false, is_thread_safe);
 
     if (!backing) {
       std::move(on_error_cb)
