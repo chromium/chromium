@@ -30,7 +30,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
-#include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #endif
@@ -92,8 +91,8 @@ void PersistedData::SetProductVersion(const std::string& id,
   // creating the ClientState key, which is read to sense for application
   // uninstallation.
   SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppClientStateKey(base::SysUTF8ToWide(id)), L"pv",
-                 base::SysUTF8ToWide(pv.GetString()));
+                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValuePV,
+                 base::UTF8ToWide(pv.GetString()));
 #endif
 }
 
@@ -165,6 +164,14 @@ std::string PersistedData::GetBrandCode(const std::string& id) const {
 void PersistedData::SetBrandCode(const std::string& id, const std::string& bc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetString(id, kBC, bc);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, we record the brand code in ClientState as
+  // well, since some applications read it from there.
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
+                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueBrandCode,
+                 base::UTF8ToWide(bc));
+#endif
 }
 
 base::FilePath PersistedData::GetBrandPath(const std::string& id) const {
@@ -209,8 +216,8 @@ void PersistedData::SetAP(const std::string& id, const std::string& ap) {
   // registry is correct. Clients should transition to requesting the
   // registration info for their application via RPC.
   SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppClientStateKey(base::SysUTF8ToWide(id)), L"ap",
-                 base::SysUTF8ToWide(ap));
+                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueAP,
+                 base::UTF8ToWide(ap));
 #endif
 }
 
@@ -279,8 +286,8 @@ void PersistedData::SetCohort(const std::string& id,
   // For backwards compatibility, we record the Cohort in ClientState as well.
   // (Some applications read it from there.)
   SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppCohortKey(base::SysUTF8ToWide(id)), L"",
-                 base::SysUTF8ToWide(cohort));
+                 GetAppCohortKey(base::UTF8ToWide(id)), L"",
+                 base::UTF8ToWide(cohort));
 #endif
 }
 
@@ -298,8 +305,8 @@ void PersistedData::SetCohortName(const std::string& id,
   // For backwards compatibility, we record the Cohort in ClientState as well.
   // (Some applications read it from there.)
   SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppCohortKey(base::SysUTF8ToWide(id)), kRegValueCohortName,
-                 base::SysUTF8ToWide(cohort_name));
+                 GetAppCohortKey(base::UTF8ToWide(id)), kRegValueCohortName,
+                 base::UTF8ToWide(cohort_name));
 #endif
 }
 
