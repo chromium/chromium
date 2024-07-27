@@ -9258,6 +9258,17 @@
     "expiry_milestone": 138
   },
   {
+    "name": "wayland-text-input-v3",
+    "owners": [
+      "orko@igalia.com",
+      "nickdiego@igalia.com",
+      "hidehiko@chromium.org",
+      "fangzhoug@chromium.org",
+      "thomasanderson@chromium.org"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "web-app-sync-generated-icon-background-fix",
     "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 130

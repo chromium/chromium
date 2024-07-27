@@ -57,12 +57,14 @@ struct DisplayDeleter {
 enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
 enum class ShouldUseExplicitSynchronizationProtocol { kNone, kUse };
 enum class EnableAuraShellProtocol { kEnabled, kDisabled };
+// Text input protocol type.
+enum class ZWPTextInputWrapperType { kV1, kV3 };
 
 struct ServerConfig {
   TestZcrTextInputExtensionV1::Version text_input_extension_version =
       TestZcrTextInputExtensionV1::Version::kV14;
-  ui::ZWPTextInputWrapperType text_input_wrapper_type =
-      ui::ZWPTextInputWrapperType::kV1;
+  ZWPTextInputWrapperType text_input_wrapper_type =
+      ZWPTextInputWrapperType::kV1;
   TestCompositor::Version compositor_version = TestCompositor::Version::kV4;
   PrimarySelectionProtocol primary_selection_protocol =
       PrimarySelectionProtocol::kNone;

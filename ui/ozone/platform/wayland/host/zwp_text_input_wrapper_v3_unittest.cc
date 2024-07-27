@@ -28,7 +28,7 @@ class ZWPTextInputWrapperV3Test : public WaylandTestSimple {
  public:
   ZWPTextInputWrapperV3Test()
       : WaylandTestSimple(
-            {.text_input_wrapper_type = ui::ZWPTextInputWrapperType::kV3}) {}
+            {.text_input_wrapper_type = wl::ZWPTextInputWrapperType::kV3}) {}
 
   void SetUp() override {
     WaylandTestSimple::SetUp();

@@ -108,6 +108,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   }
 
  private:
+  void CreateTextInputWrapper();
   void Focus(bool skip_virtual_keyboard_update,
              TextInputClient::FocusReason reason);
   void Blur(bool skip_virtual_keyboard_update);

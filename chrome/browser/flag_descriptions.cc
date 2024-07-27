@@ -8156,6 +8156,9 @@ const char kSimplifiedTabDragUIDescription[] =
 const char kWaylandPerWindowScalingName[] = "Wayland per-window scaling";
 const char kWaylandPerWindowScalingDescription[] =
     "Enable Wayland's per-window scaling experimental support.";
+const char kWaylandTextInputV3Name[] = "Wayland text-input-v3";
+const char kWaylandTextInputV3Description[] =
+    "Enable Wayland's text-input-v3 experimental support.";
 #endif  // BUILDFLAG(IS_LINUX)
 
 // All views-based platforms --------------------------------------------------

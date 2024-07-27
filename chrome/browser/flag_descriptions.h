@@ -4720,6 +4720,9 @@ extern const char kSimplifiedTabDragUIDescription[];
 
 extern const char kWaylandPerWindowScalingName[];
 extern const char kWaylandPerWindowScalingDescription[];
+
+extern const char kWaylandTextInputV3Name[];
+extern const char kWaylandTextInputV3Description[];
 #endif  // BUILDFLAG(IS_LINUX)
 
 // All views-based platforms --------------------------------------------------

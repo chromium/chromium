@@ -5435,6 +5435,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWaylandPerWindowScalingName,
      flag_descriptions::kWaylandPerWindowScalingDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kWaylandPerSurfaceScale)},
+
+    {"wayland-text-input-v3", flag_descriptions::kWaylandTextInputV3Name,
+     flag_descriptions::kWaylandTextInputV3Description, kOsLinux,
+     FEATURE_VALUE_TYPE(features::kWaylandTextInputV3)},
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

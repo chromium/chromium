@@ -143,7 +143,7 @@ bool TestWaylandServerThread::Start() {
 
   if (!zcr_stylus_.Initialize(display_.get()))
     return false;
-  if (config_.text_input_wrapper_type == ui::ZWPTextInputWrapperType::kV3) {
+  if (config_.text_input_wrapper_type == ZWPTextInputWrapperType::kV3) {
     if (!zwp_text_input_manager_v3_.Initialize(display_.get())) {
       return false;
     }

@@ -15908,6 +15908,7 @@ from previous Chrome versions.
   <int value="-2097895488" label="NotificationScrollBar:enabled"/>
   <int value="-2097737027" label="SkiaGraphite:disabled"/>
   <int value="-2097515669" label="disable-cast"/>
+  <int value="-2097013050" label="WaylandTextInputV3:disabled"/>
   <int value="-2096845406" label="QuickAnswersRichCard:enabled"/>
   <int value="-2095519429" label="FtpProtocol:enabled"/>
   <int value="-2094897448" label="TranslateIntent:disabled"/>
@@ -23392,6 +23393,7 @@ from previous Chrome versions.
   <int value="1076477581"
       label="GridTabSwitcherLandscapeAspectRatioPhones:disabled"/>
   <int value="1077140728" label="UseGMSCoreForBrandingInfo:disabled"/>
+  <int value="1077901257" label="WaylandTextInputV3:enabled"/>
   <int value="1077910471" label="RestoreTabsOnFRE:disabled"/>
   <int value="1079017005" label="LayoutExtraction:disabled"/>
   <int value="1079032226" label="ParallelDownloading:enabled"/>

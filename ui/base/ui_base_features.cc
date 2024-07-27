@@ -155,6 +155,11 @@ BASE_FEATURE(kOzoneBubblesUsePlatformWidgets,
 BASE_FEATURE(kWaylandPerSurfaceScale,
              "WaylandPerSurfaceScale",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether Wayland text-input-v3 protocol support is enabled.
+BASE_FEATURE(kWaylandTextInputV3,
+             "WaylandTextInputV3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_LINUX)
