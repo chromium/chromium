@@ -63,10 +63,16 @@ class AutofillDriverRouter;
 // Chrome is implemented by AutofillAgent, and a BrowserAutofillManager.
 //
 // AutofillDriverIOS is associated with exactly one WebFrame and its lifecycle
-// is bound to that WebFrame.
-class AutofillDriverIOS : public AutofillDriver,
-                          public AutofillManager::Observer,
-                          public web::WebFrameUserData<AutofillDriverIOS> {
+// is bound to that WebFrame. Since WebFrames do not survive cross-document
+// navigations, AutofillDriverIOS does not survive them either.
+//
+// AutofillDriverIOS is final because its constructor and destructor calls
+// AutofillManager::SetLifecycleState(), which must be called at the very
+// end/beginning of con-/destruction.
+class AutofillDriverIOS final
+    : public AutofillDriver,
+      public AutofillManager::Observer,
+      public web::WebFrameUserData<AutofillDriverIOS> {
  public:
   // Returns the AutofillDriverIOS for `web_state` and `web_frame`. Creates the
   // driver if necessary.

@@ -88,17 +88,14 @@ AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
     }
   }
 
-  // TODO: crbug.com/40269979 - Call AutofillManager::Reset() when necessary.
-  // TODO: crbug.com/354043640 - Call AutofillManager::SetLifecycleState() from
-  // the factory after construction is finished. That's required by the contract
-  // of AutofillDriver::LifecycleState.
+  // This must be called as last statement of the constructor because according
+  // to the contract it mustn't be called during construction.
   SetLifecycleState(AutofillDriver::LifecycleState::kActive, {});
 }
 
 AutofillDriverIOS::~AutofillDriverIOS() {
-  // TODO: crbug.com/354043640 - Call AutofillManager::SetLifecycleState() from
-  // the factory before destruction starts. That's required by the contract of
-  // AutofillDriver::LifecycleState.
+  // This must be called as first statement of the destructor because according
+  // to the contract it mustn't be called during destruction.
   SetLifecycleState(AutofillDriver::LifecycleState::kPendingDeletion, {});
   Unregister();
 }
