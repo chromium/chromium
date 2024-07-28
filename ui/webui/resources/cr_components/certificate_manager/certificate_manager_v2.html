@@ -23,6 +23,10 @@
     padding-inline-start: 5px;
   }
 
+  .menu-icon {
+    padding-inline-end: 8px;
+  }
+
   #main {
     flex: 1;
   }
@@ -79,14 +83,17 @@
         on-iron-select="onMenuItemSelect_">
       <a id="localMenuItem" role="menuitem" class="cr-nav-menu-item"
           path="localcerts" href="/localcerts" on-click="onMenuItemClick_">
+        <cr-icon icon="cr:computer" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2LocalCerts')]]
       </a>
       <a id="clientMenuItem" role="menuitem" class="cr-nav-menu-item"
           path="clientcerts" href="/clientcerts" on-click="onMenuItemClick_">
+        <cr-icon icon="certmanager:card" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2ClientCerts')]]
       </a>
       <a id="crsMenuItem" role="menuitem" class="cr-nav-menu-item"
           path="crscerts" href="/crscerts" on-click="onMenuItemClick_">
+        <cr-icon icon="cr:chrome-product" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2CRSCerts')]]
       </a>
     </cr-menu-selector>
@@ -186,6 +193,7 @@
         <div id="customCertsSection">
           <h3>[[i18n("certificateManagerV2CustomCertsTitle")]]</h3>
           <cr-link-row id="adminCertsInstalledLinkRow"
+              start-icon="cr:domain"
               class="card"
               label="[[i18n('certificateManagerV2AdminCertsTitle')]]"
               sub-label="[[numPolicyCertsString_]]"
