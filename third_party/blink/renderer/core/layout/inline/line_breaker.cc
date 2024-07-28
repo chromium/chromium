@@ -3412,6 +3412,11 @@ bool LineBreaker::IsMonolithicRuby(
     return true;
   }
 
+  // The base line is not breakable.
+  if (base_line.Width() <= LayoutUnit()) {
+    return true;
+  }
+
   // We don't break rubies in text-wrap:balance and text-wrap:pretty
   // because the sum of broken ruby inline-size can be different from the
   // inline-size of a non-broken ruby.
