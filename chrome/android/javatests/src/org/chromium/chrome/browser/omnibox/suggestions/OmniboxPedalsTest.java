@@ -46,6 +46,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
@@ -264,6 +266,7 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testRunChromeSafetyCheck() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
 
@@ -280,6 +283,22 @@ public class OmniboxPedalsTest {
                         /* executed= */ true);
         // Make sure the safety check was ran.
         safetyCheckHistogramWatcher.pollInstrumentationThreadUntilSatisfied();
+        verifyNoMoreInteractions(mOmniboxActionJni);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.SAFETY_HUB)
+    @RequiresRestart("Restart to ensure native is re-initialized with the correct dependencies")
+    public void testOpenChromeSafetyHub() throws InterruptedException {
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
+
+        clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), SafetyHubFragment.class);
+        verify(mOmniboxActionJni, times(1))
+                .recordActionShown(
+                        OmniboxPedalId.RUN_CHROME_SAFETY_CHECK,
+                        /* position= */ 0,
+                        /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
