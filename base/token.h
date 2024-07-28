@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_TOKEN_H_
 #define BASE_TOKEN_H_
 
 #include <stdint.h>
 
+#include <array>
 #include <compare>
 #include <optional>
 #include <string>
@@ -71,10 +67,10 @@ class BASE_EXPORT Token {
 
  private:
   // Note: Two uint64_t are used instead of uint8_t[16] in order to have a
-  // simpler implementation, paricularly for |ToString()|, |is_zero()|, and
+  // simpler implementation, particularly for |ToString()|, |is_zero()|, and
   // constexpr value construction.
 
-  uint64_t words_[2] = {0, 0};
+  std::array<uint64_t, 2> words_ = {0, 0};
 };
 
 // For use in std::unordered_map.
