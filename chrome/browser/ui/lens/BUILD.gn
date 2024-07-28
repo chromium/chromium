@@ -55,6 +55,7 @@ source_set("lens") {
     "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
     "//chrome/common:constants",

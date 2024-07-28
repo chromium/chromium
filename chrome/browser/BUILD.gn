@@ -2585,6 +2585,7 @@ static_library("browser") {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+      "//chrome/browser/ui/webui/searchbox",
       "//components/manta",
       "//components/manta/proto",
       "//components/user_education/common",
@@ -2603,6 +2604,7 @@ static_library("browser") {
 
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/webui/searchbox",
     ]
   }
 

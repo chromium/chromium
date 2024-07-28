@@ -1812,13 +1812,6 @@ static_library("ui") {
       "webui/search_engine_choice/search_engine_choice_handler.h",
       "webui/search_engine_choice/search_engine_choice_ui.cc",
       "webui/search_engine_choice/search_engine_choice_ui.h",
-      "webui/searchbox/contextual_searchbox_handler.cc",
-      "webui/searchbox/contextual_searchbox_handler.h",
-      "webui/searchbox/lens_searchbox_client.h",
-      "webui/searchbox/realbox_handler.cc",
-      "webui/searchbox/realbox_handler.h",
-      "webui/searchbox/searchbox_handler.cc",
-      "webui/searchbox/searchbox_handler.h",
       "webui/settings/about_handler.cc",
       "webui/settings/about_handler.h",
       "webui/settings/accessibility_main_handler.cc",
@@ -2039,6 +2032,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+      "//chrome/browser/ui/webui/searchbox",
+      "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/web_applications",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",
@@ -2142,6 +2137,7 @@ static_library("ui") {
 
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/webui/searchbox",
     ]
 
     if (use_ozone && !is_chromeos_ash) {
