@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
@@ -25,10 +26,17 @@ namespace web_app {
 // Component data.
 class IwaKeyDistributionInfoProvider {
  public:
-  struct ComponentData {
-    base::Version version;
-    IwaKeyDistribution proto;
+  struct KeyRotationInfo {
+    using PublicKeyData = std::vector<uint8_t>;
+
+    explicit KeyRotationInfo(std::optional<PublicKeyData> public_key);
+    ~KeyRotationInfo();
+    KeyRotationInfo(const KeyRotationInfo&);
+
+    std::optional<PublicKeyData> public_key;
   };
+
+  using KeyRotations = base::flat_map<std::string, KeyRotationInfo>;
 
   enum class ComponentUpdateError {
     kStaleVersion,
@@ -52,7 +60,8 @@ class IwaKeyDistributionInfoProvider {
   IwaKeyDistributionInfoProvider& operator=(
       const IwaKeyDistributionInfoProvider&) = delete;
 
-  const std::optional<ComponentData>& component_data() const { return data_; }
+  const KeyRotationInfo* GetKeyRotationInfo(
+      const std::string& web_bundle_id) const;
 
   // Asynchronously loads new component data and replaces the current `data_`
   // upon success and if `component_version` is greater than the stored one, and
@@ -66,12 +75,21 @@ class IwaKeyDistributionInfoProvider {
  private:
   friend struct base::DefaultSingletonTraits<IwaKeyDistributionInfoProvider>;
 
+  struct ComponentData {
+    ComponentData(base::Version version, KeyRotations key_rotations);
+    ~ComponentData();
+    ComponentData(const ComponentData&);
+
+    base::Version version;
+    KeyRotations key_rotations;
+  };
+
   IwaKeyDistributionInfoProvider();
   ~IwaKeyDistributionInfoProvider();
 
   void OnKeyDistributionDataLoaded(
       const base::Version& version,
-      base::expected<IwaKeyDistribution, ComponentUpdateError>);
+      base::expected<KeyRotations, ComponentUpdateError>);
 
   void DispatchComponentUpdateSuccess(
       const base::Version& component_version) const;

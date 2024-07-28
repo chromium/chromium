@@ -16,7 +16,6 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/device_api/device_service_impl.h"
-#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -377,7 +376,6 @@ TEST_F(DeviceAPIServiceWebAppTest, ReportErrorForDefaultUser) {
 class DeviceAPIServiceIwaTest : public DeviceAPIServiceWebAppTest {
  public:
   void SetUp() override {
-    web_app::IwaIdentityValidator::CreateSingleton();
     DeviceAPIServiceWebAppTest::SetUp();
 
 #if BUILDFLAG(ENABLE_NACL)
