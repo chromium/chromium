@@ -36,12 +36,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_recurrent_network_activation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
@@ -70,6 +70,31 @@ webnn::OperandDataType ToOperandDataType(
       return webnn::OperandDataType::kInt8;
     case blink::V8MLOperandDataType::Enum::kUint8:
       return webnn::OperandDataType::kUint8;
+  }
+}
+
+webnn::mojom::blink::RecurrentNetworkActivation
+BlinkRecurrentNetworkActivationToMojo(
+    blink::V8MLRecurrentNetworkActivation activation) {
+  // This assertion protects against the IDL enum changing without updating the
+  // corresponding mojom interface, or vice versa. The offset of 1 accounts for
+  // the zero-indexing of the mojom enum values.
+  static_assert(
+      blink::V8MLRecurrentNetworkActivation::kEnumSize ==
+          static_cast<size_t>(
+              webnn::mojom::blink::RecurrentNetworkActivation::kMaxValue) +
+              1,
+      "the number of values in the RecurrentNetworkActivation mojom enum must "
+      "match the number of values in the MLRecurrentNetworkActivation blink "
+      "enum");
+
+  switch (activation.AsEnum()) {
+    case blink::V8MLRecurrentNetworkActivation::Enum::kRelu:
+      return webnn::mojom::blink::RecurrentNetworkActivation::kRelu;
+    case blink::V8MLRecurrentNetworkActivation::Enum::kSigmoid:
+      return webnn::mojom::blink::RecurrentNetworkActivation::kSigmoid;
+    case blink::V8MLRecurrentNetworkActivation::Enum::kTanh:
+      return webnn::mojom::blink::RecurrentNetworkActivation::kTanh;
   }
 }
 
@@ -160,7 +185,6 @@ namespace blink {
 
 namespace {
 
-using blink_mojom::ActivationPtr;
 using blink_mojom::ElementWiseBinary;
 using blink_mojom::ElementWiseUnary;
 using blink_mojom::Operation;
@@ -254,42 +278,24 @@ blink_mojom::ClampPtr CreateClamp(const OperandToIdMap& operand_to_id_map,
 }
 
 blink_mojom::EluPtr CreateElu(const OperandToIdMap& operand_to_id_map,
-                              const MLOperator* elu,
-                              bool is_activation) {
-  auto elu_mojo = blink_mojom::Elu::New();
-  // Activation has no input or output operands.
-  if (!is_activation) {
-    elu_mojo->input_operand_id = GetOperatorInputId(elu, operand_to_id_map);
-    elu_mojo->output_operand_id = GetOperatorOutputId(elu, operand_to_id_map);
-  }
-
+                              const MLOperator* elu) {
   const auto* options = static_cast<const MLEluOptions*>(elu->Options());
   CHECK(options);
-  elu_mojo->alpha = options->alpha();
-  elu_mojo->label = options->label();
-  return elu_mojo;
+  return blink_mojom::Elu::New(GetOperatorInputId(elu, operand_to_id_map),
+                               GetOperatorOutputId(elu, operand_to_id_map),
+                               options->alpha(), options->label());
 }
 
 blink_mojom::HardSigmoidPtr CreateHardSigmoid(
     const OperandToIdMap& operand_to_id_map,
-    const MLOperator* hard_sigmoid,
-    bool is_activation) {
-  auto hard_sigmoid_mojo = blink_mojom::HardSigmoid::New();
-  // Activation has no input or output operands.
-  if (!is_activation) {
-    hard_sigmoid_mojo->input_operand_id =
-        GetOperatorInputId(hard_sigmoid, operand_to_id_map);
-    hard_sigmoid_mojo->output_operand_id =
-        GetOperatorOutputId(hard_sigmoid, operand_to_id_map);
-  }
-
+    const MLOperator* hard_sigmoid) {
   const auto* options =
       static_cast<const MLHardSigmoidOptions*>(hard_sigmoid->Options());
   CHECK(options);
-  hard_sigmoid_mojo->alpha = options->alpha();
-  hard_sigmoid_mojo->beta = options->beta();
-  hard_sigmoid_mojo->label = options->label();
-  return hard_sigmoid_mojo;
+  return blink_mojom::HardSigmoid::New(
+      GetOperatorInputId(hard_sigmoid, operand_to_id_map),
+      GetOperatorOutputId(hard_sigmoid, operand_to_id_map), options->alpha(),
+      options->beta(), options->label());
 }
 
 OperationPtr CreateExpandOperation(const OperandToIdMap& operand_to_id_map,
@@ -307,43 +313,24 @@ OperationPtr CreateExpandOperation(const OperandToIdMap& operand_to_id_map,
 
 blink_mojom::LeakyReluPtr CreateLeakyRelu(
     const OperandToIdMap& operand_to_id_map,
-    const MLOperator* leaky_relu,
-    bool is_activation) {
-  auto leaky_relu_mojo = blink_mojom::LeakyRelu::New();
-  // Activation has no input or output operands.
-  if (!is_activation) {
-    leaky_relu_mojo->input_operand_id =
-        GetOperatorInputId(leaky_relu, operand_to_id_map);
-    leaky_relu_mojo->output_operand_id =
-        GetOperatorOutputId(leaky_relu, operand_to_id_map);
-  }
-
+    const MLOperator* leaky_relu) {
   const auto* options =
       static_cast<const MLLeakyReluOptions*>(leaky_relu->Options());
   CHECK(options);
-  leaky_relu_mojo->alpha = options->alpha();
-  leaky_relu_mojo->label = options->label();
-  return leaky_relu_mojo;
+  return blink_mojom::LeakyRelu::New(
+      GetOperatorInputId(leaky_relu, operand_to_id_map),
+      GetOperatorOutputId(leaky_relu, operand_to_id_map), options->alpha(),
+      options->label());
 }
 
 blink_mojom::LinearPtr CreateLinear(const OperandToIdMap& operand_to_id_map,
-                                    const MLOperator* linear,
-                                    bool is_activation) {
-  auto linear_mojo = blink_mojom::Linear::New();
-  // Activation has no input and output operand.
-  if (!is_activation) {
-    linear_mojo->input_operand_id =
-        GetOperatorInputId(linear, operand_to_id_map);
-    linear_mojo->output_operand_id =
-        GetOperatorOutputId(linear, operand_to_id_map);
-  }
-
+                                    const MLOperator* linear) {
   const auto* options = static_cast<const MLLinearOptions*>(linear->Options());
   CHECK(options);
-  linear_mojo->alpha = options->alpha();
-  linear_mojo->beta = options->beta();
-  linear_mojo->label = options->label();
-  return linear_mojo;
+  return blink_mojom::Linear::New(
+      GetOperatorInputId(linear, operand_to_id_map),
+      GetOperatorOutputId(linear, operand_to_id_map), options->alpha(),
+      options->beta(), options->label());
 }
 
 OperationPtr CreateSoftmaxOperation(const OperandToIdMap& operand_to_id_map,
@@ -508,36 +495,6 @@ std::optional<base::span<const uint32_t>> GetConvTranspose2DFilterPermutation(
           return std::nullopt;
       }
       break;
-  }
-}
-
-ActivationPtr CreateActivation(const OperandToIdMap& operand_to_id_map,
-                               const MLActivation* ml_activation) {
-  switch (ml_activation->Kind()) {
-    case blink_mojom::Activation::Tag::kElu:
-      return blink_mojom::Activation::NewElu(
-          CreateElu(operand_to_id_map, ml_activation->Operator(), true));
-    case blink_mojom::Activation::Tag::kGelu:
-      return blink_mojom::Activation::NewGelu(blink_mojom::Gelu::New());
-    case blink_mojom::Activation::Tag::kHardSigmoid:
-      return blink_mojom::Activation::NewHardSigmoid(CreateHardSigmoid(
-          operand_to_id_map, ml_activation->Operator(), true));
-    case blink_mojom::Activation::Tag::kLeakyRelu:
-      return blink_mojom::Activation::NewLeakyRelu(
-          CreateLeakyRelu(operand_to_id_map, ml_activation->Operator(), true));
-    case blink_mojom::Activation::Tag::kLinear:
-      return blink_mojom::Activation::NewLinear(
-          CreateLinear(operand_to_id_map, ml_activation->Operator(), true));
-    case blink_mojom::Activation::Tag::kRelu:
-      return blink_mojom::Activation::NewRelu(blink_mojom::Relu::New());
-    case blink_mojom::Activation::Tag::kSigmoid:
-      return blink_mojom::Activation::NewSigmoid(blink_mojom::Sigmoid::New());
-    case blink_mojom::Activation::Tag::kSoftplus:
-      return blink_mojom::Activation::NewSoftplus(blink_mojom::Softplus::New());
-    case blink_mojom::Activation::Tag::kSoftsign:
-      return blink_mojom::Activation::NewSoftsign(blink_mojom::Softsign::New());
-    case blink_mojom::Activation::Tag::kTanh:
-      return blink_mojom::Activation::NewTanh(blink_mojom::Tanh::New());
   }
 }
 
@@ -874,7 +831,7 @@ OperationPtr CreateGruOperation(const OperandToIdMap& operand_to_id_map,
   gru_mojo->activations.reserve(activations.size());
   for (const auto& activation : activations) {
     gru_mojo->activations.push_back(
-        CreateActivation(operand_to_id_map, activation));
+        mojo::BlinkRecurrentNetworkActivationToMojo(activation));
   }
 
   const wtf_size_t output_count = gru->Outputs().size();
@@ -920,19 +877,14 @@ base::expected<OperationPtr, String> CreateGruCellOperation(
   // gru_cell_mojo->layout =
   //     mojo::BlinkGruWeightLayoutToMojo(options->layout().AsEnum());
 
-  // const auto& activations = options->activations();
-  const HeapVector<Member<MLActivation>>& ml_activations =
+  const Vector<V8MLRecurrentNetworkActivation>& ml_activations =
       options->activations();
   CHECK_EQ(ml_activations.size(), 2u);
-  Vector<ActivationPtr> activations;
-  activations.reserve(ml_activations.size());
+  Vector<webnn::mojom::blink::RecurrentNetworkActivation> activations(
+      ml_activations.size());
   for (const auto& activation : ml_activations) {
-    base::expected<ActivationPtr, String> validated_activation =
-        CreateActivation(operand_to_id_map, activation);
-    if (!validated_activation.has_value()) {
-      return base::unexpected(validated_activation.error());
-    }
-    activations.push_back(std::move(validated_activation.value()));
+    activations.push_back(
+        mojo::BlinkRecurrentNetworkActivationToMojo(activation));
   }
 
   uint64_t output_operand_id = GetOperatorOutputId(gru_cell, operand_to_id_map);
@@ -1068,7 +1020,7 @@ OperationPtr CreateLstmOperation(const OperandToIdMap& operand_to_id_map,
   lstm_mojo->activations.reserve(activations.size());
   for (const auto& activation : activations) {
     lstm_mojo->activations.push_back(
-        CreateActivation(operand_to_id_map, activation));
+        mojo::BlinkRecurrentNetworkActivationToMojo(activation));
   }
 
   const wtf_size_t output_count = lstm->Outputs().size();
@@ -1113,17 +1065,13 @@ base::expected<OperationPtr, String> CreateLstmCellOperation(
         operand_to_id_map.at(options->peepholeWeight());
   }
 
-  const HeapVector<Member<MLActivation>>& ml_activations =
+  const Vector<V8MLRecurrentNetworkActivation>& ml_activations =
       options->activations();
-  Vector<ActivationPtr> activations;
-  activations.reserve(activations.size());
+  Vector<webnn::mojom::blink::RecurrentNetworkActivation> activations(
+      ml_activations.size());
   for (const auto& activation : ml_activations) {
-    base::expected<ActivationPtr, String> validated_activation =
-        CreateActivation(operand_to_id_map, activation);
-    if (!validated_activation.has_value()) {
-      return base::unexpected(validated_activation.error());
-    }
-    activations.push_back(std::move(validated_activation.value()));
+    activations.push_back(
+        mojo::BlinkRecurrentNetworkActivationToMojo(activation));
   }
 
   Vector<uint64_t> output_operand_ids;
@@ -1584,8 +1532,8 @@ std::optional<String> SerializeMojoOperation(
           op->SubKind<blink_mojom::ElementWiseUnary::Kind>()));
       break;
     case blink_mojom::Operation::Tag::kElu:
-      graph_info->operations.push_back(blink_mojom::Operation::NewElu(
-          CreateElu(operand_to_id_map, op, false)));
+      graph_info->operations.push_back(
+          blink_mojom::Operation::NewElu(CreateElu(operand_to_id_map, op)));
       break;
     case blink_mojom::Operation::Tag::kExpand:
       graph_info->operations.push_back(
@@ -1615,7 +1563,7 @@ std::optional<String> SerializeMojoOperation(
     }
     case blink_mojom::Operation::Tag::kHardSigmoid:
       graph_info->operations.push_back(blink_mojom::Operation::NewHardSigmoid(
-          CreateHardSigmoid(operand_to_id_map, op, false)));
+          CreateHardSigmoid(operand_to_id_map, op)));
       break;
     case blink_mojom::Operation::Tag::kHardSwish:
       graph_info->operations.push_back(
@@ -1631,11 +1579,11 @@ std::optional<String> SerializeMojoOperation(
       break;
     case blink_mojom::Operation::Tag::kLeakyRelu:
       graph_info->operations.push_back(blink_mojom::Operation::NewLeakyRelu(
-          CreateLeakyRelu(operand_to_id_map, op, false)));
+          CreateLeakyRelu(operand_to_id_map, op)));
       break;
     case blink_mojom::Operation::Tag::kLinear:
       graph_info->operations.push_back(blink_mojom::Operation::NewLinear(
-          CreateLinear(operand_to_id_map, op, false)));
+          CreateLinear(operand_to_id_map, op)));
       break;
     case blink_mojom::Operation::Tag::kLstm:
       graph_info->operations.push_back(

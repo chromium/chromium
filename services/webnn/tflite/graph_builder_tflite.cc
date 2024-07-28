@@ -125,18 +125,15 @@ base::expected<ClampRange, std::string> GetClampRange(
       "The range of clamp is not supported in tflite schema.");
 }
 
-base::expected<::tflite::BuiltinOperator, std::string>
-GetRecurrentNetworkActivation(const mojom::Activation& activation) {
-  switch (activation.which()) {
-    case mojom::Activation::Tag::kRelu:
+::tflite::BuiltinOperator GetRecurrentNetworkActivation(
+    mojom::RecurrentNetworkActivation activation) {
+  switch (activation) {
+    case mojom::RecurrentNetworkActivation::kRelu:
       return ::tflite::BuiltinOperator_RELU;
-    case mojom::Activation::Tag::kTanh:
+    case mojom::RecurrentNetworkActivation::kTanh:
       return ::tflite::BuiltinOperator_TANH;
-    case mojom::Activation::Tag::kSigmoid:
+    case mojom::RecurrentNetworkActivation::kSigmoid:
       return ::tflite::BuiltinOperator_LOGISTIC;
-    default:
-      return base::unexpected(
-          "Recurrent network only support relu, tanh or sigmoid activation.");
   }
 }
 
@@ -1643,14 +1640,14 @@ auto GraphBuilderTflite::SerializeGruGate(
                                                hidden_size};
   const int32_t input_size = signed_input_dimensions[1];
 
-  const std::vector<mojom::ActivationPtr>& activations = gru_cell.activations;
+  const std::vector<mojom::RecurrentNetworkActivation>& activations =
+      gru_cell.activations;
   CHECK_EQ(activations.size(), 2u);
   std::vector<::tflite::BuiltinOperator> activation_operator_codes;
   activation_operator_codes.reserve(activations.size());
-  for (const auto& activation : activations) {
-    ASSIGN_OR_RETURN(::tflite::BuiltinOperator activation_operator_code,
-                     GetRecurrentNetworkActivation(*activation));
-    activation_operator_codes.push_back(activation_operator_code);
+  for (mojom::RecurrentNetworkActivation activation : activations) {
+    activation_operator_codes.push_back(
+        GetRecurrentNetworkActivation(activation));
   }
 
   ::tflite::BuiltinOperator activation_code;

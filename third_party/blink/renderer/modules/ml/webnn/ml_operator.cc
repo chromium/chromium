@@ -262,10 +262,6 @@ const bindings::DictionaryBase* MLOperator::Options() const {
   return options_.Get();
 }
 
-bool MLOperator::IsConnected() const {
-  return is_connected_;
-}
-
 const HeapVector<Member<const MLOperand>>& MLOperator::Inputs() const {
   return inputs_;
 }
@@ -276,12 +272,10 @@ const HeapVector<Member<const MLOperand>>& MLOperator::Outputs() const {
 
 void MLOperator::Connect(HeapVector<Member<const MLOperand>> inputs,
                          HeapVector<Member<const MLOperand>> outputs) {
-  DCHECK(!is_connected_);
   DCHECK(!inputs.empty());
   DCHECK(!outputs.empty());
   inputs_ = std::move(inputs);
   outputs_ = std::move(outputs);
-  is_connected_ = true;
 }
 
 MLArgMinMaxOperator::MLArgMinMaxOperator(

@@ -22,7 +22,6 @@ idl_test(
       ML: ['navigator.ml'],
       MLContext: ['context'],
       MLOperand: ['input', 'constant', 'output'],
-      MLActivation: ['relu'],
       MLGraphBuilder: ['builder'],
       MLGraph: ['graph']
     });
@@ -34,9 +33,6 @@ idl_test(
     self.constant = builder.constant(
         {dataType: 'float32', dimensions: [2, 3]},
         new Float32Array(2 * 3).fill(1));
-
-    // Create an activation which won't be used in the graph.
-    self.relu = builder.relu();
 
     self.output = builder.add(input, constant);
 

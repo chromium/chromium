@@ -60,7 +60,6 @@ BASE_FEATURE(kApplyGraphFusion,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 using Microsoft::WRL::ComPtr;
-using mojom::Activation;
 using mojom::ComputeResult;
 using mojom::CreateGraphResult;
 using mojom::Operand;
@@ -556,49 +555,18 @@ struct ActivationOperatorDesc {
   }
 };
 
-base::expected<ActivationOperatorDesc, mojom::ErrorPtr>
-CreateOperatorDescForActivation(const mojom::Activation& activation) {
-  switch (activation.which()) {
-    case mojom::Activation::Tag::kElu:
-      return ActivationOperatorDesc{.desc = DML_ACTIVATION_ELU_OPERATOR_DESC{
-                                        .Alpha = activation.get_elu()->alpha}};
-    case mojom::Activation::Tag::kHardSigmoid:
-      return ActivationOperatorDesc{
-          .desc = DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC{
-              .Alpha = activation.get_hard_sigmoid()->alpha,
-              .Beta = activation.get_hard_sigmoid()->beta}};
-    case mojom::Activation::Tag::kLeakyRelu:
-      return ActivationOperatorDesc{
-          .desc = DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC{
-              .Alpha = activation.get_leaky_relu()->alpha}};
-    case mojom::Activation::Tag::kLinear:
-      return ActivationOperatorDesc{.desc = DML_ACTIVATION_LINEAR_OPERATOR_DESC{
-                                        .Alpha = activation.get_linear()->alpha,
-                                        .Beta = activation.get_linear()->beta}};
-    case mojom::Activation::Tag::kRelu:
+ActivationOperatorDesc CreateOperatorDescForActivation(
+    mojom::RecurrentNetworkActivation activation) {
+  switch (activation) {
+    case mojom::RecurrentNetworkActivation::kRelu:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_RELU_OPERATOR_DESC{}};
-    case mojom::Activation::Tag::kSigmoid:
+    case mojom::RecurrentNetworkActivation::kSigmoid:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_SIGMOID_OPERATOR_DESC{}};
-    case mojom::Activation::Tag::kSoftplus:
-      return ActivationOperatorDesc{
-          .desc = DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC{.Steepness = 1.0}};
-    case mojom::Activation::Tag::kSoftsign:
-      return ActivationOperatorDesc{
-          .desc = DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC{}};
-    case mojom::Activation::Tag::kTanh:
+    case mojom::RecurrentNetworkActivation::kTanh:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_TANH_OPERATOR_DESC{}};
-    case mojom::Activation::Tag::kGelu:
-      // DML_OPERATOR_ACTIVATION_GELU will be
-      // supported after the DirectML version upper than DML_FEATURE_LEVEL_5_1
-      // https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history
-      //
-      // TODO(crbug.com/347026222): Create gelu activation for RNN operators.
-      return base::unexpected(
-          CreateError(mojom::Error::Code::kNotSupportedError,
-                      "The activation (gelu) is not supported."));
   }
 }
 
@@ -3159,20 +3127,24 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
         "The gru weight layout (rzn) is not supported.", label);
   }
 
-  const std::vector<mojom::ActivationPtr>& activations = gru->activations;
-  CHECK_EQ(activations.size(), 2u);
+  // When the recurrent network is bidirectional, dual activations must be
+  // provided for the forward and backward directions.
+  const size_t number_of_activations =
+      direction == mojom::RecurrentNetworkDirection::kBoth
+          ? gru->activations.size() * 2
+          : gru->activations.size();
+
   std::vector<ActivationOperatorDesc> activation_operator_descs;
-  activation_operator_descs.reserve(activations.size());
-  for (const auto& activation : activations) {
-    ASSIGN_OR_RETURN(ActivationOperatorDesc activation_operator_desc,
-                     CreateOperatorDescForActivation(*activation));
-    activation_operator_descs.push_back(std::move(activation_operator_desc));
+  activation_operator_descs.reserve(number_of_activations);
+  for (mojom::RecurrentNetworkActivation activation : gru->activations) {
+    activation_operator_descs.push_back(
+        CreateOperatorDescForActivation(activation));
   }
   // For bidirectional, activations must be provided f() and g() for forward
   // followed by f() and g() for backwards.
   if (direction == mojom::RecurrentNetworkDirection::kBoth) {
-    activation_operator_descs.push_back(activation_operator_descs[0]);
-    activation_operator_descs.push_back(activation_operator_descs[1]);
+    base::ranges::copy(activation_operator_descs,
+                       std::back_inserter(activation_operator_descs));
   }
   std::vector<DML_OPERATOR_DESC> activation_dml_descs;
   activation_dml_descs.reserve(activation_operator_descs.size());
@@ -3786,18 +3758,22 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
         /*rank=*/4, TensorDesc::Alignment::kTrailing);
   }
 
-  const std::vector<mojom::ActivationPtr>& activations = lstm.activations;
-  std::vector<ActivationOperatorDesc> activation_operator_descs;
-  activation_operator_descs.reserve(activations.size());
-  for (const auto& activation : activations) {
-    ASSIGN_OR_RETURN(ActivationOperatorDesc activation_operator_desc,
-                     CreateOperatorDescForActivation(*activation));
-    activation_operator_descs.push_back(std::move(activation_operator_desc));
-  }
   // When the recurrent network is bidirectional, dual activations must be
   // provided for the forward and backward directions.
+  const size_t number_of_activations =
+      direction == mojom::RecurrentNetworkDirection::kBoth
+          ? lstm.activations.size() * 2
+          : lstm.activations.size();
+
+  std::vector<ActivationOperatorDesc> activation_operator_descs;
+  activation_operator_descs.reserve(number_of_activations);
+  for (mojom::RecurrentNetworkActivation activation : lstm.activations) {
+    activation_operator_descs.push_back(
+        CreateOperatorDescForActivation(activation));
+  }
+  // For bidirectional, activations must be provided f() and g() for forward
+  // followed by f() and g() for backwards.
   if (direction == mojom::RecurrentNetworkDirection::kBoth) {
-    activation_operator_descs.reserve(activations.size() * 2);
     base::ranges::copy(activation_operator_descs,
                        std::back_inserter(activation_operator_descs));
   }

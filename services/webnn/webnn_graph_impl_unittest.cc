@@ -642,16 +642,6 @@ TEST_F(WebNNGraphImplTest, HardSigmoidTest) {
   }
 }
 
-struct Activation {
-  mojom::Activation::Tag kind;
-  std::optional<float> elu_alpha;
-  std::optional<float> hard_sigmoid_alpha;
-  std::optional<float> hard_sigmoid_beta;
-  std::optional<float> leaky_relu_alpha;
-  std::optional<float> linear_alpha;
-  std::optional<float> linear_beta;
-};
-
 struct BatchNormalizationTester {
   OperandInfo input;
   OperandInfo mean;
@@ -2603,9 +2593,9 @@ struct GruTester {
     mojom::RecurrentNetworkDirection direction =
         mojom::RecurrentNetworkDirection::kForward;
     mojom::GruWeightLayout layout = mojom::GruWeightLayout::kZrn;
-    std::vector<Activation> activations = {
-        Activation{.kind = mojom::Activation::Tag::kSigmoid},
-        Activation{.kind = mojom::Activation::Tag::kTanh}};
+    std::vector<mojom::RecurrentNetworkActivation> activations = {
+        mojom::RecurrentNetworkActivation::kSigmoid,
+        mojom::RecurrentNetworkActivation::kTanh};
   };
 
   OperandInfo input;
@@ -2740,42 +2730,11 @@ TEST_F(WebNNGraphImplTest, GruTest) {
                                             hidden_size}},
         .steps = steps,
         .hidden_size = hidden_size,
-        .attributes = {.direction = mojom::RecurrentNetworkDirection::kBackward,
-                       .activations =
-                           {Activation{.kind =
-                                           mojom::Activation::Tag::kSigmoid},
-                            Activation{.kind = mojom::Activation::Tag::kTanh},
-                            Activation{.kind = mojom::Activation::Tag::kTanh}}},
-        .outputs = {{.type = OperandDataType::kFloat32,
-                     .dimensions = {num_directions, batch_size, hidden_size}}},
-        .expected = false}
-        .Test();
-  }
-  {
-    // Test the invalid graph when the leakyRelu activation has incorrect
-    // attributes.
-    uint32_t steps = 2;
-    uint32_t batch_size = 1;
-    uint32_t input_size = 3;
-    uint32_t hidden_size = 4;
-    uint32_t num_directions = 1;
-    GruTester{
-        .input = {.type = OperandDataType::kFloat32,
-                  .dimensions = {steps, batch_size, input_size}},
-        .weight = {.type = OperandDataType::kFloat32,
-                   .dimensions = {num_directions, 3 * hidden_size, input_size}},
-        .recurrent_weight = {.type = OperandDataType::kFloat32,
-                             .dimensions = {num_directions, 3 * hidden_size,
-                                            hidden_size}},
-        .steps = steps,
-        .hidden_size = hidden_size,
         .attributes =
             {.direction = mojom::RecurrentNetworkDirection::kBackward,
-             .activations = {Activation{.kind =
-                                            mojom::Activation::Tag::kSigmoid},
-                             Activation{
-                                 .kind = mojom::Activation::Tag::kLeakyRelu,
-                                 .leaky_relu_alpha = NAN}}},
+             .activations = {mojom::RecurrentNetworkActivation::kSigmoid,
+                             mojom::RecurrentNetworkActivation::kTanh,
+                             mojom::RecurrentNetworkActivation::kTanh}},
         .outputs = {{.type = OperandDataType::kFloat32,
                      .dimensions = {num_directions, batch_size, hidden_size}}},
         .expected = false}
@@ -2869,9 +2828,9 @@ struct GruCellTester {
     std::optional<uint64_t> recurrent_bias_operand_id;
     bool reset_after = true;
     mojom::GruWeightLayout layout = mojom::GruWeightLayout::kZrn;
-    std::vector<Activation> activations = {
-        Activation{.kind = mojom::Activation::Tag::kSigmoid},
-        Activation{.kind = mojom::Activation::Tag::kTanh}};
+    std::vector<mojom::RecurrentNetworkActivation> activations = {
+        mojom::RecurrentNetworkActivation::kSigmoid,
+        mojom::RecurrentNetworkActivation::kTanh};
   };
 
   OperandInfo input;
@@ -3212,30 +3171,10 @@ TEST_F(WebNNGraphImplTest, GruCellTest) {
         .recurrent_weight = valid_recurrent_weight,
         .hidden_state = valid_hidden_state,
         .hidden_size = hidden_size,
-        .attributes = {.activations =
-                           {Activation{.kind =
-                                           mojom::Activation::Tag::kSigmoid},
-                            Activation{.kind = mojom::Activation::Tag::kTanh},
-                            Activation{.kind = mojom::Activation::Tag::kTanh}}},
-        .output = valid_output,
-        .expected = false}
-        .Test();
-  }
-  {
-    // Test the invalid graph when the leakyRelu activation has incorrect
-    // attributes.
-    GruCellTester{
-        .input = valid_input,
-        .weight = valid_weight,
-        .recurrent_weight = valid_recurrent_weight,
-        .hidden_state = valid_hidden_state,
-        .hidden_size = hidden_size,
         .attributes =
-            {.activations = {Activation{.kind =
-                                            mojom::Activation::Tag::kSigmoid},
-                             Activation{
-                                 .kind = mojom::Activation::Tag::kLeakyRelu,
-                                 .leaky_relu_alpha = NAN}}},
+            {.activations = {mojom::RecurrentNetworkActivation::kSigmoid,
+                             mojom::RecurrentNetworkActivation::kTanh,
+                             mojom::RecurrentNetworkActivation::kTanh}},
         .output = valid_output,
         .expected = false}
         .Test();
@@ -3726,10 +3665,10 @@ struct LstmTester {
     mojom::RecurrentNetworkDirection direction =
         mojom::RecurrentNetworkDirection::kForward;
     mojom::LstmWeightLayout layout = mojom::LstmWeightLayout::kIofg;
-    std::vector<Activation> activations = {
-        Activation{.kind = mojom::Activation::Tag::kSigmoid},
-        Activation{.kind = mojom::Activation::Tag::kTanh},
-        Activation{.kind = mojom::Activation::Tag::kTanh}};
+    std::vector<mojom::RecurrentNetworkActivation> activations = {
+        mojom::RecurrentNetworkActivation::kSigmoid,
+        mojom::RecurrentNetworkActivation::kTanh,
+        mojom::RecurrentNetworkActivation::kTanh};
   };
 
   OperandInfo input;
@@ -3871,40 +3810,6 @@ TEST_F(WebNNGraphImplTest, LstmTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the leakyRelu activation has incorrect
-    // attributes.
-    uint32_t steps = 2;
-    uint32_t batch_size = 1;
-    uint32_t input_size = 3;
-    uint32_t hidden_size = 4;
-    uint32_t direction_count = 1;
-    LstmTester{
-        .input = {.type = OperandDataType::kFloat32,
-                  .dimensions = {steps, batch_size, input_size}},
-        .weight = {.type = OperandDataType::kFloat32,
-                   .dimensions = {direction_count, 4 * hidden_size,
-                                  input_size}},
-        .recurrent_weight = {.type = OperandDataType::kFloat32,
-                             .dimensions = {direction_count, 4 * hidden_size,
-                                            hidden_size}},
-        .steps = steps,
-        .hidden_size = hidden_size,
-        .attributes =
-            {.direction = mojom::RecurrentNetworkDirection::kBackward,
-             .activations = {Activation{.kind =
-                                            mojom::Activation::Tag::kSigmoid},
-                             Activation{.kind = mojom::Activation::Tag::kTanh},
-                             Activation{
-                                 .kind = mojom::Activation::Tag::kLeakyRelu,
-                                 .leaky_relu_alpha = NAN}}},
-        .outputs = {{.type = OperandDataType::kFloat32,
-                     .dimensions = {direction_count, batch_size, hidden_size}},
-                    {.type = OperandDataType::kFloat32,
-                     .dimensions = {direction_count, batch_size, hidden_size}}},
-        .expected = false}
-        .Test();
-  }
-  {
     // Test the invalid graph when the output is incorrect.
     uint32_t steps = 2;
     uint32_t batch_size = 1;
@@ -4002,10 +3907,10 @@ struct LstmCellTester {
     std::optional<uint64_t> recurrent_bias_operand_id;
     std::optional<uint64_t> peephole_weight_operand_id;
     mojom::LstmWeightLayout layout = mojom::LstmWeightLayout::kIofg;
-    std::vector<Activation> activations = {
-        Activation{.kind = mojom::Activation::Tag::kSigmoid},
-        Activation{.kind = mojom::Activation::Tag::kTanh},
-        Activation{.kind = mojom::Activation::Tag::kTanh}};
+    std::vector<mojom::RecurrentNetworkActivation> activations = {
+        mojom::RecurrentNetworkActivation::kSigmoid,
+        mojom::RecurrentNetworkActivation::kTanh,
+        mojom::RecurrentNetworkActivation::kTanh};
   };
 
   OperandInfo input;
@@ -4236,27 +4141,6 @@ TEST_F(WebNNGraphImplTest, LstmCellTest) {
                                {.type = OperandDataType::kInt8,
                                 .dimensions = {batch_size, hidden_size}}},
                    .expected = false}
-        .Test();
-  }
-  {
-    // Test the invalid graph when the leakyRelu activation has incorrect
-    // attributes.
-    LstmCellTester{
-        .input = valid_input,
-        .weight = valid_weight,
-        .recurrent_weight = valid_recurrent_weight,
-        .hidden_state = valid_hidden_state,
-        .cell_state = valid_cell_state,
-        .hidden_size = hidden_size,
-        .attributes =
-            {.activations = {Activation{.kind =
-                                            mojom::Activation::Tag::kSigmoid},
-                             Activation{.kind = mojom::Activation::Tag::kTanh},
-                             Activation{
-                                 .kind = mojom::Activation::Tag::kLeakyRelu,
-                                 .leaky_relu_alpha = NAN}}},
-        .outputs = valid_outputs,
-        .expected = false}
         .Test();
   }
   {

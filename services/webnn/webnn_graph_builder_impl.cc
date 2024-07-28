@@ -116,26 +116,6 @@ bool ValidateLinearAttributes(const mojom::Linear& linear) {
   return true;
 }
 
-bool ValidateActivation(const mojom::Activation& activation) {
-  switch (activation.which()) {
-    case mojom::Activation::Tag::kElu:
-      return ValidateEluAttributes(*activation.get_elu());
-    case mojom::Activation::Tag::kHardSigmoid:
-      return ValidateHardSigmoidAttributes(*activation.get_hard_sigmoid());
-    case mojom::Activation::Tag::kLeakyRelu:
-      return ValidateLeakyReluAttributes(*activation.get_leaky_relu());
-    case mojom::Activation::Tag::kLinear:
-      return ValidateLinearAttributes(*activation.get_linear());
-    case mojom::Activation::Tag::kGelu:
-    case mojom::Activation::Tag::kRelu:
-    case mojom::Activation::Tag::kSigmoid:
-    case mojom::Activation::Tag::kSoftplus:
-    case mojom::Activation::Tag::kSoftsign:
-    case mojom::Activation::Tag::kTanh:
-      return true;
-  }
-}
-
 const mojom::Operand* GetMojoOperand(const IdToOperandMap& id_to_operand_map,
                                      uint64_t operand_id) {
   const auto operand_iterator = id_to_operand_map.find(operand_id);
@@ -1053,12 +1033,6 @@ bool ValidateGru(const IdToOperandMap& id_to_operand_map,
     }
   }
 
-  for (const auto& activation : gru.activations) {
-    if (!ValidateActivation(*activation)) {
-      return false;
-    }
-  }
-
   return true;
 }
 
@@ -1124,12 +1098,6 @@ bool ValidateGruCell(const IdToOperandMap& id_to_operand_map,
   }
   if (validated_output != output->descriptor) {
     return false;
-  }
-
-  for (const auto& activation : gru_cell.activations) {
-    if (!ValidateActivation(*activation)) {
-      return false;
-    }
   }
 
   return true;
@@ -1318,12 +1286,6 @@ bool ValidateLstm(const IdToOperandMap& id_to_operand_map,
     }
   }
 
-  for (const auto& activation : lstm.activations) {
-    if (!ValidateActivation(*activation)) {
-      return false;
-    }
-  }
-
   return true;
 }
 
@@ -1405,13 +1367,6 @@ bool ValidateLstmCell(const IdToOperandMap& id_to_operand_map,
     if (validated_outputs->at(i) != output->descriptor) {
       return false;
     }
-  }
-
-  if (!base::ranges::all_of(lstm_cell.activations,
-                            [](const mojom::ActivationPtr& activation) {
-                              return ValidateActivation(*activation);
-                            })) {
-    return false;
   }
 
   return true;

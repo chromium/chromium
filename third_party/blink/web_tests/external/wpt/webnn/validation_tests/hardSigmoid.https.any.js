@@ -6,8 +6,7 @@
 
 validateInputFromAnotherBuilder('hardSigmoid');
 
-validateUnaryOperation(
-    'hardSigmoid', floatingPointTypes, /*alsoBuildActivation=*/ true);
+validateUnaryOperation('hardSigmoid', floatingPointTypes);
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
@@ -17,23 +16,18 @@ promise_test(async t => {
   const output = builder.hardSigmoid(input, options);
   assert_equals(output.dataType(), 'float16');
   assert_array_equals(output.shape(), [1, 2, 3]);
-}, '[hardSigmoid] Test building an operator with options');
-
-promise_test(async t => {
-  const builder = new MLGraphBuilder(context);
-  const options = {alpha: 0.2};
-  builder.hardSigmoid(options);
-}, '[hardSigmoid] Test building an activation with options');
+}, '[hardSigmoid] Test building with options');
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
   const options = {beta: NaN};
   const input = builder.input('input', {dataType: 'float32', dimensions: []});
   assert_throws_js(TypeError, () => builder.hardSigmoid(input, options));
-}, '[hardSigmoid] Throw if options.beta is NaN when building an operator');
+}, '[hardSigmoid] Throw if options.beta is NaN');
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
   const options = {alpha: Infinity};
-  assert_throws_js(TypeError, () => builder.hardSigmoid(options));
-}, '[hardSigmoid] Throw if options.alpha is Infinity when building an activation');
+  const input = builder.input('input', {dataType: 'float32', dimensions: [1]});
+  assert_throws_js(TypeError, () => builder.hardSigmoid(input, options));
+}, '[hardSigmoid] Throw if options.alpha is Infinity');

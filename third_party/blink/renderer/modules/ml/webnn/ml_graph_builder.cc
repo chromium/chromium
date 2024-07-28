@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_recurrent_network_activation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
@@ -51,7 +52,6 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_constant_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -384,14 +384,13 @@ webnn::GruAttributes ConvertToGruAttributes(MLGraphBuilder* builder,
   attributes.return_sequence = options->returnSequence();
   attributes.direction =
       BlinkRecurrentNetworkDirectionToComponent(options->direction().AsEnum());
-  // If the activations are not specified, create a default activation sequence
-  // [sigmoid, tanh] as defined in the spec.
   if (!options->hasActivations()) {
-    MLActivation* activation_sigmoid = MakeGarbageCollected<MLActivation>(
-        builder, webnn::mojom::blink::Activation::Tag::kSigmoid);
-    MLActivation* activation_tanh = MakeGarbageCollected<MLActivation>(
-        builder, webnn::mojom::blink::Activation::Tag::kTanh);
-    options->setActivations({activation_sigmoid, activation_tanh});
+    // Create a default activation sequence as defined in the spec.
+    options->setActivations(
+        {V8MLRecurrentNetworkActivation(
+             V8MLRecurrentNetworkActivation::Enum::kSigmoid),
+         V8MLRecurrentNetworkActivation(
+             V8MLRecurrentNetworkActivation::Enum::kTanh)});
   }
   attributes.activation_count = options->activations().size();
   attributes.label = options->label().Utf8();
@@ -410,14 +409,13 @@ webnn::GruCellAttributes ConvertToGruCellAttributes(
   if (options->hasRecurrentBias()) {
     attributes.recurrent_bias = options->recurrentBias()->Descriptor();
   }
-  // If the activations are not specified, create a default activation sequence
-  // [sigmoid, tanh] as defined in the spec.
   if (!options->hasActivations()) {
-    MLActivation* activation_sigmoid = MakeGarbageCollected<MLActivation>(
-        builder, webnn::mojom::blink::Activation::Tag::kSigmoid);
-    MLActivation* activation_tanh = MakeGarbageCollected<MLActivation>(
-        builder, webnn::mojom::blink::Activation::Tag::kTanh);
-    options->setActivations({activation_sigmoid, activation_tanh});
+    // Create a default activation sequence as defined in the spec.
+    options->setActivations(
+        {V8MLRecurrentNetworkActivation(
+             V8MLRecurrentNetworkActivation::Enum::kSigmoid),
+         V8MLRecurrentNetworkActivation(
+             V8MLRecurrentNetworkActivation::Enum::kTanh)});
   }
   attributes.activation_count = options->activations().size();
   attributes.label = options->label().Utf8();
@@ -1286,23 +1284,6 @@ MLOperand* MLGraphBuilder::elu(const MLOperand* input,
       ml_context_->GetProperties().data_type_limits.elu_input, input, options);
 }
 
-MLActivation* MLGraphBuilder::elu(const MLEluOptions* options,
-                                  ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_BUILT(nullptr);
-
-  // The current spec doesn't restrict the value of alpha. An issue has been
-  // filed to track it: https://github.com/webmachinelearning/webnn/issues/383
-  if (options->alpha() <= 0.0f) {
-    exception_state.ThrowTypeError(
-        "The value of alpha must be greater than 0.");
-    return nullptr;
-  }
-  // Create the elu operator that would be used as an activation
-  // function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kElu, options);
-}
-
 MLOperand* MLGraphBuilder::expand(const MLOperand* input,
                                   const Vector<uint32_t>& new_shape,
                                   const MLOperatorOptions* options,
@@ -1373,14 +1354,6 @@ MLOperand* MLGraphBuilder::gelu(const MLOperand* input,
       ml_context_->GetProperties().data_type_limits.gelu_input, input, options);
 }
 
-MLActivation* MLGraphBuilder::gelu(ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_BUILT(nullptr);
-
-  // Create the gelu operator that would be used as an activation function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kGelu);
-}
-
 MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
                                 const MLOperand* b,
                                 const MLGemmOptions* options,
@@ -1431,11 +1404,6 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::gru(
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs),
                                  HeapVector<Member<const MLOperand>>());
 
-  if (options->hasActivations()) {
-    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivations(options->activations()),
-                                   HeapVector<Member<const MLOperand>>());
-  }
-
   auto validated_outputs = webnn::ValidateGruAndInferOutput(
       input->Descriptor(), weight->Descriptor(), recurrent_weight->Descriptor(),
       steps, hidden_size, ConvertToGruAttributes(this, options));
@@ -1474,11 +1442,6 @@ MLOperand* MLGraphBuilder::gruCell(const MLOperand* input,
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
-  if (options->hasActivations()) {
-    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivations(options->activations()),
-                                   nullptr);
-  }
-
   auto validated_output = webnn::ValidateGruCellAndInferOutput(
       input->Descriptor(), weight->Descriptor(), recurrent_weight->Descriptor(),
       hidden_state->Descriptor(), hidden_size,
@@ -1515,12 +1478,6 @@ MLOperand* MLGraphBuilder::hardSwish(const MLOperand* input,
       webnn::DataTypeConstraint::kFloat16To32, input, options);
 }
 
-MLActivation* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
-  // TODO: crbug.com/40206287 - Support HardSwish as an activation function.
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 MLOperand* MLGraphBuilder::hardSigmoid(const MLOperand* input,
                                        const MLHardSigmoidOptions* options,
                                        ExceptionState& exception_state) {
@@ -1537,16 +1494,6 @@ MLOperand* MLGraphBuilder::hardSigmoid(const MLOperand* input,
   return BuildUnaryOperator(
       this, exception_state, webnn::mojom::blink::Operation::Tag::kHardSigmoid,
       webnn::DataTypeConstraint::kFloat16To32, input, options);
-}
-
-MLActivation* MLGraphBuilder::hardSigmoid(const MLHardSigmoidOptions* options,
-                                          ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_BUILT(nullptr);
-
-  // Create the hardSigmoid operator that would be used as an activation
-  // function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kHardSigmoid, options);
 }
 
 MLOperand* MLGraphBuilder::instanceNormalization(
@@ -1638,16 +1585,6 @@ MLOperand* MLGraphBuilder::leakyRelu(const MLOperand* input,
       options);
 }
 
-MLActivation* MLGraphBuilder::leakyRelu(const MLLeakyReluOptions* options,
-                                        ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_BUILT(nullptr);
-
-  // Create the leakyRelu operator that would be used as an activation
-  // function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kLeakyRelu, options);
-}
-
 MLOperand* MLGraphBuilder::linear(const MLOperand* input,
                                   const MLLinearOptions* options,
                                   ExceptionState& exception_state) {
@@ -1664,16 +1601,6 @@ MLOperand* MLGraphBuilder::linear(const MLOperand* input,
   return BuildUnaryOperator(
       this, exception_state, webnn::mojom::blink::Operation::Tag::kLinear,
       webnn::DataTypeConstraint::kFloat16To32, input, options);
-}
-
-MLActivation* MLGraphBuilder::linear(const MLLinearOptions* options,
-                                     ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_BUILT(nullptr);
-
-  // Create the linear operator that would be used as an activation
-  // function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kLinear, options);
 }
 
 HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
@@ -1706,20 +1633,15 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs),
                                  HeapVector<Member<const MLOperand>>());
 
-  if (options->hasActivations()) {
-    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivations(options->activations()),
-                                   HeapVector<Member<const MLOperand>>());
-  }
-
-  // If the activations are not specified, create a default activation sequence
-  // [sigmoid, tanh, tanh] as defined in the spec.
   if (!options->hasActivations()) {
-    MLActivation* activation_sigmoid = MakeGarbageCollected<MLActivation>(
-        this, webnn::mojom::blink::Activation::Tag::kSigmoid);
-    MLActivation* activation_tanh = MakeGarbageCollected<MLActivation>(
-        this, webnn::mojom::blink::Activation::Tag::kTanh);
+    // Create a default activation sequence as defined in the spec.
     options->setActivations(
-        {activation_sigmoid, activation_tanh, activation_tanh});
+        {V8MLRecurrentNetworkActivation(
+             V8MLRecurrentNetworkActivation::Enum::kSigmoid),
+         V8MLRecurrentNetworkActivation(
+             V8MLRecurrentNetworkActivation::Enum::kTanh),
+         V8MLRecurrentNetworkActivation(
+             V8MLRecurrentNetworkActivation::Enum::kTanh)});
   }
 
   auto validated_outputs = webnn::ValidateLstmAndInferOutput(
@@ -1767,20 +1689,15 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstmCell(
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs),
                                  HeapVector<Member<const MLOperand>>());
 
-  if (options->hasActivations()) {
-    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivations(options->activations()),
-                                   HeapVector<Member<const MLOperand>>());
-  }
-
-  // If the activations are not specified, create a default activation sequence
-  // [sigmoid, tanh, tanh] as defined in the spec.
   if (!options->hasActivations()) {
-    MLActivation* activation_sigmoid = MakeGarbageCollected<MLActivation>(
-        this, webnn::mojom::blink::Activation::Tag::kSigmoid);
-    MLActivation* activation_tanh = MakeGarbageCollected<MLActivation>(
-        this, webnn::mojom::blink::Activation::Tag::kTanh);
+    // Create a default activation sequence as defined in the spec.
     options->setActivations(
-        {activation_sigmoid, activation_tanh, activation_tanh});
+        {V8MLRecurrentNetworkActivation(
+             V8MLRecurrentNetworkActivation::Enum::kSigmoid),
+         V8MLRecurrentNetworkActivation(
+             V8MLRecurrentNetworkActivation::Enum::kTanh),
+         V8MLRecurrentNetworkActivation(
+             V8MLRecurrentNetworkActivation::Enum::kTanh)});
   }
 
   auto validated_outputs = webnn::ValidateLstmCellAndInferOutput(
@@ -1954,14 +1871,6 @@ MLOperand* MLGraphBuilder::relu(const MLOperand* input,
       ml_context_->GetProperties().data_type_limits.relu_input, input, options);
 }
 
-MLActivation* MLGraphBuilder::relu(ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_BUILT(nullptr);
-
-  // Create the relu operator that would be used as an activation function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kRelu);
-}
-
 MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
                                    const Vector<uint32_t>& new_shape,
                                    const MLOperatorOptions* options,
@@ -2075,14 +1984,6 @@ MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
       webnn::DataTypeConstraint::kFloat16To32, input, options);
 }
 
-MLActivation* MLGraphBuilder::sigmoid(ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_BUILT(nullptr);
-
-  // Create the sigmoid operator that would be used as an activation function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kSigmoid);
-}
-
 MLOperand* MLGraphBuilder::slice(const MLOperand* input,
                                  const Vector<uint32_t>& starts,
                                  const Vector<uint32_t>& sizes,
@@ -2161,14 +2062,6 @@ MLOperand* MLGraphBuilder::softplus(const MLOperand* input,
       webnn::DataTypeConstraint::kFloat16To32, input, options);
 }
 
-MLActivation* MLGraphBuilder::softplus(ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_BUILT(nullptr);
-
-  // Create the softplus operator that would be used as an activation function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kSoftplus);
-}
-
 MLOperand* MLGraphBuilder::softsign(const MLOperand* input,
                                     const MLOperatorOptions* options,
                                     ExceptionState& exception_state) {
@@ -2186,14 +2079,6 @@ MLOperand* MLGraphBuilder::softsign(const MLOperand* input,
   return BuildUnaryOperator(
       this, exception_state, webnn::mojom::blink::Operation::Tag::kSoftsign,
       webnn::DataTypeConstraint::kFloat16To32, input, options);
-}
-
-MLActivation* MLGraphBuilder::softsign(ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_BUILT(nullptr);
-
-  // Create the softsign operator that would be used as an activation function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kSoftsign);
 }
 
 HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
@@ -2267,14 +2152,6 @@ MLOperand* MLGraphBuilder::tanh(const MLOperand* input,
   return BuildUnaryOperator(
       this, exception_state, webnn::mojom::blink::Operation::Tag::kTanh,
       webnn::DataTypeConstraint::kFloat16To32, input, options);
-}
-
-MLActivation* MLGraphBuilder::tanh(ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_BUILT(nullptr);
-
-  // Create the tanh operator that would be used as an activation function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Activation::Tag::kTanh);
 }
 
 MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
@@ -2473,26 +2350,6 @@ base::expected<void, String> MLGraphBuilder::ValidateInputs(
     const HeapVector<Member<const MLOperand>>& inputs) {
   for (const MLOperand* input_to_validate : inputs) {
     RETURN_IF_ERROR(ValidateInput(input_to_validate));
-  }
-  return base::ok();
-}
-
-// As specified in
-// https://www.w3.org/TR/webnn/#mlgraphbuilder-validate-activation.
-base::expected<void, String> MLGraphBuilder::ValidateActivation(
-    const MLActivation* activation) {
-  CHECK(activation);
-  if (activation->Operator()->Builder() != this) {
-    return base::unexpected(
-        "Invalid activation: Created from another builder.");
-  }
-  return base::ok();
-}
-
-base::expected<void, String> MLGraphBuilder::ValidateActivations(
-    const HeapVector<Member<MLActivation>>& activations) {
-  for (const MLActivation* activation_to_validate : activations) {
-    RETURN_IF_ERROR(ValidateActivation(activation_to_validate));
   }
   return base::ok();
 }

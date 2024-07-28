@@ -6,7 +6,7 @@
 
 validateInputFromAnotherBuilder('leakyRelu');
 
-validateSingleInputOperation('leakyRelu', /*alsoBuildActivation=*/ true);
+validateSingleInputOperation('leakyRelu');
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
@@ -16,23 +16,18 @@ promise_test(async t => {
   const output = builder.leakyRelu(input, options);
   assert_equals(output.dataType(), 'float32');
   assert_array_equals(output.shape(), [1, 2, 3]);
-}, '[leakyRelu] Test building an operator with options');
-
-promise_test(async t => {
-  const builder = new MLGraphBuilder(context);
-  const options = {alpha: 0.03};
-  builder.leakyRelu(options);
-}, '[leakyRelu] Test building an activation with options');
+}, '[leakyRelu] Build with options');
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
   const options = {alpha: Infinity};
   const input = builder.input('input', {dataType: 'float16', dimensions: []});
   assert_throws_js(TypeError, () => builder.leakyRelu(input, options));
-}, '[leakyRelu] Throw if options.alpha is Infinity when building an operator');
+}, '[leakyRelu] Throw if options.alpha is Infinity');
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
   const options = {alpha: -NaN};
-  assert_throws_js(TypeError, () => builder.leakyRelu(options));
-}, '[leakyRelu] Throw if options.alpha is -NaN when building an activation');
+  const input = builder.input('input', {dataType: 'float32', dimensions: [1]});
+  assert_throws_js(TypeError, () => builder.leakyRelu(input, options));
+}, '[leakyRelu] Throw if options.alpha is -NaN');

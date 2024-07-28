@@ -42,63 +42,6 @@ class GraphInfoBuilder final {
                        const std::vector<uint32_t>& dimensions,
                        OperandDataType type);
 
-  // An `Activation` type should have the following members:
-  // struct Activation {
-  //  mojom::Activation::Tag kind;
-  //  std::optional<float> elu_alpha;
-  //  std::optional<float> hard_sigmoid_alpha;
-  //  std::optional<float> hard_sigmoid_beta;
-  //  std::optional<float> leaky_relu_alpha;
-  //  std::optional<float> linear_alpha;
-  //  std::optional<float> linear_beta;
-  // };
-  template <typename ActivationAttributes>
-  mojom::ActivationPtr CreateActivation(
-      const ActivationAttributes& activation) {
-    switch (activation.kind) {
-      case mojom::Activation::Tag::kElu: {
-        auto elu = mojom::Elu::New();
-        CHECK(activation.elu_alpha.has_value());
-        elu->alpha = activation.elu_alpha.value();
-        return mojom::Activation::NewElu(std::move(elu));
-      }
-      case mojom::Activation::Tag::kGelu:
-        return mojom::Activation::NewGelu(mojom::Gelu::New());
-      case mojom::Activation::Tag::kHardSigmoid: {
-        auto hard_sigmoid = mojom::HardSigmoid::New();
-        CHECK(activation.hard_sigmoid_alpha.has_value());
-        CHECK(activation.hard_sigmoid_beta.has_value());
-        hard_sigmoid->alpha = activation.hard_sigmoid_alpha.value();
-        hard_sigmoid->beta = activation.hard_sigmoid_beta.value();
-        return mojom::Activation::NewHardSigmoid(std::move(hard_sigmoid));
-      }
-      case mojom::Activation::Tag::kLeakyRelu: {
-        auto leaky_relu = mojom::LeakyRelu::New();
-        CHECK(activation.leaky_relu_alpha.has_value());
-        leaky_relu->alpha = activation.leaky_relu_alpha.value();
-        return mojom::Activation::NewLeakyRelu(std::move(leaky_relu));
-      }
-      case mojom::Activation::Tag::kLinear: {
-        auto linear = mojom::Linear::New();
-        CHECK(activation.linear_alpha.has_value());
-        linear->alpha = activation.linear_alpha.value();
-        CHECK(activation.linear_beta.has_value());
-        linear->beta = activation.linear_beta.value();
-        return mojom::Activation::NewLinear(std::move(linear));
-      }
-      case mojom::Activation::Tag::kRelu:
-        return mojom::Activation::NewRelu(mojom::Relu::New());
-      case mojom::Activation::Tag::kSigmoid:
-        return mojom::Activation::NewSigmoid(mojom::Sigmoid::New());
-      case mojom::Activation::Tag::kSoftplus:
-        return mojom::Activation::NewSoftplus(mojom::Softplus::New());
-      case mojom::Activation::Tag::kSoftsign:
-        return mojom::Activation::NewSoftsign(mojom::Softsign::New());
-      case mojom::Activation::Tag::kTanh:
-        return mojom::Activation::NewTanh(mojom::Tanh::New());
-    }
-  }
-
   void BuildArgMinMax(mojom::ArgMinMax::Kind kind,
                       uint64_t input_operand_id,
                       uint64_t output_operand_id,
@@ -243,7 +186,7 @@ class GraphInfoBuilder final {
   //   bool return_sequence;
   //   mojom::RecurrentNetworkDirection direction;
   //   mojom::GruWeightLayout layout;
-  //   std::vector<Activation> activations;
+  //   std::vector<mojom::RecurrentNetworkActivation> activations;
   // };
   template <typename GruAttributes>
   void BuildGru(uint64_t input_operand_id,
@@ -269,10 +212,7 @@ class GraphInfoBuilder final {
     gru->return_sequence = attributes.return_sequence;
     gru->direction = attributes.direction;
     gru->layout = attributes.layout;
-
-    for (const auto& activation : attributes.activations) {
-      gru->activations.push_back(CreateActivation(activation));
-    }
+    gru->activations = attributes.activations;
 
     graph_info_->operations.push_back(mojom::Operation::NewGru(std::move(gru)));
   }
@@ -283,7 +223,7 @@ class GraphInfoBuilder final {
   //   std::optional<uint64_t> recurrent_bias_operand_id;
   //   bool reset_after;
   //   mojom::GruWeightLayout layout;
-  //   std::vector<Activation> activations;
+  //   std::vector<mojom::RecurrentNetworkActivation> activations;
   // };
   template <typename GruCellAttributes>
   void BuildGruCell(uint64_t input_operand_id,
@@ -293,16 +233,11 @@ class GraphInfoBuilder final {
                     uint64_t output_operand_id,
                     uint32_t hidden_size,
                     const GruCellAttributes& attributes) {
-    std::vector<mojom::ActivationPtr> activations;
-    activations.reserve(attributes.activations.size());
-    for (const auto& activation : attributes.activations) {
-      activations.push_back(CreateActivation(activation));
-    }
     mojom::GruCellPtr gru_cell = mojom::GruCell::New(
         input_operand_id, weight_operand_id, recurrent_weight_operand_id,
         hidden_state_operand_id, hidden_size, output_operand_id,
         attributes.bias_operand_id, attributes.recurrent_bias_operand_id,
-        attributes.reset_after, attributes.layout, std::move(activations), "");
+        attributes.reset_after, attributes.layout, attributes.activations, "");
 
     graph_info_->operations.push_back(
         mojom::Operation::NewGruCell(std::move(gru_cell)));
@@ -350,7 +285,7 @@ class GraphInfoBuilder final {
   //   bool return_sequence;
   //   mojom::RecurrentNetworkDirection direction;
   //   mojom::LstmWeightLayout layout;
-  //   std::vector<Activation> activations;
+  //   std::vector<mojom::RecurrentNetworkActivation> activations;
   // };
   template <typename LstmAttributes>
   void BuildLstm(uint64_t input_operand_id,
@@ -378,10 +313,7 @@ class GraphInfoBuilder final {
     lstm->return_sequence = attributes.return_sequence;
     lstm->direction = attributes.direction;
     lstm->layout = attributes.layout;
-
-    for (const auto& activation : attributes.activations) {
-      lstm->activations.push_back(CreateActivation(activation));
-    }
+    lstm->activations = attributes.activations;
 
     graph_info_->operations.push_back(
         mojom::Operation::NewLstm(std::move(lstm)));
@@ -393,7 +325,7 @@ class GraphInfoBuilder final {
   //   std::optional<uint64_t> recurrent_bias_operand_id;
   //   std::optional<uint64_t> peephole_weight_operand_id;
   //   mojom::LstmWeightLayout layout;
-  //   std::vector<Activation> activations;
+  //   std::vector<mojom::RecurrentNetworkActivation> activations;
   // };
   template <typename LstmCellAttributes>
   void BuildLstmCell(uint64_t input_operand_id,
@@ -404,19 +336,13 @@ class GraphInfoBuilder final {
                      std::vector<uint64_t> output_operand_ids,
                      uint32_t hidden_size,
                      const LstmCellAttributes& attributes) {
-    std::vector<mojom::ActivationPtr> activations;
-    activations.reserve(attributes.activations.size());
-    for (const auto& activation : attributes.activations) {
-      activations.push_back(CreateActivation(activation));
-    }
-
     auto lstm_cell = mojom::LstmCell::New(
         input_operand_id, weight_operand_id, recurrent_weight_operand_id,
         hidden_state_operand_id, cell_state_operand_id,
         std::move(output_operand_ids), hidden_size, attributes.bias_operand_id,
         attributes.recurrent_bias_operand_id,
         attributes.peephole_weight_operand_id, attributes.layout,
-        std::move(activations), "");
+        attributes.activations, "");
 
     graph_info_->operations.push_back(
         mojom::Operation::NewLstmCell(std::move(lstm_cell)));

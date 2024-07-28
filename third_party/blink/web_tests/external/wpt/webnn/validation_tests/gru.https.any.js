@@ -323,9 +323,7 @@ tests.forEach(
           options.layout = test.options.layout;
         }
         if (test.options.activations) {
-          options.activations = [];
-          test.options.activations.forEach(
-              activation => options.activations.push(builder[activation]()));
+          options.activations = test.options.activations;
         }
       }
 
@@ -429,18 +427,3 @@ multi_builder_test(async (t, builder, otherBuilder) => {
       () => builder.gru(
           input, weight, recurrentWeight, steps, hiddenSize, options));
 }, '[gru] throw if initialHiddenState option is from another builder');
-
-multi_builder_test(async (t, builder, otherBuilder) => {
-  const activation = builder.relu();
-  const activationFromOtherBuilder = otherBuilder.relu();
-  const options = {activations: [activation, activationFromOtherBuilder]};
-
-  const input = builder.input('input', kExampleInputDescriptor);
-  const weight = builder.input('weight', kExampleWeightDescriptor);
-  const recurrentWeight =
-      builder.input('recurrentWeight', kExampleRecurrentWeightDescriptor);
-  assert_throws_js(
-      TypeError,
-      () => builder.gru(
-          input, weight, recurrentWeight, steps, hiddenSize, options));
-}, '[gru] throw if any activation option is from another builder');

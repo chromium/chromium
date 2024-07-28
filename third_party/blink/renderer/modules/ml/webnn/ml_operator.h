@@ -66,7 +66,6 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   }
 
   const bindings::DictionaryBase* Options() const;
-  bool IsConnected() const;
   const HeapVector<Member<const MLOperand>>& Inputs() const;
   const HeapVector<Member<const MLOperand>>& Outputs() const;
   MLGraphBuilder const* Builder() const { return builder_.Get(); }
@@ -89,10 +88,6 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   Member<const bindings::DictionaryBase> options_;
   OperationSubKind sub_kind_;
 
-  // is_conneted_ indicates whether the operator is connected with operands.
-  // An operator without operand connections could be used by an MLActivation
-  // to represent an activation function that is fused into another operator.
-  bool is_connected_{false};
   HeapVector<Member<const MLOperand>> inputs_;
   HeapVector<Member<const MLOperand>> outputs_;
 };

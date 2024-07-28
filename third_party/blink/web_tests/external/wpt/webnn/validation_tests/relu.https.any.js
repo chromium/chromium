@@ -6,4 +6,4 @@
 
 validateInputFromAnotherBuilder('relu');
 
-validateSingleInputOperation('relu', /*alsoBuildActivation=*/ true);
+validateSingleInputOperation('relu');

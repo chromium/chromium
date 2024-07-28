@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_recurrent_network_activation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -59,7 +60,6 @@
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test_utils.h"
@@ -255,7 +255,6 @@ MLOperand* BuildConv2d(
   auto* conv2d = output->Operator();
   EXPECT_THAT(conv2d, testing::NotNull());
   EXPECT_EQ(conv2d->Kind(), webnn::mojom::blink::Operation::Tag::kConv2d);
-  EXPECT_TRUE(conv2d->IsConnected());
   EXPECT_THAT(conv2d->Options(), testing::NotNull());
   return output;
 }
@@ -272,7 +271,6 @@ MLOperand* BuildGemm(V8TestingScope& scope,
   auto* gemm = output->Operator();
   EXPECT_THAT(gemm, testing::NotNull());
   EXPECT_EQ(gemm->Kind(), webnn::mojom::blink::Operation::Tag::kGemm);
-  EXPECT_TRUE(gemm->IsConnected());
   EXPECT_THAT(gemm->Options(), testing::NotNull());
   return output;
 }
@@ -335,7 +333,6 @@ MLOperand* BuildElementWiseBinary(
   EXPECT_EQ(op->Kind(),
             webnn::mojom::blink::Operation::Tag::kElementWiseBinary);
   EXPECT_EQ(op->SubKind<webnn::mojom::blink::ElementWiseBinary::Kind>(), kind);
-  EXPECT_TRUE(op->IsConnected());
   return output;
 }
 
@@ -1527,77 +1524,6 @@ struct ClampOptions {
   std::optional<float> min_value;
   std::optional<float> max_value;
 };
-
-// TODO: crbug.com/325598628 - Consider replacing this with direct use of the
-// mojo Activation struct.
-struct Activation {
-  webnn::mojom::blink::Activation::Tag kind;
-  std::optional<ClampOptions> clamp_options;
-  std::optional<float> hard_sigmoid_alpha;
-  std::optional<float> hard_sigmoid_beta;
-  std::optional<float> elu_alpha;
-  std::optional<float> leaky_relu_alpha;
-  std::optional<float> linear_alpha;
-  std::optional<float> linear_beta;
-};
-
-MLActivation* CreateActivation(V8TestingScope& scope,
-                               MLGraphBuilder* builder,
-                               const Activation& activation) {
-  switch (activation.kind) {
-    case webnn::mojom::blink::Activation::Tag::kElu: {
-      auto* elu_options = MLEluOptions::Create();
-      CHECK(elu_options);
-      if (activation.elu_alpha.has_value()) {
-        elu_options->setAlpha(activation.elu_alpha.value());
-      }
-      return builder->elu(elu_options, scope.GetExceptionState());
-    }
-    case webnn::mojom::blink::Activation::Tag::kGelu:
-      return builder->gelu(scope.GetExceptionState());
-    case webnn::mojom::blink::Activation::Tag::kHardSigmoid: {
-      auto* hard_sigmoid_options = MLHardSigmoidOptions::Create();
-      CHECK(hard_sigmoid_options);
-      if (activation.hard_sigmoid_alpha.has_value()) {
-        hard_sigmoid_options->setAlpha(activation.hard_sigmoid_alpha.value());
-      }
-      if (activation.hard_sigmoid_beta.has_value()) {
-        hard_sigmoid_options->setBeta(activation.hard_sigmoid_beta.value());
-      }
-      return builder->hardSigmoid(hard_sigmoid_options,
-                                  scope.GetExceptionState());
-    }
-    case webnn::mojom::blink::Activation::Tag::kLeakyRelu: {
-      auto* leaky_relu_options = MLLeakyReluOptions::Create();
-      CHECK(leaky_relu_options);
-      if (activation.leaky_relu_alpha.has_value()) {
-        leaky_relu_options->setAlpha(activation.leaky_relu_alpha.value());
-      }
-      return builder->leakyRelu(leaky_relu_options, scope.GetExceptionState());
-    }
-    case webnn::mojom::blink::Activation::Tag::kLinear: {
-      auto* linear_options = MLLinearOptions::Create();
-      CHECK(linear_options);
-      if (activation.linear_alpha.has_value()) {
-        linear_options->setAlpha(activation.linear_alpha.value());
-      }
-      if (activation.linear_beta.has_value()) {
-        linear_options->setBeta(activation.linear_beta.value());
-      }
-      return builder->linear(linear_options, scope.GetExceptionState());
-    }
-    case webnn::mojom::blink::Activation::Tag::kRelu:
-      return builder->relu(scope.GetExceptionState());
-    case webnn::mojom::blink::Activation::Tag::kSigmoid:
-      return builder->sigmoid(scope.GetExceptionState());
-    case webnn::mojom::blink::Activation::Tag::kSoftplus:
-      return builder->softplus(scope.GetExceptionState());
-    case webnn::mojom::blink::Activation::Tag::kSoftsign:
-      return builder->softsign(scope.GetExceptionState());
-    case webnn::mojom::blink::Activation::Tag::kTanh:
-      return builder->tanh(scope.GetExceptionState());
-  }
-}
 
 struct SoftmaxTester {
   OperandInfo<float> input;

@@ -24,7 +24,6 @@
 namespace blink {
 
 class ExceptionState;
-class MLActivation;
 class MLArgMinMaxOptions;
 class MLBatchNormalizationOptions;
 class MLContext;
@@ -231,8 +230,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* elu(const MLOperand* input,
                  const MLEluOptions* options,
                  ExceptionState& exception_state);
-  MLActivation* elu(const MLEluOptions* options,
-                    ExceptionState& exception_state);
 
   MLOperand* expand(const MLOperand* input,
                     const Vector<uint32_t>& new_shape,
@@ -247,7 +244,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* gelu(const MLOperand* input,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
-  MLActivation* gelu(ExceptionState& exception_state);
 
   MLOperand* gemm(const MLOperand* a,
                   const MLOperand* b,
@@ -273,13 +269,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* hardSigmoid(const MLOperand* input,
                          const MLHardSigmoidOptions* options,
                          ExceptionState& exception_state);
-  MLActivation* hardSigmoid(const MLHardSigmoidOptions* options,
-                            ExceptionState& exception_state);
 
   MLOperand* hardSwish(const MLOperand* input,
                        const MLOperatorOptions* options,
                        ExceptionState& exception_state);
-  MLActivation* hardSwish(ExceptionState& exception_state);
 
   MLOperand* instanceNormalization(
       const MLOperand* input,
@@ -293,14 +286,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* leakyRelu(const MLOperand* input,
                        const MLLeakyReluOptions* options,
                        ExceptionState& exception_state);
-  MLActivation* leakyRelu(const MLLeakyReluOptions* options,
-                          ExceptionState& exception_state);
 
   MLOperand* linear(const MLOperand* input,
                     const MLLinearOptions* options,
                     ExceptionState& exception_state);
-  MLActivation* linear(const MLLinearOptions* options,
-                       ExceptionState& exception_state);
 
   HeapVector<Member<const MLOperand>> lstm(const MLOperand* input,
                                            const MLOperand* weight,
@@ -383,7 +372,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* relu(const MLOperand* input,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
-  MLActivation* relu(ExceptionState& exception_state);
 
   MLOperand* reshape(const MLOperand* input,
                      const Vector<uint32_t>& new_shape,
@@ -398,7 +386,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* sigmoid(const MLOperand* input,
                      const MLOperatorOptions* options,
                      ExceptionState& exception_state);
-  MLActivation* sigmoid(ExceptionState& exception_state);
 
   MLOperand* slice(const MLOperand* input,
                    const Vector<uint32_t>& starts,
@@ -417,12 +404,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* softplus(const MLOperand* input,
                       const MLOperatorOptions* options,
                       ExceptionState& exception_state);
-  MLActivation* softplus(ExceptionState& exception_state);
 
   MLOperand* softsign(const MLOperand* input,
                       const MLOperatorOptions* options,
                       ExceptionState& exception_state);
-  MLActivation* softsign(ExceptionState& exception_state);
 
   HeapVector<Member<const MLOperand>> split(const MLOperand* input,
                                             const uint32_t splits,
@@ -436,7 +421,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* tanh(const MLOperand* input,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
-  MLActivation* tanh(ExceptionState& exception_state);
 
   MLOperand* transpose(const MLOperand* input,
                        const MLTransposeOptions* options,
@@ -471,16 +455,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   // Convenience method to validate several inputs at once.
   [[nodiscard]] base::expected<void, String> ValidateInputs(
       const HeapVector<Member<const MLOperand>>& inputs);
-
-  // Performs platform-agnostic and operand-agnostic validation checks which
-  // must be run for each MLActivation passed as an option to a builder method.
-  // Returns an error message which may be used to throw a TypeError if
-  // `activation` is not valid to use with this builder.
-  [[nodiscard]] base::expected<void, String> ValidateActivation(
-      const MLActivation* activation);
-  // Convenience method to validate several activations at once.
-  [[nodiscard]] base::expected<void, String> ValidateActivations(
-      const HeapVector<Member<MLActivation>>& activations);
 
   Member<MLContext> ml_context_;
 

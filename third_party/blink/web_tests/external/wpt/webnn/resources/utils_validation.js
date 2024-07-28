@@ -407,11 +407,8 @@ function validateOptionsAxes(operationName) {
  * @param {String} operationName - An operation name
  * @param {Array} supportedDataTypes - Test building with these data types
  *     succeeds and test building with all other data types fails
- * @param {Boolean} alsoBuildActivation - If test building this operation as an
- *     activation
  */
-function validateUnaryOperation(
-    operationName, supportedDataTypes, alsoBuildActivation = false) {
+function validateUnaryOperation(operationName, supportedDataTypes) {
   promise_test(async t => {
     const builder = new MLGraphBuilder(context);
     for (let dataType of supportedDataTypes) {
@@ -451,23 +448,13 @@ function validateUnaryOperation(
       }
     }
   }, `[${operationName}] Throw if the dataType is not supported for an unary operator.`);
-
-  if (alsoBuildActivation) {
-    promise_test(async t => {
-      const builder = new MLGraphBuilder(context);
-      builder[operationName]();
-    }, `[${operationName}] Test building an activation`);
-  }
 }
 
 /**
  * Validate a single input operation
  * @param {String} operationName - An operation name
- * @param {Boolean} alsoBuildActivation - If test building this operation as an
- *     activation
  */
-function validateSingleInputOperation(
-    operationName, alsoBuildActivation = false) {
+function validateSingleInputOperation(operationName) {
   promise_test(async t => {
     const builder = new MLGraphBuilder(context);
     const supportedDataTypes =
@@ -503,13 +490,6 @@ function validateSingleInputOperation(
       }
     }
   }, `[${operationName}] Throw if the data type is not supported for the operator.`);
-
-  if (alsoBuildActivation) {
-    promise_test(async t => {
-      const builder = new MLGraphBuilder(context);
-      builder[operationName]();
-    }, `[${operationName}] Test building an activation.`);
-  }
 }
 
 /**

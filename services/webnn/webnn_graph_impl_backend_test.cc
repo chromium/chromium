@@ -21,6 +21,7 @@
 #include "services/webnn/buildflags.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom-shared.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -402,68 +403,60 @@ void WebNNGraphImplBackendTest::SetUp() {
 }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_WIN)
 
-struct Activation {
-  mojom::Activation::Tag kind;
-  std::optional<float> elu_alpha;
-  std::optional<float> hard_sigmoid_alpha;
-  std::optional<float> hard_sigmoid_beta;
-  std::optional<float> leaky_relu_alpha;
-  std::optional<float> linear_alpha;
-  std::optional<float> linear_beta;
+struct FusibleOperationDescriptor {
+  mojom::Operation::Tag kind;
+  std::optional<float> alpha;
+  std::optional<float> beta;
 };
 
-void BuildStandaloneActivation(GraphInfoBuilder& builder,
-                               const Activation& activation,
-                               uint64_t input_operand_id,
-                               uint64_t output_operand_id) {
-  switch (activation.kind) {
-    case mojom::Activation::Tag::kElu: {
-      CHECK(activation.elu_alpha.has_value());
-      builder.BuildElu(input_operand_id, output_operand_id,
-                       activation.elu_alpha.value());
+void BuildFusibleOperation(GraphInfoBuilder& builder,
+                           const FusibleOperationDescriptor& operation,
+                           uint64_t input_operand_id,
+                           uint64_t output_operand_id) {
+  switch (operation.kind) {
+    case mojom::Operation::Tag::kElu: {
+      CHECK(operation.alpha.has_value());
+      builder.BuildElu(input_operand_id, output_operand_id, *operation.alpha);
       return;
     }
-    case mojom::Activation::Tag::kGelu: {
-      // TODO(crbug.com/345640552): Support fusing gelu.
-      NOTREACHED_NORETURN();
-    }
-    case mojom::Activation::Tag::kHardSigmoid: {
-      CHECK(activation.hard_sigmoid_alpha.has_value());
-      CHECK(activation.hard_sigmoid_beta.has_value());
+    case mojom::Operation::Tag::kHardSigmoid: {
+      CHECK(operation.alpha.has_value());
+      CHECK(operation.beta.has_value());
       builder.BuildHardSigmoid(input_operand_id, output_operand_id,
-                               activation.hard_sigmoid_alpha.value(),
-                               activation.hard_sigmoid_beta.value());
+                               *operation.alpha, *operation.beta);
       return;
     }
-    case mojom::Activation::Tag::kLeakyRelu: {
-      CHECK(activation.leaky_relu_alpha.has_value());
+    case mojom::Operation::Tag::kLeakyRelu: {
+      CHECK(operation.alpha.has_value());
       builder.BuildLeakyRelu(input_operand_id, output_operand_id,
-                             activation.leaky_relu_alpha.value());
+                             *operation.alpha);
       return;
     }
-    case mojom::Activation::Tag::kLinear: {
-      CHECK(activation.linear_alpha.has_value());
-      CHECK(activation.linear_beta.has_value());
-      builder.BuildLinear(input_operand_id, output_operand_id,
-                          activation.linear_alpha.value(),
-                          activation.linear_beta.value());
+    case mojom::Operation::Tag::kLinear: {
+      CHECK(operation.alpha.has_value());
+      CHECK(operation.beta.has_value());
+      builder.BuildLinear(input_operand_id, output_operand_id, *operation.alpha,
+                          *operation.beta);
       return;
     }
-    case mojom::Activation::Tag::kRelu:
+    case mojom::Operation::Tag::kRelu:
       builder.BuildRelu(input_operand_id, output_operand_id);
       return;
-    case mojom::Activation::Tag::kSigmoid:
+    case mojom::Operation::Tag::kSigmoid:
       builder.BuildSigmoid(input_operand_id, output_operand_id);
       return;
-    case mojom::Activation::Tag::kSoftplus:
+    case mojom::Operation::Tag::kSoftplus:
       builder.BuildSoftplus(input_operand_id, output_operand_id);
       return;
-    case mojom::Activation::Tag::kSoftsign:
+    case mojom::Operation::Tag::kSoftsign:
       builder.BuildSoftsign(input_operand_id, output_operand_id);
       return;
-    case mojom::Activation::Tag::kTanh:
+    case mojom::Operation::Tag::kTanh:
       builder.BuildTanh(input_operand_id, output_operand_id);
       return;
+    default:
+      // TODO(crbug.com/345640552): Support fusing gelu.
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -483,7 +476,8 @@ struct BatchNormalizationTester {
   BatchNormalizationAttributes attributes;
   OperandInfo<T> output;
 
-  void TestFusingStandaloneActivation(const Activation& activation) {
+  void TestFusingOperation(
+      const FusibleOperationDescriptor& fusible_operation) {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
@@ -509,8 +503,8 @@ struct BatchNormalizationTester {
 
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    BuildStandaloneActivation(builder, activation, intermediate_operand_id,
-                              output_operand_id);
+    BuildFusibleOperation(builder, fusible_operation, intermediate_operand_id,
+                          output_operand_id);
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
     named_inputs.insert({"input", VectorToBigBuffer(input.values)});
@@ -557,10 +551,8 @@ TEST_F(WebNNGraphImplBackendTest,
                    .dimensions = {1, 2, 1, 3},
                    .values = {-8.999950000374997, 1, 10.999950000374997,
                               -1.2474078892909666, 11, 23.24740788929097}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kLinear,
-                       .linear_alpha = 10,
-                       .linear_beta = 1});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kLinear, .alpha = 10, .beta = 1});
   }
   {
     // Test batchNormalization with 4-D input with activation = hardsigmoid.
@@ -583,10 +575,10 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = OperandDataType::kFloat32,
                    .dimensions = {1, 2, 1, 3},
                    .values = {1, 1, 1, 1, 1, 1}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kHardSigmoid,
-                       .hard_sigmoid_alpha = 1,
-                       .hard_sigmoid_beta = 3});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kHardSigmoid,
+            .alpha = 1,
+            .beta = 3});
   }
   {
     // Test batchNormalization with 4-D input with activation = relu.
@@ -610,8 +602,8 @@ TEST_F(WebNNGraphImplBackendTest,
                    .dimensions = {1, 2, 1, 3},
                    .values = {0, 0, 0.9999950000374997, 0, 1,
                               2.224740788929097}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kRelu});
+        .TestFusingOperation(
+            FusibleOperationDescriptor{.kind = mojom::Operation::Tag::kRelu});
   }
   {
     // Test batchNormalization with 4-D input with activation = softplus.
@@ -635,8 +627,8 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = OperandDataType::kFloat32,
                    .dimensions = {1, 2, 1, 3},
                    .values = {0, 0, 100, 99, 100, 101}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kSoftplus});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kSoftplus});
   }
   {
     // Test batchNormalization with 1-D input with activation = softsign.
@@ -660,8 +652,8 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = OperandDataType::kFloat32,
                    .dimensions = {2},
                    .values = {0, 0.5}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kSoftsign});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kSoftsign});
   }
 }
 
@@ -682,7 +674,8 @@ struct Conv2dTester {
   Conv2dAttributes attributes;
   OperandInfo<float> output;
 
-  void TestFusingStandaloneActivation(const Activation& activation) {
+  void TestFusingOperation(
+      const FusibleOperationDescriptor& fusible_operation) {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
@@ -706,8 +699,8 @@ struct Conv2dTester {
 
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    BuildStandaloneActivation(builder, activation, conv2d_output_operand_id,
-                              output_operand_id);
+    BuildFusibleOperation(builder, fusible_operation, conv2d_output_operand_id,
+                          output_operand_id);
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
 
@@ -744,8 +737,8 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                    .values = {-0.7946096424007316, -0.7853474888890126,
                               -0.7601703453057089, -0.6917317734107099,
                               -0.5056964470628461, 0, 1, 2, 3}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kElu, .elu_alpha = 0.8});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kElu, .alpha = 0.8});
   }
   // Test conv2d with NCHW layout, float 32 data type, bias and fusing with
   // leakyRelu activation.
@@ -766,9 +759,8 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
         .output = {.type = OperandDataType::kFloat32,
                    .dimensions = {1, 1, 2, 2},
                    .values = {-0.3, -0.12, 21, 30}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kLeakyRelu,
-                       .leaky_relu_alpha = 0.02});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kLeakyRelu, .alpha = 0.02});
   }
   // Test conv2d with NCHW layout, float 32 data type, fusing with bias and
   // linear activation.
@@ -793,10 +785,8 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                               1.64, 1.73, 1.52, 1.64, 2,    2.09, 2.18,
                               1.82, 1.94, 2.45, 2.54, 2.63, 2.12, 1.73,
                               2.12, 2.18, 2.24, 1.85}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kLinear,
-                       .linear_alpha = 0.01,
-                       .linear_beta = 1});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kLinear, .alpha = 0.01, .beta = 1});
   }
   // Test conv2d with NCHW layout, fusing with hardSigmoid activation.
   {
@@ -819,10 +809,10 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                    .values = {0,    0,    0, 0,    0,    0,    0, 0,    0,
                               0,    0,    0, 0.09, 0.18, 0,    0, 0.45, 0.54,
                               0.63, 0.12, 0, 0.12, 0.18, 0.24, 0}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kHardSigmoid,
-                       .hard_sigmoid_alpha = 0.01,
-                       .hard_sigmoid_beta = -1});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kHardSigmoid,
+            .alpha = 0.01,
+            .beta = -1});
   }
   // Test conv2d with NCHW layout, fusing with sigmoid activation.
   {
@@ -861,8 +851,8 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                               0.6934033632278442, 0.6633020043373108,
                               0.7144469618797302, 0.7469926476478577,
                               0.7747598886489868, 0.7273134589195251}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kSigmoid});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kSigmoid});
   }
   // Test conv2d with NCHW layout, float 32 data type, bias and fusing with
   // softplus activation.
@@ -877,8 +867,8 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                         .output = {.type = OperandDataType::kFloat32,
                                    .dimensions = {1, 1, 2, 2},
                                    .values = {40, 48, 56, 64}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kSoftplus});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kSoftplus});
   }
   // Test conv2d with NCHW layout, float 32 data type, fusing with softsign
   // activation.
@@ -893,8 +883,8 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                         .output = {.type = OperandDataType::kFloat32,
                                    .dimensions = {1, 1, 2, 2},
                                    .values = {-0.9, -0.5, 0, 0.9}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kSoftsign});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kSoftsign});
   }
   // Test conv2d with NCHW layout, fusing with tanh activation.
   {
@@ -923,8 +913,8 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                               0.9985079423323266, 0.999969775809118,
                               0.9999834124992523, 0.9999908965525104,
                               0.9995503664595334}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kTanh});
+        .TestFusingOperation(
+            FusibleOperationDescriptor{.kind = mojom::Operation::Tag::kTanh});
   }
 }
 
@@ -994,7 +984,8 @@ struct ElementWiseBinaryTester {
     VerifyIsEqual(std::move(named_outputs["output"]), output);
   }
 
-  void TestFusingStandaloneActivation(const Activation& activation) {
+  void TestFusingOperation(
+      const FusibleOperationDescriptor& fusible_operation) {
     // Now only binary add supports fusing standalone activation.
     CHECK_EQ(kind, mojom::ElementWiseBinary::Kind::kAdd);
     // Build the graph with mojo type.
@@ -1011,8 +1002,8 @@ struct ElementWiseBinaryTester {
 
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    BuildStandaloneActivation(builder, activation, intermediate_operand_id,
-                              output_operand_id);
+    BuildFusibleOperation(builder, fusible_operation, intermediate_operand_id,
+                          output_operand_id);
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
     named_inputs.insert({"lhs", VectorToBigBuffer(lhs.values)});
@@ -1043,10 +1034,8 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = OperandDataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {11, 72, 71, 71, 71, 61}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kLinear,
-                       .linear_alpha = 10,
-                       .linear_beta = 1});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kLinear, .alpha = 10, .beta = 1});
   }
   // Test add with relu activation.
   {
@@ -1060,8 +1049,8 @@ TEST_F(WebNNGraphImplBackendTest,
                                    .output = {.type = OperandDataType::kFloat32,
                                               .dimensions = {1, 2, 3, 1},
                                               .values = {0, 7, 7, 7, 7, 0}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kRelu});
+        .TestFusingOperation(
+            FusibleOperationDescriptor{.kind = mojom::Operation::Tag::kRelu});
   }
 }
 
@@ -1445,7 +1434,8 @@ struct GemmTester {
   GemmAttributes attributes;
   OperandInfo<float> output;
 
-  void TestFusingStandaloneActivation(const Activation& activation) {
+  void TestFusingOperation(
+      const FusibleOperationDescriptor& fusible_operation) {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_a_operand_id =
@@ -1464,8 +1454,8 @@ struct GemmTester {
 
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    BuildStandaloneActivation(builder, activation, intermediate_operand_id,
-                              output_operand_id);
+    BuildFusibleOperation(builder, fusible_operation, intermediate_operand_id,
+                          output_operand_id);
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
     named_inputs.insert({"input_a", VectorToBigBuffer(input_a.values)});
@@ -1496,10 +1486,8 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoGemm) {
                       .output = {.type = OperandDataType::kFloat32,
                                  .dimensions = {2, 2},
                                  .values = {71, 101, 151, 221}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kLinear,
-                       .linear_alpha = 10,
-                       .linear_beta = 1});
+        .TestFusingOperation(FusibleOperationDescriptor{
+            .kind = mojom::Operation::Tag::kLinear, .alpha = 10, .beta = 1});
   }
 
   // Test gemm with a third input, activation = relu.
@@ -1517,8 +1505,8 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoGemm) {
         .output = {.type = OperandDataType::kFloat32,
                    .dimensions = {2, 2},
                    .values = {8, 11, 0, 0}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kRelu});
+        .TestFusingOperation(
+            FusibleOperationDescriptor{.kind = mojom::Operation::Tag::kRelu});
   }
 }
 
@@ -1533,9 +1521,9 @@ struct GruTester {
     mojom::RecurrentNetworkDirection direction =
         mojom::RecurrentNetworkDirection::kForward;
     mojom::GruWeightLayout layout = mojom::GruWeightLayout::kZrn;
-    std::vector<Activation> activations{
-        Activation{.kind = mojom::Activation::Tag::kSigmoid},
-        Activation{.kind = mojom::Activation::Tag::kTanh}};
+    std::vector<mojom::RecurrentNetworkActivation> activations{
+        mojom::RecurrentNetworkActivation::kSigmoid,
+        mojom::RecurrentNetworkActivation::kTanh};
   };
 
   OperandInfo<T> input;
@@ -1638,9 +1626,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
                                  1)},
         .steps = steps,
         .hidden_size = hidden_size,
-        .attributes = {.activations =
-                           {Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .attributes =
+            {.activations = {mojom::RecurrentNetworkActivation::kRelu,
+                             mojom::RecurrentNetworkActivation::kRelu}},
         .outputs = {{.type = OperandDataType::kFloat32,
                      .dimensions = {num_directions, batch_size, hidden_size},
                      .values = {-30., -30., -30., -30., -30., -210., -210.,
@@ -1671,10 +1659,10 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
                                  1)},
         .steps = steps,
         .hidden_size = hidden_size,
-        .attributes = {.direction = mojom::RecurrentNetworkDirection::kBoth,
-                       .activations =
-                           {Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .attributes =
+            {.direction = mojom::RecurrentNetworkDirection::kBoth,
+             .activations = {mojom::RecurrentNetworkActivation::kRelu,
+                             mojom::RecurrentNetworkActivation::kRelu}},
         .outputs = {{.type = OperandDataType::kFloat32,
                      .dimensions = {num_directions, batch_size, hidden_size},
                      .values = {-30.,  -30.,  -30.,  -30.,  -30.,  -210.,
@@ -1708,10 +1696,10 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
                                  1)},
         .steps = steps,
         .hidden_size = hidden_size,
-        .attributes = {.direction = mojom::RecurrentNetworkDirection::kBoth,
-                       .activations =
-                           {Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .attributes =
+            {.direction = mojom::RecurrentNetworkDirection::kBoth,
+             .activations = {mojom::RecurrentNetworkActivation::kRelu,
+                             mojom::RecurrentNetworkActivation::kRelu}},
         .outputs = {{.type = OperandDataType::kFloat32,
                      .dimensions = {num_directions, batch_size, hidden_size},
                      .values = {6.,  6.,  6.,  6.,  6.,  15., 15., 15.,
@@ -1753,9 +1741,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
                                .dimensions = {num_directions, 3 * hidden_size},
                                .values = std::vector<float>(
                                    num_directions * 3 * hidden_size, 0)},
-        .attributes = {.activations =
-                           {Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .attributes =
+            {.activations = {mojom::RecurrentNetworkActivation::kRelu,
+                             mojom::RecurrentNetworkActivation::kRelu}},
         .outputs = {{.type = OperandDataType::kFloat32,
                      .dimensions = {num_directions, batch_size, hidden_size},
                      .values = {-42., -42., -42., -42., -42., -240., -240.,
@@ -1797,9 +1785,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
                 .dimensions = {num_directions, batch_size, hidden_size},
                 .values = std::vector<float>(
                     num_directions * batch_size * hidden_size, 1)},
-        .attributes = {.activations =
-                           {Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .attributes =
+            {.activations = {mojom::RecurrentNetworkActivation::kRelu,
+                             mojom::RecurrentNetworkActivation::kRelu}},
         .outputs = {{.type = OperandDataType::kFloat32,
                      .dimensions = {num_directions, batch_size, hidden_size},
                      .values = {-725., -725., -725., -725., -725., -2399.,
@@ -1846,10 +1834,10 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
                 .dimensions = {num_directions, batch_size, hidden_size},
                 .values = std::vector<float>(
                     num_directions * batch_size * hidden_size, 1)},
-        .attributes = {.return_sequence = true,
-                       .activations =
-                           {Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .attributes =
+            {.return_sequence = true,
+             .activations = {mojom::RecurrentNetworkActivation::kRelu,
+                             mojom::RecurrentNetworkActivation::kRelu}},
         .outputs =
             {{.type = OperandDataType::kFloat32,
               .dimensions = {num_directions, batch_size, hidden_size},
@@ -1874,9 +1862,9 @@ struct GruCellTester {
     std::optional<uint64_t> recurrent_bias_operand_id;
     bool reset_after = true;
     mojom::GruWeightLayout layout = mojom::GruWeightLayout::kZrn;
-    std::vector<Activation> activations{
-        Activation{.kind = mojom::Activation::Tag::kSigmoid},
-        Activation{.kind = mojom::Activation::Tag::kTanh}};
+    std::vector<mojom::RecurrentNetworkActivation> activations{
+        mojom::RecurrentNetworkActivation::kSigmoid,
+        mojom::RecurrentNetworkActivation::kTanh};
   };
 
   OperandInfo<T> input;
@@ -1972,9 +1960,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGruCell) {
                          .values =
                              std::vector<float>(batch_size * hidden_size, 0)},
         .hidden_size = hidden_size,
-        .attributes = {.activations =
-                           {Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .attributes =
+            {.activations = {mojom::RecurrentNetworkActivation::kRelu,
+                             mojom::RecurrentNetworkActivation::kRelu}},
         .output = {.type = OperandDataType::kFloat32,
                    .dimensions = {batch_size, hidden_size},
                    .values = {-30., -30., -30., -30., -30., -210., -210., -210.,
@@ -2011,9 +1999,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGruCell) {
                                              .dimensions = {3 * hidden_size},
                                              .values = std::vector<float>(
                                                  3 * hidden_size, 0)},
-        .attributes = {.activations =
-                           {Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .attributes =
+            {.activations = {mojom::RecurrentNetworkActivation::kRelu,
+                             mojom::RecurrentNetworkActivation::kRelu}},
         .output = {.type = OperandDataType::kFloat32,
                    .dimensions = {batch_size, hidden_size},
                    .values = {-42., -42., -42., -42., -42., -240., -240., -240.,
@@ -2213,7 +2201,8 @@ struct InstanceNormalizationTester {
   InstanceNormalizationAttributes attributes;
   OperandInfo<T> output;
 
-  void TestFusingStandaloneActivation(const Activation& activation) {
+  void TestFusingOperation(
+      const FusibleOperationDescriptor& fusible_operation) {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
@@ -2234,8 +2223,8 @@ struct InstanceNormalizationTester {
 
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    BuildStandaloneActivation(builder, activation, intermediate_operand_id,
-                              output_operand_id);
+    BuildFusibleOperation(builder, fusible_operation, intermediate_operand_id,
+                          output_operand_id);
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
     named_inputs.insert({"input", VectorToBigBuffer(input.values)});
@@ -2269,8 +2258,8 @@ TEST_F(WebNNGraphImplBackendTest,
                    .dimensions = {1, 2, 1, 3},
                    .values = {0, 0, 1.2247356859083902, 0, 0,
                               1.2247356859083902}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kRelu});
+        .TestFusingOperation(
+            FusibleOperationDescriptor{.kind = mojom::Operation::Tag::kRelu});
   }
 }
 
@@ -2326,7 +2315,8 @@ struct LayerNormalizationTester {
     }
   }
 
-  void TestFusingStandaloneActivation(const Activation& activation) {
+  void TestFusingOperation(
+      const FusibleOperationDescriptor& fusible_operation) {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
@@ -2347,8 +2337,8 @@ struct LayerNormalizationTester {
 
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    BuildStandaloneActivation(builder, activation, intermediate_operand_id,
-                              output_operand_id);
+    BuildFusibleOperation(builder, fusible_operation, intermediate_operand_id,
+                          output_operand_id);
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
     named_inputs.insert({"input", VectorToBigBuffer(input.values)});
@@ -2382,8 +2372,8 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = OperandDataType::kFloat32,
                    .dimensions = {5},
                    .values = {0, 0, 0, 0.7071050134262237, 1.4142100268524473}}}
-        .TestFusingStandaloneActivation(
-            Activation{.kind = mojom::Activation::Tag::kRelu});
+        .TestFusingOperation(
+            FusibleOperationDescriptor{.kind = mojom::Operation::Tag::kRelu});
   }
 }
 
@@ -2448,10 +2438,10 @@ struct LstmTester {
     mojom::RecurrentNetworkDirection direction =
         mojom::RecurrentNetworkDirection::kForward;
     mojom::LstmWeightLayout layout = mojom::LstmWeightLayout::kIofg;
-    std::vector<Activation> activations{
-        Activation{.kind = mojom::Activation::Tag::kSigmoid},
-        Activation{.kind = mojom::Activation::Tag::kTanh},
-        Activation{.kind = mojom::Activation::Tag::kTanh}};
+    std::vector<mojom::RecurrentNetworkActivation> activations{
+        mojom::RecurrentNetworkActivation::kSigmoid,
+        mojom::RecurrentNetworkActivation::kTanh,
+        mojom::RecurrentNetworkActivation::kTanh};
   };
   LstmAttributes attributes;
   std::vector<OperandInfo<T>> outputs;
@@ -2545,41 +2535,6 @@ struct LstmTester {
 // Test building and computing a graph with single operator lstm.
 TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
   {
-    // Test lstm with bidirection and activations = {relu, relu, linear}.
-    uint32_t steps = 1;
-    uint32_t batch_size = 2;
-    uint32_t input_size = 2;
-    uint32_t direction_count = 2;
-    uint32_t hidden_size = 1;
-    LstmTester<float>{
-        .input = {.type = OperandDataType::kFloat32,
-                  .dimensions = {steps, batch_size, input_size},
-                  .values = {1, 2, 3, 4}},
-        .weight = {.type = OperandDataType::kFloat32,
-                   .dimensions = {direction_count, 4 * hidden_size, input_size},
-                   .values = std::vector<float>(16, 1)},
-        .recurrent_weight = {.type = OperandDataType::kFloat32,
-                             .dimensions = {direction_count, 4 * hidden_size,
-                                            hidden_size},
-                             .values = std::vector<float>(8, 1)},
-        .steps = steps,
-        .hidden_size = hidden_size,
-        .attributes =
-            {.direction = mojom::RecurrentNetworkDirection::kBoth,
-             .activations = {Activation{.kind = mojom::Activation::Tag::kRelu},
-                             Activation{.kind = mojom::Activation::Tag::kRelu},
-                             Activation{.kind = mojom::Activation::Tag::kLinear,
-                                        .linear_alpha = 2,
-                                        .linear_beta = 0}}},
-        .outputs = {{.type = OperandDataType::kFloat32,
-                     .dimensions = {direction_count, batch_size, hidden_size},
-                     .values = {54, 686, 54, 686}},
-                    {.type = OperandDataType::kFloat32,
-                     .dimensions = {direction_count, batch_size, hidden_size},
-                     .values = {9, 49, 9, 49}}}}
-        .Test();
-  }
-  {
     // Test lstm with given bias and recurrent bias, activations = {relu, relu,
     // relu}.
     uint32_t steps = 2;
@@ -2608,10 +2563,10 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
             OperandInfo<float>{.type = OperandDataType::kFloat32,
                                .dimensions = {direction_count, 4 * hidden_size},
                                .values = std::vector<float>(4, 0.5)},
-        .attributes = {.activations =
-                           {Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .attributes =
+            {.activations = {mojom::RecurrentNetworkActivation::kRelu,
+                             mojom::RecurrentNetworkActivation::kRelu,
+                             mojom::RecurrentNetworkActivation::kRelu}},
         .outputs = {{.type = OperandDataType::kFloat32,
                      .dimensions = {direction_count, batch_size, hidden_size},
                      .values = {8, 216}},
@@ -2649,75 +2604,16 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
             OperandInfo<float>{.type = OperandDataType::kFloat32,
                                .dimensions = {direction_count, 3 * hidden_size},
                                .values = std::vector<float>(6, 0)},
-        .attributes = {.activations =
-                           {Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .attributes =
+            {.activations = {mojom::RecurrentNetworkActivation::kRelu,
+                             mojom::RecurrentNetworkActivation::kRelu,
+                             mojom::RecurrentNetworkActivation::kRelu}},
         .outputs = {{.type = OperandDataType::kFloat32,
                      .dimensions = {direction_count, batch_size, hidden_size},
                      .values = {2811392, 2811392}},
                     {.type = OperandDataType::kFloat32,
                      .dimensions = {direction_count, batch_size, hidden_size},
                      .values = {20672, 20672}}}}
-        .Test();
-  }
-  {
-    // Test lstm with given recurrent bias, initial hidden state and initial
-    // cell state, return_sequence = true, activations = {linear, linear,
-    // linear}.
-    uint32_t steps = 1;
-    uint32_t batch_size = 2;
-    uint32_t input_size = 1;
-    uint32_t direction_count = 1;
-    uint32_t hidden_size = 2;
-    LstmTester<float>{
-        .input = {.type = OperandDataType::kFloat32,
-                  .dimensions = {steps, batch_size, input_size},
-                  .values = {0, 1}},
-        .weight = {.type = OperandDataType::kFloat32,
-                   .dimensions = {direction_count, 4 * hidden_size, input_size},
-                   .values = std::vector<float>(8, 1)},
-        .recurrent_weight = {.type = OperandDataType::kFloat32,
-                             .dimensions = {direction_count, 4 * hidden_size,
-                                            hidden_size},
-                             .values = std::vector<float>(16, 1)},
-        .steps = steps,
-        .hidden_size = hidden_size,
-        .recurrent_bias =
-            OperandInfo<float>{.type = OperandDataType::kFloat32,
-                               .dimensions = {direction_count, 4 * hidden_size},
-                               .values = std::vector<float>(8, 2)},
-        .initial_hidden_state =
-            OperandInfo<float>{
-                .type = OperandDataType::kFloat32,
-                .dimensions = {direction_count, batch_size, hidden_size},
-                .values = std::vector<float>(4, 1)},
-        .initial_cell_state =
-            OperandInfo<float>{
-                .type = OperandDataType::kFloat32,
-                .dimensions = {direction_count, batch_size, hidden_size},
-                .values = std::vector<float>(4, 0)},
-        .attributes =
-            {.return_sequence = true,
-             .activations = {Activation{.kind = mojom::Activation::Tag::kLinear,
-                                        .linear_alpha = 1,
-                                        .linear_beta = 0},
-                             Activation{.kind = mojom::Activation::Tag::kLinear,
-                                        .linear_alpha = 1,
-                                        .linear_beta = 1},
-                             Activation{.kind = mojom::Activation::Tag::kLinear,
-                                        .linear_alpha = 1,
-                                        .linear_beta = 2}}},
-        .outputs = {{.type = OperandDataType::kFloat32,
-                     .dimensions = {direction_count, batch_size, hidden_size},
-                     .values = {88, 88, 160, 160}},
-                    {.type = OperandDataType::kFloat32,
-                     .dimensions = {direction_count, batch_size, hidden_size},
-                     .values = {20, 20, 30, 30}},
-                    {.type = OperandDataType::kFloat32,
-                     .dimensions = {steps, direction_count, batch_size,
-                                    hidden_size},
-                     .values = {88, 88, 160, 160}}}}
         .Test();
   }
   {
@@ -2758,10 +2654,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
     attributes.initial_cell_state_operand_id = builder.BuildConstant(
         {direction_count, batch_size, hidden_size}, OperandDataType::kFloat32,
         base::as_bytes(base::make_span(initial_cell_state_data)));
-    attributes.activations = {
-        Activation{.kind = mojom::Activation::Tag::kRelu},
-        Activation{.kind = mojom::Activation::Tag::kRelu},
-        Activation{.kind = mojom::Activation::Tag::kRelu}};
+    attributes.activations = {mojom::RecurrentNetworkActivation::kRelu,
+                              mojom::RecurrentNetworkActivation::kRelu,
+                              mojom::RecurrentNetworkActivation::kRelu};
 
     uint64_t output_a_operand_id = builder.BuildOutput(
         "output0", {direction_count, batch_size, hidden_size},
@@ -2793,7 +2688,10 @@ struct LstmCellAttributes {
   std::optional<uint64_t> recurrent_bias_operand_id;
   std::optional<uint64_t> peephole_weight_operand_id;
   mojom::LstmWeightLayout layout = mojom::LstmWeightLayout::kIofg;
-  std::vector<Activation> activations;
+  std::vector<mojom::RecurrentNetworkActivation> activations = {
+      mojom::RecurrentNetworkActivation::kSigmoid,
+      mojom::RecurrentNetworkActivation::kTanh,
+      mojom::RecurrentNetworkActivation::kTanh};
 };
 
 // TODO(crbug.com/331250158): Remove this test after the WPT conformance tests
@@ -2823,9 +2721,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstmCell) {
       "cellState", {batch_size, hidden_size}, OperandDataType::kFloat32);
 
   LstmCellAttributes attributes;
-  attributes.activations = {Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu},
-                            Activation{.kind = mojom::Activation::Tag::kRelu}};
+  attributes.activations = {mojom::RecurrentNetworkActivation::kRelu,
+                            mojom::RecurrentNetworkActivation::kRelu,
+                            mojom::RecurrentNetworkActivation::kRelu};
 
   uint64_t output_a_operand_id = builder.BuildOutput(
       "output0", {batch_size, hidden_size}, OperandDataType::kFloat32);
@@ -2865,9 +2763,10 @@ struct MatmulTester {
   OperandInfo<T> input_b;
   OperandInfo<T> output;
 
-  void TestFusion(std::optional<std::vector<uint32_t>> permutation_a,
-                  std::optional<std::vector<uint32_t>> permutation_b,
-                  std::optional<const Activation> activation) {
+  void TestFusion(
+      std::optional<std::vector<uint32_t>> permutation_a,
+      std::optional<std::vector<uint32_t>> permutation_b,
+      std::optional<const FusibleOperationDescriptor> fusible_operation) {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_a_operand_id =
@@ -2894,7 +2793,7 @@ struct MatmulTester {
     }
 
     uint64_t output_operand_id;
-    if (activation) {
+    if (fusible_operation) {
       output_operand_id =
           builder.BuildIntermediateOperand(output.dimensions, output.type);
     } else {
@@ -2905,12 +2804,12 @@ struct MatmulTester {
     builder.BuildMatmul(input_a_operand_id, input_b_operand_id,
                         output_operand_id);
 
-    if (activation) {
+    if (fusible_operation) {
       uint64_t intermediate_operand_id = output_operand_id;
       output_operand_id =
           builder.BuildOutput("output", output.dimensions, output.type);
-      BuildStandaloneActivation(builder, activation.value(),
-                                intermediate_operand_id, output_operand_id);
+      BuildFusibleOperation(builder, fusible_operation.value(),
+                            intermediate_operand_id, output_operand_id);
     }
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
@@ -3013,9 +2912,9 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneOperationsIntoMatmul) {
         .TestFusion(
             /*transpose_a*/ std::nullopt, /*transpose_b*/ std::nullopt,
             /*activation*/
-            Activation{.kind = mojom::Activation::Tag::kLinear,
-                       .linear_alpha = 10,
-                       .linear_beta = 1});
+            FusibleOperationDescriptor{.kind = mojom::Operation::Tag::kLinear,
+                                       .alpha = 10,
+                                       .beta = 1});
   }
 
   // Test matmul that can fuse transpose a, b and linear.
@@ -3033,9 +2932,9 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneOperationsIntoMatmul) {
             /*transpose_a*/ std::vector<uint32_t>({0, 2, 1}),
             /*transpose_b*/ std::vector<uint32_t>({0, 2, 1}),
             /*activation*/
-            Activation{.kind = mojom::Activation::Tag::kLinear,
-                       .linear_alpha = 10,
-                       .linear_beta = 1});
+            FusibleOperationDescriptor{.kind = mojom::Operation::Tag::kLinear,
+                                       .alpha = 10,
+                                       .beta = 1});
   }
 }
 

@@ -12,6 +12,8 @@ enum MLConv2dFilterOperandLayout { "oihw", "hwio", "ohwi", "ihwo" };
 
 enum MLConvTranspose2dFilterOperandLayout { "iohw", "hwoi", "ohwi" };
 
+enum MLRecurrentNetworkActivation { "relu", "sigmoid", "tanh" };
+
 enum MLRecurrentNetworkDirection { "forward", "backward", "both" };
 
 enum MLLstmWeightLayout { "iofg", "ifgo" };
@@ -81,7 +83,7 @@ dictionary MLGruOptions : MLOperatorOptions {
   boolean returnSequence = false;
   MLRecurrentNetworkDirection direction = "forward";
   MLGruWeightLayout layout = "zrn";
-  sequence<MLActivation> activations;
+  sequence<MLRecurrentNetworkActivation> activations;
 };
 
 dictionary MLGruCellOptions : MLOperatorOptions {
@@ -89,7 +91,7 @@ dictionary MLGruCellOptions : MLOperatorOptions {
   MLOperand recurrentBias;
   boolean resetAfter = true;
   MLGruWeightLayout layout = "zrn";
-  sequence<MLActivation> activations;
+  sequence<MLRecurrentNetworkActivation> activations;
 };
 
 dictionary MLHardSigmoidOptions : MLOperatorOptions {
@@ -122,7 +124,7 @@ dictionary MLLstmOptions : MLOperatorOptions {
   boolean returnSequence = false;
   MLRecurrentNetworkDirection direction = "forward";
   MLLstmWeightLayout layout = "iofg";
-  sequence<MLActivation> activations;
+  sequence<MLRecurrentNetworkActivation> activations;
 };
 
 dictionary MLLstmCellOptions : MLOperatorOptions {
@@ -130,7 +132,7 @@ dictionary MLLstmCellOptions : MLOperatorOptions {
   MLOperand recurrentBias;
   MLOperand peepholeWeight;
   MLLstmWeightLayout layout = "iofg";
-  sequence<MLActivation> activations;
+  sequence<MLRecurrentNetworkActivation> activations;
 };
 
 enum MLPaddingMode {
@@ -261,14 +263,12 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [RaisesException] MLOperand cast(MLOperand input, MLOperandDataType outputDataType, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand elu(MLOperand x, optional MLEluOptions options = {});
-  [RaisesException] MLActivation elu(optional MLEluOptions options = {});
 
   [RaisesException] MLOperand expand(MLOperand input, sequence<[EnforceRange] unsigned long> newShape, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand gather(MLOperand input, MLOperand indices, optional MLGatherOptions options = {});
 
   [RaisesException] MLOperand gelu(MLOperand input, optional MLOperatorOptions options = {});
-  [RaisesException] MLActivation gelu();
 
   [RaisesException] MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
 
@@ -280,10 +280,8 @@ dictionary MLTriangularOptions : MLOperatorOptions {
                     [EnforceRange] unsigned long hiddenSize, optional MLGruCellOptions options = {});
 
   [RaisesException] MLOperand hardSigmoid(MLOperand x, optional MLHardSigmoidOptions options = {});
-  [RaisesException] MLActivation hardSigmoid(optional MLHardSigmoidOptions options = {});
 
-  [RaisesException] MLOperand hardSwish(MLOperand x,  optional MLOperatorOptions options = {});
-  [RaisesException] MLActivation hardSwish();
+  [RaisesException] MLOperand hardSwish(MLOperand x, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand instanceNormalization(MLOperand input, optional MLInstanceNormalizationOptions options = {});
 
@@ -292,10 +290,8 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [RaisesException] MLOperand layerNormalization(MLOperand input, optional MLLayerNormalizationOptions options = {});
 
   [RaisesException] MLOperand leakyRelu(MLOperand x, optional MLLeakyReluOptions options = {});
-  [RaisesException] MLActivation leakyRelu(optional MLLeakyReluOptions options = {});
 
   [RaisesException] MLOperand linear(MLOperand input, optional MLLinearOptions options = {});
-  [RaisesException] MLActivation linear(optional MLLinearOptions options = {});
 
   [RaisesException] sequence<MLOperand> lstm(MLOperand input, MLOperand weight, MLOperand recurrentWeight,
                                              [EnforceRange] unsigned long steps, [EnforceRange] unsigned long hiddenSize,
@@ -330,9 +326,8 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [RaisesException] MLOperand reduceSumSquare(MLOperand input, optional MLReduceOptions options = {});
 
   [RaisesException] MLOperand relu(MLOperand input, optional MLOperatorOptions options = {});
-  [RaisesException] MLActivation relu();
 
-  [RaisesException] MLOperand reshape(MLOperand input, sequence<[EnforceRange] unsigned long> newShape,  optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand reshape(MLOperand input, sequence<[EnforceRange] unsigned long> newShape, optional MLOperatorOptions options = {});
 
   [
     CallWith=ScriptState,
@@ -340,32 +335,28 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   ] MLOperand resample2d(MLOperand input, optional MLResample2dOptions options = {});
 
   [RaisesException] MLOperand sigmoid(MLOperand input, optional MLOperatorOptions options = {});
-  [RaisesException] MLActivation sigmoid();
 
-  [RaisesException] MLOperand slice(MLOperand input, sequence<[EnforceRange] unsigned long> starts, sequence<[EnforceRange] unsigned long> sizes,  optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand slice(MLOperand input, sequence<[EnforceRange] unsigned long> starts, sequence<[EnforceRange] unsigned long> sizes, optional MLOperatorOptions options = {});
 
   // TODO: crbug.com/342919187 - Remove the deprecated version once ort-web 1.18.* supporting softmax(input, aixs) is released.
   [RaisesException] MLOperand softmax(MLOperand input, optional MLOperatorOptions options = {});
-  [RaisesException] MLOperand softmax(MLOperand input, [EnforceRange] unsigned long axis,  optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand softmax(MLOperand input, [EnforceRange] unsigned long axis, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand softplus(MLOperand input, optional MLOperatorOptions options = {});
-  [RaisesException] MLActivation softplus();
 
   [RaisesException] MLOperand softsign(MLOperand input, optional MLOperatorOptions options = {});
-  [RaisesException] MLActivation softsign();
 
   [RaisesException] sequence<MLOperand> split(MLOperand input, [EnforceRange] unsigned long splits, optional MLSplitOptions options = {});
   [RaisesException] sequence<MLOperand> split(MLOperand input, sequence<[EnforceRange] unsigned long> splits, optional MLSplitOptions options = {});
 
   [RaisesException] MLOperand tanh(MLOperand input, optional MLOperatorOptions options = {});
-  [RaisesException] MLActivation tanh();
 
   [RaisesException] MLOperand transpose(
       MLOperand input, optional MLTransposeOptions options = {});
 
   [RaisesException] MLOperand triangular(MLOperand input, optional MLTriangularOptions options = {});
 
-  [RaisesException] MLOperand where(MLOperand condition, MLOperand trueValue, MLOperand falseValue,  optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand where(MLOperand condition, MLOperand trueValue, MLOperand falseValue, optional MLOperatorOptions options = {});
 
   [
     CallWith=ScriptState,

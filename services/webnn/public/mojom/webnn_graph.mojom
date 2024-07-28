@@ -554,6 +554,14 @@ struct Gelu {
   string label;
 };
 
+// Represents the `MLRecurrentNetworkActivation` which describes an activation
+// function type for a recurrent operator.
+enum RecurrentNetworkActivation {
+  kRelu,
+  kSigmoid,
+  kTanh,
+};
+
 // Represents the processing direction of the input sequence for the recurrent
 // network.
 enum RecurrentNetworkDirection {
@@ -601,7 +609,7 @@ struct Gru {
   GruWeightLayout layout;
   // Specifies a pair of activation functions for the update, reset and new
   // gates.
-  array<Activation, 2> activations;
+  array<RecurrentNetworkActivation, 2> activations;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -632,7 +640,7 @@ struct GruCell {
   GruWeightLayout layout;
   // Specifies a pair of activation functions for the update, reset and new
   // gates.
-  array<Activation, 2> activations;
+  array<RecurrentNetworkActivation, 2> activations;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -796,7 +804,7 @@ struct Lstm {
   // The ordering of both weight and bias vectors.
   LstmWeightLayout layout;
   // The activation functions for the input, output and forget gates.
-  array<Activation, 3> activations;
+  array<RecurrentNetworkActivation, 3> activations;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -829,7 +837,7 @@ struct LstmCell {
   // The ordering of both weight and bias vectors.
   LstmWeightLayout layout;
   // The activation functions for the input, output and forget gates.
-  array<Activation, 3> activations;
+  array<RecurrentNetworkActivation, 3> activations;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -1051,20 +1059,6 @@ struct Where {
   uint64 output_operand_id;
   // User defined label from MLOperatorOptions.
   string label;
-};
-
-// Represents the `MLActivation` which describes an activation function type.
-union Activation {
-  Elu elu;
-  Gelu gelu;
-  HardSigmoid hard_sigmoid;
-  LeakyRelu leaky_relu;
-  Linear linear;
-  Relu relu;
-  Sigmoid sigmoid;
-  Softplus softplus;
-  Softsign softsign;
-  Tanh tanh;
 };
 
 // Holds one of operator.
