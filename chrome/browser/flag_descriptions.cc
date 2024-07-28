@@ -5187,11 +5187,6 @@ const char kReadAloudLanguagePackDownloadingDescription[] =
     "Enables the experimental Reading Mode feature that downloads Google TTS "
     "languages directly from the Read Aloud menus.";
 
-const char kReadAnythingLocalSidePanelName[] =
-    "Reading Mode with Local Side Panel";
-const char kReadAnythingLocalSidePanelDescription[] =
-    "Keep the Reading Mode side panel separate and local to each tab.";
-
 const char kReadAnythingDocsIntegrationName[] =
     "Reading Mode Google Docs Integration";
 const char kReadAnythingDocsIntegrationDescription[] =

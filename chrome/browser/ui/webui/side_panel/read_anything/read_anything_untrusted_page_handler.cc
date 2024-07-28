@@ -243,17 +243,10 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   ax_action_handler_observer_.Observe(
       ui::AXActionHandlerRegistry::GetInstance());
 
-  if (features::IsReadAnythingLocalSidePanelEnabled()) {
-    auto* active_web_contents =
-        browser_->tab_strip_model()->GetActiveWebContents();
-    if (active_web_contents) {
-      ObserveWebContentsSidePanelController(active_web_contents);
-    }
-  } else {
-    coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_.get());
-    if (coordinator_) {
-      coordinator_->AddObserver(this);
-    }
+  auto* active_web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (active_web_contents) {
+    ObserveWebContentsSidePanelController(active_web_contents);
   }
 
   PrefService* prefs = browser_->profile()->GetPrefs();
@@ -341,16 +334,11 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   pdf_observer_.reset();
   LogTextStyle();
 
-  if (features::IsReadAnythingLocalSidePanelEnabled() && tab_helper_) {
+  if (tab_helper_) {
     // If |this| is destroyed before the |ReadAnythingSidePanelController|, then
     // remove |this| from the observer lists. In the cases where the coordinator
     // is destroyed first, these will have been destroyed before this call.
     tab_helper_->RemovePageHandlerAsObserver(weak_factory_.GetWeakPtr());
-  } else if (coordinator_) {
-    // If |this| is destroyed before the |ReadAnythingCoordinator|, then remove
-    // |this| from the observer lists. In the cases where the coordinator is
-    // destroyed first, these will have been destroyed before this call.
-    coordinator_->RemoveObserver(this);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -627,10 +615,6 @@ void ReadAnythingUntrustedPageHandler::Activate(bool active) {
   OnActiveWebContentsChanged();
 }
 
-void ReadAnythingUntrustedPageHandler::OnCoordinatorDestroyed() {
-  coordinator_ = nullptr;
-}
-
 void ReadAnythingUntrustedPageHandler::OnSidePanelControllerDestroyed() {
   tab_helper_ = nullptr;
 }
@@ -674,10 +658,8 @@ void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
       active_ && browser_ ? browser_->tab_strip_model()->GetActiveWebContents()
                           : nullptr;
 
-  if (features::IsReadAnythingLocalSidePanelEnabled()) {
-    if (!tab_helper_ && web_contents) {
-      ObserveWebContentsSidePanelController(web_contents);
-    }
+  if (!tab_helper_ && web_contents) {
+    ObserveWebContentsSidePanelController(web_contents);
   }
 
   // Enable accessibility for the top level render frame and all descendants.

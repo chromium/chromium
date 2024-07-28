@@ -3003,9 +3003,6 @@ extern const char kReadAnythingReadAloudAutomaticWordHighlightingDescription[];
 extern const char kReadAloudLanguagePackDownloadingName[];
 extern const char kReadAloudLanguagePackDownloadingDescription[];
 
-extern const char kReadAnythingLocalSidePanelName[];
-extern const char kReadAnythingLocalSidePanelDescription[];
-
 extern const char kReadAnythingDocsIntegrationName[];
 extern const char kReadAnythingDocsIntegrationDescription[];
 

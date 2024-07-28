@@ -40,7 +40,6 @@ class MockReadAnythingCoordinatorObserver
  public:
   MOCK_METHOD(void, Activate, (bool active), (override));
   MOCK_METHOD(void, OnActivePageDistillable, (bool distillable), (override));
-  MOCK_METHOD(void, OnCoordinatorDestroyed, (), (override));
 };
 
 class ReadAnythingCoordinatorTest : public TestWithBrowserView {
@@ -56,8 +55,9 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   void SetUp() override {
     base::test::ScopedFeatureList features;
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingDocsIntegration,
-         features::kReadAnythingLocalSidePanel},
+        {
+            features::kReadAnythingDocsIntegration,
+        },
         {});
     TestWithBrowserView::SetUp();
 
@@ -180,11 +180,6 @@ TEST_F(ReadAnythingCoordinatorTest, ContainerViewsAreUnique) {
   auto view1 = CreateContainerView();
   auto view2 = CreateContainerView();
   EXPECT_NE(view1, view2);
-}
-
-TEST_F(ReadAnythingCoordinatorTest, OnCoordinatorDestroyedCalled) {
-  AddObserver(&coordinator_observer_);
-  EXPECT_CALL(coordinator_observer_, OnCoordinatorDestroyed()).Times(1);
 }
 
 TEST_F(ReadAnythingCoordinatorTest,

@@ -29,10 +29,7 @@ namespace {
 
 class ExtensionUntrustedWebUITest : public ExtensionApiTest {
  public:
-  ExtensionUntrustedWebUITest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingLocalSidePanel}, {});
-  }
+  ExtensionUntrustedWebUITest() = default;
 
   ~ExtensionUntrustedWebUITest() override = default;
 
@@ -116,9 +113,6 @@ class ExtensionUntrustedWebUITest : public ExtensionApiTest {
     return result ? testing::AssertionSuccess()
                   : (testing::AssertionFailure() << "Check console output");
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

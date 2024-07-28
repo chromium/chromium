@@ -157,7 +157,6 @@ class ReadAnythingUntrustedPageHandler :
 
   // ReadAnythingCoordinator::Observer:
   void Activate(bool active) override;
-  void OnCoordinatorDestroyed() override;
 
   void SetDefaultLanguageCode(const std::string& code);
 
@@ -199,7 +198,6 @@ class ReadAnythingUntrustedPageHandler :
   void PerformActionInTargetTree(const ui::AXTreeID& target_tree_id,
                                  const ui::AXActionData& data);
 
-  raw_ptr<ReadAnythingCoordinator> coordinator_;
   raw_ptr<ReadAnythingTabHelper> tab_helper_;
   const base::WeakPtr<Browser> browser_;
   const raw_ptr<content::WebUI> web_ui_;

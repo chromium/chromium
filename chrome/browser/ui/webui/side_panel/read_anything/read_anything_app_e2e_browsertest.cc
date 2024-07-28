@@ -20,10 +20,7 @@
 
 class ReadAnythingAppE2ETest : public InProcessBrowserTest {
  public:
-  ReadAnythingAppE2ETest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingLocalSidePanel}, {});
-  }
+  ReadAnythingAppE2ETest() = default;
   ~ReadAnythingAppE2ETest() override = default;
   ReadAnythingAppE2ETest(const ReadAnythingAppE2ETest&) = delete;
   ReadAnythingAppE2ETest& operator=(const ReadAnythingAppE2ETest&) = delete;
@@ -123,9 +120,6 @@ class ReadAnythingAppE2ETest : public InProcessBrowserTest {
 
     return testing::AssertionSuccess();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppE2ETest, DISABLED_Sample) {
