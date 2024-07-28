@@ -162227,21 +162227,6 @@
       ]
      ]
     },
-    "css-outline": {
-     "subpixel-outline-width.tentative.html": [
-      "a9fc0c49cf3e4a21c36eace6769058f99afa1458",
-      [
-       null,
-       [
-        [
-         "/css/css-outline/reference/subpixel-outline-width-ref.tentative.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ]
-    },
     "css-overflow": {
      "clip-001.html": [
       "dacb658db6458e67832b454ebd6887a8a04b9349",
@@ -232276,6 +232261,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "subpixel-outline-width.tentative.html": [
+      "a9fc0c49cf3e4a21c36eace6769058f99afa1458",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/subpixel-outline-width-ref.tentative.html",
          "=="
         ]
        ],
@@ -330127,7 +330125,7 @@
      "clip-path": {
       "animations": {
        "clip-path-animation-cancel-ref.html": [
-        "661e7b3be8460934b425b1330b66f56f6c214096",
+        "ac04bd53798188fb5fcc27ea87a6eae2ffb46a3b",
         []
        ],
        "clip-path-animation-custom-timing-function-ref.html": [
@@ -330139,7 +330137,7 @@
         []
        ],
        "clip-path-animation-ellipse-ref.html": [
-        "63b3174806f9751a6fcfebb3b81e508decd4ebbc",
+        "8fda2089cd051d29e83175c1c57ce8bbe5e8e1c3",
         []
        ],
        "clip-path-animation-filter-ref.html": [
@@ -330155,7 +330153,7 @@
         []
        ],
        "clip-path-animation-font-size-ref.html": [
-        "912a8e8464266e98588bc3a6faf6b60d589198d7",
+        "f4369b0f111ad591f020f1d6e2f675590e0357bb",
         []
        ],
        "clip-path-animation-fragmented-ref.html": [
@@ -330191,11 +330189,11 @@
         []
        ],
        "clip-path-animation-path-ref.html": [
-        "d53067f5634265344f78962fbab011e742b0dbf3",
+        "be3e970e462b3ed2a1884212321895ea72d1d3d9",
         []
        ],
        "clip-path-animation-polygon-ref.html": [
-        "28e11e966d58ad6ed074ff1a3e8b232f56df8213",
+        "7c18c5feca2b242d6484329ac0bae01beb458de7",
         []
        ],
        "clip-path-animation-ref.html": [
@@ -332082,14 +332080,6 @@
       "0eb8cd16a1688183fa52bc6bc9f2b4243123513d",
       []
      ]
-    },
-    "css-outline": {
-     "reference": {
-      "subpixel-outline-width-ref.tentative.html": [
-       "28d84fabb77750d5e9dbad9515b1e85b4a6fadcb",
-       []
-      ]
-     }
     },
     "css-overflow": {
      "DIR_METADATA": [
@@ -345875,6 +345865,10 @@
        "62b0c41757dd1bb4e323c8a6753f82c30c98ce7a",
        []
       ],
+      "subpixel-outline-width-ref.tentative.html": [
+       "28d84fabb77750d5e9dbad9515b1e85b4a6fadcb",
+       []
+      ],
       "text-overflow-001-ref.html": [
        "9e9303106a82dea9433ec61fa9ec0df8950ae38f",
        []
@@ -355477,7 +355471,7 @@
     },
     "ranges": {
      "Range-isPointInRange-shadowdom.tentative-expected.txt": [
-      "9a95fba52cc924afaa66eaa2bf1e6083ce6e1b7c",
+      "2727820d5e2e6bb9d75c61c588dd60e4fd4d9e3a",
       []
      ],
      "Range-mutations.js": [
@@ -393589,10 +393583,6 @@
      "d5d199068c5b0465f96ed643af8d7d20a889312e",
      []
     ],
-    "idlharness.window-expected.txt": [
-     "d9af645b1fdecc6bfaa46e9de75e3a796d56f507",
-     []
-    ],
     "modify-line-flex-row.tentative-expected.txt": [
      "2c52fb30ffa7e4bc6221e05834d28c030b68fa0c",
      []
@@ -393652,10 +393642,6 @@
      ],
      "cross-shadow-boundary-select-root-ref.html": [
       "fe74406acda98ad7e4f868a7ecf7f8be0d0bf197",
-      []
-     ],
-     "select-later-become-slotted-content-expected.txt": [
-      "7bf9b1f2c78136fb0899b8946720888744452d20",
       []
      ]
     },
@@ -396727,12 +396713,8 @@
       []
      ]
     },
-    "selection-collapse-and-extend.tentative-expected.txt": [
-     "78af99947632c60e7cb689169b2b13a952294926",
-     []
-    ],
     "selection-getComposedRanges.tentative-expected.txt": [
-     "a60abc7222679f95ac4e2c73ea82fcfc9484762c",
+     "b2b64bd071c62c195e304cef770fead5941b8f98",
      []
     ],
     "shadow-style-invalidation-vw-units-ref.html": [
@@ -465553,15 +465535,6 @@
       ]
      ]
     },
-    "css-outline": {
-     "outline-width-rounding.tentative.html": [
-      "8a4a724bbe5b95989de2398385c6d3139043fe7f",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
     "css-overflow": {
      "auto-scrollbar-inline-children.html": [
       "149cf942fe625af24de8623baab3e68fed581738",
@@ -479969,6 +479942,13 @@
      ],
      "outline-018.html": [
       "c2db6f99719369484f07cee39871841cb498031d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "outline-width-rounding.tentative.html": [
+      "8a4a724bbe5b95989de2398385c6d3139043fe7f",
       [
        null,
        {}
@@ -642909,7 +642889,7 @@
      ]
     ],
     "shadow-dom": {
-     "select-later-become-slotted-content.html": [
+     "select-later-become-slotted-content.tentative.html": [
       "f38105dd0bb32e609bb67c5c625f435e87ef3ebc",
       [
        null,
