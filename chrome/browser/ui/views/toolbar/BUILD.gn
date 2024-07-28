@@ -104,6 +104,7 @@ source_set("toolbar") {
     "//chrome/browser/companion/core",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/themes",

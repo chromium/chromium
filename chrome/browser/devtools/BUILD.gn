@@ -104,6 +104,7 @@ static_library("devtools") {
 
   deps = [
     "//base",
+    "//chrome/browser/search",
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
 

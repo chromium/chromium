@@ -422,6 +422,7 @@ static_library("ui") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/headless",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/search",
     "//chrome/browser/ui/tabs:tab_enums",
   ]
 
@@ -747,6 +748,7 @@ static_library("ui") {
     "//chrome/browser/profiling_host",
 
     "//chrome/browser/permissions",
+    "//chrome/browser/search",
 
     # TODO(crbug.com/344921703): Remove circular dependencies.
     "//chrome/browser/sync",
