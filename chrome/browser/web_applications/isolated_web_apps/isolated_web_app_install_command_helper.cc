@@ -37,6 +37,7 @@
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "components/base32/base32.h"
@@ -206,6 +207,19 @@ void UpdateBundlePathAndCreateStorageLocation(
           },
       },
       source.variant());
+}
+
+base::expected<std::reference_wrapper<const WebApp>, std::string>
+GetIsolatedWebAppById(const WebAppRegistrar& registrar,
+                      const webapps::AppId& iwa_id) {
+  auto* iwa = registrar.GetAppById(iwa_id);
+  if (!iwa) {
+    return base::unexpected("App is no longer installed.");
+  }
+  if (!iwa->isolation_data()) {
+    return base::unexpected("Installed app is not an Isolated Web App.");
+  }
+  return *iwa;
 }
 
 // static

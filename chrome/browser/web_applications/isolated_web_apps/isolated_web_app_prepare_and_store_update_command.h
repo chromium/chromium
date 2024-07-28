@@ -22,13 +22,13 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
@@ -205,7 +205,8 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   const IsolatedWebAppUrlInfo url_info_;
   const std::optional<base::Version> expected_version_;
 
-  std::optional<web_package::SignedWebBundleIntegrityBlock> integrity_block_;
+  // The inferred integrity block data of the update bundle being processed.
+  std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data_;
 
   std::optional<IwaSourceWithModeAndFileOp> update_source_;
   std::optional<IwaSourceWithMode> destination_location_;

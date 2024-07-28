@@ -35,6 +35,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
@@ -315,17 +316,16 @@ void IsolatedWebAppUpdateManager::OnWebAppUninstalled(
 
 bool IsolatedWebAppUpdateManager::MaybeDiscoverUpdatesForApp(
     const webapps::AppId& app_id) {
-  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
-  if (!web_app || !web_app->isolation_data().has_value()) {
-    return false;
-  }
+  ASSIGN_OR_RETURN(const WebApp& iwa,
+                   GetIsolatedWebAppById(provider_->registrar_unsafe(), app_id),
+                   [](const std::string&) { return false; });
 
   base::flat_map<web_package::SignedWebBundleId, GURL>
       id_to_update_manifest_map =
           GetForceInstalledBundleIdToUpdateManifestUrlMap();
 
   bool queued_update_discovery_task =
-      MaybeQueueUpdateDiscoveryTask(*web_app, id_to_update_manifest_map);
+      MaybeQueueUpdateDiscoveryTask(iwa, id_to_update_manifest_map);
   if (queued_update_discovery_task) {
     task_queue_.MaybeStartNextTask();
   }
