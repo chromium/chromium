@@ -20,8 +20,7 @@ class View;
 class ReadAnythingUntrustedPageHandler;
 
 // A per-tab class that facilitates the showing of the Read Anything side panel.
-class ReadAnythingSidePanelController : public ReadAnythingTabHelper::Delegate,
-                                        public SidePanelEntryObserver {
+class ReadAnythingSidePanelController : public SidePanelEntryObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -35,13 +34,12 @@ class ReadAnythingSidePanelController : public ReadAnythingTabHelper::Delegate,
       const ReadAnythingSidePanelController&) = delete;
   ~ReadAnythingSidePanelController() override;
 
-  // ReadAnythingTabHelper::Delegate:
-  void CreateAndRegisterEntry() override;
-  void DeregisterEntry() override;
+  void CreateAndRegisterEntry();
+  void DeregisterEntry();
   void AddPageHandlerAsObserver(
-      base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) override;
+      base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler);
   void RemovePageHandlerAsObserver(
-      base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) override;
+      base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler);
 
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* entry) override;

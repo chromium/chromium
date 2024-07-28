@@ -27,9 +27,3 @@ bool IsReadAnythingEntryShowing(Browser* browser) {
          (side_panel_ui->GetCurrentEntryId() ==
           SidePanelEntryId::kReadAnything);
 }
-
-std::unique_ptr<ReadAnythingTabHelper::Delegate> CreateDelegate(
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-  return std::make_unique<ReadAnythingSidePanelController>(web_contents);
-}

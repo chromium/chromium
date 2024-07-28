@@ -15,8 +15,4 @@ void ShowReadAnythingSidePanel(Browser* browser,
                                SidePanelOpenTrigger open_trigger);
 bool IsReadAnythingEntryShowing(Browser* browser);
 
-// Create a ReadAnythingTabHelper::Delegate for a given WebContents.
-std::unique_ptr<ReadAnythingTabHelper::Delegate> CreateDelegate(
-    content::WebContents* web_contents);
-
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_CONTROLLER_UTILS_H_

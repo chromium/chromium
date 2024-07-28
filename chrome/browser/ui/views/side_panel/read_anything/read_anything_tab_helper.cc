@@ -9,30 +9,27 @@
 
 ReadAnythingTabHelper::ReadAnythingTabHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<ReadAnythingTabHelper>(*web_contents),
-      delegate_(CreateDelegate(web_contents)) {}
+      side_panel_controller_(
+          std::make_unique<ReadAnythingSidePanelController>(web_contents)) {}
 
 ReadAnythingTabHelper::~ReadAnythingTabHelper() = default;
 
 void ReadAnythingTabHelper::CreateAndRegisterEntry() {
-  CHECK(delegate_);
-  delegate_->CreateAndRegisterEntry();
+  side_panel_controller_->CreateAndRegisterEntry();
 }
 
 void ReadAnythingTabHelper::DeregisterEntry() {
-  CHECK(delegate_);
-  delegate_->DeregisterEntry();
+  side_panel_controller_->DeregisterEntry();
 }
 
 void ReadAnythingTabHelper::AddPageHandlerAsObserver(
     base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) {
-  CHECK(delegate_);
-  delegate_->AddPageHandlerAsObserver(page_handler);
+  side_panel_controller_->AddPageHandlerAsObserver(page_handler);
 }
 
 void ReadAnythingTabHelper::RemovePageHandlerAsObserver(
     base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) {
-  CHECK(delegate_);
-  delegate_->RemovePageHandlerAsObserver(page_handler);
+  side_panel_controller_->RemovePageHandlerAsObserver(page_handler);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingTabHelper);

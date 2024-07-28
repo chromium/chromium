@@ -11,6 +11,7 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class ReadAnythingSidePanelController;
 class ReadAnythingUntrustedPageHandler;
 
 // An observer of WebContents that facilitates the logic for the Read Anything
@@ -18,19 +19,6 @@ class ReadAnythingUntrustedPageHandler;
 class ReadAnythingTabHelper
     : public content::WebContentsUserData<ReadAnythingTabHelper> {
  public:
-  // This class delegates the responsibility for registering and deregistering
-  // the Read Anything side panel.
-  class Delegate {
-   public:
-    virtual void CreateAndRegisterEntry() = 0;
-    virtual void DeregisterEntry() = 0;
-    virtual void AddPageHandlerAsObserver(
-        base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) = 0;
-    virtual void RemovePageHandlerAsObserver(
-        base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) = 0;
-    virtual ~Delegate() = default;
-  };
-
   ReadAnythingTabHelper(const ReadAnythingTabHelper&) = delete;
   ReadAnythingTabHelper& operator=(const ReadAnythingTabHelper&) = delete;
   ~ReadAnythingTabHelper() override;
@@ -52,7 +40,7 @@ class ReadAnythingTabHelper
 
   explicit ReadAnythingTabHelper(content::WebContents* web_contents);
 
-  std::unique_ptr<Delegate> delegate_;
+  std::unique_ptr<ReadAnythingSidePanelController> side_panel_controller_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
