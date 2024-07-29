@@ -10,4 +10,13 @@
 // Accessibility identifier of the Drive file picker.
 extern NSString* const kDriveFilePickerAccessibilityIdentifier;
 
+// Enum values for the drive download status.
+enum class DriveFileDownloadStatus {
+  kNotStarted = 0,
+  kInProgress,
+  kSuccess,
+  kInterrupted,
+  kFailed,
+};
+
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSTANTS_H_

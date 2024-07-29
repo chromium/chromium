@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -50,10 +51,17 @@ UILabel* CreateGoogleDriveTitleLabel() {
 
 }  // namespace
 
-@implementation DriveFilePickerTableViewController
+@implementation DriveFilePickerTableViewController {
+  // The status of file dowload.
+  DriveFileDownloadStatus _status;
+}
 
 - (instancetype)init {
-  return [super initWithStyle:ChromeTableViewStyle()];
+  self = [super initWithStyle:ChromeTableViewStyle()];
+  if (self) {
+    _status = DriveFileDownloadStatus::kNotStarted;
+  }
+  return self;
 }
 
 #pragma mark - UIViewController
@@ -78,14 +86,7 @@ UILabel* CreateGoogleDriveTitleLabel() {
 #endif
   }
 
-  // Add a "Confirm" button to confirm the selection.
-  UIBarButtonItem* confirmButton = [[UIBarButtonItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_DRIVE_FILE_PICKER_CONFIRM)
-              style:UIBarButtonItemStyleDone
-             target:self
-             action:@selector(confirmSelection)];
-  confirmButton.enabled = NO;
-  self.navigationItem.rightBarButtonItem = confirmButton;
+  self.navigationItem.rightBarButtonItem = [self configureRightBarButtonItem];
 
   // Add the search bar.
   self.navigationItem.searchController = [[UISearchController alloc] init];
@@ -163,6 +164,45 @@ UILabel* CreateGoogleDriveTitleLabel() {
     filterButton, spaceButton, accountButton, spaceButton, sortButton
   ]
                animated:NO];
+}
+
+// Returns the right bar button based on the status.
+- (UIBarButtonItem*)configureRightBarButtonItem {
+  switch (_status) {
+    case DriveFileDownloadStatus::kInProgress:
+      return [self activityIndicatorButtonItem];
+    case DriveFileDownloadStatus::kSuccess:
+      return [self confirmButtonItem];
+    case DriveFileDownloadStatus::kInterrupted:
+    case DriveFileDownloadStatus::kFailed:
+    case DriveFileDownloadStatus::kNotStarted: {
+      UIBarButtonItem* rightBarButton = [self confirmButtonItem];
+      rightBarButton.enabled = NO;
+      return rightBarButton;
+    }
+  }
+}
+
+// Returns a button with the title `Confirm`.
+- (UIBarButtonItem*)confirmButtonItem {
+  UIBarButtonItem* confirmButton = [[UIBarButtonItem alloc]
+      initWithTitle:l10n_util::GetNSString(IDS_IOS_DRIVE_FILE_PICKER_CONFIRM)
+              style:UIBarButtonItemStyleDone
+             target:self
+             action:@selector(confirmSelection)];
+  return confirmButton;
+}
+
+// Returns an activity indicator when the download is in progress.
+- (UIBarButtonItem*)activityIndicatorButtonItem {
+  UIActivityIndicatorView* activityIndicator = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  [activityIndicator startAnimating];
+
+  UIBarButtonItem* activityIndicatorButton =
+      [[UIBarButtonItem alloc] initWithCustomView:activityIndicator];
+  activityIndicatorButton.enabled = YES;
+  return activityIndicatorButton;
 }
 
 @end
