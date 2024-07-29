@@ -37,10 +37,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/re2/src/re2/re2.h"
-#include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/core/SkColorType.h"
-#include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node.h"
@@ -57,7 +53,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/url_util.h"
-#include "v8-typed-array.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
 
@@ -348,17 +343,6 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
   return snapshot;
 }
 
-SkBitmap CorrectColorOfBitMap(SkBitmap& originalBitmap) {
-  SkBitmap converted;
-  converted.allocPixels(SkImageInfo::Make(
-      originalBitmap.width(), originalBitmap.height(),
-      SkColorType::kRGBA_8888_SkColorType, originalBitmap.alphaType()));
-
-  originalBitmap.readPixels(converted.info(), converted.getPixels(),
-                            converted.rowBytes(), 0, 0);
-  return converted;
-}
-
 }  // namespace
 
 // static
@@ -501,6 +485,12 @@ void ReadAnythingAppController::AccessibilityEventReceived(
   if (model_.redraw_required()) {
     model_.reset_redraw_required();
     Draw(/* recompute_display_nodes= */ true);
+  }
+
+  if (model_.image_to_update_node_id() != ui::kInvalidAXNodeID) {
+    ExecuteJavaScript("chrome.readingMode.updateImage(" +
+                      base::ToString(model_.image_to_update_node_id()) + ");");
+    model_.reset_image_to_update_node_id();
   }
 
   // TODO(accessibility): it isn't clear this handles the pending updates path
@@ -923,9 +913,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::MovePositionToNextGranularity)
       .SetMethod("movePositionToPreviousGranularity",
                  &ReadAnythingAppController::MovePositionToPreviousGranularity)
-      .SetMethod("requestImageData",
+      .SetMethod("requestImageDataUrl",
                  &ReadAnythingAppController::RequestImageDataUrl)
-      .SetMethod("getImageBitmap", &ReadAnythingAppController::GetImageBitmap)
+      .SetMethod("getImageDataUrl", &ReadAnythingAppController::GetImageDataUrl)
       .SetMethod("getDisplayNameForLocale",
                  &ReadAnythingAppController::GetDisplayNameForLocale)
       .SetMethod("incrementMetricCount",
@@ -1345,70 +1335,6 @@ void ReadAnythingAppController::RequestImageDataUrl(
     CHECK_NE(target_tree_id, ui::AXTreeIDUnknown());
     page_handler_->OnImageDataRequested(target_tree_id, node_id);
   }
-}
-
-void ReadAnythingAppController::OnImageDataDownloaded(
-    const ui::AXTreeID& tree_id,
-    ui::AXNodeID node_id,
-    const SkBitmap& image) {
-  // If the tree has changed since the request, do nothing with the downloaded
-  // image.
-  if (tree_id != model_.active_tree_id()) {
-    return;
-  }
-  // Temporarily store the image so that javascript can fetch it.
-  downloaded_images_[node_id] = image;
-  // Notify javascript to fetch the image.
-  ExecuteJavaScript("chrome.readingMode.onImageDownloaded(" +
-                    base::ToString(node_id) + ")");
-}
-
-v8::Local<v8::Value> ReadAnythingAppController::GetImageBitmap(
-    ui::AXNodeID node_id) {
-  // Get the isolate for reading mode.
-  v8::Isolate* isolate =
-      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
-
-  if (auto itr = downloaded_images_.find(node_id);
-      itr != downloaded_images_.end()) {
-    // Don't reference itr again.
-    SkBitmap bitmap = std::move(itr->second);
-    // Remove the downloaded image from the map.
-    downloaded_images_.erase(node_id);
-    // Ensure that the bitmap is in the correct color format.
-    if (bitmap.colorType() != SkColorType::kRGBA_8888_SkColorType) {
-      bitmap = CorrectColorOfBitMap(bitmap);
-    }
-
-    // Get the pixmap to compute the bytes.
-    auto pixmap = std::move(bitmap.pixmap());
-    auto size = pixmap.computeByteSize();
-    // Create an array buffer with the image bytes.
-    v8::Local<v8::ArrayBuffer> buffer = v8::ArrayBuffer::New(isolate, size);
-    // Copy the memory in.
-    memcpy(buffer->GetBackingStore()->Data(), pixmap.addr(), size);
-    // Create a clamped array so we can create an ImageData object on the
-    // javascript side.
-    v8::Local<v8::Uint8ClampedArray> array =
-        v8::Uint8ClampedArray::New(buffer, 0, size);
-
-    // Create an object with the image data and height.
-    v8::Local<v8::Object> obj = v8::Object::New(isolate);
-    auto created = obj->DefineOwnProperty(
-        isolate->GetCurrentContext(),
-        v8::String::NewFromUtf8(isolate, "data").ToLocalChecked(), array);
-    created = obj->DefineOwnProperty(
-        isolate->GetCurrentContext(),
-        v8::String::NewFromUtf8(isolate, "width").ToLocalChecked(),
-        v8::Number::New(isolate, bitmap.width()));
-    created = obj->DefineOwnProperty(
-        isolate->GetCurrentContext(),
-        v8::String::NewFromUtf8(isolate, "height").ToLocalChecked(),
-        v8::Number::New(isolate, bitmap.height()));
-    return obj;
-  }
-  // If there wasn't an image, return undefined.
-  return v8::Undefined(isolate);
 }
 
 std::string ReadAnythingAppController::GetImageDataUrl(
