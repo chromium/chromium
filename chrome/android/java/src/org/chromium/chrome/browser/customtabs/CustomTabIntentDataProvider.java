@@ -1022,7 +1022,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         // Ordering: Log all the features ordered by CustomTabsFeature enum, when they apply.
         if (mAnimationBundle != null) {
-            featureUsage.log(CustomTabsFeature.EXTRA_ACTION_BUTTON_BUNDLE);
+            featureUsage.log(CustomTabsFeature.EXTRA_EXIT_ANIMATION_BUNDLE);
         }
         if (IntentUtils.safeHasExtra(intent, CustomTabsIntent.EXTRA_TINT_ACTION_BUTTON)) {
             featureUsage.log(CustomTabsFeature.EXTRA_TINT_ACTION_BUTTON);

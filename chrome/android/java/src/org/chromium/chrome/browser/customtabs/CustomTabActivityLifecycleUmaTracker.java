@@ -23,6 +23,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -70,11 +71,18 @@ public class CustomTabActivityLifecycleUmaTracker
     private boolean mIsInitialResume = true;
 
     private void recordIncognitoLaunchReason() {
-        IncognitoCustomTabIntentDataProvider incognitoProvider =
-                (IncognitoCustomTabIntentDataProvider) mIntentDataProvider;
+        // TODO(crbug.com/352525607): Separate Ephemeral and Incognito CCT metrics.
+        @IntentHandler.IncognitoCCTCallerId int incognitoCCTCallerId;
+        if (mIntentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO) {
+            incognitoCCTCallerId =
+                    ((IncognitoCustomTabIntentDataProvider) mIntentDataProvider)
+                            .getFeatureIdForMetricsCollection();
+        } else {
+            incognitoCCTCallerId =
+                    ((EphemeralCustomTabIntentDataProvider) mIntentDataProvider)
+                            .getFeatureIdForMetricsCollection();
+        }
 
-        @IntentHandler.IncognitoCCTCallerId
-        int incognitoCCTCallerId = incognitoProvider.getFeatureIdForMetricsCollection();
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.IncognitoCCTCallerId",
                 incognitoCCTCallerId,
@@ -82,7 +90,7 @@ public class CustomTabActivityLifecycleUmaTracker
 
         // Record which 1P app launched Incognito CCT.
         if (incognitoCCTCallerId == IntentHandler.IncognitoCCTCallerId.GOOGLE_APPS) {
-            String sendersPackageName = incognitoProvider.getSendersPackageName();
+            String sendersPackageName = mIntentDataProvider.getClientPackageName();
             @IntentHandler.ExternalAppId
             int externalId = IntentHandler.mapPackageToExternalAppId(sendersPackageName);
             if (externalId != IntentHandler.ExternalAppId.OTHER) {
@@ -94,7 +102,8 @@ public class CustomTabActivityLifecycleUmaTracker
                 // Using package name didn't give any meaningful insight on who launched the
                 // Incognito CCT, falling back to check if they provided EXTRA_APPLICATION_ID.
                 externalId =
-                        IntentHandler.determineExternalIntentSource(incognitoProvider.getIntent());
+                        IntentHandler.determineExternalIntentSource(
+                                mIntentDataProvider.getIntent());
                 RecordHistogram.recordEnumeratedHistogram(
                         "CustomTabs.ClientAppId.Incognito",
                         externalId,
