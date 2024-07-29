@@ -37,9 +37,9 @@ class Trip extends Transition {
 
     private static List<? extends ConditionalState> getStationPlusFacilitiesWithPhase(
             Station station, @Phase int phase) {
-        List<ConditionalState> allConditionalStates =
-                new ArrayList<>(station.getFacilitiesWithPhase(phase));
+        List<ConditionalState> allConditionalStates = new ArrayList<>();
         allConditionalStates.add(station);
+        allConditionalStates.addAll(station.getFacilitiesWithPhase(phase));
         return allConditionalStates;
     }
 
