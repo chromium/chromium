@@ -107,6 +107,8 @@ void PushNotificationClient::loadFeedbackWithPayloadAndClientId(
   }
 }
 
+// TODO(crbug.com/355627607): this API needs to be re-designed to work
+// with Multiple Identities.
 ChromeBrowserState* PushNotificationClient::GetLastUsedBrowserState() {
   if (last_used_browser_state_for_testing_) {
     return last_used_browser_state_for_testing_;
