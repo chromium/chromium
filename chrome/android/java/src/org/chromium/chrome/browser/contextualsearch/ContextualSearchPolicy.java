@@ -542,6 +542,10 @@ class ContextualSearchPolicy {
         // data reset of their device, and occasionally miss relevant information, such as - in this
         // particular case - "contextual_search_url" value.
         if (mContextualSearchResolutionUrlValid == null) {
+            if (ContextualSearchPolicyJni.get() == null) {
+                // JNI is not initialized.
+                return false;
+            }
             mContextualSearchResolutionUrlValid =
                     ContextualSearchPolicyJni.get().isContextualSearchResolutionUrlValid(mProfile);
         }
