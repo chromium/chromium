@@ -89,9 +89,11 @@ class TouchToFillKeyboardSuppressor
       ContentAutofillDriverFactory& factory) override;
   void OnContentAutofillDriverCreated(ContentAutofillDriverFactory& factory,
                                       ContentAutofillDriver& driver) override;
-  void OnContentAutofillDriverWillBeDeleted(
+  void OnContentAutofillDriverStateChanged(
       ContentAutofillDriverFactory& factory,
-      ContentAutofillDriver& driver) override;
+      ContentAutofillDriver& driver,
+      AutofillDriver::LifecycleState old_state,
+      AutofillDriver::LifecycleState new_state) override;
 
   // AutofillManager::Observer:
   void OnAutofillManagerStateChanged(

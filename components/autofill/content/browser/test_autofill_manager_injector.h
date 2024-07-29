@@ -152,10 +152,20 @@ class TestAutofillManagerInjector : public TestAutofillManagerInjectorBase {
       test_api(driver).set_autofill_manager(std::move(new_manager));
     }
 
-    void OnContentAutofillDriverWillBeDeleted(
+    void OnContentAutofillDriverStateChanged(
         ContentAutofillDriverFactory& factory,
-        ContentAutofillDriver& driver) override {
-      owner_->managers_.erase(driver.render_frame_host());
+        ContentAutofillDriver& driver,
+        AutofillDriver::LifecycleState old_state,
+        AutofillDriver::LifecycleState new_state) override {
+      switch (new_state) {
+        case AutofillDriver::LifecycleState::kInactive:
+        case AutofillDriver::LifecycleState::kActive:
+        case AutofillDriver::LifecycleState::kPendingReset:
+          break;
+        case AutofillDriver::LifecycleState::kPendingDeletion:
+          owner_->managers_.erase(driver.render_frame_host());
+          break;
+      }
     }
 
    private:

@@ -90,13 +90,13 @@ AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
 
   // This must be called as last statement of the constructor because according
   // to the contract it mustn't be called during construction.
-  SetLifecycleState(AutofillDriver::LifecycleState::kActive, {});
+  SetLifecycleState(LifecycleState::kActive, []() {}, {});
 }
 
 AutofillDriverIOS::~AutofillDriverIOS() {
   // This must be called as first statement of the destructor because according
   // to the contract it mustn't be called during destruction.
-  SetLifecycleState(AutofillDriver::LifecycleState::kPendingDeletion, {});
+  SetLifecycleState(LifecycleState::kPendingDeletion, []() {}, {});
   Unregister();
 }
 
@@ -467,14 +467,14 @@ void AutofillDriverIOS::ClearLastInteractedForm() {
 // from the factory directly.
 void AutofillDriverIOS::OnAutofillManagerStateChanged(
     AutofillManager& manager,
-    AutofillDriver::LifecycleState old_state,
-    AutofillDriver::LifecycleState new_state) {
+    LifecycleState old_state,
+    LifecycleState new_state) {
   switch (new_state) {
-    case AutofillDriver::LifecycleState::kInactive:
-    case AutofillDriver::LifecycleState::kActive:
-    case AutofillDriver::LifecycleState::kPendingReset:
+    case LifecycleState::kInactive:
+    case LifecycleState::kActive:
+    case LifecycleState::kPendingReset:
       break;
-    case AutofillDriver::LifecycleState::kPendingDeletion:
+    case LifecycleState::kPendingDeletion:
       manager_observation_.Reset();
       break;
   }

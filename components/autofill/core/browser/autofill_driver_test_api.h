@@ -16,7 +16,7 @@ class AutofillDriverTestApi {
   explicit AutofillDriverTestApi(AutofillDriver* driver) : driver_(*driver) {}
 
   void SetLifecycleState(AutofillDriver::LifecycleState lifecycle_state) {
-    driver_->SetLifecycleState(lifecycle_state, {});
+    driver_->SetLifecycleState(lifecycle_state, []() {}, {});
   }
 
   void SetLifecycleStateWithoutNotifications(

@@ -62,14 +62,24 @@ void TouchToFillKeyboardSuppressor::OnContentAutofillDriverCreated(
   autofill_manager_observations_.AddObservation(&driver.GetAutofillManager());
 }
 
-void TouchToFillKeyboardSuppressor::OnContentAutofillDriverWillBeDeleted(
+void TouchToFillKeyboardSuppressor::OnContentAutofillDriverStateChanged(
     ContentAutofillDriverFactory& factory,
-    ContentAutofillDriver& driver) {
-  if (suppressed_manager_.get() == &driver.GetAutofillManager()) {
-    Unsuppress();
+    ContentAutofillDriver& driver,
+    AutofillDriver::LifecycleState old_state,
+    AutofillDriver::LifecycleState new_state) {
+  switch (new_state) {
+    case AutofillDriver::LifecycleState::kInactive:
+    case AutofillDriver::LifecycleState::kActive:
+    case AutofillDriver::LifecycleState::kPendingReset:
+      break;
+    case AutofillDriver::LifecycleState::kPendingDeletion:
+      if (suppressed_manager_.get() == &driver.GetAutofillManager()) {
+        Unsuppress();
+      }
+      autofill_manager_observations_.RemoveObservation(
+          &driver.GetAutofillManager());
+      break;
   }
-  autofill_manager_observations_.RemoveObservation(
-      &driver.GetAutofillManager());
 }
 
 void TouchToFillKeyboardSuppressor::OnAutofillManagerStateChanged(

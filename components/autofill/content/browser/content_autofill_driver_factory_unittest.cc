@@ -52,9 +52,11 @@ class MockContentAutofillDriverFactoryObserver
                ContentAutofillDriver& driver),
               (override));
   MOCK_METHOD(void,
-              OnContentAutofillDriverWillBeDeleted,
+              OnContentAutofillDriverStateChanged,
               (ContentAutofillDriverFactory & factory,
-               ContentAutofillDriver& driver),
+               ContentAutofillDriver& driver,
+               AutofillDriver::LifecycleState old_state,
+               AutofillDriver::LifecycleState new_state),
               (override));
 };
 
@@ -353,10 +355,21 @@ TEST_F(ContentAutofillDriverFactoryTest_Observer, DriverCreated) {
 }
 
 TEST_F(ContentAutofillDriverFactoryTest_Observer, DriverDeleted) {
+  using enum AutofillDriver::LifecycleState;
   EXPECT_CALL(observer_, OnContentAutofillDriverCreated);
-  EXPECT_CALL(observer_, OnContentAutofillDriverWillBeDeleted(
-                             Ref(factory()), IsKnownDriver(&factory())));
+  EXPECT_CALL(observer_, OnContentAutofillDriverStateChanged(
+                             Ref(factory()), IsKnownDriver(&factory()),
+                             kInactive, kActive));
+  EXPECT_CALL(observer_, OnContentAutofillDriverStateChanged(
+                             Ref(factory()), IsKnownDriver(&factory()), kActive,
+                             kPendingReset));
+  EXPECT_CALL(observer_, OnContentAutofillDriverStateChanged(
+                             Ref(factory()), IsKnownDriver(&factory()),
+                             kPendingReset, kActive));
   NavigateMainFrame("https://a.com/");
+  EXPECT_CALL(observer_, OnContentAutofillDriverStateChanged(
+                             Ref(factory()), IsKnownDriver(&factory()), kActive,
+                             kPendingDeletion));
   factory().RenderFrameDeleted(main_rfh());
 }
 

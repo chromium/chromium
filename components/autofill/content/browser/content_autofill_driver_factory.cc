@@ -72,6 +72,20 @@ ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
                                max_drivers_);
 }
 
+void ContentAutofillDriverFactory::SetLifecycleStateAndNotifyObservers(
+    ContentAutofillDriver& driver,
+    const LifecycleState new_state) {
+  const LifecycleState old_state = driver.GetLifecycleState();
+  driver.SetLifecycleState(new_state,
+                           [&]() {
+                             for (Observer& observer : observers_) {
+                               observer.OnContentAutofillDriverStateChanged(
+                                   *this, driver, old_state, new_state);
+                             }
+                           },
+                           {});
+}
+
 ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     content::RenderFrameHost* render_frame_host) {
   // Within fenced frames and their descendants, Password Manager should for now
@@ -99,15 +113,15 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     // 5. `render_frame_host->~RenderFrameHostImpl()` finishes.
     if (render_frame_host->IsRenderFrameLive()) {
       driver = std::make_unique<ContentAutofillDriver>(render_frame_host, this);
+      DCHECK_EQ(driver->GetLifecycleState(), LifecycleState::kInactive);
       for (Observer& observer : observers_) {
         observer.OnContentAutofillDriverCreated(*this, *driver);
       }
       // TODO: crbug.com/342132628 - `driver->IsActive()` is guaranteed once
       // prerendered CADs are deferred.
-      driver->SetLifecycleState(driver->IsActive()
-                                    ? AutofillDriver::LifecycleState::kActive
-                                    : AutofillDriver::LifecycleState::kInactive,
-                                {});
+      SetLifecycleStateAndNotifyObservers(
+          *driver, driver->IsActive() ? LifecycleState::kActive
+                                      : LifecycleState::kInactive);
       DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(),
                 driver.get());
     } else {
@@ -137,12 +151,8 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
         render_frame_host->DocumentUsedWebOTP());
   }
 
-  for (Observer& observer : observers_) {
-    observer.OnContentAutofillDriverWillBeDeleted(*this, *driver);
-  }
-
-  driver->SetLifecycleState(AutofillDriver::LifecycleState::kPendingDeletion,
-                            {});
+  SetLifecycleStateAndNotifyObservers(*driver,
+                                      LifecycleState::kPendingDeletion);
   driver_map_.erase(it);
 }
 
@@ -177,7 +187,7 @@ void ContentAutofillDriverFactory::RenderFrameHostStateChanged(
     NOTREACHED_NORETURN();
   }();
   if (state) {
-    driver->SetLifecycleState(*state, {});
+    SetLifecycleStateAndNotifyObservers(*driver, *state);
   }
 }
 
@@ -215,14 +225,13 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
     return;
   }
 
-  driver->SetLifecycleState(AutofillDriver::LifecycleState::kPendingReset, {});
+  SetLifecycleStateAndNotifyObservers(*driver, LifecycleState::kPendingReset);
   driver->Reset({});
   // TODO: crbug.com/342132628 - `driver->IsActive()` is guaranteed once
   // prerendered CADs are deferred.
-  driver->SetLifecycleState(driver->IsActive()
-                                ? AutofillDriver::LifecycleState::kActive
-                                : AutofillDriver::LifecycleState::kInactive,
-                            {});
+  SetLifecycleStateAndNotifyObservers(
+      *driver, driver->IsActive() ? AutofillDriver::LifecycleState::kActive
+                                  : AutofillDriver::LifecycleState::kInactive);
 }
 
 std::vector<ContentAutofillDriver*>

@@ -52,12 +52,15 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
         ContentAutofillDriverFactory& factory,
         ContentAutofillDriver& driver) {}
 
-    // Called right before the driver's RenderFrameHost is deleted.
-    // At the time of this event, the `driver` object is still fully alive and
+    // Called right after the driver's state has changed.
+    // See AutofillDriver::LifecycleState for details.
+    // At the time of this event, the `driver` object is fully alive and
     // `factory.DriverForFrame(driver.render_frame_host()) == &driver` holds.
-    virtual void OnContentAutofillDriverWillBeDeleted(
+    virtual void OnContentAutofillDriverStateChanged(
         ContentAutofillDriverFactory& factory,
-        ContentAutofillDriver& driver) {}
+        ContentAutofillDriver& driver,
+        AutofillDriver::LifecycleState old_state,
+        AutofillDriver::LifecycleState new_state) {}
   };
 
   static ContentAutofillDriverFactory* FromWebContents(
@@ -107,12 +110,16 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
 
  private:
   friend class ContentAutofillDriverFactoryTestApi;
+  using LifecycleState = AutofillDriver::LifecycleState;
 
   // Gets the `ContentAutofillDriver` associated with `render_frame_host`.
   // If `render_frame_host` is currently being deleted, this may be nullptr.
   // `render_frame_host` must be owned by `web_contents()`.
   ContentAutofillDriver* DriverForFrame(
       content::RenderFrameHost* render_frame_host);
+
+  void SetLifecycleStateAndNotifyObservers(ContentAutofillDriver& driver,
+                                           LifecycleState new_state);
 
   // The owning AutofillClient.
   const raw_ref<ContentAutofillClient> client_;

@@ -120,13 +120,17 @@ class AutofillDriver {
   // The current state of the driver. See LifecycleState for details.
   LifecycleState GetLifecycleState() const { return lifecycle_state_; }
 
-  // Transitions GetLifecycleState() to `new_state` and afterwards notifies the
-  // AutofillManager about that change (i.e., calls
-  // (AutofillManager::OnAutofillDriverLifecycleStateChanged()).
+  // Transitions GetLifecycleState() to `new_state`, runs `callback`, and then
+  // notifies the AutofillManager about that change (i.e., calls
+  // AutofillManager::OnAutofillDriverLifecycleStateChanged()).
   //
   // State changes must not happen during construction or destruction of the
   // AutofillDriver.
+  //
+  // TODO: crbug.com/354043640 - Replace `callback` with a list of
+  // AutofillDriverFactory::Observers to notify.
   void SetLifecycleState(LifecycleState new_state,
+                         base::FunctionRef<void()> notify_observers_callback,
                          AutofillDriverFactoryPassKey);
 
   // Returns the uniquely identifying frame token.

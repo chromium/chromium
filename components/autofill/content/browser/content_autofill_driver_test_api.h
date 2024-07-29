@@ -19,7 +19,7 @@ class ContentAutofillDriverTestApi {
 
   void SetLifecycleState(
       ContentAutofillDriver::LifecycleState lifecycle_state) {
-    driver_->SetLifecycleState(lifecycle_state, {});
+    driver_->SetLifecycleState(lifecycle_state, []() {}, {});
   }
 
   void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
