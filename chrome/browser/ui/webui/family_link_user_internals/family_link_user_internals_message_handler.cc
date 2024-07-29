@@ -193,7 +193,6 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
 
   base::Value::List* section_profile = AddSection(&section_list, "Profile");
   AddSectionEntry(section_profile, "Account", profile->GetProfileUserName());
-  AddSectionEntry(section_profile, "Child", profile->IsChild());
 
   supervised_user::SupervisedUserURLFilter* filter =
       GetSupervisedUserService()->GetURLFilter();
