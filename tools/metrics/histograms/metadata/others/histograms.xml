@@ -6059,6 +6059,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MPArch.ChildProcessLauncher.{Event}" units="ms"
+    expires_after="2025-01-05">
+  <owner>ajgo@chromium.org</owner>
+  <owner>src/sandbox/policy/win/OWNERS</owner>
+  <summary>
+    The amount of time spent within ChildProcessLauncher while launching a
+    process. These metrics are being added to measure upcoming changes to
+    sandbox process launching. See https://crbug.com/40287847.
+
+    The Notify measurement time starts on the UI thread when the process launch
+    is requested and ends when the UI thread is notified of a successful launch.
+    The PreLaunchDelay variant captures the subset of time spent waiting for the
+    launcher thread to be ready.
+  </summary>
+  <token key="Event">
+    <variant name="Notify"/>
+    <variant name="PreLaunchDelay"/>
+  </token>
+</histogram>
+
 <histogram name="MPArch.ChildProcessLaunchFirst" units="ms"
     expires_after="2025-01-05">
   <owner>pasko@chromium.org</owner>
