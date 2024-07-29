@@ -6,10 +6,9 @@
 #define IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_SEGMENTED_DEFAULT_BROWSER_UTILS_H_
 
 #import "base/time/time.h"
+#import "components/segmentation_platform/public/result.h"
 
 namespace segmentation_platform {
-
-struct ClassificationResult;
 
 // Maximum time to wait to retrieve a result from the
 // deviceSwitcherResultDispatcher before returning PredictionStatus kNotReady.
@@ -30,9 +29,10 @@ enum class DefaultBrowserUserSegment {
 };
 
 // Utility function to determine the DefaultBrowserUserSegment based on user's
-// device switcher ClassificationResult.
+// device switcher and shopping user segment ClassificationResults.
 DefaultBrowserUserSegment GetDefaultBrowserUserSegment(
-    const ClassificationResult& device_switcher_result);
+    const ClassificationResult* device_switcher_result,
+    const ClassificationResult* shopper_result);
 
 }  // namespace segmentation_platform
 

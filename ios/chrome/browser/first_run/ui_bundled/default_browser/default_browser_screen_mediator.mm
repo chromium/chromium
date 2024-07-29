@@ -56,7 +56,7 @@
 
 // Retrieves user segmentation data from the Segmentation Platform.
 - (void)retrieveUserSegment {
-  __weak DefaultBrowserScreenMediator* weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
 
   _deviceSwitcherResultDispatcher->WaitForClassificationResult(
       segmentation_platform::kDeviceSwitcherWaitTimeout,
@@ -71,7 +71,7 @@
 // Segmentation Platform.
 - (void)didReceiveDeviceSwitcherSegmentationResult:
     (const segmentation_platform::ClassificationResult&)result {
-  _userSegment = segmentation_platform::GetDefaultBrowserUserSegment(result);
+  _userSegment = GetDefaultBrowserUserSegment(&result, nullptr);
 }
 
 // Sets the Default Browser screen view title with targeted messaging based on

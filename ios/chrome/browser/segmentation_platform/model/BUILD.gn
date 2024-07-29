@@ -70,11 +70,11 @@ source_set("segmented_default_browser") {
     "segmented_default_browser_utils.h",
     "segmented_default_browser_utils.mm",
   ]
-  deps = [
+  public_deps = [
     "//base",
-    "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
   ]
+  deps = [ "//components/segmentation_platform/embedder/default_model" ]
 }
 
 source_set("unit_tests") {
