@@ -19545,19 +19545,6 @@
     "SafeBrowsingHashPrefixRealTimeLookups": [
         {
             "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingHashPrefixRealTimeLookups"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
                 "android_webview"
             ],
             "experiments": [
