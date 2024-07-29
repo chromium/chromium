@@ -2305,7 +2305,7 @@ bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   // ScrollRectToVisible will stop bubbling when it reaches the layout viewport
   // so that can be animated by the PageScaleAnimation.
   mojom::blink::ScrollIntoViewParamsPtr params =
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
           mojom::blink::ScrollType::kProgrammatic,
           /*make_visible_in_visual_viewport=*/false,

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 
 #include <memory>
+#include <string>
 
 #include "cc/layers/picture_layer.h"
 #include "cc/layers/scrollbar_layer_base.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
@@ -60,8 +62,6 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
-
-#include <string>
 
 using testing::_;
 using testing::PrintToString;
@@ -2447,7 +2447,7 @@ TEST_P(VisualViewportScrollIntoViewTest, ScrollingToFixed) {
   Element* bottom_element = web_doc.GetElementById("bottom");
   bool is_for_scroll_sequence =
       !RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled();
-  auto scroll_params = ScrollAlignment::CreateScrollIntoViewParams(
+  auto scroll_params = scroll_into_view_util::CreateScrollIntoViewParams(
       ScrollAlignment::ToEdgeIfNeeded(), ScrollAlignment::ToEdgeIfNeeded(),
       mojom::blink::ScrollType::kProgrammatic,
       /*make_visible_in_visual_viewport=*/true,

@@ -849,7 +849,7 @@ TEST_P(ScrollIntoViewTest, StopAtLayoutViewportForFocusedEditable) {
   // Use ScrollRectToVisible on the #target element, specifying
   // for_focused_editable.
   LayoutObject* target = editable->GetLayoutObject();
-  auto params = ScrollAlignment::CreateScrollIntoViewParams(
+  auto params = scroll_into_view_util::CreateScrollIntoViewParams(
       ScrollAlignment::LeftAlways(), ScrollAlignment::TopAlways(),
       mojom::blink::ScrollType::kProgrammatic, false,
       mojom::blink::ScrollBehavior::kInstant);
@@ -954,7 +954,7 @@ TEST_P(ScrollIntoViewTest, SmoothUserScrollNotAbortedByProgrammaticScrolls) {
   Element* content = GetDocument().getElementById(AtomicString("content"));
   scroll_into_view_util::ScrollRectToVisible(
       *content->GetLayoutObject(), content->BoundingBoxForScrollIntoView(),
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::ToEdgeIfNeeded(), ScrollAlignment::TopAlways(),
           mojom::blink::ScrollType::kUser, false,
           mojom::blink::ScrollBehavior::kSmooth, true));
@@ -1181,7 +1181,7 @@ TEST_P(ScrollIntoViewTest, FromDisplayNoneIframe) {
   // may call into so ensure we don't crash or do something strange since its
   // owner element will not have a LayoutObject.
   ASSERT_TRUE(child_document->GetLayoutView());
-  auto params = ScrollAlignment::CreateScrollIntoViewParams(
+  auto params = scroll_into_view_util::CreateScrollIntoViewParams(
       ScrollAlignment::LeftAlways(), ScrollAlignment::TopAlways(),
       mojom::blink::ScrollType::kProgrammatic, false,
       mojom::blink::ScrollBehavior::kInstant);

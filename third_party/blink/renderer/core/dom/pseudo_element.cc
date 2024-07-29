@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
@@ -473,7 +474,7 @@ void PseudoElement::DefaultEventHandler(Event& event) {
     options->setInlinePosition(
         SnapAlignmentToV8ScrollLogicalPosition(inline_alignment));
     mojom::blink::ScrollIntoViewParamsPtr params =
-        ScrollAlignment::CreateScrollIntoViewParams(*options, *style);
+        scroll_into_view_util::CreateScrollIntoViewParams(*options, *style);
 
     originating_element->ScrollIntoViewNoVisualUpdate(std::move(params));
     event.SetDefaultHandled();

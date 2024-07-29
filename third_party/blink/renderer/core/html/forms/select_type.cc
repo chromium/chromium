@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/svg/svg_path_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -1429,7 +1430,7 @@ void ListBoxSelectType::ScrollToOptionTask() {
   DCHECK(box->Layer()->GetScrollableArea());
   box->Layer()->GetScrollableArea()->ScrollIntoView(
       bounds, PhysicalBoxStrut(),
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::ToEdgeIfNeeded(), ScrollAlignment::ToEdgeIfNeeded(),
           mojom::blink::ScrollType::kProgrammatic, false,
           mojom::blink::ScrollBehavior::kInstant));

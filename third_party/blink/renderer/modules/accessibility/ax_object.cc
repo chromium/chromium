@@ -7276,7 +7276,7 @@ bool AXObject::OnNativeScrollToMakeVisibleAction() const {
   PhysicalRect target_rect(layout_object->AbsoluteBoundingBoxRect());
   scroll_into_view_util::ScrollRectToVisible(
       *layout_object, target_rect,
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
           mojom::blink::ScrollType::kProgrammatic, false,
           mojom::blink::ScrollBehavior::kAuto));
@@ -7297,7 +7297,7 @@ bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
       layout_object->LocalToAbsoluteRect(PhysicalRect(rect));
   scroll_into_view_util::ScrollRectToVisible(
       *layout_object, target_rect,
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           horizontal_scroll_alignment, vertical_scroll_alignment,
           mojom::blink::ScrollType::kProgrammatic,
           false /* make_visible_in_visual_viewport */,
@@ -7317,7 +7317,7 @@ bool AXObject::OnNativeScrollToGlobalPointAction(
   target_rect.Move(-PhysicalOffset(global_point));
   scroll_into_view_util::ScrollRectToVisible(
       *layout_object, target_rect,
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::LeftAlways(), ScrollAlignment::TopAlways(),
           mojom::blink::ScrollType::kProgrammatic, false,
           mojom::blink::ScrollBehavior::kAuto));

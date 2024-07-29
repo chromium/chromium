@@ -2705,7 +2705,7 @@ protocol::Response InspectorDOMAgent::scrollIntoViewIfNeeded(
   }
   scroll_into_view_util::ScrollRectToVisible(
       *layout_object, rect_to_scroll,
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
           mojom::blink::ScrollType::kProgrammatic,
           true /* make_visible_in_visual_viewport */,
