@@ -53,9 +53,11 @@ suite('SeaPenInputQueryElementTest', function() {
     return suggestionArray.includes(suggestion);
   }
 
-  test('displays recreate button if thumbnails exist', async () => {
+  test('displays recreate button if thumbnails and query exist', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnails =
         seaPenProvider.thumbnails;
+    personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery =
+        seaPenProvider.seaPenFreeformQuery;
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);
 
@@ -72,6 +74,24 @@ suite('SeaPenInputQueryElementTest', function() {
 
   test('displays create button when no thumbnails are generated', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnails = null;
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    const searchButton =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            '#searchButton');
+    const icon = searchButton!.querySelector<HTMLElement>('iron-icon');
+
+    assertEquals(
+        seaPenInputQueryElement.i18n('seaPenCreateButton'),
+        searchButton!.innerText);
+    assertEquals('sea-pen:photo-spark', icon!.getAttribute('icon'));
+  });
+
+  test('displays create button when the current query is cleared', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.thumbnails;
+    personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery = null;
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);
 

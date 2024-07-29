@@ -67,7 +67,6 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
       thumbnails_: {
         type: Object,
-        observer: 'updateSearchButton_',
       },
 
       thumbnailsLoading_: Boolean,
@@ -111,6 +110,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   static get observers() {
     return [
       'updateShouldShowSuggestions_(textValue_, thumbnailsLoading_)',
+      'updateSearchButton_(thumbnails_, seaPenQuery_)',
     ];
   }
 
@@ -230,8 +230,9 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         event.detail;
   }
 
-  private updateSearchButton_(thumbnails: SeaPenThumbnail[]|null) {
-    if (!thumbnails) {
+  private updateSearchButton_(
+      thumbnails: SeaPenThumbnail[]|null, seaPenQuery: SeaPenQuery|null) {
+    if (!thumbnails || !seaPenQuery) {
       // The thumbnails are not loaded yet.
       this.searchButtonText_ = this.i18n('seaPenCreateButton');
       this.searchButtonIcon_ = 'sea-pen:photo-spark';
