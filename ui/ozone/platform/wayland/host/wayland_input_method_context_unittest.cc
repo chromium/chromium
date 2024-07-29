@@ -365,7 +365,11 @@ class WaylandInputMethodContextTestBase : public WaylandTest {
     input_method_context_ = std::make_unique<WaylandInputMethodContext>(
         connection_.get(), keyboard_delegate_.get(),
         input_method_context_delegate_.get());
-    input_method_context_->Init(true);
+    input_method_context_->Init(
+        true, nullptr,
+        // Ensure by default it doesn't pick the current desktop from the system
+        // the tests are running on.
+        base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_OTHER);
     connection_->Flush();
 
     WaylandConnectionTestApi(connection_.get()).SyncDisplay();
@@ -2095,7 +2099,11 @@ class WaylandInputMethodContextWithMockWrapperTest : public WaylandTestSimple {
         input_method_context_delegate_.get());
     auto mock_wrapper = std::make_unique<MockZWPTextInputWrapper>();
     mock_wrapper_ = mock_wrapper.get();
-    input_method_context_->Init(true, std::move(mock_wrapper));
+    input_method_context_->Init(
+        true, std::move(mock_wrapper),
+        // Ensure by default it doesn't pick the current desktop from the system
+        // the tests are running on.
+        base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_OTHER);
   }
 
  protected:
