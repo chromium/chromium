@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
@@ -614,12 +615,12 @@ ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
 }
 
 void ChromeWebAuthenticationDelegate::DeletePasskey(
-    content::BrowserContext* browser_context,
+    content::WebContents* web_contents,
     const std::vector<uint8_t>& passkey_credential_id,
     const std::string& relying_party_id) {
   webauthn::PasskeyModel* passkey_store =
       PasskeyModelFactory::GetInstance()->GetForProfile(
-          Profile::FromBrowserContext(browser_context));
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 
   CHECK(passkey_store);
   std::string credential_id(passkey_credential_id.begin(),
@@ -628,6 +629,11 @@ void ChromeWebAuthenticationDelegate::DeletePasskey(
       passkey_store->GetPasskeyByCredentialId(relying_party_id, credential_id);
   if (credential_specifics) {
     passkey_store->DeletePasskey(std::move(credential_id), FROM_HERE);
+    PasswordsClientUIDelegate* manage_passwords_ui_controller =
+        PasswordsClientUIDelegateFromWebContents(web_contents);
+    if (manage_passwords_ui_controller) {
+      manage_passwords_ui_controller->OnPasskeyDeleted();
+    }
   }
 }
 

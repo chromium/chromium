@@ -1722,9 +1722,9 @@ void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
     CompleteReportRequest(rp_id_validation_result);
     return;
   }
-  GetWebAuthenticationDelegate()->DeletePasskey(GetBrowserContext(),
-                                                options->unknown_credential_id,
-                                                req_state_->relying_party_id);
+  GetWebAuthenticationDelegate()->DeletePasskey(
+      WebContents::FromRenderFrameHost(GetRenderFrameHost()),
+      options->unknown_credential_id, req_state_->relying_party_id);
   CompleteReportRequest(blink::mojom::AuthenticatorStatus::SUCCESS, nullptr);
 }
 
