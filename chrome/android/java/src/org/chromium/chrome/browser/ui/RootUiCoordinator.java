@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -1562,7 +1563,10 @@ public class RootUiCoordinator
                                         mModalDialogManagerSupplier.get(),
                                         mSnackbarManagerSupplier.get(),
                                         mLayoutManager,
-                                        mTabModelSelectorSupplier.get());
+                                        mTabModelSelectorSupplier.get(),
+                                        ArchivedTabModelOrchestrator.getForProfile(
+                                                        mProfileSupplier.get())
+                                                .getTabModelSelector());
                             });
 
             mToolbarManager =

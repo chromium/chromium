@@ -39,6 +39,12 @@ void TabsCounter::Count() {
     }
   }
 
+  TabModel* archived_tab_model = TabModelList::GetArchivedTabModel();
+  if (archived_tab_model) {
+    total_tab_count += archived_tab_model->GetTabCountNavigatedInTimeWindow(
+        begin_time, end_time);
+  }
+
   auto result =
       std::make_unique<TabsResult>(this, total_tab_count, total_window_count);
   ReportResult(std::move(result));

@@ -2359,6 +2359,31 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteTabs) {
 
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_TABS, GetRemovalMask());
 }
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       DeleteTabs_WithArchivedTabModelPresent) {
+  ::testing::NiceMock<MockTabModel> tab_model(GetProfile());
+  TabModelList::AddTabModel(&tab_model);
+  ::testing::NiceMock<MockTabModel> archived_tab_model(GetProfile());
+  TabModelList::SetArchivedTabModel(&archived_tab_model);
+
+  ASSERT_EQ(1u, TabModelList::models().size());
+
+  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
+
+  EXPECT_CALL(tab_model,
+              CloseTabsNavigatedInTimeWindow(two_hours_ago, base::Time::Max()))
+      .Times(1);
+  EXPECT_CALL(archived_tab_model,
+              CloseTabsNavigatedInTimeWindow(two_hours_ago, base::Time::Max()))
+      .Times(1);
+
+  BlockUntilBrowsingDataRemoved(two_hours_ago, base::Time::Max(),
+                                chrome_browsing_data_remover::DATA_TYPE_TABS,
+                                false);
+
+  EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_TABS, GetRemovalMask());
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 class ChromeBrowsingDataRemoverDelegateEnabledUkmDatabaseTest

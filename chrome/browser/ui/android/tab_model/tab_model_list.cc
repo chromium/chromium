@@ -19,6 +19,8 @@ base::LazyInstance<TabModelList>::Leaky tab_model_list_ =
     LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
+static TabModel* archived_tab_model_ = nullptr;
+
 TabModelList::TabModelList() = default;
 TabModelList::~TabModelList() = default;
 
@@ -128,4 +130,14 @@ bool TabModelList::IsOffTheRecordSessionActive() {
 // static
 const TabModelList::TabModelVector& TabModelList::models() {
   return tab_model_list_.Get().models_;
+}
+
+// static
+void TabModelList::SetArchivedTabModel(TabModel* archived_tab_model) {
+  archived_tab_model_ = archived_tab_model;
+}
+
+// static
+TabModel* TabModelList::GetArchivedTabModel() {
+  return archived_tab_model_;
 }

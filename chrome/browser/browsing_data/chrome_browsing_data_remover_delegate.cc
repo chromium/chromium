@@ -1455,6 +1455,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
       tab_model->CloseTabsNavigatedInTimeWindow(delete_begin, delete_end);
     }
+
+    TabModel* archived_tab_model = TabModelList::GetArchivedTabModel();
+    if (archived_tab_model) {
+      archived_tab_model->CloseTabsNavigatedInTimeWindow(delete_begin,
+                                                         delete_end);
+    }
 #else   // BUILDFLAG(IS_ANDROID)
     NOTIMPLEMENTED();
 #endif  // BUILDFLAG(IS_ANDROID)

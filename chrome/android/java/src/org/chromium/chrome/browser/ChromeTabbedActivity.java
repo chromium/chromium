@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.metrics.TabbedActivityLaunchCauseMetrics;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeNextTabPolicySupplier;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
@@ -2758,7 +2759,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     getModalDialogManager(),
                     getSnackbarManager(),
                     getLayoutManager(),
-                    mTabModelSelector);
+                    mTabModelSelector,
+                    ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get())
+                            .getTabModelSelector());
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu);
         }

@@ -170,8 +170,8 @@ public class TabModelImpl extends TabModelJniBridge {
             AsyncTabParamsManager asyncTabParamsManager,
             TabModelDelegate modelDelegate,
             boolean supportUndo,
-            boolean trackInNativeModelList) {
-        super(profile, activityType, trackInNativeModelList);
+            boolean isArchivedTabModel) {
+        super(profile, activityType, isArchivedTabModel);
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
         mOrderController = orderController;
@@ -970,7 +970,6 @@ public class TabModelImpl extends TabModelJniBridge {
             if (tab.isCustomTab()) continue;
 
             final long recentNavigationTime = tab.getLastNavigationCommittedTimestampMillis();
-
             if (recentNavigationTime >= beginTimeMs && recentNavigationTime < endTimeMs) {
                 tabList.add(tab);
             }

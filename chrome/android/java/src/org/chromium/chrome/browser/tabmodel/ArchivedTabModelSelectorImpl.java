@@ -87,7 +87,7 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
                         mAsyncTabParamsManager,
                         this,
                         /* supportUndo= */ true,
-                        /* trackInNativeModelList= */ false) {
+                        /* isArchivedTabModel= */ true) {
                     @Override
                     public int index() {
                         // Intentional noop.
