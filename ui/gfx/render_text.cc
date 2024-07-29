@@ -1439,15 +1439,14 @@ Range RenderText::ExpandRangeToGraphemeBoundary(const Range& range) const {
 
   const size_t min_index = snap_to_grapheme(range.GetMin(), CURSOR_BACKWARD);
   const size_t max_index = snap_to_grapheme(range.GetMax(), CURSOR_FORWARD);
-  return range.is_reversed() ? Range(max_index, min_index)
-                             : Range(min_index, max_index);
+  return Range(min_index, max_index).MatchDirection(range);
 }
 
 Range RenderText::ExpandRangeToWordBoundary(const Range& range) const {
   const size_t length = text().length();
   DCHECK_LE(range.GetMax(), length);
   if (obscured()) {
-    return range.is_reversed() ? Range(length, 0) : Range(0, length);
+    return Range(0, length).MatchDirection(range);
   }
 
   base::i18n::BreakIterator iter(text(), base::i18n::BreakIterator::BREAK_WORD);
@@ -1478,9 +1477,7 @@ Range RenderText::ExpandRangeToWordBoundary(const Range& range) const {
       break;
     }
   }
-
-  return range.is_reversed() ? Range(range_max, range_min)
-                             : Range(range_min, range_max);
+  return Range(range_min, range_max).MatchDirection(range);
 }
 
 bool RenderText::IsNewlineSegment(const internal::LineSegment& segment) const {

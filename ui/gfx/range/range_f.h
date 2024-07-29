@@ -36,6 +36,16 @@ class GFX_RANGE_EXPORT RangeF {
   // Checks if the range is valid through comparison to InvalidRange().
   constexpr bool IsValid() const { return *this != InvalidRange(); }
 
+  // Ensures that the direction of this range matches the direction of the
+  // provided range, reversing this range if necessary. Returns a reference to
+  // `this` to allow method chaining.
+  RangeF& MatchDirection(const RangeF& other) {
+    if (is_reversed() != other.is_reversed()) {
+      std::swap(start_, end_);
+    }
+    return *this;
+  }
+
   // Getters and setters.
   constexpr float start() const { return start_; }
   void set_start(float start) { start_ = start; }
