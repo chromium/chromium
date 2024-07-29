@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/types/expected.h"
@@ -253,7 +254,6 @@ std::string LinkCaptureTestParamToString(
 class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
  public:
   WebContentsCreationMonitor() { AddAllBrowsers(); }
-  ~WebContentsCreationMonitor() override { last_seen_web_contents_ = nullptr; }
 
   content::WebContents* GetLastSeenWebContentsAndStopMonitoring() {
     ConditionMet();
@@ -295,11 +295,6 @@ class WebAppLinkCapturingBrowserTestParameterized
       public testing::WithParamInterface<LinkCaptureTestParam> {
  public:
   WebAppLinkCapturingBrowserTestParameterized() {
-    auto link_capture_test_path = GetPathForLinkCaptureInputJson();
-    CHECK(link_capture_test_path.has_value())
-        << " Unable to parse link capture file for testing";
-    json_file_path_ = link_capture_test_path.value();
-
     InitializeTestExpectations();
   }
 
@@ -346,14 +341,14 @@ class WebAppLinkCapturingBrowserTestParameterized
   // Obtains expected results for the current test run. Returned as a pair of
   // (expected) BrowserType and a bool signifying whether the test should expect
   // the old browser object to be used for the navigation to the destination.
-  TestExpectation GetTestExpectationFromParam() {
-    testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
 
-    const base::Value& value = test_expectations_.value();
-    const base::Value::Dict& dict = value.GetDict();
-    const base::Value::List* list = dict.FindList("expectations");
-    for (const auto& entry : *list) {
-      const base::Value::Dict& log_entry = entry.GetDict();
+  base::Value::Dict& GetExpectationValueFromParam() {
+    base::Value& value = test_expectations_.value();
+    base::Value::Dict& dict = value.GetDict();
+    base::Value::List* list = dict.EnsureList("expectations");
+
+    for (base::Value& entry : *list) {
+      base::Value::Dict& log_entry = entry.GetDict();
 
       const std::string* start = log_entry.FindString("start");
       const std::string* scope = log_entry.FindString("scope");
@@ -386,24 +381,39 @@ class WebAppLinkCapturingBrowserTestParameterized
         continue;
       }
 
-      std::string expectation = *log_entry.FindString("expect");
-      std::vector<std::string> tokens = base::SplitString(
-          expectation, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      TestExpectation test_expectation = {
-          Browser::Type::TYPE_PICTURE_IN_PICTURE, false, false};
-      for (size_t i = 0; i < tokens.size(); ++i) {
-        if (i == 0) {
-          test_expectation.browser_type = StringToBrowserType(tokens[0]);
-        } else if (tokens[i].compare(kValueSameBrowser) == 0) {
-          test_expectation.same_browser = true;
-        } else if (tokens[i].compare(kValueInIFrame) == 0) {
-          test_expectation.in_iframe = true;
-        }
-      }
-      return test_expectation;
+      return log_entry;
     }
 
-    NOTREACHED() << "Missing expectation in test file";
+    base::Value::Dict new_expectation =
+        base::Value::Dict()
+            .Set("start", ToJsonString(GetStartingPoint()))
+            .Set("scope", ToJsonString(GetDestination()))
+            .Set("element", ToJsonString(GetNavigationElement()))
+            .Set("click", ToJsonString(GetClickMethod()))
+            .Set("opener", ToJsonString(GetOpenerMode()))
+            .Set("target", ToJsonString(GetNavigationTarget()));
+    list->Append(std::move(new_expectation));
+    return list->back().GetDict();
+  }
+
+  TestExpectation GetTestExpectationFromParam() {
+    const base::Value::Dict& log_entry = GetExpectationValueFromParam();
+    const std::string* expectation = log_entry.FindString("expect");
+    CHECK(expectation) << "Missing expectation in test file";
+    std::vector<std::string> tokens = base::SplitString(
+        *expectation, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    TestExpectation test_expectation = {Browser::Type::TYPE_PICTURE_IN_PICTURE,
+                                        false, false};
+    for (size_t i = 0; i < tokens.size(); ++i) {
+      if (i == 0) {
+        test_expectation.browser_type = StringToBrowserType(tokens[0]);
+      } else if (tokens[i].compare(kValueSameBrowser) == 0) {
+        test_expectation.same_browser = true;
+      } else if (tokens[i].compare(kValueInIFrame) == 0) {
+        test_expectation.in_iframe = true;
+      }
+    }
+    return test_expectation;
   }
 
   // This function runs a javascript on the `contents`, which will result in a
@@ -425,61 +435,34 @@ class WebAppLinkCapturingBrowserTestParameterized
   // from an actual run of a single test case. Constructs a json dictionary and
   // saves it to the test results json file. Returns true if writing was
   // successful.
-  bool RecordActualResults(Browser::Type type,
+  void RecordActualResults(Browser::Type type,
                            bool same_browser_instance,
                            bool in_iframe) {
-    std::string_view input_template =
-        "{\"start\": \"$1\", \"scope\": \"$2\", \"element\": \"$3\", "
-        "\"click\": \"$4\", \"opener\": \"$5\", \"target\": \"$6\", "
-        "\"expect\": \"$7\"}";
-
-    std::vector<std::string> substitutions = {
-        ToJsonString(GetStartingPoint()),
-        ToJsonString(GetDestination()),
-        ToJsonString(GetNavigationElement()),
-        ToJsonString(GetClickMethod()),
-        ToJsonString(GetOpenerMode()),
-        ToJsonString(GetNavigationTarget())};
-
     std::string expect =
         BrowserTypeToString(type) + " " +
         (same_browser_instance ? kValueSameBrowser : kValueOtherBrowser) + " " +
         (in_iframe ? kValueInIFrame : kValueInMain);
-    substitutions.push_back(expect);
 
-    std::string output =
-        base::ReplaceStringPlaceholders(input_template, substitutions, nullptr);
+    base::Value::Dict& expectation = GetExpectationValueFromParam();
+    expectation.Set("expect", expect);
+    SaveExpectations();
+  }
 
-    const ::testing::TestInfo* test_info =
-        ::testing::UnitTest::GetInstance()->current_test_info();
-    std::string test_name = test_info->name();
-    // Using the test name to figure out what is the first test in the series is
-    // not ideal, but it gets the job done. A better way would be to query the
-    // test for the index/name of the first and last test, but all I can find is
-    // how many tests there are total in this run, but not what the index is for
-    // the current test.
-    bool first_run =
-        test_name.find(
-            "AppWnd_ScopeA2A_ViaLink_LeftClick_WithOpener_TargetSelf") !=
-        std::string::npos;
-    bool last_run = test_name.find(
-                        "Tab_ScopeA2BRedirectA_ViaButton_MiddleClick_"
-                        "WithoutOpener_TargetNoFrame") != std::string::npos;
-
+  void SaveExpectations() {
+    // Sort the list of test cases, ignoring the actual expectation.
+    base::ranges::sort(*test_expectations_->GetDict().FindList("expectations"),
+                       /*comp=*/{}, /*proj=*/[](const base::Value& v) {
+                         base::Value::Dict dict = v.GetDict().Clone();
+                         dict.Remove("expect");
+                         return base::Value(std::move(dict));
+                       });
+    // And write formatted JSON back to disk.
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      if (first_run) {
-        output = "{\"expectations\": [\n" + output;
-        return base::WriteFile(json_file_path_, output);
-      } else {
-        // Add trailing comma to last entry and write a new entry.
-        output = ",\n" + output;
-        if (last_run) {
-          // Wrap up the rest of the json.
-          output += "\n]}";
-        }
-        return base::AppendToFile(json_file_path_, output);
-      }
+      std::optional<std::string> json_string = base::WriteJsonWithOptions(
+          *test_expectations_, base::JsonOptions::OPTIONS_PRETTY_PRINT);
+      ASSERT_TRUE(json_string.has_value());
+      ASSERT_TRUE(base::WriteFile(json_file_path_, *json_string));
     }
   }
 
@@ -650,22 +633,14 @@ class WebAppLinkCapturingBrowserTestParameterized
   // being constructed and likely contains invalid values.
   void InitializeTestExpectations() {
     std::string json_data;
-    if (ShouldRebaseline()) {
-      // Use a dummy expectation file while rebaselining (see function comment).
+    bool success = ReadFileToString(json_file_path_, &json_data);
+    if (!ShouldRebaseline()) {
+      ASSERT_TRUE(success) << "Failed to read test baselines";
+    }
+    if (!success) {
       json_data = R"(
-        {"expectations": [
-        {
-          "start": "APP",
-          "scope": "SAME",
-          "element": "LINK",
-          "click": "MIDDLE",
-          "opener": "NO_OPENER",
-          "target": "NO_FRAME",
-          "expect": "TYPE_NORMAL SAME_BROWSER IFRAME"
-        }]}
-      )";
-    } else {
-      ASSERT_TRUE(ReadFileToString(json_file_path_, &json_data));
+          {"expectations": []}
+        )";
     }
     test_expectations_ = base::JSONReader::Read(json_data);
     ASSERT_TRUE(test_expectations_) << "Unable to read test expectation file";
@@ -673,7 +648,9 @@ class WebAppLinkCapturingBrowserTestParameterized
   }
 
   // The path to the json file containing the test expectations.
-  base::FilePath json_file_path_;
+  base::FilePath json_file_path_ =
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+          .AppendASCII(kLinkCaptureTestInputPath);
 
   // Current expectations for this test (parsed from the test json file).
   std::optional<base::Value> test_expectations_;
@@ -793,8 +770,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTestParameterized,
   Browser::Type browser_type_b = browser_b->type();
 
   if (ShouldRebaseline()) {
-    ASSERT_TRUE(
-        RecordActualResults(browser_type_b, browser_a == browser_b, in_iframe));
+    RecordActualResults(browser_type_b, browser_a == browser_b, in_iframe);
   } else {
     // Make sure browser type and browser creation match expectations.
     ASSERT_EQ(BrowserTypeToString(expectation.browser_type),
