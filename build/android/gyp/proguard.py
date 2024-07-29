@@ -112,10 +112,14 @@ def _ParseOptions():
   parser.add_argument(
       '--extra-mapping-output-paths',
       help='GN-list of additional paths to copy output mapping file to.')
+  parser.add_argument('--sdk-jars',
+                      action='append',
+                      help='GN-list of .jar files to include as libraries.')
   parser.add_argument(
-      '--classpath',
+      '--sdk-extension-jars',
       action='append',
-      help='GN-list of .jar files to include as libraries.')
+      help='GN-list of .jar files to include as libraries, and that are not a '
+      'part of R8\'s API database.')
   parser.add_argument('--main-dex-rules-path',
                       action='append',
                       help='Path to main dex rules for multidex.')
@@ -223,7 +227,9 @@ def _ParseOptions():
     parser.error('Cannot use both --force-enable-assertions and '
                  '--assertion-handler')
 
-  options.classpath = action_helpers.parse_gn_list(options.classpath)
+  options.sdk_jars = action_helpers.parse_gn_list(options.sdk_jars)
+  options.sdk_extension_jars = action_helpers.parse_gn_list(
+      options.sdk_extension_jars)
   options.proguard_configs = action_helpers.parse_gn_list(
       options.proguard_configs)
   options.input_paths = action_helpers.parse_gn_list(options.input_paths)
@@ -323,25 +329,6 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
                                                      tmp_output)
     base_context = split_contexts_by_name['base']
 
-    # List of packages that R8 does not currently have in its API database:
-    # https://b/326252366
-    extension_packages = [
-        'android.car',
-        'android.car.hardware.property',
-        'android.car.input',
-        'android.car.media',
-        'android.car.remoteaccess',
-        'android.car.watchdog',
-        'androidx.window.extensions',
-        'androidx.window.extensions.area',
-        'androidx.window.extensions.core',
-        'androidx.window.extensions.core.util',
-        'androidx.window.extensions.core.util.function',
-        'androidx.window.extensions.layout',
-        'androidx.window.extensions.embedding',
-        'androidx.window.layout.adapter.extensions',
-    ]
-
     # R8 OOMs with xmx=2G.
     cmd = build_utils.JavaCmd(xmx='3G') + [
         # Allows -whyareyounotinlining, which we don't have by default, but
@@ -350,10 +337,13 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
         # Restricts horizontal class merging to apply only to classes that
         # share a .java file (nested classes). https://crbug.com/1363709
         '-Dcom.android.tools.r8.enableSameFilePolicy=1',
-        # Enable API modelling for OS extensions.
-        '-Dcom.android.tools.r8.androidApiExtensionPackages=' +
-        ','.join(extension_packages),
     ]
+    if options.sdk_extension_jars:
+      # Enable API modelling for OS extensions. https://b/326252366
+      cmd += [
+          '-Dcom.android.tools.r8.androidApiExtensionLibraries=' +
+          ','.join(options.sdk_extension_jars)
+      ]
     if options.dump_inputs:
       cmd += [f'-Dcom.android.tools.r8.dumpinputtodirectory={_DUMP_DIR_NAME}']
     if options.dump_unknown_refs:
@@ -458,7 +448,7 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
   return split_contexts_by_name
 
 
-def _OutputKeepRules(r8_path, input_paths, classpath, targets_re_string,
+def _OutputKeepRules(r8_path, input_paths, libraries, targets_re_string,
                      keep_rules_output):
 
   cmd = build_utils.JavaCmd() + [
@@ -472,7 +462,7 @@ def _OutputKeepRules(r8_path, input_paths, classpath, targets_re_string,
       cmd += ['--target', path]
     else:
       cmd += ['--source', path]
-  for path in classpath:
+  for path in libraries:
     cmd += ['--lib', path]
 
   build_utils.CheckOutput(cmd, print_stderr=False, fail_on_output=False)
@@ -491,7 +481,7 @@ def _CheckForMissingSymbols(options, dex_files, error_title):
       '--check'
   ]
 
-  for path in options.classpath:
+  for path in options.sdk_jars + options.sdk_extension_jars:
     cmd += ['--lib', path]
   for path in dex_files:
     cmd += ['--source', path]
@@ -715,11 +705,10 @@ def _Run(options):
   dynamic_config_data = _CreateDynamicConfig(options)
 
   logging.debug('Looking for embedded configs')
-  # If a jar is part of input no need to include it as library jar.
-  libraries = [p for p in options.classpath if p not in options.input_paths]
+  libraries = options.sdk_jars + options.sdk_extension_jars
 
   embedded_configs = {}
-  for jar_path in options.input_paths + libraries:
+  for jar_path in options.input_paths:
     _ExtractEmbeddedConfigs(jar_path, embedded_configs)
 
   # ProGuard configs that are derived from flags.
@@ -738,7 +727,7 @@ def _Run(options):
       return
 
   if options.keep_rules_output_path:
-    _OutputKeepRules(options.r8_path, options.input_paths, options.classpath,
+    _OutputKeepRules(options.r8_path, options.input_paths, libraries,
                      options.keep_rules_targets_regex,
                      options.keep_rules_output_path)
     return
