@@ -367,7 +367,8 @@ void ResolvedFrameData::ResetAfterAggregation() {
 }
 
 const CompositorFrameMetadata& ResolvedFrameData::GetMetadata() const {
-  CHECK(valid_);
+  // TODO(crbug.com/354664676): Add back CHECK(valid_) once this is only called
+  // for valid frames.
   return surface_->GetActiveFrameMetadata();
 }
 
