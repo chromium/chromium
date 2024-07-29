@@ -397,10 +397,8 @@ class AppListSyncableService : public syncer::SyncableService,
   // after a sync item is removed (which may result in an empty folder).
   void PruneEmptySyncFolders();
 
-  // Creates or updates a SyncItem from |specifics|. Returns true if a new item
-  // was created.
-  // TODO(crbug.com/40677489): Change return type to void.
-  bool ProcessSyncItemSpecifics(const sync_pb::AppListSpecifics& specifics);
+  // Creates or updates a SyncItem from |specifics|.
+  void ProcessSyncItemSpecifics(const sync_pb::AppListSpecifics& specifics);
 
   // Handles a newly created sync item (e.g. creates a new AppItem and adds it
   // to the model or uninstalls a deleted default item.
