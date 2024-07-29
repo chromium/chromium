@@ -278,9 +278,20 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         });
     this.eventTracker_.add(
         document, 'restore-selected-text-context-menu', () => {
-          // show-selected-text-context-menu must be triggered first so that
+          // show-selected-text-context-menu or
+          // update-selected-text-context-menu must be triggered first so that
           // instance variables are set.
           this.showSelectedTextContextMenu = true;
+        });
+    this.eventTracker_.add(
+        document, 'update-selected-text-context-menu',
+        (e: CustomEvent<SelectedTextContextMenuData>) => {
+          this.selectedTextContextMenuX = e.detail.left;
+          this.selectedTextContextMenuY = e.detail.bottom;
+          this.highlightedText = e.detail.text;
+          this.contentLanguage = e.detail.contentLanguage;
+          this.textSelectionStartIndex = e.detail.selectionStartIndex;
+          this.textSelectionEndIndex = e.detail.selectionEndIndex;
         });
     this.eventTracker_.add(
         document, 'show-detected-text-context-menu', (e: CustomEvent) => {
@@ -728,6 +739,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     unfocusShimmer(this, ShimmerControlRequester.CURSOR);
   }
 
+  private handleTranslateDetectedText() {
+    this.$.textSelectionLayer.selectAndTranslateWords(
+        this.detectedTextStartIndex, this.detectedTextEndIndex);
+    this.$.postSelectionRenderer.clearSelection();
+    unfocusShimmer(this, ShimmerControlRequester.CURSOR);
+  }
+
   private handleTranslate() {
     BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
         this.highlightedText, this.contentLanguage,
@@ -794,6 +812,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   handleSelectTextForTesting() {
     this.handleSelectText();
+  }
+
+  handleTranslateDetectedTextForTesting() {
+    this.handleTranslateDetectedText();
   }
 
   handleTranslateForTesting() {
