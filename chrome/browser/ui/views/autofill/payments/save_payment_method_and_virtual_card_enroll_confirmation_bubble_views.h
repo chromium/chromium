@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_PAYMENT_METHOD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_PAYMENT_METHOD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS_H_
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
@@ -12,22 +12,22 @@
 
 namespace autofill {
 
-// This class displays a confirmation bubble view after a save card upload or
-// virtual card enrollment.
-class SaveCardAndVirtualCardEnrollConfirmationBubbleViews
+// This class displays a confirmation bubble view after a save card or IBAN
+// upload or virtual card enrollment.
+class SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews
     : public AutofillLocationBarBubble {
  public:
-  SaveCardAndVirtualCardEnrollConfirmationBubbleViews(
+  SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews(
       views::View* anchor_view,
       content::WebContents* web_contents,
       base::OnceCallback<void(PaymentsBubbleClosedReason)>
           controller_hide_callback,
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params);
 
-  SaveCardAndVirtualCardEnrollConfirmationBubbleViews(
-      const SaveCardAndVirtualCardEnrollConfirmationBubbleViews&) = delete;
-  SaveCardAndVirtualCardEnrollConfirmationBubbleViews& operator=(
-      const SaveCardAndVirtualCardEnrollConfirmationBubbleViews&) = delete;
+  SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews(
+      const SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews&) = delete;
+  SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews& operator=(
+      const SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews&) = delete;
 
   // AutofillBubbleBase:
   void Hide() override;
@@ -39,7 +39,7 @@ class SaveCardAndVirtualCardEnrollConfirmationBubbleViews
   void OnWidgetInitialized() override;
 
  private:
-  ~SaveCardAndVirtualCardEnrollConfirmationBubbleViews() override;
+  ~SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews() override;
 
   // LocationBarBubbleDelegateView:
   void Init() override;
@@ -51,4 +51,4 @@ class SaveCardAndVirtualCardEnrollConfirmationBubbleViews
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_PAYMENT_METHOD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS_H_

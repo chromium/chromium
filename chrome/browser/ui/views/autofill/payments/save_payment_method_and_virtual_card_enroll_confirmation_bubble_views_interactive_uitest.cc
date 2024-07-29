@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
-#include "chrome/browser/ui/views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
@@ -55,8 +55,8 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
-  SaveCardAndVirtualCardEnrollConfirmationBubbleViews* BubbleView() {
-    return static_cast<SaveCardAndVirtualCardEnrollConfirmationBubbleViews*>(
+  SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews* BubbleView() {
+    return static_cast<SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews*>(
         GetController()->GetPaymentBubbleView());
   }
 
@@ -210,8 +210,8 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
-  SaveCardAndVirtualCardEnrollConfirmationBubbleViews* BubbleView() {
-    return static_cast<SaveCardAndVirtualCardEnrollConfirmationBubbleViews*>(
+  SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews* BubbleView() {
+    return static_cast<SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews*>(
         GetController()->GetVirtualCardBubbleView());
   }
 

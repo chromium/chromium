@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
 
 #include <utility>
 
@@ -16,8 +16,8 @@
 
 namespace autofill {
 
-SaveCardAndVirtualCardEnrollConfirmationBubbleViews::
-    SaveCardAndVirtualCardEnrollConfirmationBubbleViews(
+SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
+    SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews(
         views::View* anchor_view,
         content::WebContents* web_contents,
         base::OnceCallback<void(PaymentsBubbleClosedReason)>
@@ -37,7 +37,7 @@ SaveCardAndVirtualCardEnrollConfirmationBubbleViews::
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 
-void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::Hide() {
+void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::Hide() {
   CloseBubble();
   if (!controller_hide_callback_.is_null()) {
     std::move(controller_hide_callback_)
@@ -45,7 +45,7 @@ void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::Hide() {
   }
 }
 
-void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::AddedToWidget() {
+void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::AddedToWidget() {
   if (ui_params_.is_success) {
     auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
         ui::ImageModel::FromVectorIcon(kSaveCardAndVcnSuccessConfirmationIcon),
@@ -64,18 +64,18 @@ void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::AddedToWidget() {
 }
 
 std::u16string
-SaveCardAndVirtualCardEnrollConfirmationBubbleViews::GetWindowTitle() const {
+SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::GetWindowTitle() const {
   return ui_params_.title_text;
 }
 
-void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::WindowClosing() {
+void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::WindowClosing() {
   if (!controller_hide_callback_.is_null()) {
     std::move(controller_hide_callback_)
         .Run(GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
   }
 }
 
-void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::
+void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
     OnWidgetInitialized() {
   if (auto* ok_button = GetOkButton()) {
     ok_button->GetViewAccessibility().SetName(
@@ -83,7 +83,7 @@ void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::
   }
 }
 
-void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::Init() {
+void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
@@ -98,7 +98,7 @@ void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::Init() {
   AddChildView(std::move(description));
 }
 
-SaveCardAndVirtualCardEnrollConfirmationBubbleViews::
-    ~SaveCardAndVirtualCardEnrollConfirmationBubbleViews() = default;
+SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
+    ~SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews() = default;
 
 }  // namespace autofill

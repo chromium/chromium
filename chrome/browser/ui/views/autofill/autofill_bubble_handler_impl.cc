@@ -21,11 +21,11 @@
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_opt_in_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
-#include "chrome/browser/ui/views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_manage_cards_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_offer_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views.h"
@@ -392,8 +392,8 @@ AutofillBubbleHandlerImpl::ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
         controller_hide_callback,
     PageActionIconView* icon_view,
     SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params) {
-  SaveCardAndVirtualCardEnrollConfirmationBubbleViews* bubble =
-      new SaveCardAndVirtualCardEnrollConfirmationBubbleViews(
+  SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews* bubble =
+      new SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews(
           anchor_view, web_contents, std::move(controller_hide_callback),
           std::move(ui_params));
 
