@@ -9832,6 +9832,10 @@
                     },
                     "enable_features": [
                         "EnableFingerprintingProtectionFilter"
+                    ],
+                    "disable_features": [
+                        "FingerprintingProtectionSetting",
+                        "FingerprintingProtectionUx"
                     ]
                 }
             ]
