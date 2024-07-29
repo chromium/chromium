@@ -669,9 +669,9 @@ int UDPSocketWin::SetBroadcast(bool broadcast) {
 }
 
 int UDPSocketWin::AllowAddressSharingForMulticast() {
-  // When proper multicast groups are used, Windows further defines the address
-  // resuse option (SO_REUSEADDR) to ensure all listening sockets can receive
-  // all incoming messages for the multicast group.
+  // When proper multicast groups are used, Windows further defines the
+  // address reuse option (SO_REUSEADDR) to ensure all listening sockets can
+  // receive all incoming messages for the multicast group.
   return AllowAddressReuse();
 }
 
@@ -687,7 +687,8 @@ void UDPSocketWin::DoWriteCallback(int rv) {
   DCHECK_NE(rv, ERR_IO_PENDING);
   DCHECK(!write_callback_.is_null());
 
-  // since Run may result in Write being called, clear write_callback_ up front.
+  // since Run may result in Write being called, clear write_callback_ up
+  // front.
   std::move(write_callback_).Run(rv);
 }
 
@@ -703,8 +704,9 @@ void UDPSocketWin::DidCompleteRead() {
   if (result >= 0) {
     if (address.FromSockAddr(core_->recv_addr_storage_.addr,
                              core_->recv_addr_storage_.addr_len)) {
-      if (recv_from_address_)
+      if (recv_from_address_) {
         *recv_from_address_ = address;
+      }
       address_to_log = &address;
     } else {
       result = ERR_ADDRESS_INVALID;
@@ -763,26 +765,32 @@ void UDPSocketWin::OnObjectSignaled(HANDLE object) {
     return;
   }
 
-  if ((network_events.lNetworkEvents & FD_READ) && read_iobuffer_)
+  if ((network_events.lNetworkEvents & FD_READ) && read_iobuffer_) {
     OnReadSignaled();
-  if (!event_pending)
+  }
+  if (!event_pending) {
     return;
+  }
 
-  if ((network_events.lNetworkEvents & FD_WRITE) && write_iobuffer_)
+  if ((network_events.lNetworkEvents & FD_WRITE) && write_iobuffer_) {
     OnWriteSignaled();
-  if (!event_pending)
+  }
+  if (!event_pending) {
     return;
+  }
 
   // There's still pending read / write. Watch for further events.
-  if (read_iobuffer_ || write_iobuffer_)
+  if (read_iobuffer_ || write_iobuffer_) {
     WatchForReadWrite();
+  }
 }
 
 void UDPSocketWin::OnReadSignaled() {
   int rv = InternalRecvFromNonBlocking(read_iobuffer_.get(), read_iobuffer_len_,
                                        recv_from_address_);
-  if (rv == ERR_IO_PENDING)
+  if (rv == ERR_IO_PENDING) {
     return;
+  }
   read_iobuffer_ = nullptr;
   read_iobuffer_len_ = 0;
   recv_from_address_ = nullptr;
@@ -792,8 +800,9 @@ void UDPSocketWin::OnReadSignaled() {
 void UDPSocketWin::OnWriteSignaled() {
   int rv = InternalSendToNonBlocking(write_iobuffer_.get(), write_iobuffer_len_,
                                      send_to_address_.get());
-  if (rv == ERR_IO_PENDING)
+  if (rv == ERR_IO_PENDING) {
     return;
+  }
   write_iobuffer_ = nullptr;
   write_iobuffer_len_ = 0;
   send_to_address_.reset();
@@ -801,8 +810,9 @@ void UDPSocketWin::OnWriteSignaled() {
 }
 
 void UDPSocketWin::WatchForReadWrite() {
-  if (read_write_watcher_.IsWatching())
+  if (read_write_watcher_.IsWatching()) {
     return;
+  }
   bool watched =
       read_write_watcher_.StartWatchingOnce(read_write_event_.Get(), this);
   DCHECK(watched);
@@ -844,7 +854,12 @@ void UDPSocketWin::PopulateWSAMSG(WSAMSG& message,
                                   WSABUF* data_buffer,
                                   WSABUF& control_buffer,
                                   bool send) {
-  bool is_ipv6 = addr_family_ == AF_INET6;
+  bool is_ipv6;
+  if (send && remote_address_.get() != nullptr) {
+    is_ipv6 = (remote_address_->GetSockAddrFamily() == AF_INET6);
+  } else {
+    is_ipv6 = (addr_family_ == AF_INET6);
+  }
   message.name = storage.addr;
   message.namelen = storage.addr_len;
   message.lpBuffers = data_buffer;
@@ -922,8 +937,9 @@ int UDPSocketWin::InternalRecvFromOverlapped(IOBuffer* buf,
       if (result >= 0) {
         if (address_storage.FromSockAddr(core_->recv_addr_storage_.addr,
                                          core_->recv_addr_storage_.addr_len)) {
-          if (address)
+          if (address) {
             *address = address_storage;
+          }
           address_to_log = &address_storage;
         } else {
           result = ERR_ADDRESS_INVALID;
@@ -977,7 +993,14 @@ int UDPSocketWin::InternalSendToOverlapped(IOBuffer* buf,
     control_buffer.buf = raw_control_buffer;
     control_buffer.len = sizeof(raw_control_buffer);
     WSAMSG message;
+    bool temp_address = !remote_address_.get();
+    if (temp_address) {
+      remote_address_ = std::make_unique<IPEndPoint>(*address);
+    }
     PopulateWSAMSG(message, storage, &write_buffer, control_buffer, true);
+    if (temp_address) {
+      remote_address_.reset();
+    }
     rv = wsa_send_msg_(socket_, &message, flags, &num,
                        &core_->write_overlapped_, nullptr);
   } else {
@@ -1051,8 +1074,9 @@ int UDPSocketWin::InternalRecvFromNonBlocking(IOBuffer* buf,
   IPEndPoint* address_to_log = nullptr;
   if (rv >= 0) {
     if (address_storage.FromSockAddr(storage.addr, storage.addr_len)) {
-      if (address)
+      if (address) {
         *address = address_storage;
+      }
       address_to_log = &address_storage;
     } else {
       rv = ERR_ADDRESS_INVALID;
@@ -1118,25 +1142,25 @@ int UDPSocketWin::InternalSendToNonBlocking(IOBuffer* buf,
 int UDPSocketWin::SetMulticastOptions() {
   if (!(socket_options_ & SOCKET_OPTION_MULTICAST_LOOP)) {
     DWORD loop = 0;
-    int protocol_level =
-        addr_family_ == AF_INET ? IPPROTO_IP : IPPROTO_IPV6;
+    int protocol_level = addr_family_ == AF_INET ? IPPROTO_IP : IPPROTO_IPV6;
     int option =
-        addr_family_ == AF_INET ? IP_MULTICAST_LOOP: IPV6_MULTICAST_LOOP;
+        addr_family_ == AF_INET ? IP_MULTICAST_LOOP : IPV6_MULTICAST_LOOP;
     int rv = setsockopt(socket_, protocol_level, option,
                         reinterpret_cast<const char*>(&loop), sizeof(loop));
-    if (rv < 0)
+    if (rv < 0) {
       return MapSystemError(WSAGetLastError());
+    }
   }
   if (multicast_time_to_live_ != 1) {
     DWORD hops = multicast_time_to_live_;
-    int protocol_level =
-        addr_family_ == AF_INET ? IPPROTO_IP : IPPROTO_IPV6;
+    int protocol_level = addr_family_ == AF_INET ? IPPROTO_IP : IPPROTO_IPV6;
     int option =
-        addr_family_ == AF_INET ? IP_MULTICAST_TTL: IPV6_MULTICAST_HOPS;
+        addr_family_ == AF_INET ? IP_MULTICAST_TTL : IPV6_MULTICAST_HOPS;
     int rv = setsockopt(socket_, protocol_level, option,
                         reinterpret_cast<const char*>(&hops), sizeof(hops));
-    if (rv < 0)
+    if (rv < 0) {
       return MapSystemError(WSAGetLastError());
+    }
   }
   if (multicast_interface_ != 0) {
     switch (addr_family_) {
@@ -1146,8 +1170,9 @@ int UDPSocketWin::SetMulticastOptions() {
         int rv = setsockopt(socket_, IPPROTO_IP, IP_MULTICAST_IF,
                             reinterpret_cast<const char*>(&address),
                             sizeof(address));
-        if (rv)
+        if (rv) {
           return MapSystemError(WSAGetLastError());
+        }
         break;
       }
       case AF_INET6: {
@@ -1155,8 +1180,9 @@ int UDPSocketWin::SetMulticastOptions() {
         int rv = setsockopt(socket_, IPPROTO_IPV6, IPV6_MULTICAST_IF,
                             reinterpret_cast<const char*>(&interface_index),
                             sizeof(interface_index));
-        if (rv)
+        if (rv) {
           return MapSystemError(WSAGetLastError());
+        }
         break;
       }
       default:
@@ -1169,11 +1195,13 @@ int UDPSocketWin::SetMulticastOptions() {
 
 int UDPSocketWin::DoBind(const IPEndPoint& address) {
   SockaddrStorage storage;
-  if (!address.ToSockAddr(storage.addr, &storage.addr_len))
+  if (!address.ToSockAddr(storage.addr, &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
+  }
   int rv = bind(socket_, storage.addr, storage.addr_len);
-  if (rv == 0)
+  if (rv == 0) {
     return OK;
+  }
   int last_error = WSAGetLastError();
   // Map some codes that are special to bind() separately.
   // * WSAEACCES: If a port is already bound to a socket, WSAEACCES may be
@@ -1181,8 +1209,9 @@ int UDPSocketWin::DoBind(const IPEndPoint& address) {
   //   option SO_REUSEADDR or SO_EXCLUSIVEADDRUSE is set and whether the
   //   conflicting socket is owned by a different user account. See the MSDN
   //   page "Using SO_REUSEADDR and SO_EXCLUSIVEADDRUSE" for the gory details.
-  if (last_error == WSAEACCES || last_error == WSAEADDRNOTAVAIL)
+  if (last_error == WSAEACCES || last_error == WSAEADDRNOTAVAIL) {
     return ERR_ADDRESS_IN_USE;
+  }
   return MapSystemError(last_error);
 }
 
@@ -1192,36 +1221,39 @@ QwaveApi* UDPSocketWin::GetQwaveApi() const {
 
 int UDPSocketWin::JoinGroup(const IPAddress& group_address) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!is_connected())
+  if (!is_connected()) {
     return ERR_SOCKET_NOT_CONNECTED;
+  }
 
   switch (group_address.size()) {
     case IPAddress::kIPv4AddressSize: {
-      if (addr_family_ != AF_INET)
+      if (addr_family_ != AF_INET) {
         return ERR_ADDRESS_INVALID;
+      }
       ip_mreq mreq;
       mreq.imr_interface.s_addr = htonl(multicast_interface_);
       memcpy(&mreq.imr_multiaddr, group_address.bytes().data(),
              IPAddress::kIPv4AddressSize);
       int rv = setsockopt(socket_, IPPROTO_IP, IP_ADD_MEMBERSHIP,
-                          reinterpret_cast<const char*>(&mreq),
-                          sizeof(mreq));
-      if (rv)
+                          reinterpret_cast<const char*>(&mreq), sizeof(mreq));
+      if (rv) {
         return MapSystemError(WSAGetLastError());
+      }
       return OK;
     }
     case IPAddress::kIPv6AddressSize: {
-      if (addr_family_ != AF_INET6)
+      if (addr_family_ != AF_INET6) {
         return ERR_ADDRESS_INVALID;
+      }
       ipv6_mreq mreq;
       mreq.ipv6mr_interface = multicast_interface_;
       memcpy(&mreq.ipv6mr_multiaddr, group_address.bytes().data(),
              IPAddress::kIPv6AddressSize);
       int rv = setsockopt(socket_, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP,
-                          reinterpret_cast<const char*>(&mreq),
-                          sizeof(mreq));
-      if (rv)
+                          reinterpret_cast<const char*>(&mreq), sizeof(mreq));
+      if (rv) {
         return MapSystemError(WSAGetLastError());
+      }
       return OK;
     }
     default:
@@ -1232,34 +1264,39 @@ int UDPSocketWin::JoinGroup(const IPAddress& group_address) const {
 
 int UDPSocketWin::LeaveGroup(const IPAddress& group_address) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!is_connected())
+  if (!is_connected()) {
     return ERR_SOCKET_NOT_CONNECTED;
+  }
 
   switch (group_address.size()) {
     case IPAddress::kIPv4AddressSize: {
-      if (addr_family_ != AF_INET)
+      if (addr_family_ != AF_INET) {
         return ERR_ADDRESS_INVALID;
+      }
       ip_mreq mreq;
       mreq.imr_interface.s_addr = htonl(multicast_interface_);
       memcpy(&mreq.imr_multiaddr, group_address.bytes().data(),
              IPAddress::kIPv4AddressSize);
       int rv = setsockopt(socket_, IPPROTO_IP, IP_DROP_MEMBERSHIP,
                           reinterpret_cast<const char*>(&mreq), sizeof(mreq));
-      if (rv)
+      if (rv) {
         return MapSystemError(WSAGetLastError());
+      }
       return OK;
     }
     case IPAddress::kIPv6AddressSize: {
-      if (addr_family_ != AF_INET6)
+      if (addr_family_ != AF_INET6) {
         return ERR_ADDRESS_INVALID;
+      }
       ipv6_mreq mreq;
       mreq.ipv6mr_interface = multicast_interface_;
       memcpy(&mreq.ipv6mr_multiaddr, group_address.bytes().data(),
              IPAddress::kIPv6AddressSize);
       int rv = setsockopt(socket_, IPPROTO_IPV6, IP_DROP_MEMBERSHIP,
                           reinterpret_cast<const char*>(&mreq), sizeof(mreq));
-      if (rv)
+      if (rv) {
         return MapSystemError(WSAGetLastError());
+      }
       return OK;
     }
     default:
@@ -1270,32 +1307,37 @@ int UDPSocketWin::LeaveGroup(const IPAddress& group_address) const {
 
 int UDPSocketWin::SetMulticastInterface(uint32_t interface_index) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (is_connected())
+  if (is_connected()) {
     return ERR_SOCKET_IS_CONNECTED;
+  }
   multicast_interface_ = interface_index;
   return OK;
 }
 
 int UDPSocketWin::SetMulticastTimeToLive(int time_to_live) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (is_connected())
+  if (is_connected()) {
     return ERR_SOCKET_IS_CONNECTED;
+  }
 
-  if (time_to_live < 0 || time_to_live > 255)
+  if (time_to_live < 0 || time_to_live > 255) {
     return ERR_INVALID_ARGUMENT;
+  }
   multicast_time_to_live_ = time_to_live;
   return OK;
 }
 
 int UDPSocketWin::SetMulticastLoopbackMode(bool loopback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (is_connected())
+  if (is_connected()) {
     return ERR_SOCKET_IS_CONNECTED;
+  }
 
-  if (loopback)
+  if (loopback) {
     socket_options_ |= SOCKET_OPTION_MULTICAST_LOOP;
-  else
+  } else {
     socket_options_ &= ~SOCKET_OPTION_MULTICAST_LOOP;
+  }
   return OK;
 }
 
@@ -1347,8 +1389,9 @@ int UDPSocketWin::SetDiffServCodePoint(DiffServCodePoint dscp) {
 }
 
 int UDPSocketWin::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
-  if (!is_connected())
+  if (!is_connected()) {
     return ERR_SOCKET_NOT_CONNECTED;
+  }
 
   if (dscp != DSCP_NO_CHANGE) {
     QwaveApi* api = GetQwaveApi();
@@ -1397,8 +1440,8 @@ void UDPSocketWin::UseNonBlockingIO() {
 }
 
 void UDPSocketWin::ApplySocketTag(const SocketTag& tag) {
-  // Windows does not support any specific SocketTags so fail if any non-default
-  // tag is applied.
+  // Windows does not support any specific SocketTags so fail if any
+  // non-default tag is applied.
   CHECK(tag == SocketTag());
 }
 
@@ -1408,18 +1451,21 @@ DscpManager::DscpManager(QwaveApi* api, SOCKET socket)
 }
 
 DscpManager::~DscpManager() {
-  if (!qos_handle_)
+  if (!qos_handle_) {
     return;
+  }
 
-  if (flow_id_ != 0)
+  if (flow_id_ != 0) {
     api_->RemoveSocketFromFlow(qos_handle_, NULL, flow_id_, 0);
+  }
 
   api_->CloseHandle(qos_handle_);
 }
 
 void DscpManager::Set(DiffServCodePoint dscp) {
-  if (dscp == DSCP_NO_CHANGE || dscp == dscp_value_)
+  if (dscp == DSCP_NO_CHANGE || dscp == dscp_value_) {
     return;
+  }
 
   dscp_value_ = dscp;
 
@@ -1438,18 +1484,22 @@ int DscpManager::PrepareForSend(const IPEndPoint& remote_address) {
     return OK;
   }
 
-  if (!api_->qwave_supported())
+  if (!api_->qwave_supported()) {
     return ERR_NOT_IMPLEMENTED;
+  }
 
-  if (!qos_handle_)
+  if (!qos_handle_) {
     return ERR_INVALID_HANDLE;  // The closest net error to try again later.
+  }
 
-  if (configured_.find(remote_address) != configured_.end())
+  if (configured_.find(remote_address) != configured_.end()) {
     return OK;
+  }
 
   SockaddrStorage storage;
-  if (!remote_address.ToSockAddr(storage.addr, &storage.addr_len))
+  if (!remote_address.ToSockAddr(storage.addr, &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
+  }
 
   // We won't try this address again if we get an error.
   configured_.emplace(remote_address);
@@ -1464,9 +1514,9 @@ int DscpManager::PrepareForSend(const IPEndPoint& remote_address) {
     DWORD err = ::GetLastError();
     if (err == ERROR_DEVICE_REINITIALIZATION_NEEDED) {
       // Reset. PrepareForSend is called for every packet.  Once RequestHandle
-      // completes asynchronously the next PrepareForSend call will re-register
-      // the address with the new QoS Handle.  In the meantime, sends will
-      // continue without DSCP.
+      // completes asynchronously the next PrepareForSend call will
+      // re-register the address with the new QoS Handle.  In the meantime,
+      // sends will continue without DSCP.
       RequestHandle();
       configured_.clear();
       flow_id_ = 0;
@@ -1487,8 +1537,9 @@ int DscpManager::PrepareForSend(const IPEndPoint& remote_address) {
 }
 
 void DscpManager::RequestHandle() {
-  if (handle_is_initializing_)
+  if (handle_is_initializing_) {
     return;
+  }
 
   if (qos_handle_) {
     api_->CloseHandle(qos_handle_);
@@ -1518,8 +1569,9 @@ HANDLE DscpManager::DoCreateHandle(QwaveApi* api) {
 void DscpManager::OnHandleCreated(QwaveApi* api,
                                   base::WeakPtr<DscpManager> dscp_manager,
                                   HANDLE handle) {
-  if (!handle)
+  if (!handle) {
     api->OnFatalError();
+  }
 
   if (!dscp_manager) {
     api->CloseHandle(handle);

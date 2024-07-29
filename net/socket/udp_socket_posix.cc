@@ -505,7 +505,11 @@ int UDPSocketPosix::SetRecvTos() {
         0) {
       return MapSystemError(errno);
     }
-
+#if BUILDFLAG(IS_APPLE)
+    // Linux requires dual-stack sockets to have the sockopt set on both levels.
+    // Apple does not, and in fact returns an error if it is.
+    return OK;
+#else
     int v6_only = false;
     socklen_t v6_only_len = sizeof(v6_only);
     if (getsockopt(socket_, IPPROTO_IPV6, IPV6_V6ONLY, &v6_only,
@@ -515,6 +519,7 @@ int UDPSocketPosix::SetRecvTos() {
     if (v6_only) {
       return OK;
     }
+#endif  // BUILDFLAG(IS_APPLE)
   }
 
   int rv = setsockopt(socket_, IPPROTO_IP, IP_RECVTOS, &ecn, sizeof(ecn));
