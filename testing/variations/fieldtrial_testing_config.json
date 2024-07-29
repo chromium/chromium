@@ -24748,26 +24748,6 @@
             ]
         }
     ],
-    "WaffleStudy": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledAllUsers",
-                    "params": {
-                        "for_tagged_profiles_only": "false",
-                        "reprompt": "NO_REPROMPT"
-                    },
-                    "enable_features": [
-                        "SearchEngineChoiceTrigger"
-                    ]
-                }
-            ]
-        }
-    ],
     "WaitForLateScrollEvents": [
         {
             "platforms": [
