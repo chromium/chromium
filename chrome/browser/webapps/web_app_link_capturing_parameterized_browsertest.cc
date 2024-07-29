@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <ostream>
+
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -10,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/types/expected.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
@@ -22,6 +25,7 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -198,6 +202,13 @@ std::string_view ToParamString(OpenerMode opener) {
   }
 }
 
+template <typename ParamType, class Char, class Traits>
+std::basic_ostream<Char, Traits>& operator<<(
+    std::basic_ostream<Char, Traits>& os,
+    ParamType param) {
+  return os << ToParamString(param);
+}
+
 // The target to supply for the navigation:
 enum class NavigationTarget {
   // The target to supply for the navigation:
@@ -297,6 +308,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
       public testing::WithParamInterface<LinkCaptureTestParam> {
  public:
   WebAppLinkCapturingParameterizedBrowserTest() {
+    std::map<std::string, std::string> parameters;
+    parameters["link_capturing_state"] = "reimpl_default_on";
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDesktopPWAsLinkCapturing, parameters);
     InitializeTestExpectations();
   }
 
@@ -657,6 +672,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
     ASSERT_TRUE(test_expectations_) << "Unable to read test expectation file";
     ASSERT_TRUE(test_expectations_.value().is_dict());
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   // The path to the json file containing the test expectations.
   base::FilePath json_file_path_ =
