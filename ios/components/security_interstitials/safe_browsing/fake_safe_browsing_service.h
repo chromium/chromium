@@ -16,8 +16,11 @@
 // safe.
 class FakeSafeBrowsingService : public SafeBrowsingService {
  public:
-  // URLs with this host are treated as unsafe.
+  // URLs with this host are treated as unsafe by all fake checkers.
   static const std::string kUnsafeHost;
+
+  // URLs with this host are treated as unsafe only by async fake checkers.
+  static const std::string kAsyncUnsafeHost;
 
   FakeSafeBrowsingService();
 

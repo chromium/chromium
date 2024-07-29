@@ -61,6 +61,10 @@ class SafeBrowsingQueryManager
     bool proceed = false;
     // Whether an error page should be shown for the URL.
     bool show_error_page = false;
+    // Checks if sync check was completed.
+    bool sync_check_complete = false;
+    // Checks if async check was completed.
+    bool async_check_complete = false;
     // The UnsafeResource created for the URL check, if any.
     std::optional<security_interstitials::UnsafeResource> resource;
   };
@@ -76,6 +80,7 @@ class SafeBrowsingQueryManager
         const Result& result,
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
             performed_check) {}
+
     // Notifies observers that a sync `query` check has completed with `result`
     // after performing a check of type `performed_check`.
     virtual void SafeBrowsingSyncQueryFinished(
@@ -84,6 +89,14 @@ class SafeBrowsingQueryManager
         const SafeBrowsingQueryManager::Result& result,
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
             performed_check) {}
+
+    virtual void SafeBrowsingAsyncQueryFinished(
+        SafeBrowsingQueryManager* manager,
+        const SafeBrowsingQueryManager::Query& query,
+        const SafeBrowsingQueryManager::Result& result,
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+            performed_check) {}
+
     // Called when `manager` is about to be destroyed.
     virtual void SafeBrowsingQueryManagerDestroyed(
         SafeBrowsingQueryManager* manager) {}
