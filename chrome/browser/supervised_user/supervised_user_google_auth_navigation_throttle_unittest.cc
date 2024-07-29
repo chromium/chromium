@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
@@ -16,6 +17,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -134,7 +136,12 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
 }
 
 TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
-       NavigationForInvalidSignedinSupervisedUsers) {
+       NavigationForInvalidSignedInSupervisedUsers) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      supervised_user::kForceSupervisedUserReauthenticationForYouTube);
+#endif
   SetUserAsSupervised();
   // An invalid, signed-in account is not authenticated.
   signin::SetListAccountsResponseOneAccountWithParams(
@@ -146,12 +153,30 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
   identity_manager()->GetAccountsCookieMutator()->TriggerCookieJarUpdate();
   content::RunAllTasksUntilIdle();
 
-  // For a supervised account that is not authenticated navigation to Google and
-  // Youtube are deferred until they are signed in.
+  // For a supervised account that is not authenticated, navigation to Google
+  // and YouTube can be subject to throttling.
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             CreateNavigationThrottle(GURL(kExampleURL))->WillStartRequest());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // On desktop platforms, non-YouTube navigation are permitted.
+  EXPECT_EQ(
+      content::NavigationThrottle::PROCEED,
+      CreateNavigationThrottle(GURL(kGoogleSearchURL))->WillStartRequest());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            CreateNavigationThrottle(GURL(kGoogleHomeURL))->WillStartRequest());
+  // YouTube navigation is cancelled and accompanied with a re-authentication
+  // interstitial.
+  content::NavigationThrottle::ThrottleCheckResult youtube_navigation_throttle =
+      CreateNavigationThrottle(GURL(kYoutubeDomain))->WillStartRequest();
+  EXPECT_EQ(content::NavigationThrottle::CANCEL,
+            youtube_navigation_throttle.action());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
+            youtube_navigation_throttle.net_error_code());
+  EXPECT_NE(std::string::npos,
+            youtube_navigation_throttle.error_page_content()->find(
+                "supervised-user-verify"));
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  // For ChromeOS, navigation to Google and YouTube are deferred.
   EXPECT_EQ(
       content::NavigationThrottle::DEFER,
       CreateNavigationThrottle(GURL(kGoogleSearchURL))->WillStartRequest());
@@ -160,6 +185,7 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             CreateNavigationThrottle(GURL(kYoutubeDomain))->WillStartRequest());
 #elif BUILDFLAG(IS_ANDROID)
+  // For Android, navigation to Google and YouTube are deferred.
   SetPrimaryAccount(identity_manager(), kChildTestEmail,
                     signin::ConsentLevel::kSignin);
   EXPECT_EQ(content::NavigationThrottle::DEFER,
@@ -169,7 +195,7 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
             CreateNavigationThrottle(GURL(kGoogleHomeURL))->WillStartRequest());
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             CreateNavigationThrottle(GURL(kYoutubeDomain))->WillStartRequest());
-#else
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_EQ(
       content::NavigationThrottle::PROCEED,
       CreateNavigationThrottle(GURL(kGoogleSearchURL))->WillStartRequest());

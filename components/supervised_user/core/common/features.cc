@@ -122,6 +122,12 @@ BASE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers,
              "ForceSafeSearchForUnauthenticatedSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+BASE_FEATURE(kForceSupervisedUserReauthenticationForYouTube,
+             "ForceSupervisedUserReauthenticationForYouTube",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers,
              "UncredentialedFilteringFallbackForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
