@@ -426,7 +426,7 @@ BASE_FEATURE(kHappinessTrackingSurveysConfiguration,
 
 const base::FeatureParam<std::string> kHappinessTrackingSurveysHostedUrl{
     &kHappinessTrackingSurveysConfiguration, "custom-url",
-    "https://www.google.com/chrome/hats/index.html"};
+    "https://www.google.com/chrome/hats/index_m129.html"};
 
 // Enables or disables the Happiness Tracking System for COEP issues in Chrome
 // DevTools on Desktop.

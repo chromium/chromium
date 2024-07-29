@@ -225,6 +225,10 @@ void HatsNextWebDialog::OnSurveyClosed() {
   CloseWidget();
 }
 
+void HatsNextWebDialog::OnSurveyQuestionAnswered(std::string& state) {
+  // do nothing
+}
+
 HatsNextWebDialog::HatsNextWebDialog(
     Browser* browser,
     const std::string& trigger_id,
@@ -368,6 +372,8 @@ void HatsNextWebDialog::OnSurveyStateUpdateReceived(std::string state) {
     OnSurveyClosed();
   } else if (state == "completed") {
     OnSurveyCompleted();
+  } else if (base::StartsWith(state, "answer-")) {
+    OnSurveyQuestionAnswered(state);
   } else {
     LOG(ERROR) << "Unknown state provided in URL fragment by HaTS survey:"
                << state;
