@@ -388,6 +388,7 @@ class AndroidNetworkLibrary {
 
     /** Returns true if cleartext traffic to |host| is allowed by the current app. */
     @CalledByNative
+    @RequiresApi(Build.VERSION_CODES.N)
     private static boolean isCleartextPermitted(String host) {
         try {
             return NetworkSecurityPolicyProxy.getInstance().isCleartextTrafficPermitted(host);
