@@ -529,13 +529,11 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
 void PdfInkModule::HandleAnnotationRedoMessage(
     const base::Value::Dict& message) {
-  CHECK(enabled_);
   ApplyUndoRedoCommands(undo_redo_model_.Redo());
 }
 
 void PdfInkModule::HandleAnnotationUndoMessage(
     const base::Value::Dict& message) {
-  CHECK(enabled_);
   ApplyUndoRedoCommands(undo_redo_model_.Undo());
 }
 

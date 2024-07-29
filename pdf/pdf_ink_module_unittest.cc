@@ -828,6 +828,32 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   EXPECT_EQ(1, client().stroke_finished_count());
 }
 
+TEST_F(PdfInkModuleUndoRedoTest, UndoRedoAnnotationModeDisabled) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  const auto kMatcher =
+      ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints))));
+  EXPECT_THAT(StrokeInputPositions(), kMatcher);
+  EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
+  // RunStrokeCheckTest() performed the only stroke.
+  EXPECT_EQ(1, client().stroke_finished_count());
+
+  // Disable annotation mode. Undo/redo should still work.
+  EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(false)));
+  EXPECT_EQ(false, ink_module().enabled());
+
+  PerformUndo();
+  EXPECT_THAT(StrokeInputPositions(), kMatcher);
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  EXPECT_EQ(1, client().stroke_finished_count());
+
+  PerformRedo();
+  EXPECT_THAT(StrokeInputPositions(), kMatcher);
+  EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
+  EXPECT_EQ(1, client().stroke_finished_count());
+}
+
 TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
