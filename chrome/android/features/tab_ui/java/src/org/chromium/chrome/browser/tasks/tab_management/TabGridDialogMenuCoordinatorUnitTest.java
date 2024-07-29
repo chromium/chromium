@@ -65,7 +65,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
     private static final String EMAIL = "fake@gmail.com";
     private static final Token TAB_GROUP_TOKEN = Token.createRandom();
 
-    /** Overrides {@link #buildMenuItems(boolean, boolean)} to get access to calling it. */
+    /** Overrides {@link #buildMenuActionItems(boolean, boolean)} to get access to calling it. */
     private static class TestMenuCoordinator extends TabGridDialogMenuCoordinator {
         public TestMenuCoordinator(
                 Context context,
@@ -92,8 +92,8 @@ public class TabGridDialogMenuCoordinatorUnitTest {
         }
 
         @Override
-        public ModelList buildMenuItems(boolean isIncognito, boolean shouldShowDeleteGroup) {
-            return super.buildMenuItems(isIncognito, shouldShowDeleteGroup);
+        public ModelList buildMenuActionItems(boolean isIncognito, boolean shouldShowDeleteGroup) {
+            return super.buildMenuActionItems(isIncognito, shouldShowDeleteGroup);
         }
     }
 
@@ -158,7 +158,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         mTabGroupSyncService,
                         mDataSharingService);
         ModelList modelList =
-                testMenuCoordinator.buildMenuItems(
+                testMenuCoordinator.buildMenuActionItems(
                         /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
 
         assertEquals(4, modelList.size());
@@ -183,7 +183,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         /* tabGroupSyncService= */ null,
                         mDataSharingService);
         ModelList modelList =
-                testMenuCoordinator.buildMenuItems(
+                testMenuCoordinator.buildMenuActionItems(
                         /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
 
         assertEquals(4, modelList.size());
@@ -209,7 +209,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         mTabGroupSyncService,
                         mDataSharingService);
         ModelList modelList =
-                testMenuCoordinator.buildMenuItems(
+                testMenuCoordinator.buildMenuActionItems(
                         /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
 
         assertEquals(4, modelList.size());
@@ -235,7 +235,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         mTabGroupSyncService,
                         mDataSharingService);
         ModelList modelList =
-                testMenuCoordinator.buildMenuItems(
+                testMenuCoordinator.buildMenuActionItems(
                         /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
 
         assertEquals(4, modelList.size());
@@ -261,7 +261,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         mTabGroupSyncService,
                         mDataSharingService);
         ModelList modelList =
-                testMenuCoordinator.buildMenuItems(
+                testMenuCoordinator.buildMenuActionItems(
                         /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
 
         assertEquals(4, modelList.size());
@@ -286,7 +286,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         mTabGroupSyncService,
                         mDataSharingService);
         ModelList modelList =
-                testMenuCoordinator.buildMenuItems(
+                testMenuCoordinator.buildMenuActionItems(
                         /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
 
         assertEquals(3, modelList.size());
@@ -334,7 +334,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         mTabGroupSyncService,
                         mDataSharingService);
         ModelList modelList =
-                testMenuCoordinator.buildMenuItems(
+                testMenuCoordinator.buildMenuActionItems(
                         /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
 
         assertEquals(3, modelList.size());
@@ -388,7 +388,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         mTabGroupSyncService,
                         mDataSharingService);
         ModelList modelList =
-                testMenuCoordinator.buildMenuItems(
+                testMenuCoordinator.buildMenuActionItems(
                         /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
 
         assertEquals(3, modelList.size());
@@ -420,7 +420,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         mTabGroupSyncService,
                         mDataSharingService);
         ModelList modelList =
-                testMenuCoordinator.buildMenuItems(
+                testMenuCoordinator.buildMenuActionItems(
                         /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
 
         assertEquals(3, modelList.size());
@@ -465,7 +465,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         mTabGroupSyncService,
                         mDataSharingService);
         ModelList modelList =
-                testMenuCoordinator.buildMenuItems(
+                testMenuCoordinator.buildMenuActionItems(
                         /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
 
         assertEquals(3, modelList.size());

@@ -55,11 +55,18 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             int tabId,
             boolean isIncognito,
             boolean shouldShowDeleteGroup) {
-        super(context, anchorView, onItemClicked, tabId, isIncognito, shouldShowDeleteGroup);
+        super(
+                context,
+                R.layout.tab_switcher_action_menu_layout,
+                anchorView,
+                onItemClicked,
+                tabId,
+                isIncognito,
+                shouldShowDeleteGroup);
     }
 
     @Override
-    protected ModelList buildMenuItems(boolean isIncognito, boolean shouldShowDeleteGroup) {
+    protected ModelList buildMenuActionItems(boolean isIncognito, boolean shouldShowDeleteGroup) {
         ModelList itemList = new ModelList();
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(

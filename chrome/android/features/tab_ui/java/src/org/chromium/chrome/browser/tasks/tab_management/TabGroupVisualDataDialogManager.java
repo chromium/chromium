@@ -131,7 +131,10 @@ public class TabGroupVisualDataDialogManager {
                 new ColorPickerCoordinator(
                         mContext,
                         colors,
-                        R.layout.tab_group_color_picker_container,
+                        LayoutInflater.from(mContext)
+                                .inflate(
+                                        R.layout.tab_group_color_picker_container,
+                                        /* root= */ null),
                         ColorPickerType.TAB_GROUP,
                         /* isIncognito= */ false,
                         ColorPickerLayoutType.DYNAMIC,

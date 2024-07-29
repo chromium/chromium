@@ -380,7 +380,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                 new ColorPickerCoordinator(
                         mActivity,
                         colors,
-                        R.layout.tab_group_color_picker_container,
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.tab_group_color_picker_container, null),
                         ColorPickerType.TAB_GROUP,
                         mModel.get(TabGridDialogProperties.IS_INCOGNITO),
                         ColorPickerLayoutType.DOUBLE_ROW,

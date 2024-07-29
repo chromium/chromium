@@ -124,7 +124,14 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
             @Nullable IdentityManager identityManager,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @Nullable DataSharingService dataSharingService) {
-        super(context, anchorView, onItemClicked, tabId, isIncognito, shouldShowDeleteGroup);
+        super(
+                context,
+                R.layout.tab_switcher_action_menu_layout,
+                anchorView,
+                onItemClicked,
+                tabId,
+                isIncognito,
+                shouldShowDeleteGroup);
         mTabModelSupplier = tabModelSupplier;
         mIdentityManager = identityManager;
         mTabGroupSyncService = tabGroupSyncService;
@@ -132,7 +139,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
     }
 
     @Override
-    protected ModelList buildMenuItems(boolean isIncognito, boolean shouldShowDeleteGroup) {
+    protected ModelList buildMenuActionItems(boolean isIncognito, boolean shouldShowDeleteGroup) {
         ModelList itemList = new ModelList();
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(

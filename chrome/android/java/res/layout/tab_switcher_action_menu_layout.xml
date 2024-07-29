@@ -7,7 +7,7 @@ found in the LICENSE file.
 
 <ListView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/tab_switcher_action_menu_list"
+    android:id="@+id/tab_group_action_menu_list"
     android:paddingTop="8dp"
     android:paddingBottom="8dp"
     android:divider="@android:color/transparent"

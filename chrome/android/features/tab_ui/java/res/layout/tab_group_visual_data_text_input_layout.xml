@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tab_group_title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="16dp"
+    android:hint="@string/title"
+    app:emptyErrorMessage="@string/tab_group_visual_data_missing_title">
+
+  <com.google.android.material.textfield.TextInputEditText
+      android:id="@+id/title_input_text"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:imeOptions="flagNoExtractUi"
+      android:inputType="textCapSentences|textAutoCorrect"
+      android:selectAllOnFocus="true" />
+</org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout>

@@ -16,6 +16,7 @@ import android.widget.ListView;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -60,6 +61,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
      */
     public TabGroupOverflowMenuCoordinator(
             Context context,
+            @LayoutRes int menuLayout,
             View anchorView,
             OnItemClickedCallback onItemClickedCallback,
             int tabId,
@@ -81,16 +83,14 @@ public abstract class TabGroupOverflowMenuCoordinator {
                 };
         mContext.registerComponentCallbacks(mComponentCallbacks);
 
-        final View contentView =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.tab_switcher_action_menu_layout, null);
+        final View contentView = LayoutInflater.from(context).inflate(menuLayout, null);
         setupMenu(contentView, anchorView, isIncognito, shouldShowDeleteGroup);
     }
 
     private void setupMenu(
             View contentView, View anchorView, boolean isIncognito, boolean shouldShowDeleteGroup) {
-        ListView listView = contentView.findViewById(R.id.tab_switcher_action_menu_list);
-        ModelList modelList = buildMenuItems(isIncognito, shouldShowDeleteGroup);
+        ListView listView = contentView.findViewById(R.id.tab_group_action_menu_list);
+        ModelList modelList = buildMenuActionItems(isIncognito, shouldShowDeleteGroup);
 
         ModelListAdapter adapter =
                 new ModelListAdapter(modelList) {
@@ -110,6 +110,9 @@ public abstract class TabGroupOverflowMenuCoordinator {
                     mOnItemClickedCallback.onClick((int) id, mTabId);
                     mMenuWindow.dismiss();
                 });
+
+        // Build custom views, such as the tab group title and color picker.
+        buildCustomView(contentView, isIncognito);
 
         View decorView = ((Activity) contentView.getContext()).getWindow().getDecorView();
         ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
@@ -146,12 +149,23 @@ public abstract class TabGroupOverflowMenuCoordinator {
     }
 
     /**
+     * Implemented in {@link TabGroupContextMenuCoordinator} to initialize the custom view for the
+     * tab group context menu. This method inflates necessary components, including the color picker
+     * and group title text.
+     *
+     * @param contentView The root view of the content where the custom view will be initialized.
+     * @param isIncognito Whether the current tab model is incognito or not.
+     */
+    protected void buildCustomView(View contentView, boolean isIncognito) {}
+
+    /**
      * Concrete class required to define what the ModelList for the menu contains.
      *
      * @param isIncognito Whether the current tab model is incognito or not.
      * @param shouldShowDeleteGroup Whether to show the delete group option.
      */
-    protected abstract ModelList buildMenuItems(boolean isIncognito, boolean shouldShowDeleteGroup);
+    protected abstract ModelList buildMenuActionItems(
+            boolean isIncognito, boolean shouldShowDeleteGroup);
 
     /** Concrete class required to get a specific menu width for the menu pop up window. */
     protected abstract @DimenRes int getMenuWidth();

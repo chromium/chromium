@@ -2170,7 +2170,7 @@ public class TabGridDialogTest {
 
     private void openDialogToolbarMenuAndVerify(ChromeTabbedActivity cta) {
         onView(withId(R.id.toolbar_menu_button)).perform(click());
-        onView(withId(R.id.tab_switcher_action_menu_list))
+        onView(withId(R.id.tab_group_action_menu_list))
                 .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
                 .check(
                         (v, noMatchException) -> {
