@@ -2632,6 +2632,10 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
     if (is_server_auction_) {
       if (saved_response_) {
         CreateBidFromServerResponse();
+        std::move(bidding_and_scoring_phase_callback_)
+            .Run(saved_response_->result == AuctionResult::kSuccess);
+        MaybeCompleteBiddingAndScoringPhase();
+        return;
       }
     } else {
       // If there are no component auctions, request the seller worklet if we
