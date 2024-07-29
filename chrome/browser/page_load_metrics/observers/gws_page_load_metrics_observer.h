@@ -20,6 +20,13 @@ extern const char kHistogramGWSNavigationStartToFirstResponseStart[];
 extern const char kHistogramGWSNavigationStartToFirstLoaderCallback[];
 extern const char kHistogramGWSNavigationStartToOnComplete[];
 
+extern const char kHistogramGWSConnectTimingFirstRequestDomainLookupDelay[];
+extern const char kHistogramGWSConnectTimingFirstRequestConnectDelay[];
+extern const char kHistogramGWSConnectTimingFirstRequestSslDelay[];
+extern const char kHistogramGWSConnectTimingFinalRequestDomainLookupDelay[];
+extern const char kHistogramGWSConnectTimingFinalRequestConnectDelay[];
+extern const char kHistogramGWSConnectTimingFinalRequestSslDelay[];
+
 extern const char kHistogramGWSAFTEnd[];
 extern const char kHistogramGWSAFTStart[];
 

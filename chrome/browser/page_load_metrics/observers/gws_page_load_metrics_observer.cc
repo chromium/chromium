@@ -40,6 +40,20 @@ const char kHistogramGWSNavigationStartToFirstLoaderCallback[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstLoaderCallback";
 const char kHistogramGWSNavigationStartToOnComplete[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToOnComplete";
+
+const char kHistogramGWSConnectTimingFirstRequestDomainLookupDelay[] =
+    HISTOGRAM_PREFIX "ConnectTiming.FirstRequestDomainLookupDelay";
+const char kHistogramGWSConnectTimingFirstRequestConnectDelay[] =
+    HISTOGRAM_PREFIX "ConnectTiming.FirstRequestConnectDelay";
+const char kHistogramGWSConnectTimingFirstRequestSslDelay[] =
+    HISTOGRAM_PREFIX "ConnectTiming.FirstRequestSslDelay";
+const char kHistogramGWSConnectTimingFinalRequestDomainLookupDelay[] =
+    HISTOGRAM_PREFIX "ConnectTiming.FinalRequestDomainLookupDelay";
+const char kHistogramGWSConnectTimingFinalRequestConnectDelay[] =
+    HISTOGRAM_PREFIX "ConnectTiming.FinalRequestConnectDelay";
+const char kHistogramGWSConnectTimingFinalRequestSslDelay[] =
+    HISTOGRAM_PREFIX "ConnectTiming.FinalRequestSslDelay";
+
 const char kHistogramGWSAFTEnd[] = HISTOGRAM_PREFIX "PaintTiming.AFTEnd";
 const char kHistogramGWSAFTStart[] = HISTOGRAM_PREFIX "PaintTiming.AFTStart";
 const char kHistogramGWSFirstContentfulPaint[] =
@@ -213,6 +227,25 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
   PAGE_LOAD_HISTOGRAM(
       internal::kHistogramGWSNavigationStartToFinalLoaderCallback,
       timing.final_loader_callback_time - navigation_start_time);
+
+  PAGE_LOAD_SHORT_HISTOGRAM(
+      internal::kHistogramGWSConnectTimingFirstRequestDomainLookupDelay,
+      timing.first_request_domain_lookup_delay);
+  PAGE_LOAD_SHORT_HISTOGRAM(
+      internal::kHistogramGWSConnectTimingFirstRequestConnectDelay,
+      timing.first_request_connect_delay);
+  PAGE_LOAD_SHORT_HISTOGRAM(
+      internal::kHistogramGWSConnectTimingFirstRequestSslDelay,
+      timing.first_request_ssl_delay);
+  PAGE_LOAD_SHORT_HISTOGRAM(
+      internal::kHistogramGWSConnectTimingFinalRequestDomainLookupDelay,
+      timing.final_request_domain_lookup_delay);
+  PAGE_LOAD_SHORT_HISTOGRAM(
+      internal::kHistogramGWSConnectTimingFinalRequestConnectDelay,
+      timing.final_request_connect_delay);
+  PAGE_LOAD_SHORT_HISTOGRAM(
+      internal::kHistogramGWSConnectTimingFinalRequestSslDelay,
+      timing.final_request_ssl_delay);
 
   // Record trace events according to the navigation milestone.
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
