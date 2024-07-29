@@ -69,6 +69,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, TogglesActionUIState) {
   TabOrganizationService* service =
       tab_search_container()->tab_organization_service_for_testing();
 
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kNone);
   service->OnTriggerOccured(browser());
 
   ASSERT_TRUE(
@@ -92,6 +94,10 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   ASSERT_EQ(service,
             second_search_container->tab_organization_service_for_testing());
 
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kNone);
+  second_search_container->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kNone);
   service->OnTriggerOccured(browser());
 
   EXPECT_TRUE(
@@ -107,6 +113,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   std::unique_ptr<ScopedTabStripModalUI> scoped_tab_strip_modal_ui =
       browser()->tab_strip_model()->ShowModalUI();
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kNone);
   tab_search_container()->ShowTabOrganization();
 
   EXPECT_FALSE(
