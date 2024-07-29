@@ -123,7 +123,6 @@ message ContextRequest {
 
   optional DiagnosticsRequest diagnostics = 1;
   optional SettingsDataRequest settings = 3;
-  optional Action action = 4;
 }
 
 message Turn {
@@ -137,14 +136,20 @@ message SparkyResponse {
   optional Turn latest_reply = 2;
 }
 
+message WebContent {
+  optional string page_contents = 1;
+  optional string page_url = 2;
+}
+
 message SparkyContextData {
+  reserved 8;
+
   optional Task task = 1;
   optional DiagnosticsData diagnostics_data = 2;
   optional SettingsData settings_data = 3;
   repeated Turn conversation = 4;
   optional Image screenshot = 5;
   optional AppsData apps_data = 6;
-  optional ServerConfig server_config = 7;
-  optional string page_contents = 8;
-  optional string page_url = 9;
+  optional WebContent web_contents = 7;
+  optional ServerConfig server_config = 9;
 }
