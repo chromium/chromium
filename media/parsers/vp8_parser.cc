@@ -5,6 +5,11 @@
 // This file contains an implementation of a VP8 raw stream parser,
 // as defined in RFC 6386.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/parsers/vp8_parser.h"
 
 #include <cstring>

@@ -32,6 +32,11 @@
 // view, it will seem that the device has just clogged and stopped requesting
 // data.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/alsa/alsa_output.h"
 
 #include <stddef.h>

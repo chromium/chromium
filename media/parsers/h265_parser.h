@@ -4,6 +4,11 @@
 //
 // This file contains an implementation of an H265 Annex-B video stream parser.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef MEDIA_PARSERS_H265_PARSER_H_
 #define MEDIA_PARSERS_H265_PARSER_H_
 

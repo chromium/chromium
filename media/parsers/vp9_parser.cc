@@ -9,6 +9,11 @@
 //  2 parsing steps
 //  3 parsed values (selected)
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/parsers/vp9_parser.h"
 
 #include <algorithm>

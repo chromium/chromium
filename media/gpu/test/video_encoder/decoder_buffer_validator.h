@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef MEDIA_GPU_TEST_VIDEO_ENCODER_DECODER_BUFFER_VALIDATOR_H_
 #define MEDIA_GPU_TEST_VIDEO_ENCODER_DECODER_BUFFER_VALIDATOR_H_
 
