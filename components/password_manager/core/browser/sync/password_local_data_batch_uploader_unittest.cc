@@ -77,6 +77,7 @@ class PasswordLocalDataBatchUploaderTest : public ::testing::Test {
   }
 
   ~PasswordLocalDataBatchUploaderTest() override {
+    RunUntilIdle();
     account_store_->ShutdownOnUIThread();
     profile_store_->ShutdownOnUIThread();
   }
@@ -282,7 +283,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest, MigrationUploadsLocalPassword) {
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest,
-       MigrationHandlesSimultaneousRequests) {
+       MigrationNoOpsIfOngoingMigrationAlreadyExists) {
   // Add one local password and one account password.
   base::HistogramTester histogram_tester;
   base::test::TestFuture<void> wait_add;
@@ -293,14 +294,15 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   account_store()->AddLogin(account_password, wait_add.GetCallback());
   ASSERT_TRUE(wait_add.WaitAndClear());
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
-
   uploader.TriggerLocalDataMigration();
+  ASSERT_TRUE(uploader.trigger_local_data_migration_ongoing_for_test());
+
+  // A second migration is triggered.
   uploader.TriggerLocalDataMigration();
   RunUntilIdle();
 
   // The first migration should upload the local password, and second migration
-  // should be harmless. The metric behavior is not the best, it records that
-  // a single password was moved twice.
+  // should be ignored.
   EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
   EXPECT_THAT(account_store()->stored_passwords(),
               UnorderedElementsAre(
@@ -308,7 +310,35 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
                        UnorderedElementsAre(MatchesForm(local_password))),
                   Pair(account_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(account_password)))));
-  histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 1, 2);
+  // Only one migration should have been triggered.
+  histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 1, 1);
+}
+
+TEST_F(PasswordLocalDataBatchUploaderTest,
+       DescriptionEmptyIfOngoingMigrationAlreadyExists) {
+  // Add one local password and one account password.
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> wait_add;
+  PasswordForm local_password = CreatePasswordForm("http://local.com");
+  profile_store()->AddLogin(local_password, wait_add.GetCallback());
+  ASSERT_TRUE(wait_add.WaitAndClear());
+  PasswordForm account_password = CreatePasswordForm("http://account.com");
+  account_store()->AddLogin(account_password, wait_add.GetCallback());
+  ASSERT_TRUE(wait_add.WaitAndClear());
+  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
+  uploader.TriggerLocalDataMigration();
+  ASSERT_TRUE(uploader.trigger_local_data_migration_ongoing_for_test());
+
+  // During an ongoing migration, the returned description should be empty.
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+  uploader.GetLocalDataDescription(description.GetCallback());
+
+  EXPECT_EQ(description.Get().item_count, 0u);
+  EXPECT_EQ(description.Get().domain_count, 0u);
+  EXPECT_EQ(description.Get().domains, std::vector<std::string>{});
+
+  // Complete the migration before destroying the uploader to avoid crashes.
+  RunUntilIdle();
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest, MigrationRemovesDuplicate) {

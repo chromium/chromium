@@ -636,8 +636,13 @@ TEST_F(LocalDataMigrationHelperTest, ShouldMovePasswordsToAccountStore) {
   base::HistogramTester histogram_tester;
 
   local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+  EXPECT_EQ(local_data_migration_helper_->GetTypesWithOngoingMigrations(),
+            syncer::ModelTypeSet{syncer::PASSWORDS});
 
   RunAllPendingTasks();
+
+  EXPECT_EQ(local_data_migration_helper_->GetTypesWithOngoingMigrations(),
+            syncer::ModelTypeSet{});
 
   EXPECT_EQ(2, histogram_tester.GetTotalSum("Sync.PasswordsBatchUpload.Count"));
 
@@ -971,6 +976,8 @@ TEST_F(LocalDataMigrationHelperTest, ShouldMoveBookmarksToAccountStore) {
                           GURL("https://www.google.com"));
 
   local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::BOOKMARKS}));
+  EXPECT_EQ(local_data_migration_helper_->GetTypesWithOngoingMigrations(),
+            syncer::ModelTypeSet{});
 
   // -------- The expected merge outcome --------
   // account_bookmark_bar
@@ -1083,11 +1090,17 @@ TEST_F(LocalDataMigrationHelperTest,
 
   // Request #1.
   local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+  EXPECT_EQ(local_data_migration_helper_->GetTypesWithOngoingMigrations(),
+            syncer::ModelTypeSet{syncer::PASSWORDS});
 
   // Request #2.
   local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::BOOKMARKS}));
+  EXPECT_EQ(local_data_migration_helper_->GetTypesWithOngoingMigrations(),
+            syncer::ModelTypeSet{syncer::PASSWORDS});
 
   RunAllPendingTasks();
+  EXPECT_EQ(local_data_migration_helper_->GetTypesWithOngoingMigrations(),
+            syncer::ModelTypeSet{});
 
   // The local data has been moved to the account store/model.
   form.in_store = password_manager::PasswordForm::Store::kAccountStore;
@@ -1121,11 +1134,18 @@ TEST_F(LocalDataMigrationHelperTest, ShouldHandleMultipleRequestsForPasswords) {
 
   // Request #1.
   local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+  EXPECT_EQ(local_data_migration_helper_->GetTypesWithOngoingMigrations(),
+            syncer::ModelTypeSet{syncer::PASSWORDS});
 
   // Request #2.
   local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::PASSWORDS}));
+  EXPECT_EQ(local_data_migration_helper_->GetTypesWithOngoingMigrations(),
+            syncer::ModelTypeSet{syncer::PASSWORDS});
 
   RunAllPendingTasks();
+
+  EXPECT_EQ(local_data_migration_helper_->GetTypesWithOngoingMigrations(),
+            syncer::ModelTypeSet{});
 
   // Passwords have been moved to the account store.
   local_form1.in_store = password_manager::PasswordForm::Store::kAccountStore;
@@ -1157,6 +1177,8 @@ TEST_F(LocalDataMigrationHelperTest, ShouldMoveReadingListToAccountStore) {
 
   local_data_migration_helper_->Run(
       syncer::ModelTypeSet({syncer::READING_LIST}));
+  EXPECT_EQ(local_data_migration_helper_->GetTypesWithOngoingMigrations(),
+            syncer::ModelTypeSet{});
 
   RunAllPendingTasks();
 

@@ -282,6 +282,8 @@ void IOSChromeSyncClient::GetLocalDataDescriptions(
     syncer::ModelTypeSet types,
     base::OnceCallback<void(
         std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback) {
+  types.RemoveAll(
+      local_data_migration_helper_->GetTypesWithOngoingMigrations());
   local_data_query_helper_->Run(types, std::move(callback));
 }
 
