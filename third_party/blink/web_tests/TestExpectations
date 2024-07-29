@@ -5641,8 +5641,6 @@ crbug.com/1456384 external/wpt/event-timing/interactionid-keypress.html [ Failur
 crbug.com/1446711 [ Mac11 Release ] media/controls/playback-speed-menu.html [ Timeout ]
 crbug.com/1446711 [ Mac12 Release ] media/controls/playback-speed-menu.html [ Timeout ]
 crbug.com/1446711 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/accessibility-playback-speed-button.html [ Timeout ]
-crbug.com/1426680 [ Mac13-arm64 ] fast/canvas/OffscreenCanvas-copyImage.html [ Timeout ]
-crbug.com/1426680 [ Mac12-arm64 ] fast/canvas/OffscreenCanvas-copyImage.html [ Timeout ]
 crbug.com/1472813 [ Mac ] virtual/close-watcher/external/wpt/close-watcher/user-activation-shared.html?CloseWatcher [ Timeout ]
 crbug.com/1492172 [ Win ] external/wpt/soft-navigation-heuristics/softnav-before-lcp-paint.tentative.html [ Failure ]
 crbug.com/1491472 [ Mac ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/debugger-pause-on-first-script.js [ Skip Timeout ]
@@ -6372,7 +6370,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] http/tests/devtools/security/origin-group-names-unique.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/fetch/metadata/generated/element-iframe.sub.html [ Skip Timeout ]
-[ Debug Mac13 ] fast/canvas/OffscreenCanvas-copyImage.html [ Skip Timeout ]
 [ Debug Mac13 ] animations/unanimated-style.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/resource-tree/resource-tree-frame-in-crafted-frame.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/text/input-basic-box-appearance-basic.html [ Skip Timeout ]
@@ -7432,9 +7429,6 @@ crbug.com/338299516 fast/forms/color/color-picker-top-left-selection-position-af
 # Flaky test on all builds.
 crbug.com/40279192 external/wpt/event-timing/mouseleave.html [ Failure Pass ]
 
-# Gardener 2024-06-04
-crbug.com/40899458 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
-
 # SVG resource references to html files do not work properly.
 crbug.com/350075019 external/wpt/svg/struct/reftests/use-external-html-resource-with-doctype.html [ Failure ]
 crbug.com/350075019 external/wpt/svg/struct/reftests/use-external-html-resource.html [ Failure ]
@@ -7473,8 +7467,6 @@ crbug.com/349554230 http/tests/devtools/animation/animation-group-matching-anima
 crbug.com/349554230 http/tests/devtools/animation/animation-group-matching-transitions.js [ Failure Skip ]
 crbug.com/349554230 http/tests/devtools/animation/animation-group-matching.js [ Failure Skip ]
 
-crbug.com/40899458 [ Mac14 ] fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass Timeout ]
-
 crbug.com/342438266 external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 crbug.com/342438266 external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 
@@ -7497,9 +7489,6 @@ crbug.com/349938120 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https
 # Gardener 2024-07-11
 crbug.com/352455679 [ Debug Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-focused-nested-containers.html [ Pass Timeout ]
 crbug.com/41490706 [ Linux ] external/wpt/touch-events/multi-touch-interfaces.html [ Failure Pass ]
-
-# Gardener 2024-07-15
-crbug.com/353204670 [ Mac11-arm64 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
 
 # Gardener 2024-07-16
 crbug.com/353392059 [ Linux ] fast/forms/select-popup/select-many-options-hang.html [ Pass Timeout ]
@@ -7528,6 +7517,9 @@ crbug.com/353746882 external/wpt/fs/FileSystemFileHandle-cross-primitive-locking
 crbug.com/40186254 fast/events/touch/gesture/gesture-tap-reset-selection-range.html [ Failure Pass Timeout ]
 crbug.com/40186254 fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined-in-iframe.html [ Failure Pass Timeout ]
 
-# Gardener 2024-07-29 Flaky Linux MSAN failures
+# Gardener 2024-07-29
+# Flaky Linux MSAN failures
 crbug.com/356041709 [ Linux ] http/tests/devtools/elements/highlight/highlight-css-grid-huge.js [ Pass Crash ]
 crbug.com/356041709 [ Linux ] http/tests/devtools/elements/highlight/highlight-css-persistent-grid-huge.js [ Pass Crash ]
+
+crbug.com/40899458 fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass Timeout ]
