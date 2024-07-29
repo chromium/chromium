@@ -56,6 +56,8 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 
 #if !BUILDFLAG(IS_MAC)
 #include "components/prefs/pref_service.h"
@@ -108,9 +110,11 @@ void SetBoundsProperties(const gfx::Rect& bounds,
 
 // Combines the constraints of the content and window, and returns constraints
 // for the window.
-gfx::Size GetCombinedWindowConstraints(const gfx::Size& window_constraints,
-                                       const gfx::Size& content_constraints,
-                                       const gfx::Insets& frame_insets) {
+gfx::Size GetCombinedWindowConstraints(
+    const gfx::Size& window_constraints,
+    const gfx::Size& content_constraints,
+    const gfx::Insets& frame_insets,
+    const gfx::RoundedCornersF& window_radii) {
   gfx::Size combined_constraints(window_constraints);
   if (content_constraints.width() > 0) {
     combined_constraints.set_width(content_constraints.width() +
@@ -120,6 +124,12 @@ gfx::Size GetCombinedWindowConstraints(const gfx::Size& window_constraints,
     combined_constraints.set_height(content_constraints.height() +
                                     frame_insets.height());
   }
+
+  const gfx::Size minimum_size =
+      SizeConstraints::GetMinimumSizeSupportingRoundedCorners(window_radii);
+  combined_constraints.SetSize(
+      std::max(minimum_size.width(), combined_constraints.width()),
+      std::max(minimum_size.height(), combined_constraints.height()));
   return combined_constraints;
 }
 
@@ -180,7 +190,8 @@ AppWindow::CreateParams::CreateParams(const CreateParams& other) = default;
 AppWindow::CreateParams::~CreateParams() = default;
 
 gfx::Rect AppWindow::CreateParams::GetInitialWindowBounds(
-    const gfx::Insets& frame_insets) const {
+    const gfx::Insets& frame_insets,
+    const gfx::RoundedCornersF& window_radii) const {
   // Combine into a single window bounds.
   gfx::Rect combined_bounds(window_spec.bounds);
   if (content_spec.bounds.x() != BoundsSpecification::kUnspecifiedPosition)
@@ -199,9 +210,11 @@ gfx::Rect AppWindow::CreateParams::GetInitialWindowBounds(
   // Constrain the bounds.
   SizeConstraints constraints(
       GetCombinedWindowConstraints(window_spec.minimum_size,
-                                   content_spec.minimum_size, frame_insets),
+                                   content_spec.minimum_size, frame_insets,
+                                   window_radii),
       GetCombinedWindowConstraints(window_spec.maximum_size,
-                                   content_spec.maximum_size, frame_insets));
+                                   content_spec.maximum_size, frame_insets,
+                                   window_radii));
   combined_bounds.set_size(constraints.ClampSize(combined_bounds.size()));
 
   return combined_bounds;
@@ -220,15 +233,19 @@ gfx::Size AppWindow::CreateParams::GetContentMaximumSize(
 }
 
 gfx::Size AppWindow::CreateParams::GetWindowMinimumSize(
-    const gfx::Insets& frame_insets) const {
+    const gfx::Insets& frame_insets,
+    const gfx::RoundedCornersF& window_radii) const {
   return GetCombinedWindowConstraints(window_spec.minimum_size,
-                                      content_spec.minimum_size, frame_insets);
+                                      content_spec.minimum_size, frame_insets,
+                                      window_radii);
 }
 
 gfx::Size AppWindow::CreateParams::GetWindowMaximumSize(
-    const gfx::Insets& frame_insets) const {
+    const gfx::Insets& frame_insets,
+    const gfx::RoundedCornersF& window_radii) const {
   return GetCombinedWindowConstraints(window_spec.maximum_size,
-                                      content_spec.maximum_size, frame_insets);
+                                      content_spec.maximum_size, frame_insets,
+                                      window_radii);
 }
 
 // AppWindow
@@ -776,12 +793,13 @@ void AppWindow::GetSerializedState(base::Value::Dict* properties) const {
                       "innerBounds", properties);
 
   gfx::Insets frame_insets = native_app_window_->GetFrameInsets();
-  gfx::Rect frame_bounds = native_app_window_->GetBounds();
-  gfx::Size frame_min_size =
-      SizeConstraints::AddFrameToConstraints(content_min_size, frame_insets);
-  gfx::Size frame_max_size =
-      SizeConstraints::AddFrameToConstraints(content_max_size, frame_insets);
-  SetBoundsProperties(frame_bounds, frame_min_size, frame_max_size,
+  gfx::RoundedCornersF window_radii = native_app_window_->GetWindowRadii();
+  gfx::Rect window_bounds = native_app_window_->GetBounds();
+  gfx::Size window_min_size = SizeConstraints::AddWindowToConstraints(
+      content_min_size, frame_insets, window_radii);
+  gfx::Size window_max_size = SizeConstraints::AddWindowToConstraints(
+      content_max_size, frame_insets, window_radii);
+  SetBoundsProperties(window_bounds, window_min_size, window_max_size,
                       "outerBounds", properties);
 }
 
@@ -1048,8 +1066,9 @@ AppWindow::CreateParams AppWindow::LoadDefaults(CreateParams params) const {
       display::Screen* screen = display::Screen::GetScreen();
       display::Display display = screen->GetDisplayMatching(cached_bounds);
       gfx::Rect current_screen_bounds = display.work_area();
-      SizeConstraints constraints(params.GetWindowMinimumSize(gfx::Insets()),
-                                  params.GetWindowMaximumSize(gfx::Insets()));
+      SizeConstraints constraints(
+          params.GetWindowMinimumSize(gfx::Insets(), gfx::RoundedCornersF()),
+          params.GetWindowMaximumSize(gfx::Insets(), gfx::RoundedCornersF()));
       AdjustBoundsToBeVisibleOnScreen(
           cached_bounds, cached_screen_bounds, current_screen_bounds,
           constraints.GetMinimumSize(), &params.window_spec.bounds);

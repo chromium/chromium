@@ -29,6 +29,7 @@ enum class TabletState;
 
 namespace gfx {
 class ImageSkia;
+class RoundedCornersF;
 }
 
 namespace ui {
@@ -63,12 +64,10 @@ class ChromeNativeAppWindowViewsAuraAsh
   ~ChromeNativeAppWindowViewsAuraAsh() override;
 
  protected:
-  // NativeAppWindowViews:
+  // ChromeNativeAppWindowViewsAura:
   void InitializeWindow(
       extensions::AppWindow* app_window,
       const extensions::AppWindow::CreateParams& create_params) override;
-
-  // ChromeNativeAppWindowViews:
   void OnBeforeWidgetInit(
       const extensions::AppWindow::CreateParams& create_params,
       views::Widget::InitParams* init_params,
@@ -77,6 +76,7 @@ class ChromeNativeAppWindowViewsAuraAsh
       override;
   bool ShouldRemoveStandardFrame() override;
   void EnsureAppIconCreated() override;
+  gfx::RoundedCornersF GetWindowRadii() const override;
 
   // ui::BaseWindow:
   gfx::Rect GetRestoredBounds() const override;

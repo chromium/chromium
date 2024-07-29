@@ -25,7 +25,6 @@
 #include "extensions/common/mojom/frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "ui/base/ui_base_types.h"  // WindowShowState
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
 class GURL;
@@ -33,7 +32,12 @@ class SkRegion;
 
 namespace base {
 class Value;
-}
+}  // namespace base
+
+namespace gfx {
+class Rect;
+class RoundedCornersF;
+}  // namespace gfx
 
 namespace content {
 class BrowserContext;
@@ -203,15 +207,21 @@ class AppWindow : public content::WebContentsDelegate,
 
     // The API enables developers to specify content or window bounds. This
     // function combines them into a single, constrained window size.
-    gfx::Rect GetInitialWindowBounds(const gfx::Insets& frame_insets) const;
+    gfx::Rect GetInitialWindowBounds(
+        const gfx::Insets& frame_insets,
+        const gfx::RoundedCornersF& window_radii) const;
 
     // The API enables developers to specify content or window size constraints.
     // These functions combine them so that we can work with one set of
     // constraints.
     gfx::Size GetContentMinimumSize(const gfx::Insets& frame_insets) const;
     gfx::Size GetContentMaximumSize(const gfx::Insets& frame_insets) const;
-    gfx::Size GetWindowMinimumSize(const gfx::Insets& frame_insets) const;
-    gfx::Size GetWindowMaximumSize(const gfx::Insets& frame_insets) const;
+    gfx::Size GetWindowMinimumSize(
+        const gfx::Insets& frame_insets,
+        const gfx::RoundedCornersF& window_radii) const;
+    gfx::Size GetWindowMaximumSize(
+        const gfx::Insets& frame_insets,
+        const gfx::RoundedCornersF& window_radii) const;
   };
 
   // Convert draggable regions in raw format to SkRegion format. Caller is

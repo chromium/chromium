@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
@@ -38,8 +39,8 @@ ShellNativeAppWindowMac::ShellNativeAppWindowMac(
     AppWindow* app_window,
     const AppWindow::CreateParams& params)
     : ShellNativeAppWindow(app_window, params) {
-  NSRect cocoa_bounds =
-      gfx::ScreenRectToNSRect(params.GetInitialWindowBounds(gfx::Insets()));
+  NSRect cocoa_bounds = gfx::ScreenRectToNSRect(
+      params.GetInitialWindowBounds(gfx::Insets(), gfx::RoundedCornersF()));
 
   // TODO(yoz): Do we need to handle commands (keyboard shortcuts)?
   // Do we need need ChromeEventProcessingWindow?

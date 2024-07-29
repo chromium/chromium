@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/base_window.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 class SkRegion;
 
@@ -73,6 +74,9 @@ class NativeAppWindow : public ui::BaseWindow,
   // Returns the difference between the window bounds (including titlebar and
   // borders) and the content bounds, if any.
   virtual gfx::Insets GetFrameInsets() const = 0;
+
+  // Returns the radii of the window's corners.
+  virtual gfx::RoundedCornersF GetWindowRadii() const = 0;
 
   // Returns the minimum size constraints of the content.
   virtual gfx::Size GetContentMinimumSize() const = 0;
