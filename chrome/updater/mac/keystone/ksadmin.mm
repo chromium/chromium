@@ -790,6 +790,7 @@ void KSAdminApp::FirstTaskRun() {
     if (setuid(0) || setgid(0)) {
       LOG(ERROR) << "Can't setuid()/setgid() appropriately.";
       Shutdown(1);
+      return;
     }
   }
   const std::map<std::string, void (KSAdminApp::*)()> commands = {
