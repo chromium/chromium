@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.browser_controls;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -49,6 +51,35 @@ public class BottomControlsStackerUnitTest {
                 ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching, "false");
         testValues.addFeatureFlagOverride(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, true);
         FeatureList.setTestValues(testValues);
+    }
+
+    @Test
+    public void testHasVisibleLayersOtherThan() {
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        10,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        assertFalse(
+                "Only the bottom layer is currently showing.",
+                mBottomControlsStacker.hasVisibleLayersOtherThan(bottom.mType));
+
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        10,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        assertTrue(
+                "Not just the bottom layer is showing, the top layer is also showing.",
+                mBottomControlsStacker.hasVisibleLayersOtherThan(bottom.mType));
     }
 
     // Visibility

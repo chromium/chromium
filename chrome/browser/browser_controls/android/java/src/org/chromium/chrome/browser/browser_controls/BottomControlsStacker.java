@@ -129,11 +129,11 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     /**
      * Checks whether there are any layers that are currently visible besides the specified type.
      */
-    public boolean hasVisibleLayersOtherThan(@LayerType int type) {
+    public boolean hasVisibleLayersOtherThan(@LayerType int typeToExclude) {
         for (int layerType : STACK_ORDER) {
-            if (type == layerType) continue;
+            if (typeToExclude == layerType) continue;
 
-            if (mLayerVisibilities.get(type)) return true;
+            if (mLayerVisibilities.get(layerType)) return true;
         }
         return false;
     }
