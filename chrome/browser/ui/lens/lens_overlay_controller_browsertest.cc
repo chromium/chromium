@@ -333,10 +333,11 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       lens::mojom::CenterRotatedBoxPtr region,
       const std::string& query_text,
       lens::LensOverlaySelectionType multimodal_selection_type,
-      std::map<std::string, std::string> additional_search_query_params)
-      override {
+      std::map<std::string, std::string> additional_search_query_params,
+      std::optional<SkBitmap> region_bitmap) override {
     Reset();
     last_queried_region_ = region.Clone();
+    last_queried_region_bytes_ = region_bitmap;
     last_queried_text_ = query_text;
     last_lens_selection_type_ = multimodal_selection_type;
   }
@@ -1041,9 +1042,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
   controller->ShowUIWithPendingRegion(LensOverlayInvocationSource::kAppMenu,
-                                      kTestRegion->Clone(),
-                                      CreateNonEmptyBitmap(100, 100));
+                                      kTestRegion->Clone(), initial_bitmap);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlayAndResults; }));
@@ -1059,8 +1060,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(fake_controller);
   EXPECT_EQ(kTestRegion,
             fake_controller->fake_overlay_page_.post_region_selection_);
+
   auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
       controller->get_lens_overlay_query_controller_for_testing());
+  EXPECT_TRUE(fake_query_controller->last_queried_region_bytes_);
+  EXPECT_TRUE(
+      memcmp(fake_query_controller->last_queried_region_bytes_->getPixels(),
+             initial_bitmap.getPixels(),
+             initial_bitmap.computeByteSize()) == 0);
+  EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->width(), 100);
+  EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->height(), 100);
   EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
             lens::INJECTED_IMAGE);
 }
@@ -2378,9 +2387,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
   controller->ShowUIWithPendingRegion(
       LensOverlayInvocationSource::kContentAreaContextMenuImage,
-      kTestRegion->Clone(), CreateNonEmptyBitmap(100, 100));
+      kTestRegion->Clone(), initial_bitmap);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlayAndResults; }));
@@ -2482,12 +2492,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   controller->PopAndLoadQueryFromHistory();
 
   // Verify the new interaction request was sent.
-  // TODO(b/348003311): Add support for sending the selected region bitmap
-  // in the multimodal request.
   EXPECT_EQ(controller->get_selected_region_for_testing(), kTestRegion);
   EXPECT_FALSE(controller->get_selected_text_for_region());
   EXPECT_EQ(fake_query_controller->last_queried_region_, kTestRegion);
-  EXPECT_FALSE(fake_query_controller->last_queried_region_bytes_);
+  EXPECT_TRUE(fake_query_controller->last_queried_region_bytes_);
+  EXPECT_TRUE(
+      memcmp(fake_query_controller->last_queried_region_bytes_->getPixels(),
+             initial_bitmap.getPixels(),
+             initial_bitmap.computeByteSize()) == 0);
+  EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->width(), 100);
+  EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->height(), 100);
   EXPECT_EQ(fake_query_controller->last_queried_text_, "green");
   EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
             lens::MULTIMODAL_SEARCH);
@@ -2508,6 +2522,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(controller->get_selected_text_for_region());
   EXPECT_EQ(fake_query_controller->last_queried_region_, kTestRegion);
   EXPECT_TRUE(fake_query_controller->last_queried_region_bytes_);
+  EXPECT_TRUE(
+      memcmp(fake_query_controller->last_queried_region_bytes_->getPixels(),
+             initial_bitmap.getPixels(),
+             initial_bitmap.computeByteSize()) == 0);
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->width(), 100);
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->height(), 100);
   EXPECT_TRUE(fake_query_controller->last_queried_text_.empty());
