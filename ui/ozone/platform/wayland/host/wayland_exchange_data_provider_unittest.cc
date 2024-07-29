@@ -28,13 +28,8 @@ namespace {
 
 template <typename StringType>
 PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
-  base::span<const typename StringType::value_type> data_span(data_string);
-  std::vector<uint8_t> result(data_span.size() *
-                              sizeof(typename StringType::value_type));
-  std::memcpy(result.data(), data_span.data(), result.size());
-
-  return static_cast<scoped_refptr<base::RefCountedBytes>>(
-      base::RefCountedBytes::TakeVector(&result));
+  return base::MakeRefCounted<base::RefCountedBytes>(
+      base::as_byte_span(data_string));
 }
 }  // namespace
 
