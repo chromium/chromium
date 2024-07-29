@@ -5340,7 +5340,7 @@
   {
     "name": "intents-on-measurements",
     "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 128
+    "expiry_milestone": 132
   },
   {
     "name": "intents-on-viewport",
