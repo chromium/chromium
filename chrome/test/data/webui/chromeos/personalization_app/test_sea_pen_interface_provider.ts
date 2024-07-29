@@ -100,6 +100,8 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
 
   shouldShowSeaPenIntroductionDialogResponse = true;
 
+  isInTabletModeResponse = false;
+
   constructor() {
     super([
       'setSeaPenObserver',
@@ -111,6 +113,8 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
       'deleteRecentSeaPenImage',
       'shouldShowSeaPenIntroductionDialog',
       'handleSeaPenIntroductionDialogClosed',
+      'isInTabletMode',
+      'makeTransparent',
     ]);
   }
 
@@ -177,5 +181,14 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
   handleSeaPenIntroductionDialogClosed() {
     this.methodCalled('handleSeaPenIntroductionDialogClosed');
     this.shouldShowSeaPenIntroductionDialogResponse = false;
+  }
+
+  isInTabletMode() {
+    this.methodCalled('isInTabletMode');
+    return Promise.resolve({tabletMode: this.isInTabletModeResponse});
+  }
+
+  makeTransparent() {
+    this.methodCalled('makeTransparent');
   }
 }

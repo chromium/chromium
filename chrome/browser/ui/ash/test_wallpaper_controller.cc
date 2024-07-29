@@ -208,6 +208,7 @@ bool TestWallpaperController::SetThirdPartyWallpaper(
 void TestWallpaperController::SetSeaPenWallpaper(
     const AccountId& account_id,
     const uint32_t image_id,
+    bool preview_mode,
     SetWallpaperCallback callback) {
   ++sea_pen_wallpaper_count_;
 

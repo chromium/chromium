@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
+
 import {QUERY, SeaPenImageId} from './constants.js';
+import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
 import {MantaStatusCode, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import * as seaPenAction from './sea_pen_actions.js';
 import {logSeaPenImageSet} from './sea_pen_metrics_logger.js';
@@ -24,14 +27,26 @@ export async function selectRecentSeaPenImage(
   store.dispatch(seaPenAction.beginLoadSelectedRecentSeaPenImageAction());
   store.endBatchUpdate();
 
-  const {success} = await provider.selectRecentSeaPenImage(id);
+  let shouldPreview: boolean =
+      isPersonalizationApp() && isSeaPenTextInputEnabled();
+  if (shouldPreview) {
+    // Should show fullscreen preview only on tablet mode.
+    const {tabletMode} = await provider.isInTabletMode();
+    shouldPreview = tabletMode;
+  }
+  if (shouldPreview) {
+    provider.makeTransparent();
+    store.dispatch(seaPenAction.setSeaPenFullscreenStateAction(
+        FullscreenPreviewState.LOADING));
+  }
+  const {success} = await provider.selectRecentSeaPenImage(id, shouldPreview);
 
   store.beginBatchUpdate();
   store.dispatch(seaPenAction.endSelectRecentSeaPenImageAction(id, success));
   if (!success) {
     console.warn('Error setting image');
-  }
-  if (!success) {
+    store.dispatch(seaPenAction.setSeaPenFullscreenStateAction(
+        FullscreenPreviewState.OFF));
     // Revert back to the old one.
     store.dispatch(seaPenAction.setSelectedRecentSeaPenImageAction(
         store.data.currentSelected));

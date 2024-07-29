@@ -131,7 +131,7 @@ class MockSeaPenProvider
               (override));
   MOCK_METHOD(void,
               SelectRecentSeaPenImage,
-              (uint32_t id, SelectRecentSeaPenImageCallback),
+              (uint32_t id, bool preview_mode, SelectRecentSeaPenImageCallback),
               (override));
   MOCK_METHOD(void,
               GetRecentSeaPenImageIds,
@@ -154,6 +154,11 @@ class MockSeaPenProvider
               (ShouldShowSeaPenIntroductionDialogCallback callback),
               (override));
   MOCK_METHOD(void, HandleSeaPenIntroductionDialogClosed, (), (override));
+  MOCK_METHOD(void,
+              IsInTabletMode,
+              (IsInTabletModeCallback callback),
+              (override));
+  MOCK_METHOD(void, MakeTransparent, (), (override));
 };
 
 class MockPersonalizationAppThemeProvider

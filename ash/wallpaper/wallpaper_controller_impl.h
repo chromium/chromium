@@ -294,6 +294,7 @@ class ASH_EXPORT WallpaperControllerImpl
                               const gfx::ImageSkia& image) override;
   void SetSeaPenWallpaper(const AccountId& account_id,
                           uint32_t image_id,
+                          bool preview_mode,
                           SetWallpaperCallback callback) override;
   void ConfirmPreviewWallpaper() override;
   void CancelPreviewWallpaper() override;
@@ -580,12 +581,14 @@ class ASH_EXPORT WallpaperControllerImpl
   // immediately if `account_id` is for the active user.
   void OnSeaPenWallpaperDecoded(const AccountId& account_id,
                                 uint32_t sea_pen_image_id,
+                                bool preview_mode,
                                 SetWallpaperCallback callback,
                                 const gfx::ImageSkia& image_skia);
 
   void OnSeaPenWallpaperSavedToPublic(const AccountId& account_id,
                                       const gfx::ImageSkia& image_skia,
                                       uint32_t sea_pen_image_id,
+                                      bool preview_mode,
                                       SetWallpaperCallback callback,
                                       const base::FilePath& file_path);
 
