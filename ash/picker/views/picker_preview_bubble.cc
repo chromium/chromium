@@ -77,6 +77,9 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
       std::make_unique<views::BoxLayout>(views::LayoutOrientation::kVertical))
       ->set_cross_axis_alignment(views::LayoutAlignment::kStretch);
   SetCanActivate(false);
+  // Ignore this bubble for accessibility purposes. The contents of the preview
+  // bubble are announced via the item view that triggered the bubble.
+  SetAccessibleWindowRole(ax::mojom::Role::kNone);
 
   views::Builder<PickerPreviewBubbleView>(this)
       .set_margins(kMargins)
