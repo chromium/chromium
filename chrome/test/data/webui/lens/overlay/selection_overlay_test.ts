@@ -292,6 +292,35 @@ suite('SelectionOverlay', function() {
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
       });
 
+  test(
+      `verify that adding text after region selection triggers detected text context menu`,
+      async () => {
+        callbackRouterRemote.setPostRegionSelection({
+          box: normalizedBox({x: 65, y: 25, width: 30, height: 30}),
+          rotation: 0.0,
+          coordinateType: 1,
+        });
+
+        await addWords();
+
+        assertEquals(
+            0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+        assertEquals(
+            0,
+            testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
+        assertTrue(
+            selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+
+        testBrowserProxy.handler.reset();
+        selectionOverlayElement.handleSelectTextForTesting();
+
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertDeepEquals('there test', textQuery);
+        assertEquals(
+            0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+      });
+
   test('verify that detected text context menu works', async () => {
     await addWords();
 
