@@ -48,6 +48,7 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -368,6 +369,16 @@ void OidcAuthenticationSigninInterceptor::OnClientRegistered(
   // IsDasherlessManagement is replaced with an Enum.
   dasher_based_ = !kOidcAuthIsDasherBased.Get() ? kOidcAuthIsDasherBased.Get()
                                                 : !is_dasherless_client;
+
+  // TODO(b/355270189): The interaction between OIDC profiles and BrowserSignin
+  // policy should be finalized, this check only prevents Chrome from crashing.
+  if (dasher_based_ &&
+      !profile_->GetPrefs()->GetBoolean(prefs::kSigninAllowedOnNextStartup)) {
+    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
+        << "Google-synced OIDC profile can't be created because browser sign "
+           "in is disabled.";
+    return HandleError(OidcInterceptionResult::kInvalidProfile);
+  }
 
   RecordOidcEnrollmentRegistrationLatency(
       dasher_based_, /*success=*/true,
