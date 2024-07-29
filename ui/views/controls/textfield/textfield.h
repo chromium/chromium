@@ -713,6 +713,8 @@ class VIEWS_EXPORT Textfield : public View,
 
   void StopSelectionDragging();
 
+  void UpdateAccessibleDefaultActionVerb();
+
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   // Calculate widths for each grapheme and word starts and ends. Used for
   // accessibility. Currently only on Windows when UIA is enabled.

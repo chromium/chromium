@@ -5358,6 +5358,26 @@ TEST_F(TextfieldTest, AccessibleTextDirectionRTL) {
             static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
 }
 
+TEST_F(TextfieldTest, AccessibleDefaultActionVerb) {
+  InitTextfield();
+  ui::AXNodeData data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kActivate);
+
+  data = ui::AXNodeData();
+  textfield_->SetEnabled(false);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+
+  data = ui::AXNodeData();
+  textfield_->SetEnabled(true);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kActivate);
+}
+
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 TEST_F(TextfieldTest, WordOffsets) {
   base::test::ScopedFeatureList scoped_feature_list;

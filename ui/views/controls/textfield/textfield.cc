@@ -268,6 +268,7 @@ Textfield::Textfield()
   // accessibility trees of all the platforms we support.
   GetViewAccessibility().SetIsLeaf(true);
   UpdateAccessibilityTextDirection();
+  UpdateAccessibleDefaultActionVerb();
 }
 
 Textfield::~Textfield() {
@@ -1050,9 +1051,6 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Editable state indicates support of editable interface, and is always set
   // for a textfield, even if disabled or readonly.
   node_data->AddState(ax::mojom::State::kEditable);
-  if (GetEnabled()) {
-    node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kActivate);
-  }
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
     node_data->SetValue(std::u16string(
         GetText().size(), gfx::RenderText::kPasswordReplacementChar));
@@ -3027,6 +3025,7 @@ void Textfield::OnEnabledChanged() {
   if (GetEnabled() && GetReadOnly()) {
     GetViewAccessibility().SetReadOnly(true);
   }
+  UpdateAccessibleDefaultActionVerb();
 }
 
 void Textfield::DropDraggedText(
@@ -3232,6 +3231,15 @@ void Textfield::StopSelectionDragging() {
   }
   selection_dragging_state_ = SelectionDraggingState::kNone;
   selection_drag_type_ = std::nullopt;
+}
+
+void Textfield::UpdateAccessibleDefaultActionVerb() {
+  if (GetEnabled()) {
+    GetViewAccessibility().SetDefaultActionVerb(
+        ax::mojom::DefaultActionVerb::kActivate);
+  } else {
+    GetViewAccessibility().RemoveDefaultActionVerb();
+  }
 }
 
 BEGIN_METADATA(Textfield)
