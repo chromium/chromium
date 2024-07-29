@@ -77,10 +77,11 @@ class TabStripController {
   virtual void AddSelectionFromAnchorTo(int index) = 0;
 
   // Prepares to close a tab. If closing the tab might require (for example) a
-  // user prompt, triggers that prompt and returns false, indicating that the
-  // current close operation should not proceed. If this method returns true,
-  // closing can proceed.
-  virtual bool BeforeCloseTab(int index, CloseTabSource source) = 0;
+  // user prompt, triggers that prompt passing in the callback ownership to it.
+  // Otherwise it runs the callback.
+  virtual void OnCloseTab(int index,
+                          CloseTabSource source,
+                          base::OnceCallback<void()> callback) = 0;
 
   // Closes the tab at the specified index in the model.
   virtual void CloseTab(int index) = 0;

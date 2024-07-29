@@ -320,3 +320,48 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(group_model->ContainsTabGroup(group_list[0]));
   EXPECT_EQ(1, tsm->count());
 }
+
+IN_PROC_BROWSER_TEST_F(
+    TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2,
+    CloseGroupedTab) {
+  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
+  InProcessBrowserTest::AddBlankTabAndShow(browser());
+  InProcessBrowserTest::AddBlankTabAndShow(browser());
+
+  TabStripModel* tsm = browser()->tab_strip_model();
+  ASSERT_EQ(3, tsm->count());
+  tsm->AddToNewGroup({0});
+  browser_view->tabstrip()->CloseTab(browser_view->tabstrip()->tab_at(0),
+                                     CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+
+  tab_groups::DeletionDialogController* deletion_dialog_controller =
+      browser_view->browser()->tab_group_deletion_dialog_controller();
+
+  EXPECT_TRUE(deletion_dialog_controller->IsShowingDialog());
+
+  deletion_dialog_controller->SimulateOkButtonForTesting();
+
+  EXPECT_FALSE(deletion_dialog_controller->IsShowingDialog());
+  EXPECT_EQ(2, tsm->count());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2,
+    CloseGroupedTabWithPreventShowDialog) {
+  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
+  InProcessBrowserTest::AddBlankTabAndShow(browser());
+  InProcessBrowserTest::AddBlankTabAndShow(browser());
+
+  tab_groups::DeletionDialogController* deletion_dialog_controller =
+      browser_view->browser()->tab_group_deletion_dialog_controller();
+  deletion_dialog_controller->SetPrefsPreventShowingDialogForTesting(true);
+
+  TabStripModel* tsm = browser()->tab_strip_model();
+  ASSERT_EQ(3, tsm->count());
+  tsm->AddToNewGroup({0});
+  browser_view->tabstrip()->CloseTab(browser_view->tabstrip()->tab_at(0),
+                                     CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+
+  EXPECT_FALSE(deletion_dialog_controller->IsShowingDialog());
+  EXPECT_EQ(2, tsm->count());
+}

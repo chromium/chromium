@@ -325,10 +325,12 @@ void BrowserTabStripController::AddSelectionFromAnchorTo(int model_index) {
   model_->AddSelectionFromAnchorTo(model_index);
 }
 
-bool BrowserTabStripController::BeforeCloseTab(int model_index,
-                                               CloseTabSource source) {
+void BrowserTabStripController::OnCloseTab(
+    int model_index,
+    CloseTabSource source,
+    base::OnceCallback<void()> callback) {
   if (!web_app::IsTabClosable(model_, model_index)) {
-    return false;
+    return;
   }
 
   // Only consider pausing the close operation if this is the last remaining
@@ -347,7 +349,7 @@ bool BrowserTabStripController::BeforeCloseTab(int model_index,
             base::Unretained(tabstrip_), model_index, source));
 
     if (result != Browser::WarnBeforeClosingResult::kOkToClose) {
-      return false;
+      return;
     }
   }
 
@@ -359,21 +361,13 @@ bool BrowserTabStripController::BeforeCloseTab(int model_index,
     // If the user is destroying the last tab in the group via the tabstrip, a
     // dialog is shown that will decide whether to destroy the tab or not. It
     // will first ungroup the tab, then close the tab.
-    base::OnceCallback<void()> callback = base::BindOnce(
-        [](TabStrip* tab_strip, TabStripModel* model, int index,
-           CloseTabSource source) {
-          // Closing the last tab in a group also closes the group for us.
-          tab_strip->CloseTab(tab_strip->tab_at(index), source);
-        },
-        base::Unretained(tabstrip_), base::Unretained(model_), model_index,
-        source);
-
-    return tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
+    tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
         browser_view_->browser(),
         tab_groups::DeletionDialogController::DialogType::CloseTabAndDelete,
         groups_to_delete, std::move(callback));
+  } else {
+    std::move(callback).Run();
   }
-  return true;
 }
 
 void BrowserTabStripController::CloseTab(int model_index) {

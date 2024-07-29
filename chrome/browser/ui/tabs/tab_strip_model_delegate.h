@@ -189,15 +189,13 @@ class TabStripModelDelegate {
   // When performing actions to groups, some features may need to show
   // interstitials before allowing deletion. |groups| is a list of all of the
   // groups that would be Closed by the |callback| which may be called by the
-  // implementation. A return value of true means that deletion can continue
-  // synchronously. A return value of false means that an asynchronous action is
-  // taking place, and whatever process of destroying groups should be stopped.
-  // The callback will not be called if the process returns true.
-  virtual bool ConfirmDestroyingGroups(
+  // implementation. This should be called with a non empty `group_ids`.
+  // callback will either be executed by the delegate or asynchronously handled.
+  virtual void OnGroupsDestruction(
       const std::vector<tab_groups::TabGroupId>& group_ids,
       base::OnceCallback<void()> callback) = 0;
 
-  virtual bool ConfirmRemovingAllTabsFromGroups(
+  virtual void OnRemovingAllTabsFromGroups(
       const std::vector<tab_groups::TabGroupId>& group_ids,
       base::OnceCallback<void()> callback) = 0;
 };
