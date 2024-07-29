@@ -31,8 +31,9 @@ class BackgroundHeaderTest : public ExtensionBrowserTest {
   }
 
   GURL GetSecFetchUrl(const std::string& hostname) {
-    if (hostname.empty())
+    if (hostname.empty()) {
       return https_test_server_.GetURL("/echoheader?sec-fetch-site");
+    }
     return https_test_server_.GetURL(hostname, "/echoheader?sec-fetch-site");
   }
 

@@ -193,8 +193,9 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
 
   void CreateExtensionService(bool extensions_enabled) {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    if (!extensions_enabled)
+    if (!extensions_enabled) {
       command_line.AppendSwitch(::switches::kDisableExtensions);
+    }
     extensions::TestExtensionSystem* test_ext_system =
         static_cast<extensions::TestExtensionSystem*>(
             extensions::ExtensionSystem::Get(profile()));
@@ -217,8 +218,9 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
         kExtensionId1, ExtensionDownloaderDelegate::Stage::MANIFEST_LOADED);
     install_stage_tracker()->ReportDownloadingStage(
         kExtensionId1, ExtensionDownloaderDelegate::Stage::DOWNLOADING_CRX);
-    if (install_time)
+    if (install_time) {
       task_environment_.FastForwardBy(install_time.value());
+    }
     install_stage_tracker()->ReportDownloadingStage(
         kExtensionId1, ExtensionDownloaderDelegate::Stage::FINISHED);
     install_stage_tracker()->ReportInstallationStage(

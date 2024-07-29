@@ -34,10 +34,11 @@ const char kTooManyMenuItems[] =
     "An extension can create a maximum of * menu items.";
 
 std::string GetIDString(const MenuItem::Id& id) {
-  if (id.uid == 0)
+  if (id.uid == 0) {
     return id.string_uid;
-  else
+  } else {
     return base::NumberToString(id.uid);
+  }
 }
 
 MenuItem* GetParent(MenuItem::Id parent_id,

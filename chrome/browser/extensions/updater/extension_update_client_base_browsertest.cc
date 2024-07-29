@@ -221,8 +221,9 @@ ExtensionUpdateClientBaseTest::WaitOnComponentUpdaterCompleteEvent(
 
 bool ExtensionUpdateClientBaseTest::OnRequest(
     content::URLLoaderInterceptor::RequestParams* params) {
-  if (params->url_request.url.host() != "localhost")
+  if (params->url_request.url.host() != "localhost") {
     return false;
+  }
 
   get_interceptor_count_++;
   return callback_ && callback_.Run(params);

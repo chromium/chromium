@@ -262,8 +262,9 @@ void TestInitFromValue(content::BrowserContext* browser_context,
   bool actual_return_code =
       GenerateInfoSpec(browser_context, values, &actual_info_spec);
   EXPECT_EQ(expected_return_code, actual_return_code);
-  if (expected_return_code)
+  if (expected_return_code) {
     EXPECT_EQ(expected_extra_info_spec, actual_info_spec);
+  }
 }
 
 }  // namespace

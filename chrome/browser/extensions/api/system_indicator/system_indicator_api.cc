@@ -42,8 +42,9 @@ ExtensionFunction::ResponseAction SystemIndicatorSetIconFunction::Run() {
         ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon) ==
         ExtensionAction::IconParseResult::kSuccess);
 
-    if (icon.isNull())
+    if (icon.isNull()) {
       return RespondNow(Error("Icon invalid."));
+    }
 
     SystemIndicatorManagerFactory::GetForContext(browser_context())
         ->SetSystemIndicatorDynamicIcon(*extension(), gfx::Image(icon));
