@@ -7,29 +7,9 @@
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies_prefs.h"
+#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-namespace {
-
-base::Value::List CreateStringListValueForTest(
-    const std::vector<std::string>& items) {
-  base::Value::List list;
-  for (const auto& item : items) {
-    list.Append(item);
-  }
-  return list;
-}
-
-base::Value::Dict CreatePolicyEntry(const std::string& extension,
-                                    const std::vector<std::string>& domains) {
-  base::Value::Dict out;
-  out.Set("file_extension", base::Value{extension});
-  out.Set("domains", CreateStringListValueForTest(domains));
-  return out;
-}
-
-}  // namespace
 
 namespace safe_browsing::file_type {
 class FileTypePoliciesPolicyUtilTest
@@ -63,7 +43,8 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListIsIgnoredIfNoValuesSet) {
 TEST_F(FileTypePoliciesPolicyUtilTest,
        OverrideListIsIgnoredIfNoDomainsSetForExtension) {
   base::Value::List list;
-  list.Append(CreatePolicyEntry("txt", {/* empty vector */}));
+  list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
+      "txt", {/* empty vector */}));
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
@@ -73,9 +54,11 @@ TEST_F(FileTypePoliciesPolicyUtilTest,
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanUseWildcards) {
   base::Value::List list;
-  list.Append(CreatePolicyEntry("txt", {"example.com"}));
-  list.Append(CreatePolicyEntry("exe", {"http://*"}));
-  list.Append(CreatePolicyEntry("jpg", {"*"}));
+  list.Append(
+      CreateNotDangerousOverridePolicyEntryForTesting("txt", {"example.com"}));
+  list.Append(
+      CreateNotDangerousOverridePolicyEntryForTesting("exe", {"http://*"}));
+  list.Append(CreateNotDangerousOverridePolicyEntryForTesting("jpg", {"*"}));
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
@@ -93,7 +76,8 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanUseWildcards) {
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchExactly) {
   base::Value::List list;
-  list.Append(CreatePolicyEntry("txt", {"http://www.example.com"}));
+  list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
+      "txt", {"http://www.example.com"}));
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
@@ -105,7 +89,8 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchExactly) {
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchSubPaths) {
   base::Value::List list;
-  list.Append(CreatePolicyEntry("txt", {"http://www.example.com"}));
+  list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
+      "txt", {"http://www.example.com"}));
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
@@ -116,7 +101,8 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchSubPaths) {
 
 TEST_F(FileTypePoliciesPolicyUtilTest, CanLimitToHTTPS) {
   base::Value::List list;
-  list.Append(CreatePolicyEntry("txt", {"https://example.com"}));
+  list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
+      "txt", {"https://example.com"}));
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
@@ -131,7 +117,8 @@ TEST_F(FileTypePoliciesPolicyUtilTest, CanLimitToHTTPS) {
 TEST_F(FileTypePoliciesPolicyUtilTest,
        OverrideListOnlyWorksForListedExtension) {
   base::Value::List list;
-  list.Append(CreatePolicyEntry("txt", {"www.example.com"}));
+  list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
+      "txt", {"www.example.com"}));
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
@@ -143,7 +130,8 @@ TEST_F(FileTypePoliciesPolicyUtilTest,
 
 TEST_F(FileTypePoliciesPolicyUtilTest, ValuesAreNotCaseSensitive) {
   base::Value::List list;
-  list.Append(CreatePolicyEntry("TxT", {"www.example.com"}));
+  list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
+      "TxT", {"www.example.com"}));
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
@@ -155,7 +143,8 @@ TEST_F(FileTypePoliciesPolicyUtilTest, ValuesAreNotCaseSensitive) {
 
 TEST_F(FileTypePoliciesPolicyUtilTest, NormalizesBlobURLs) {
   base::Value::List list;
-  list.Append(CreatePolicyEntry("txt", {"https://example.com"}));
+  list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
+      "txt", {"https://example.com"}));
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));

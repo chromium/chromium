@@ -165,6 +165,8 @@ class FileTypePolicies {
                            NoInspectionTypeReturnsDefault);
   FRIEND_TEST_ALL_PREFIXES(FileTypePoliciesTest,
                            ChecksInspectionTypeNotDefault);
+  FRIEND_TEST_ALL_PREFIXES(FileTypePoliciesTest,
+                           NotDangerousOverrideShouldOnlyOverrideDangerType);
 
   friend struct FileTypePoliciesSingletonTrait;
   friend class FileTypePoliciesTestOverlay;

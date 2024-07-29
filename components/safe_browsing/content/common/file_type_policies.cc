@@ -244,9 +244,10 @@ const DownloadFileType& FileTypePolicies::PolicyForExtension(
 
   if (safe_browsing::IsInNotDangerousOverrideList(ascii_ext, source_url,
                                                   prefs)) {
-    if (itr != file_type_by_ext_.find(ascii_ext))
+    if (itr != file_type_by_ext_.end()) {
       return policy::GetOrCreatePolicyForExtensionOverrideNotDangerous(
           ascii_ext, *itr->second);
+    }
     return policy::GetOrCreatePolicyForExtensionOverrideNotDangerous(
         ascii_ext, config_->default_file_type());
   }
