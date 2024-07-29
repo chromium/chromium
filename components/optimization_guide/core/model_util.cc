@@ -135,6 +135,8 @@ std::string GetStringNameForOptimizationTarget(
       return "CameraBackgroundSegmentation";
     case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_SEARCH:
       return "ModelExecutionFeatureHistorySearch";
+    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROMPT_API:
+      return "ModelExecutionFeaturePromptAPI";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

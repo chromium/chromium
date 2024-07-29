@@ -48,6 +48,10 @@ TEST(ModelExecutionFeature, GetOptimizationTargetForModelAdaptation) {
                   ModelBasedCapabilityKey::kHistorySearch),
               proto::OptimizationTarget::
                   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_SEARCH);
+  EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(
+                  ModelBasedCapabilityKey::kPromptApi),
+              proto::OptimizationTarget::
+                  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROMPT_API);
 
   // Special cases go here.
   EXPECT_THAT(features::internal::GetOptimizationTargetForModelAdaptation(

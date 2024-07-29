@@ -59,10 +59,6 @@ BASE_FEATURE(kOnDeviceModelTestFeature,
              "OnDeviceModelTestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOnDeviceModelPromptApiFeature,
-             "OnDeviceModelPromptApiFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kModelAdaptationHistorySearch,
              "ModelAdaptationHistorySearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -165,8 +161,7 @@ bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature) {
       return base::GetFieldTrialParamByFeatureAsBool(
           kOnDeviceModelTestFeature, "enable_adaptation", false);
     case ModelBasedCapabilityKey::kPromptApi:
-      return base::GetFieldTrialParamByFeatureAsBool(
-          kOnDeviceModelPromptApiFeature, "enable_adaptation", false);
+      return true;
     case ModelBasedCapabilityKey::kHistorySearch:
       return true;
     case ModelBasedCapabilityKey::kTabOrganization:
