@@ -23,10 +23,6 @@
  * DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/renderer/core/inspector/inspector_style_sheet.h"
 
@@ -215,7 +211,7 @@ class StyleSheetHandler final : public CSSParserObserver {
   void RemoveLastRuleFromSourceTree();
   CSSRuleSourceData* PopRuleData();
   template <typename CharacterType>
-  inline void SetRuleHeaderEnd(const CharacterType*, unsigned);
+  inline void SetRuleHeaderEnd(const base::span<const CharacterType>, unsigned);
   const LineEndings* GetLineEndings();
   void ReportPropertyRuleFailure(unsigned start_offset,
                                  CSSPropertyID invalid_property);
@@ -256,13 +252,15 @@ void StyleSheetHandler::StartRuleHeader(StyleRule::RuleType type,
 }
 
 template <typename CharacterType>
-inline void StyleSheetHandler::SetRuleHeaderEnd(const CharacterType* data_start,
-                                                unsigned list_end_offset) {
+inline void StyleSheetHandler::SetRuleHeaderEnd(
+    const base::span<const CharacterType> data_start,
+    unsigned list_end_offset) {
   while (list_end_offset > 1) {
-    if (IsHTMLSpace<CharacterType>(*(data_start + list_end_offset - 1)))
+    if (IsHTMLSpace<CharacterType>(data_start[list_end_offset - 1])) {
       --list_end_offset;
-    else
+    } else {
       break;
+    }
   }
 
   current_rule_data_stack_.back()->rule_header_range.end = list_end_offset;
@@ -275,9 +273,9 @@ void StyleSheetHandler::EndRuleHeader(unsigned offset) {
   DCHECK(!current_rule_data_stack_.empty());
 
   if (parsed_text_.Is8Bit())
-    SetRuleHeaderEnd<LChar>(parsed_text_.Characters8(), offset);
+    SetRuleHeaderEnd<LChar>(parsed_text_.Span8(), offset);
   else
-    SetRuleHeaderEnd<UChar>(parsed_text_.Characters16(), offset);
+    SetRuleHeaderEnd<UChar>(parsed_text_.Span16(), offset);
 }
 
 void StyleSheetHandler::ObserveSelector(unsigned start_offset,
