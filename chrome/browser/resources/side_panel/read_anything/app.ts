@@ -134,6 +134,7 @@ export interface ReadAnythingElement {
     toolbar: ReadAnythingToolbarElement,
     appFlexParent: HTMLElement,
     container: HTMLElement,
+    containerParent: HTMLElement,
   };
 }
 
@@ -382,9 +383,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.previousHighlights_ = [];
     };
 
-    document.onscroll = () => {
+    // TODO (b/356186008): Write a test for this scrolling behavior.
+    this.$.containerParent.onscroll = () => {
       chrome.readingMode.onScroll(this.scrollingOnSelection_);
       this.scrollingOnSelection_ = false;
+
+      // If user scrolls to the bottom of the Reading Mode side panel,
+      // attempt to scroll the main page
+      if (Math.abs(
+              this.$.containerParent.scrollHeight -
+              this.$.containerParent.clientHeight -
+              this.$.containerParent.scrollTop) <= 1) {
+        chrome.readingMode.onScrolledToBottom();
+      }
     };
 
     // Pass copy commands to main page. Copy commands will not work if they are

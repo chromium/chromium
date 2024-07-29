@@ -257,6 +257,9 @@ declare namespace chrome {
     // SidePanelWebUIView::ShowUI
     function shouldShowUi(): boolean;
 
+    // Called when the Read Anything panel is scrolled all the way down.
+    function onScrolledToBottom(): void;
+
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.
     ////////////////////////////////////////////////////////////////

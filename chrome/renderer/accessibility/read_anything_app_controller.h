@@ -231,6 +231,7 @@ class ReadAnythingAppController
   void OnSpeechPlayingStateChanged(bool is_speech_active);
   std::string GetValidatedFontName(const std::string& font) const;
   std::vector<std::string> GetAllFonts();
+  void OnScrolledToBottom();
 
   // The language code that should be used to determine which voices are
   // supported for speech.

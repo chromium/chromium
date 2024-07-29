@@ -941,7 +941,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getNextWordHighlightLength",
                  &ReadAnythingAppController::GetNextWordHighlightLength)
       .SetMethod("getValidatedFontName",
-                 &ReadAnythingAppController::GetValidatedFontName);
+                 &ReadAnythingAppController::GetValidatedFontName)
+      .SetMethod("onScrolledToBottom",
+                 &ReadAnythingAppController::OnScrolledToBottom);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1851,4 +1853,8 @@ int ReadAnythingAppController::GetNextWordHighlightLength(int index) {
 void ReadAnythingAppController::IncrementMetricCount(
     const std::string& metric) {
   read_aloud_model_.IncrementMetric(metric);
+}
+
+void ReadAnythingAppController::OnScrolledToBottom() {
+  // TODO (b/353590969): trigger an accessibility action to refresh/scroll more
 }
