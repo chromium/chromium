@@ -96,21 +96,21 @@ constexpr char kValidDeviceRestrictionScheduleJson[] = R"([
   {
     "start": {
         "day_of_week": "WEDNESDAY",
-        "time": 43200000
+        "milliseconds_since_midnight": 43200000
     },
     "end": {
         "day_of_week": "WEDNESDAY",
-        "time": 75600000
+        "milliseconds_since_midnight": 75600000
     }
   },
   {
     "start": {
         "day_of_week": "FRIDAY",
-        "time": 64800000
+        "milliseconds_since_midnight": 64800000
     },
     "end": {
         "day_of_week": "MONDAY",
-        "time": 21600000
+        "milliseconds_since_midnight": 21600000
     }
   }
 ])";
