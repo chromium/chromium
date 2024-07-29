@@ -37,10 +37,6 @@
 }
 
 - (void)registerBackgroundRefreshTask {
-  if (!IsAppBackgroundRefreshEnabled()) {
-    return;
-  }
-
   auto handler = ^(BGTask* task) {
     [self systemTriggeredRefreshForTask:task];
   };
@@ -54,6 +50,7 @@
 }
 
 - (void)requestAppRefreshWithDelay:(NSTimeInterval)delay {
+  // Schedule requests only if flag is enabled.
   if (!IsAppBackgroundRefreshEnabled()) {
     return;
   }

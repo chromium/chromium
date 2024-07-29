@@ -563,6 +563,10 @@ SEQUENCE_CHECKER(_sequenceChecker);
     }
   }
 
+  // Request background refresh.
+  [[BackgroundRefreshAppAgent agentFromApp:self.appState]
+      requestAppRefreshWithDelay:30 * 60.0];  // 30 minutes.
+
   // Perform any background initialisation that is required and then
   // migrate to the next stage.
   __weak __typeof(self) weakSelf = self;
@@ -878,8 +882,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // Register background refresh providers.
   [refreshAgent addAppRefreshProvider:[[TestRefresher alloc]
                                           initWithAppState:self.appState]];
-  // Request background refresh.
-  [refreshAgent requestAppRefreshWithDelay:30 * 60.0];  // 30 minutes.
 
   // TODO(crbug.com/355142171): Remove the FeedAppAgent.
   [appState addAgent:[[FeedAppAgent alloc] init]];

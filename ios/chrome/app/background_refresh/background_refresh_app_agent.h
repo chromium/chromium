@@ -7,9 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-@class AppRefreshProvider;
-
 #import "ios/chrome/app/application_delegate/observing_app_state_agent.h"
+
+@class AppRefreshProvider;
 
 // An app agent that manages background refresh tasks.
 // DEBUGGING/TESTING note: App refresh does not work on simulators; you must
