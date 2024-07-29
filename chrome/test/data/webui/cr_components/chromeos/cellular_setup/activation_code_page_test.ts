@@ -46,7 +46,6 @@ suite('CrComponentsActivationCodePageTest', function() {
   // requests to play the video due to the speed of execution. Avoid this by
   // mocking the play and pause actions.
   function playVideoFunction(): void {}
-  function stopStreamFunction(_: MediaStream): void {}
 
   setup(async function() {
     networkConfigRemote = new FakeNetworkConfig();
@@ -75,7 +74,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     activationCodePage = document.createElement('activation-code-page');
     await activationCodePage.setFakesForTesting(
         FakeBarcodeDetector, FakeImageCapture, setIntervalFunction,
-        playVideoFunction, stopStreamFunction);
+        playVideoFunction);
     document.body.appendChild(activationCodePage);
     await flushAsync();
 
@@ -311,6 +310,61 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(video.hidden);
   });
 
+  test('Opening multiple streams is not supported', async function() {
+    assertTrue(!!mediaDevices);
+    mediaDevices.setShouldUserMediaRequestFail(true);
+
+    const video =
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#video');
+    const startScanningButton =
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>(
+            '#startScanningButton');
+    const switchCameraButton =
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>(
+            '#switchCameraButton');
+    const scanFailureContainer =
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>(
+            '#scanFailureContainer');
+
+    // Confirm the UI starts in a good state.
+    assertTrue(!!video);
+    assertTrue(!!startScanningButton);
+    assertTrue(!!switchCameraButton);
+    assertTrue(!!scanFailureContainer);
+
+    // Initial state should only be showing the start scanning UI.
+    assertTrue(video.hidden);
+    assertTrue(switchCameraButton.hidden);
+    assertTrue(scanFailureContainer.hidden);
+
+    // Click the start scanning button.
+    startScanningButton.click();
+    mediaDevices.resolveGetUserMedia();
+    await flushAsync();
+
+    // The video should be visible and switch camera button hidden.
+    assertFalse(video.hidden);
+    assertTrue(switchCameraButton.hidden);
+    assertTrue(mediaDevices.isStreamingUserFacingCamera);
+
+    // Add a new video device.
+    await addMediaDevice();
+
+    // The switch camera button should now be visible.
+    assertFalse(switchCameraButton.hidden);
+    assertTrue(mediaDevices.isStreamingUserFacingCamera);
+
+    switchCameraButton.click();
+    mediaDevices.resolveGetUserMedia();
+    await flushAsync();
+
+    // The failure message should be visible as multiple media streams are not
+    // allowed.
+    assertFalse(scanFailureContainer.hidden);
+    assertTrue(video.hidden);
+    assertTrue(switchCameraButton.hidden);
+  });
+
   test(
       'Do not show qrContainer when BarcodeDetector is not ready',
       async function() {
@@ -327,7 +381,7 @@ suite('CrComponentsActivationCodePageTest', function() {
         FakeBarcodeDetector.setShouldFail(true);
         await activationCodePage.setFakesForTesting(
             FakeBarcodeDetector, FakeImageCapture, setIntervalFunction,
-            playVideoFunction, stopStreamFunction);
+            playVideoFunction);
 
         qrCodeDetectorContainer =
             activationCodePage.shadowRoot!.querySelector('#esimQrCodeDetection');

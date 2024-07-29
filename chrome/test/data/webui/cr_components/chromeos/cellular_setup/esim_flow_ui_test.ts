@@ -140,7 +140,6 @@ suite(`CrComponentsEsimFlowUiTest`, function() {
     // requests to play the video due to the speed of execution. Avoid this by
     // mocking the play and pause actions.
     const playVideoFunction = () => {};
-    const stopStreamFunction = (_stream: MediaStream) => {};
     assertTrue(!!activationCodePage);
     assertTrue(!!profileLoadingPage);
     assertTrue(!!profileDiscoveryConsentPage);
@@ -150,7 +149,7 @@ suite(`CrComponentsEsimFlowUiTest`, function() {
 
     await activationCodePage.setFakesForTesting(
         FakeBarcodeDetector, FakeImageCapture, setIntervalFunction,
-        playVideoFunction, stopStreamFunction);
+        playVideoFunction);
   });
 
   function assertSelectedPage(pageName: EsimPageName, page: HTMLElement): void {
