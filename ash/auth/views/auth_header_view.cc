@@ -31,12 +31,14 @@ constexpr int kAvatarSizeDp = 40;
 
 constexpr ui::ColorId kTitleColorId = cros_tokens::kCrosSysOnSurface;
 constexpr ui::ColorId kTitleErrorColorId = cros_tokens::kCrosSysError;
-constexpr int kTitleLineWidthDp = 268;
+// The title and description width is the kActiveSessionAuthViewWidthDp -
+// 2 X 32 dp margin.
+constexpr int kTitleLineWidthDp = 322 - 2 * 32;
 constexpr int kTitleToDescriptionDistanceDp = 8;
 constexpr TypographyToken kTitleFont = TypographyToken::kCrosTitle1;
 
 constexpr ui::ColorId kDescriptionColorId = cros_tokens::kCrosSysOnSurface;
-constexpr int kDescriptionLineWidthDp = 268;
+constexpr int kDescriptionLineWidthDp = kTitleLineWidthDp;
 constexpr TypographyToken kDescriptionFont = TypographyToken::kCrosAnnotation1;
 
 }  // namespace
@@ -120,10 +122,11 @@ AuthHeaderView::~AuthHeaderView() {
 
 gfx::Size AuthHeaderView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  const int preferred_height = kAvatarSizeDp + kIconToTitleDistanceDp +
-                               title_label_->GetPreferredSize().height() +
-                               kTitleToDescriptionDistanceDp +
-                               description_label_->GetPreferredSize().height();
+  const int preferred_height =
+      kAvatarSizeDp + kIconToTitleDistanceDp +
+      title_label_->GetHeightForWidth(kTitleLineWidthDp) +
+      kTitleToDescriptionDistanceDp +
+      description_label_->GetHeightForWidth(kDescriptionLineWidthDp);
   return gfx::Size(kTitleLineWidthDp, preferred_height);
 }
 

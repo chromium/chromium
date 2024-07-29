@@ -88,15 +88,15 @@ TEST_F(AuthHeaderPixelTest, DayMode) {
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   //  Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "DayMode", /*revision_number=*/0, header_view_));
+      "DayMode", /*revision_number=*/1, header_view_));
   // Verify the error.
   header_view_->SetErrorTitle(kErrorTitle);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Error", /*revision_number=*/0, header_view_));
+      "Error", /*revision_number=*/1, header_view_));
   // Verify the restore
   header_view_->RestoreTitle();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Restore", /*revision_number=*/0, header_view_));
+      "Restore", /*revision_number=*/1, header_view_));
 }
 
 }  // namespace
