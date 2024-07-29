@@ -871,6 +871,18 @@
       <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA_NEVER" desc="The string for the option to never archive tabs.">
         Never
       </message>
+      <message name="IDS_ARCHIVE_DIALOG_CLOSE_ALL_INACTIVE_TABS_CONFIRMATION_TITLE" desc="The title to show in the action confirmation dialog.">
+        {TAB_COUNT, plural,
+          =1 {Close 1 inactive tab?}
+          other {Close <ph name="TAB_COUNT_MANY">%1$d<ex>12</ex></ph> inactive tabs?}
+        }
+      </message>
+      <message name="IDS_ARCHIVE_DIALOG_CLOSE_ALL_INACTIVE_TABS_CONFIRMATION_DESCRIPTION" desc="The description for the option to never archive tabs.">
+        You can always get them back in history
+      </message>
+      <message name="IDS_ARCHIVE_DIALOG_CLOSE_ALL_INACTIVE_TABS_CONFIRMATION" desc="The description for the option to never archive tabs.">
+        Close all
+      </message>
     </messages>
   </release>
 </grit>

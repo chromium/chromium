@@ -233,6 +233,7 @@ public class ActionConfirmationManager {
         @Nullable
         CoreAccountInfo coreAccountInfo =
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        final Function<Resources, String> titleResolver = (res) -> res.getString(titleRes);
         final Function<Resources, String> descriptionResolver;
         if (syncingTabGroups && coreAccountInfo != null) {
             descriptionResolver =
@@ -260,7 +261,7 @@ public class ActionConfirmationManager {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                titleRes,
+                titleResolver,
                 descriptionResolver,
                 actionRes,
                 /* supportStopShowing= */ true,
@@ -274,6 +275,7 @@ public class ActionConfirmationManager {
             String formatArg,
             @StringRes int actionRes,
             Callback<Integer> onResult) {
+        final Function<Resources, String> titleResolver = (res) -> res.getString(titleRes);
         final Function<Resources, String> descriptionResolver =
                 (resources -> resources.getString(descriptionRes, formatArg));
         ConfirmationDialogResult onDialogResult =
@@ -282,7 +284,7 @@ public class ActionConfirmationManager {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                titleRes,
+                titleResolver,
                 descriptionResolver,
                 actionRes,
                 /* supportStopShowing= */ false,

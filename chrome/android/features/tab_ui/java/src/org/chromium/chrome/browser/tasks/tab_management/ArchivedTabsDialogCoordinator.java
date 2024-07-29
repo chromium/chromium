@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -16,6 +17,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Function;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -212,6 +214,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final @NonNull TabArchiveSettings mTabArchiveSettings;
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull UndoBarController mUndoBarController;
+    private final @NonNull ActionConfirmationDialog mActionConfirmationDialog;
 
     private ViewGroup mView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
@@ -273,6 +276,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                 .inflate(R.layout.archived_tabs_dialog, mRootView, false);
         mView.findViewById(R.id.close_all_tabs_button)
                 .setOnClickListener(this::closeAllInactiveTabs);
+        mActionConfirmationDialog = new ActionConfirmationDialog(mContext, mModalDialogManager);
     }
 
     /**
@@ -405,9 +409,32 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     @VisibleForTesting
     void closeAllInactiveTabs(View view) {
         int tabCount = mArchivedTabModel.getCount();
-        mArchivedTabModel.closeAllTabs(false);
-        RecordHistogram.recordCount1000Histogram("Tabs.CloseAllArchivedTabs.TabCount", tabCount);
-        RecordUserAction.record("Tabs.CloseAllArchivedTabsMenuItem");
+        Function<Resources, String> titleResolver =
+                (res) -> {
+                    return res.getQuantityString(
+                            R.plurals.archive_dialog_close_all_inactive_tabs_confirmation_title,
+                            tabCount,
+                            tabCount);
+                };
+        Function<Resources, String> descriptionResolver =
+                (res) -> {
+                    return res.getString(
+                            R.string
+                                    .archive_dialog_close_all_inactive_tabs_confirmation_description);
+                };
+        mActionConfirmationDialog.show(
+                titleResolver,
+                descriptionResolver,
+                R.string.archive_dialog_close_all_inactive_tabs_confirmation,
+                /* supportStopShowing= */ false,
+                (isPositive, stopShowing) -> {
+                    if (isPositive) {
+                        mArchivedTabModel.closeAllTabs(false);
+                        RecordHistogram.recordCount1000Histogram(
+                                "Tabs.CloseAllArchivedTabs.TabCount", tabCount);
+                        RecordUserAction.record("Tabs.CloseAllArchivedTabsMenuItem");
+                    }
+                });
     }
 
     private void closeArchivedTabs(List<Tab> tabs) {

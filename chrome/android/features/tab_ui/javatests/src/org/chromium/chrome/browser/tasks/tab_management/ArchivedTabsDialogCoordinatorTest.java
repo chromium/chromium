@@ -296,10 +296,27 @@ public class ArchivedTabsDialogCoordinatorTest {
 
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
         onView(withText("Close all inactive tabs")).perform(click());
+        onView(withText("Close all")).perform(click());
+
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         assertEquals(0, mArchivedTabModel.getCount());
         histogramExpectation.assertExpected();
         assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseAllArchivedTabsMenuItem"));
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseAllArchivedTabs_Cancel() throws Exception {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        showDialog(2);
+
+        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("Close all inactive tabs")).perform(click());
+        onView(withText("Cancel")).perform(click());
+
+        assertEquals(2, mArchivedTabModel.getCount());
+        assertEquals(0, mUserActionTester.getActionCount("Tabs.CloseAllArchivedTabsMenuItem"));
     }
 
     @Test

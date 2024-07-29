@@ -251,4 +251,18 @@ public class TabModelUtils {
         }
         return list;
     }
+
+    /**
+     * Converts a {@link TabList} to a {@link List<Integer>} tab ids. A null input returns an empty
+     * list.
+     */
+    public static @Nullable List<Integer> convertTabListToListOfTabIds(@Nullable TabList tabList) {
+        ArrayList<Integer> list = new ArrayList<>();
+        if (tabList == null) return list;
+
+        for (int i = 0; i < tabList.getCount(); i++) {
+            list.add(tabList.getTabAt(i).getId());
+        }
+        return list;
+    }
 }

@@ -46,7 +46,7 @@ public class ActionConfirmationDialog {
     }
 
     public void show(
-            @StringRes int titleRes,
+            Function<Resources, String> titleResolver,
             Function<Resources, String> descriptionResolver,
             @StringRes int positiveButtonRes,
             boolean supportStopShowing,
@@ -72,7 +72,7 @@ public class ActionConfirmationDialog {
         ModalDialogProperties.Controller dialogController =
                 new WasPositiveController(mModalDialogManager, onDismissWhetherPositive);
 
-        String titleText = resources.getString(titleRes);
+        String titleText = titleResolver.apply(resources);
         String positiveText = resources.getString(positiveButtonRes);
         String negativeText = resources.getString(R.string.cancel);
 

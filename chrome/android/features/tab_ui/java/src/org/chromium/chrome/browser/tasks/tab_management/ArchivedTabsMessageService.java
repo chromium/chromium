@@ -130,7 +130,6 @@ public class ArchivedTabsMessageService extends MessageService
             @NonNull BackPressManager backPressManager,
             @NonNull ModalDialogManager modalDialogManager) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
-
         mContext = context;
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
         mBrowserControlsStateProvider = browserControlStateProvider;

@@ -77,7 +77,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mActivity, mModalDialogManager);
         dialog.show(
-                R.string.delete_tab_group_dialog_title,
+                noSyncResolver(R.string.delete_tab_group_dialog_title),
                 noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 /* supportStopShowing= */ true,
@@ -101,7 +101,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mActivity, mModalDialogManager);
         dialog.show(
-                R.string.delete_tab_group_dialog_title,
+                noSyncResolver(R.string.delete_tab_group_dialog_title),
                 syncResolver(R.string.delete_tab_group_description, "test@gmail.com"),
                 R.string.delete_tab_group_action,
                 /* supportStopShowing= */ true,
@@ -123,7 +123,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mActivity, mModalDialogManager);
         dialog.show(
-                R.string.delete_tab_group_dialog_title,
+                noSyncResolver(R.string.delete_tab_group_dialog_title),
                 noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 /* supportStopShowing= */ true,
@@ -144,7 +144,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mActivity, mModalDialogManager);
         dialog.show(
-                R.string.delete_tab_group_dialog_title,
+                noSyncResolver(R.string.delete_tab_group_dialog_title),
                 noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 /* supportStopShowing= */ true,
@@ -165,7 +165,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mActivity, mModalDialogManager);
         dialog.show(
-                R.string.delete_tab_group_dialog_title,
+                noSyncResolver(R.string.delete_tab_group_dialog_title),
                 noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 /* supportStopShowing= */ true,
@@ -190,7 +190,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mActivity, mModalDialogManager);
         dialog.show(
-                R.string.delete_tab_group_dialog_title,
+                noSyncResolver(R.string.delete_tab_group_dialog_title),
                 noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 /* supportStopShowing= */ true,
@@ -215,7 +215,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mActivity, mModalDialogManager);
         dialog.show(
-                R.string.delete_tab_group_dialog_title,
+                noSyncResolver(R.string.delete_tab_group_dialog_title),
                 noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 /* supportStopShowing= */ false,
