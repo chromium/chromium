@@ -316,7 +316,6 @@ All changes to this list should go through Blink's feature review process: http:
     position
     position-anchor
     position-try-fallbacks
-    position-try-options
     position-try-order
     position-visibility
     quotes

@@ -353,7 +353,7 @@ pointerEvents
 position
 positionAnchor
 positionTry
-positionTryOptions
+positionTryFallbacks
 positionTryOrder
 positionVisibility
 prefix
