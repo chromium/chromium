@@ -1238,9 +1238,13 @@ const CGFloat kFeedContainerExtraHeight = 500;
   [NSLayoutConstraint deactivateConstraints:self.fakeOmniboxConstraints];
 
   if (IsHomeCustomizationEnabled()) {
-    // If there's a module below the header, anchor the header to it.
-    if ([self.viewControllersAboveFeed lastObject] !=
+    // If all modules are disabled, the fake omnibox doesn't need additional
+    // constraints.
+    if ([self.viewControllersAboveFeed lastObject] ==
         self.headerViewController) {
+      self.fakeOmniboxConstraints = @[];
+    } else {
+      // Otherwise, anchor the header to the module below it.
       NSInteger headerIndex = [self.viewControllersAboveFeed
           indexOfObject:self.headerViewController];
       UIView* viewBelowHeader =
