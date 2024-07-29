@@ -11,6 +11,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.PackageUtils;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
 
@@ -83,6 +84,11 @@ public class PasswordManagerUtilBridge {
                 .isUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
     }
 
+    public static @PasswordAccessLossWarningType int getPasswordAccessLossWarningType(
+            PrefService prefService) {
+        return PasswordManagerUtilBridgeJni.get().getPasswordAccessLossWarningType(prefService);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean shouldUseUpmWiring(
@@ -98,5 +104,8 @@ public class PasswordManagerUtilBridge {
         boolean areMinUpmRequirementsMet();
 
         boolean isUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
+
+        @PasswordAccessLossWarningType
+        int getPasswordAccessLossWarningType(@JniType("PrefService*") PrefService prefService);
     }
 }

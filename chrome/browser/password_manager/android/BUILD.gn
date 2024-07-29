@@ -130,6 +130,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/loading_modal/android:java",
     "//chrome/browser/notifications:java",
+    "//chrome/browser/password_manager/android/access_loss:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
@@ -474,6 +475,11 @@ android_library("public_impl_java") {
   ]
 
   resources_package = "org.chromium.chrome.browser.password_manager"
+}
+
+java_cpp_enum("java_enum_srcjar") {
+  visibility = [ "//chrome/browser/password_manager/android/access_loss:*" ]
+  sources = [ "password_manager_android_util.h" ]
 }
 
 source_set("utils") {

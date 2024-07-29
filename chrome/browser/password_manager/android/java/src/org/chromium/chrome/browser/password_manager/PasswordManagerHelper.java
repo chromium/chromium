@@ -31,6 +31,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
@@ -161,6 +163,11 @@ public class PasswordManagerHelper {
                 ManagePasswordsReferrer.MAX_VALUE + 1);
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         PrefService prefService = UserPrefs.get(mProfile);
+
+        if (getAccessLossWarningType(prefService) != PasswordAccessLossWarningType.NONE) {
+            // TODO(b/353284087): Show the password access loss dialog here.
+            return;
+        }
 
         // Force instantiation of GMSCore password settings if GMSCore update is required. Launching
         // Password settings will fail and instead the blocking dialog with the suggestion to update
@@ -753,6 +760,17 @@ public class PasswordManagerHelper {
             } catch (ActivityNotFoundException e) {
             }
         }
+    }
+
+    public @PasswordAccessLossWarningType int getAccessLossWarningType(PrefService prefService) {
+        // TODO(crbug.com/323149739): Enable this feature flag in SafetyCheckMediatorTest and
+        // PasswordManagerHelperTest in all tests before launch.
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList
+                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
+            return PasswordAccessLossWarningType.NONE;
+        }
+        return PasswordManagerUtilBridge.getPasswordAccessLossWarningType(prefService);
     }
 
     @NativeMethods

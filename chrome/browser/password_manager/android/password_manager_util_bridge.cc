@@ -56,6 +56,16 @@ JNI_PasswordManagerUtilBridge_IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled(
       IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
 }
 
+jint JNI_PasswordManagerUtilBridge_GetPasswordAccessLossWarningType(
+    JNIEnv* env,
+    PrefService* pref_service) {
+  std::string gms_version_str =
+      base::android::BuildInfo::GetInstance()->gms_version_code();
+  return static_cast<int>(
+      password_manager_android_util::GetPasswordAccessLossWarningType(
+          gms_version_str, pref_service));
+}
+
 namespace password_manager_android_util {
 bool IsInternalBackendPresent() {
   return Java_PasswordManagerUtilBridge_isInternalBackendPresent(

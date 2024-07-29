@@ -1,0 +1,12 @@
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsCoordinator.java" ]
+
+  deps = [
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+
+  srcjar_deps = [ "//chrome/browser/password_manager/android:java_enum_srcjar" ]
+}

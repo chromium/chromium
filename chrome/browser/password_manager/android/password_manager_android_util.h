@@ -27,7 +27,7 @@ enum class PasswordAccessLossWarningType {
   kNoGmsCore = 1,  // A warning that the password manager will stop working.
   kNoUpm = 2,      // A warning that GMS Core is outdated; updated suggested.
   kOnlyAccountUpm = 3,  // A warning that GMSCore is outdated; update suggested.
-  kNewGmsCoreMigrationFailed = 4  // A warning for fixing the migration error.
+  kNewGmsCoreMigrationFailed = 4,  // A warning for fixing the migration error.
 };
 
 // Used to prevent static casting issues with
