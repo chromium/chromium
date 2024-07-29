@@ -222,14 +222,12 @@ void CastDetailedView::AddAccessCodeCastButton(
       AddScrollListItem(receiver_list_view, vector_icons::kKeyboardIcon,
                         l10n_util::GetStringUTF16(
                             IDS_ASH_STATUS_TRAY_CAST_ACCESS_CODE_CAST_CONNECT));
-  if (chromeos::features::IsJellyEnabled()) {
-    // `views::ImageView` does not support changing the color, so set the
-    // image with an updated `ui::ImageModel`.
-    add_access_code_device_->icon()->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kKeyboardIcon, cros_tokens::kCrosSysPrimary));
-    add_access_code_device_->text_label()->SetEnabledColorId(
-        cros_tokens::kCrosSysPrimary);
-  }
+  // `views::ImageView` does not support changing the color, so set the
+  // image with an updated `ui::ImageModel`.
+  add_access_code_device_->icon()->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kKeyboardIcon, cros_tokens::kCrosSysPrimary));
+  add_access_code_device_->text_label()->SetEnabledColorId(
+      cros_tokens::kCrosSysPrimary);
 }
 
 void CastDetailedView::AddReceiverActionButtons(
