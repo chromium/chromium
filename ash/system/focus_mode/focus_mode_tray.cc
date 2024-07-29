@@ -369,7 +369,6 @@ void FocusModeTray::ShowBubble() {
 }
 
 void FocusModeTray::UpdateTrayItemColor(bool is_active) {
-  CHECK(chromeos::features::IsJellyEnabled());
   UpdateTrayIcon();
 }
 
@@ -527,14 +526,9 @@ void FocusModeTray::CreateTaskItemView(const std::string& task_title) {
 }
 
 void FocusModeTray::UpdateTrayIcon() {
-  SkColor color;
-  if (chromeos::features::IsJellyEnabled()) {
-    color = GetColorProvider()->GetColor(
-        is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                    : cros_tokens::kCrosSysOnSurface);
-  } else {
-    color = GetColorProvider()->GetColor(kColorAshIconColorPrimary);
-  }
+  SkColor color = GetColorProvider()->GetColor(
+      is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                  : cros_tokens::kCrosSysOnSurface);
   image_view_->SetImage(CreateVectorIcon(kFocusModeLampIcon, color));
 }
 
