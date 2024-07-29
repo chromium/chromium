@@ -8,6 +8,7 @@ load("//lib/builders.star", "builders", "cpu", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/html.star", "linkify_builder")
 load("//lib/structs.star", "structs")
 load("//lib/xcode.star", "xcode")
 
@@ -812,8 +813,8 @@ ci.builder(
     name = "Comparison Linux (reclient)(CQ)",
     description_html = """\
 This builder measures Linux build performance with reclient prod vs test in cq configuration.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-rel-compilator">linux-rel-compilator</a>.\
-""",
+The bot specs should be in sync with {}.\
+""".format(linkify_builder("try", "linux-rel-compilator")),
     executable = "recipe:reclient_reclient_comparison",
     gn_args = {
         "build1": gn_args.config(

@@ -15,9 +15,9 @@ load(
     "standalone_trybot_excluded_builder_groups",
     "standalone_trybot_excluded_builders",
 )
-load("./builder_url.star", "linkify_builder")
 load("./chrome_settings.star", "per_builder_outputs_config")
 load("./enums.star", "enums")
+load("./html.star", "linkify_builder")
 load("./nodes.star", "nodes")
 load("./sheriff_rotations.star", "get_gardener_rotations")
 load("./structs.star", "structs")

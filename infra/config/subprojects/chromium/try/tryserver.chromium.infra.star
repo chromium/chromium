@@ -5,6 +5,7 @@
 
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "siso")
+load("//lib/html.star", "linkify")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
@@ -103,7 +104,12 @@ try_.builder(
 
 try_.builder(
     name = "linux-utr-tester",
-    description_html = "Tests the <a href=\"https://chromium.googlesource.com/chromium/src/+/HEAD/tools/utr/README.md\">Universal Test Runner</a> against cli and recipe changes.",
+    description_html = "Tests the {} against cli and recipe changes.".format(
+        linkify(
+            "https://chromium.googlesource.com/chromium/src/+/HEAD/tools/utr/README.md",
+            "Universal Test Runner",
+        ),
+    ),
     executable = "recipe:chromium/universal_test_runner_test",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -156,7 +162,12 @@ try_.builder(
 
 try_.builder(
     name = "win-utr-tester",
-    description_html = "Tests the <a href=\"https://chromium.googlesource.com/chromium/src/+/HEAD/tools/utr/README.md\">Universal Test Runner</a> against cli and recipe changes.",
+    description_html = "Tests the {} against cli and recipe changes.".format(
+        linkify(
+            "https://chromium.googlesource.com/chromium/src/+/HEAD/tools/utr/README.md",
+            "Universal Test Runner",
+        ),
+    ),
     executable = "recipe:chromium/universal_test_runner_test",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

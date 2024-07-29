@@ -6,6 +6,7 @@
 load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/branches.star", "branches")
+load("//lib/html.star", "linkify")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -76,10 +77,9 @@ try_.builder(
 # (tests content shell) to avoid coupling their build configurations.
 try_.builder(
     name = "linux-wpt-chromium-rel",
-    description_html = """\
-Runs <a href="https://web-platform-tests.org">web platform tests</a> against
-Chrome.\
-""",
+    description_html = "Runs {} against Chrome.".format(
+        linkify("https://web-platform-tests.org", "web platform tests"),
+    ),
     mirrors = ["ci/linux-wpt-chromium-rel"],
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
