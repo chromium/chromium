@@ -35,8 +35,8 @@ EXPORTS
     ??$Append@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@$0A@@Cord@absl@@QAEX$$QAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ??$AppendImpl@ABVCord@absl@@@Cord@absl@@AAEXABV01@@Z
     ??$AppendImpl@VCord@absl@@@Cord@absl@@AAEX$$QAV01@@Z
-    ??$AsciiStrCaseFoldLong@$00@ascii_internal@absl@@YAXPADI@Z
-    ??$AsciiStrCaseFoldLong@$0A@@ascii_internal@absl@@YAXPADI@Z
+    ??$AsciiStrCaseFoldLong@$00@ascii_internal@absl@@YAXPADPBDI@Z
+    ??$AsciiStrCaseFoldLong@$0A@@ascii_internal@absl@@YAXPADPBDI@Z
     ??$Base64EscapeInternal@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@strings_internal@absl@@YAXPBEIPAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@_NPBD@Z
     ??$CallOnceImpl@A6AXXZ$$V@base_internal@absl@@YAXPAU?$atomic@I@__Cr@std@@W4SchedulingMode@01@A6AXXZ@Z
     ??$CallOnceImpl@P8FlagImpl@flags_internal@absl@@AEXXZPAV123@@base_internal@absl@@YAXPAU?$atomic@I@__Cr@std@@W4SchedulingMode@01@$$QAP8FlagImpl@flags_internal@1@AEXXZ$$QAPAV671@@Z
@@ -399,7 +399,9 @@ EXPORTS
     ?ApplyMask@MaskedPointer@flags_internal@absl@@AAEXI@Z
     ?ApplySubstitutions@strings_internal@absl@@YAHV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAV?$vector@UViableSubstitution@strings_internal@absl@@V?$allocator@UViableSubstitution@strings_internal@absl@@@__Cr@std@@@45@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@45@@Z
     ?AsciiStrToLower@absl@@YAXPAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
+    ?AsciiStrToLower@ascii_internal@absl@@YAXPADPBDI@Z
     ?AsciiStrToUpper@absl@@YAXPAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
+    ?AsciiStrToUpper@ascii_internal@absl@@YAXPADPBDI@Z
     ?AssertHeld@Mutex@absl@@QBEXXZ
     ?AssertNotHeld@Mutex@absl@@QBEXXZ
     ?AssertReaderHeld@Mutex@absl@@QBEXXZ

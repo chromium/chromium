@@ -772,7 +772,7 @@ class Cord {
 
   // Cord::Find()
   //
-  // Returns an iterator to the first occurrance of the substring `needle`.
+  // Returns an iterator to the first occurrence of the substring `needle`.
   //
   // If the substring `needle` does not occur, `Cord::char_end()` is returned.
   CharIterator Find(absl::string_view needle) const;

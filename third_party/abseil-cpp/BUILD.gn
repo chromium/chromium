@@ -271,6 +271,8 @@ if (absl_build_tests) {
         "absl/base:nullability_test",
         "absl/base:poison_test",
         "absl/base:prefetch_test",
+        "absl/base:tracing_internal_strong_test",
+        "absl/base:tracing_internal_weak_test",
         "absl/cleanup:cleanup_test",
 
         # TODO(mbonadei): Fix issue with EXPECT_DEATH and uncomment.

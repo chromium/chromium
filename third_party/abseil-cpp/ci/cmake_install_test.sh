@@ -48,7 +48,7 @@ for link_type in ${LINK_TYPE}; do
     --tmpfs=/abseil-cpp:exec \
     --workdir=/abseil-cpp \
     --cap-add=SYS_PTRACE \
-    -e "ABSL_GOOGLETEST_COMMIT=${ABSL_GOOGLETEST_COMMIT}" \
+    -e "ABSL_GOOGLETEST_VERSION=${ABSL_GOOGLETEST_VERSION}" \
     -e "ABSL_GOOGLETEST_DOWNLOAD_URL=${ABSL_GOOGLETEST_DOWNLOAD_URL}" \
     -e "LINK_TYPE=${link_type}" \
     --rm \

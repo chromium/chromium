@@ -259,7 +259,7 @@ struct CordRep {
   // on the specific layout of these fields. Notably: the non-trivial field
   // `refcount` being preceded by `length`, and being tailed by POD data
   // members only.
-  // # LINT.IfChange
+  // LINT.IfChange
   size_t length;
   RefcountAndFlags refcount;
   // If tag < FLAT, it represents CordRepKind and indicates the type of node.
@@ -275,7 +275,7 @@ struct CordRep {
   // allocate room for these in the derived class, as not all compilers reuse
   // padding space from the base class (clang and gcc do, MSVC does not, etc)
   uint8_t storage[3];
-  // # LINT.ThenChange(cord_rep_btree.h:copy_raw)
+  // LINT.ThenChange(cord_rep_btree.h:copy_raw)
 
   // Returns true if this instance's tag matches the requested type.
   constexpr bool IsSubstring() const { return tag == SUBSTRING; }

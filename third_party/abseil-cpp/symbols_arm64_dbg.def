@@ -510,10 +510,10 @@ EXPORTS
     ??$ArgumentToConv@_N@str_format_internal@absl@@YA?AW4FormatConversionCharSet@1@XZ
     ??$AsciiInAZRange@$00@ascii_internal@absl@@YA_NE@Z
     ??$AsciiInAZRange@$0A@@ascii_internal@absl@@YA_NE@Z
-    ??$AsciiStrCaseFold@$00@ascii_internal@absl@@YAXPEAD_K@Z
-    ??$AsciiStrCaseFold@$0A@@ascii_internal@absl@@YAXPEAD_K@Z
-    ??$AsciiStrCaseFoldLong@$00@ascii_internal@absl@@YAXPEAD_K@Z
-    ??$AsciiStrCaseFoldLong@$0A@@ascii_internal@absl@@YAXPEAD_K@Z
+    ??$AsciiStrCaseFold@$00@ascii_internal@absl@@YAXPEADPEBD_K@Z
+    ??$AsciiStrCaseFold@$0A@@ascii_internal@absl@@YAXPEADPEBD_K@Z
+    ??$AsciiStrCaseFoldLong@$00@ascii_internal@absl@@YAXPEADPEBD_K@Z
+    ??$AsciiStrCaseFoldLong@$0A@@ascii_internal@absl@@YAXPEADPEBD_K@Z
     ??$AssertHashEqConsistent@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@IEAAXAEBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ??$AssignElements@V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@V?$IteratorValueAdapter@V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@V?$move_iterator@PEAUPayload@status_internal@absl@@@23@@inlined_vector_internal@absl@@@inlined_vector_internal@absl@@YAXPEAUPayload@status_internal@1@AEAV?$IteratorValueAdapter@V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@V?$move_iterator@PEAUPayload@status_internal@absl@@@23@@01@_K@Z
     ??$Base64EscapeInternal@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@strings_internal@absl@@YAXPEBE_KPEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@_NPEBD@Z
@@ -2835,7 +2835,9 @@ EXPORTS
     ?AreItersFromSameContainer@container_internal@absl@@YA_NPEBW4ctrl_t@12@0AEBQEBX1@Z
     ?AsValueType@?$FixedArray@D$0?0V?$allocator@D@__Cr@std@@@absl@@CAPEADPEAD@Z
     ?AsciiStrToLower@absl@@YAXPEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
+    ?AsciiStrToLower@ascii_internal@absl@@YAXPEADPEBD_K@Z
     ?AsciiStrToUpper@absl@@YAXPEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
+    ?AsciiStrToUpper@ascii_internal@absl@@YAXPEADPEBD_K@Z
     ?AssertHeld@CordzInfo@cord_internal@absl@@QEAAXXZ
     ?AssertHeld@Mutex@absl@@QEBAXXZ
     ?AssertInSooMode@CommonFields@container_internal@absl@@AEBAXXZ
