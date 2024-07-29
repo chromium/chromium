@@ -13,7 +13,7 @@ import fetch_github_release
 
 
 if __name__ == '__main__':
-    fetch_github_release.main(project='adoptium/temurin17-binaries',
+    fetch_github_release.main(project='adoptium/temurin21-binaries',
                               artifact_extension='.tar.gz',
                               artifact_regex=r'jdk_x64_linux_.*\.tar\.gz$',
                               install_scripts=[_3PP_DIR / 'install.sh'])
