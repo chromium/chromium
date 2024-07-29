@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -40,9 +41,11 @@
 namespace ash {
 
 constexpr char kTestDomain[] = "test.org";
-constexpr char kTestUserEmail[] = "user@test.org";
 constexpr char kTestAuthCode[] = "test_auth_code";
 constexpr char kTestDeviceId[] = "test_device_id";
+constexpr char kTestUserEmail[] = "user@test.org";
+constexpr char kTestUserGaiaId[] = "test_user_gaia_id";
+constexpr char kTestUserPassword[] = "test_password";
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -271,8 +274,15 @@ class EnrollmentScreenBaseTest : public testing::Test {
   void ExpectShowViewWithLogin(
       policy::LicenseType license_type = policy::LicenseType::kEnterprise) {
     EXPECT_CALL(mock_view_, Show()).WillOnce([this, license_type]() {
-      enrollment_screen_->OnLoginDone(
-          kTestUserEmail, static_cast<int>(license_type), kTestAuthCode);
+      login::OnlineSigninArtifacts signin_artifacts;
+      signin_artifacts.email = kTestUserEmail;
+      signin_artifacts.gaia_id = kTestUserGaiaId;
+      signin_artifacts.password = kTestUserPassword;
+      signin_artifacts.using_saml = false;
+
+      enrollment_screen_->OnLoginDone(std::move(signin_artifacts),
+                                      static_cast<int>(license_type),
+                                      kTestAuthCode);
     });
   }
 

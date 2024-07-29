@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -139,6 +140,16 @@ class EnrollmentEmbeddedPolicyServerBase : public OobeBaseTest {
         WizardController::default_controller()->screen_manager());
     EXPECT_NE(enrollment_screen, nullptr);
     return enrollment_screen;
+  }
+
+  login::OnlineSigninArtifacts GetFakeSinginArtifactsForEnterpriseUser1() {
+    login::OnlineSigninArtifacts signin_artifacts;
+    signin_artifacts.email = FakeGaiaMixin::kEnterpriseUser1;
+    signin_artifacts.gaia_id = FakeGaiaMixin::kEnterpriseUser1GaiaId;
+    signin_artifacts.password = FakeGaiaMixin::kFakeUserPassword;
+    signin_artifacts.using_saml = false;
+
+    return signin_artifacts;
   }
 
   AutoEnrollmentCheckScreen* auto_enrollment_screen() {
@@ -1064,7 +1075,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentRecoveryTest, Success) {
             enrollment_ui_.WaitForScreenExit());
 
   enrollment_screen()->OnLoginDone(
-      FakeGaiaMixin::kEnterpriseUser1,
+      GetFakeSinginArtifactsForEnterpriseUser1(),
       static_cast<int>(policy::LicenseType::kEnterprise),
       FakeGaiaMixin::kFakeAuthCode);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
@@ -1080,8 +1091,15 @@ IN_PROC_BROWSER_TEST_F(EnrollmentRecoveryTest, DifferentDomain) {
 
   ASSERT_TRUE(StartupUtils::IsDeviceRegistered());
   ASSERT_TRUE(InstallAttributes::Get()->IsEnterpriseManaged());
+
+  login::OnlineSigninArtifacts signin_artifacts;
+  signin_artifacts.email = FakeGaiaMixin::kFakeUserEmail;
+  signin_artifacts.gaia_id = FakeGaiaMixin::kFakeUserGaiaId;
+  signin_artifacts.password = FakeGaiaMixin::kFakeUserPassword;
+  signin_artifacts.using_saml = false;
+
   enrollment_screen()->OnLoginDone(
-      FakeGaiaMixin::kFakeUserEmail,
+      std::move(signin_artifacts),
       static_cast<int>(policy::LicenseType::kEnterprise),
       FakeGaiaMixin::kFakeAuthCode);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
@@ -1126,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, MAYBE_EnrollmentForced) {
   // Domain is actually different from what the server sent down. But Chrome
   // does not enforce that domain if device is not locked.
   enrollment_screen()->OnLoginDone(
-      FakeGaiaMixin::kEnterpriseUser1,
+      GetFakeSinginArtifactsForEnterpriseUser1(),
       static_cast<int>(policy::LicenseType::kEnterprise),
       FakeGaiaMixin::kFakeAuthCode);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
@@ -1172,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
   // Domain is actually different from what the server sent down. But Chrome
   // does not enforce that domain if device is not locked.
   enrollment_screen()->OnLoginDone(
-      FakeGaiaMixin::kEnterpriseUser1,
+      GetFakeSinginArtifactsForEnterpriseUser1(),
       static_cast<int>(policy::LicenseType::kEnterprise),
       FakeGaiaMixin::kFakeAuthCode);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
