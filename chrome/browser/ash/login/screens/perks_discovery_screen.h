@@ -28,6 +28,7 @@ struct Illustration {
 
 struct Content {
   Content();
+  Content(const Content& content);
   ~Content();
   std::optional<Illustration> illustration;
 };

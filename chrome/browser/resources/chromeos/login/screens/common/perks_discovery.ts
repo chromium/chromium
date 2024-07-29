@@ -155,11 +155,11 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   setPerksData(perksData: PerkData[]): void {
     assert(perksData !== null);
     this.perksList = perksData;
-    this.currentPerk = 0;
     this.interestedInPerks = new Map<string, boolean>();
   }
 
   setOverviewStep(): void {
+    this.currentPerk = 0;
     this.setUIStep(PerksDiscoveryStep.OVERVIEW);
   }
 
