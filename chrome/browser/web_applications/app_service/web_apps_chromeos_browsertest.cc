@@ -23,6 +23,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -214,20 +216,28 @@ class WebAppsPreventCloseChromeOsBrowserTest
         break;
 
       case AppType::kIsolatedWebApp:
+        auto web_bundle_id = web_app::test::GetDefaultEd25519WebBundleId();
+
+        isolated_web_app_update_server_mixin_.AddBundle(
+            web_app::IsolatedWebAppBuilder(
+                web_app::ManifestBuilder().SetVersion("1.0.0"))
+                .BuildBundle(web_bundle_id,
+                             {web_app::test::GetDefaultEd25519KeyPair()}));
+
         installed_app_url_ =
-            isolated_web_app_update_server_mixin_.GetAppOrigin()
+            web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+                web_bundle_id)
+                .origin()
                 .GetURL()
                 .spec();
         profile()->GetPrefs()->SetList(
             prefs::kIsolatedWebAppInstallForceList,
             base::Value::List().Append(
                 base::Value::Dict()
-                    .Set(web_app::kPolicyWebBundleIdKey,
-                         isolated_web_app_update_server_mixin_.GetWebBundleId()
-                             .id())
+                    .Set(web_app::kPolicyWebBundleIdKey, web_bundle_id.id())
                     .Set(web_app::kPolicyUpdateManifestUrlKey,
                          isolated_web_app_update_server_mixin_
-                             .GetUpdateManifestUrl()
+                             .GetUpdateManifestUrl(web_bundle_id)
                              .spec())));
         break;
     }
@@ -236,7 +246,9 @@ class WebAppsPreventCloseChromeOsBrowserTest
 
   webapps::AppId GetInstalledAppId() const {
     return (GetAppType() == AppType::kIsolatedWebApp)
-               ? isolated_web_app_update_server_mixin_.GetAppId()
+               ? web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+                     web_app::test::GetDefaultEd25519WebBundleId())
+                     .app_id()
                : web_app::kCalculatorAppId;
   }
 
@@ -265,7 +277,7 @@ class WebAppsPreventCloseChromeOsBrowserTest
  protected:
   std::optional<std::string> installed_app_url_;
   web_app::IsolatedWebAppUpdateServerMixin
-      isolated_web_app_update_server_mixin_{&mixin_host_, this};
+      isolated_web_app_update_server_mixin_{&mixin_host_};
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

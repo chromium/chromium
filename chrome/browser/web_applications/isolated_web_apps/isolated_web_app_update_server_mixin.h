@@ -8,53 +8,56 @@
 #include <memory>
 #include <optional>
 
-#include "base/files/file_path.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "base/version.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
-#include "components/webapps/common/web_app_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "url/gurl.h"
 
 class InProcessBrowserTest;
-class Profile;
-
-namespace web_package {
-class SignedWebBundleId;
-}  // namespace web_package
 
 namespace web_app {
 
 class BundledIsolatedWebApp;
 
-// This mixin starts a server that hosts an update manifest and a hardcoded
-// signed web bundle.
+// This mixin starts a server that hosts update manifests and bundles.
 class IsolatedWebAppUpdateServerMixin : public InProcessBrowserTestMixin {
  public:
-  static constexpr std::string_view kUpdateManifestFileName =
-      "update_manifest.json";
-  static constexpr std::string_view kBundleFileName = "bundle.swbn";
-
-  IsolatedWebAppUpdateServerMixin(InProcessBrowserTestMixinHost* mixin_host,
-                                  InProcessBrowserTest* test_base);
+  explicit IsolatedWebAppUpdateServerMixin(
+      InProcessBrowserTestMixinHost* mixin_host);
   ~IsolatedWebAppUpdateServerMixin() override;
 
+  // Sets up `iwa_server_`.
   void SetUpOnMainThread() override;
-  void TearDownOnMainThread() override;
 
-  url::Origin GetAppOrigin() const;
-  webapps::AppId GetAppId() const;
-  web_package::SignedWebBundleId GetWebBundleId() const;
-  GURL GetUpdateManifestUrl() const;
+  // The returned URL has the following structure:
+  //   * /<web_bundle_id>/update_manifest.json
+  GURL GetUpdateManifestUrl(
+      const web_package::SignedWebBundleId& web_bundle_id) const;
+
+  // Adds a bundle to the update server and starts tracking it in the
+  // corresponding update manifest.
+  void AddBundle(std::unique_ptr<BundledIsolatedWebApp> bundle);
+
+  // Removes the bundle with `version` for `web_bundle_id` and stops tracking it
+  // in the corresponding update manifest. Will CHECK if this bundle is not
+  // currently served.
+  void RemoveBundle(const web_package::SignedWebBundleId& web_bundle_id,
+                    const base::Version& version);
 
  private:
-  void SetUpFilesAndServer();
+  // Handles the following routes:
+  //  * /<web_bundle_id>/update_manifest.json
+  //  * /<web_bundle_id>/<version>.swbn
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request);
 
-  Profile* profile();
-
-  raw_ptr<InProcessBrowserTest> test_base_;
-  std::optional<IsolatedWebAppUrlInfo> url_info_;
-  base::FilePath temp_dir_;
   net::EmbeddedTestServer iwa_server_;
-  std::unique_ptr<BundledIsolatedWebApp> bundle_;
+  base::flat_map<
+      web_package::SignedWebBundleId,
+      base::flat_map<base::Version, std::unique_ptr<BundledIsolatedWebApp>>>
+      bundle_versions_per_id_;
 };
 
 }  // namespace web_app
