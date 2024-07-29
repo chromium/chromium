@@ -9,8 +9,6 @@ import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_P
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE;
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
 
-import static org.chromium.chrome.browser.content.WebContentsFactory.DEFAULT_NETWORK_HANDLE;
-
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -31,6 +29,7 @@ import androidx.browser.trusted.sharing.ShareTarget;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.net.NetId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -639,11 +638,11 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * Return the network handle that should be used from this intent, the default value to be used
+     * Return the target network that should be used from this intent, the default value to be used
      * when a network has not been explicitly set via intent.
      */
-    public long getNetworkHandle() {
-        return DEFAULT_NETWORK_HANDLE;
+    public long getTargetNetwork() {
+        return NetId.INVALID;
     }
 
     /** Return {@code true} if the service was launched for authentication. */

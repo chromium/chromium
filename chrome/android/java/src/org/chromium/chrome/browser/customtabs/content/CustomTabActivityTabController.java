@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
-import static org.chromium.chrome.browser.content.WebContentsFactory.DEFAULT_NETWORK_HANDLE;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
 
 import android.content.Intent;
@@ -67,6 +66,7 @@ import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.NetId;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.annotation.Retention;
@@ -437,13 +437,13 @@ public class CustomTabActivityTabController implements InflationObserver {
             return webContents;
         }
 
-        // Check if any available network handle specified via customTabsIntent before creating
+        // Check if any available target network specified via customTabsIntent before creating
         // web contents, and we only use the spare web contents if the provided network is the
         // default one.
         // TODO: this check can be removed once the spare web contents can be created with a
-        // particular network handle as well, e.g. via {@link CustomTabsSession#mayLaunchUrl}.
-        long networkHandle = mIntentDataProvider.getNetworkHandle();
-        if (networkHandle == DEFAULT_NETWORK_HANDLE) {
+        // particular target network as well, e.g. via {@link CustomTabsSession#mayLaunchUrl}.
+        long targetNetwork = mIntentDataProvider.getTargetNetwork();
+        if (targetNetwork == NetId.INVALID) {
             webContents =
                     mWarmupManager.takeSpareWebContents(
                             mIntentDataProvider.isOffTheRecord(), /* initiallyHidden= */ false);
@@ -458,7 +458,7 @@ public class CustomTabActivityTabController implements InflationObserver {
                 ProfileProvider.getOrCreateProfile(
                         mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord()),
                 /* initiallyHidden= */ false,
-                networkHandle);
+                targetNetwork);
     }
 
     private @Nullable WebContents takeAsyncWebContents() {

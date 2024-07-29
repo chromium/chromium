@@ -23,8 +23,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.content.WebContentsFactory.DEFAULT_NETWORK_HANDLE;
-
 import android.content.Intent;
 import android.net.Network;
 import android.os.Bundle;
@@ -45,6 +43,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.NetId;
 
 /** Tests for {@link CustomTabActivityTabController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -64,7 +63,7 @@ public class CustomTabActivityTabControllerUnitTest {
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
     @Mock private Network mNetwork;
 
-    private static final long TEST_NETWORK_HANDLE = 1000;
+    private static final long TEST_TARGET_NETWORK = 1000;
 
     @Before
     public void setUp() {
@@ -72,7 +71,7 @@ public class CustomTabActivityTabControllerUnitTest {
         when(env.profileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(env.profileProvider.getOffTheRecordProfile(eq(true))).thenReturn(mIncognitoProfile);
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
-        when(env.intentDataProvider.getNetworkHandle()).thenReturn(DEFAULT_NETWORK_HANDLE);
+        when(env.intentDataProvider.getTargetNetwork()).thenReturn((long) NetId.INVALID);
 
         mTabController = env.createTabController();
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
@@ -171,9 +170,9 @@ public class CustomTabActivityTabControllerUnitTest {
     @Test
     public void usesWebContentsCreatedWithWarmRenderer_basedOnParticularNetworkHandle() {
         WebContents webContents = mock(WebContents.class);
-        when(env.intentDataProvider.getNetworkHandle()).thenReturn(TEST_NETWORK_HANDLE);
+        when(env.intentDataProvider.getTargetNetwork()).thenReturn(TEST_TARGET_NETWORK);
         when(env.webContentsFactory.createWebContentsWithWarmRenderer(
-                        any(), anyBoolean(), eq(TEST_NETWORK_HANDLE)))
+                        any(), anyBoolean(), eq(TEST_TARGET_NETWORK)))
                 .thenReturn(webContents);
         env.reachNativeInit(mTabController);
         verify(env.warmupManager, never()).takeSpareWebContents(env.isOffTheRecord, false);

@@ -28,6 +28,7 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//components/webapps/browser/android:java",
     "//content/public/android:content_main_dex_java",
+    "//net/android:net_java",
     "//services/device/public/mojom:mojom_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_browser_browser_java",
