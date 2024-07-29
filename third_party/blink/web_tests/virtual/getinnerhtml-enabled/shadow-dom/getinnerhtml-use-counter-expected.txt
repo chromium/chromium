@@ -1,0 +1,4 @@
+CONSOLE WARNING: The getInnerHTML() function is non-standard, deprecated, and will be removed from this browser very soon. At that point, this console warning will become a JavaScript exception. Please use getHTML() instead. See https://chromestatus.com/feature/5081733588582400 for more information.
+This is a testharness.js-based test.
+Harness: the test ran to completion.
+
