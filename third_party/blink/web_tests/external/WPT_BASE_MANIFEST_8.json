@@ -8254,6 +8254,13 @@
        null,
        {}
       ]
+     ],
+     "viewport-100vh.html": [
+      "cc862bd29955ec0c6730614a4eb72e3565c46cd4",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "scroll-timelines": {
@@ -162220,6 +162227,19 @@
        [
         [
          "/css/css-nesting/supports-is-consistent-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "supports-rule.html": [
+      "886eda432370f1262dd55280e9d941cc2667c5aa",
+      [
+       null,
+       [
+        [
+         "/css/css-nesting/supports-rule-ref.html",
          "=="
         ]
        ],
@@ -332075,6 +332095,10 @@
      "supports-is-consistent-ref.html": [
       "0eb8cd16a1688183fa52bc6bc9f2b4243123513d",
       []
+     ],
+     "supports-rule-ref.html": [
+      "1be71b225233ed934bc40b8051f4c9b2682118c8",
+      []
      ]
     },
     "css-overflow": {
@@ -455058,7 +455082,7 @@
        ]
       ],
       "content-visibility-anchor-positioning-007.html": [
-       "988caad79a69441475de8ba3779ecc51dbfaba30",
+       "69e7f6f53e6bf072655e3c6336f885c39bcaeab7",
        [
         null,
         {}
@@ -480941,6 +480965,20 @@
       ]
      ],
      "integer_interpolation_round_half_002.html": [
+      "c9b042ccb8f2d08e04dca56df9715b4081c4d19d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "integer_interpolation_round_half_towards_positive_infinity_order.html": [
+      "60c439ebcf4cb5e6e7a412326b4333a163a6bd60",
+      [
+       null,
+       {}
+      ]
+     ],
+     "integer_interpolation_round_half_towards_positive_infinity_z_index.html": [
       "c9b042ccb8f2d08e04dca56df9715b4081c4d19d",
       [
        null,
