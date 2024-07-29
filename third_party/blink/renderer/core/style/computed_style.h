@@ -2276,6 +2276,11 @@ class ComputedStyle final : public ComputedStyleBase {
     return ScrollMarkerGroup() == other.ScrollMarkerGroup();
   }
 
+  PhysicalBoxStrut ScrollMarginStrut() const {
+    return {LayoutUnit(ScrollMarginTop()), LayoutUnit(ScrollMarginRight()),
+            LayoutUnit(ScrollMarginBottom()), LayoutUnit(ScrollMarginLeft())};
+  }
+
   // Returns true if the element is rendered in the top layer. That is the case
   // when the overlay property computes to 'auto', or when the element is a
   // ::backdrop pseudo.

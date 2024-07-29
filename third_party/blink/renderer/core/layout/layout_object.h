@@ -1571,6 +1571,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return HasNonVisibleOverflow() && StyleRef().IsScrollContainer();
   }
 
+  bool IsScrollContainerWithScrollMarkerGroup() const {
+    NOT_DESTROYED();
+    return IsScrollContainer() && !Style()->ScrollMarkerGroupNone();
+  }
+
   // Not returning StyleRef().HasTransformRelatedProperty() because some objects
   // ignore the transform-related styles (e.g., LayoutInline).
   bool HasTransformRelatedProperty() const {

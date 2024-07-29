@@ -78,20 +78,6 @@ PseudoId ResolvePseudoIdAlias(PseudoId pseudo_id) {
   }
 }
 
-V8ScrollLogicalPosition::Enum SnapAlignmentToV8ScrollLogicalPosition(
-    cc::SnapAlignment alignment) {
-  switch (alignment) {
-    case cc::SnapAlignment::kNone:
-      return V8ScrollLogicalPosition::Enum::kNearest;
-    case cc::SnapAlignment::kStart:
-      return V8ScrollLogicalPosition::Enum::kStart;
-    case cc::SnapAlignment::kEnd:
-      return V8ScrollLogicalPosition::Enum::kEnd;
-    case cc::SnapAlignment::kCenter:
-      return V8ScrollLogicalPosition::Enum::kCenter;
-  }
-}
-
 }  // namespace
 
 PseudoElement* PseudoElement::Create(Element* parent,
@@ -463,19 +449,9 @@ void PseudoElement::DefaultEventHandler(Event& event) {
                           IsScrollMarkerPseudoElement() &&
                           (is_click || is_enter);
   if (should_intercept) {
-    const ComputedStyle* style = originating_element->GetComputedStyle();
-    cc::SnapAlignment block_alignment =
-        style->GetScrollSnapAlign().alignment_block;
-    cc::SnapAlignment inline_alignment =
-        style->GetScrollSnapAlign().alignment_inline;
-
-    ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-    options->setBlock(SnapAlignmentToV8ScrollLogicalPosition(block_alignment));
-    options->setInlinePosition(
-        SnapAlignmentToV8ScrollLogicalPosition(inline_alignment));
     mojom::blink::ScrollIntoViewParamsPtr params =
-        scroll_into_view_util::CreateScrollIntoViewParams(*options, *style);
-
+        scroll_into_view_util::CreateScrollIntoViewParams(
+            *originating_element->GetComputedStyle());
     originating_element->ScrollIntoViewNoVisualUpdate(std::move(params));
     event.SetDefaultHandled();
   }

@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
@@ -78,6 +79,7 @@
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -3112,6 +3114,61 @@ PhysicalRect LayoutBox::LocalCaretRect(
   }
 
   return rect;
+}
+
+// Implements scroll tracking for scroll marker controls as per
+// https://drafts.csswg.org/css-overflow-5/#scroll-container-scroll.
+void LayoutBox::UpdateScrollMarkerControlsAfterScroll() const {
+  NOT_DESTROYED();
+  CHECK(IsScrollContainerWithScrollMarkerGroup());
+  LayoutObject* scroll_marker_group = GetScrollMarkerGroup();
+  CHECK(scroll_marker_group);
+  LayoutObject* selected = scroll_marker_group->SlowFirstChild();
+  PhysicalOffset scroll_offset = ScrolledContentOffset();
+  for (LayoutObject* scroll_marker = selected; scroll_marker;
+       scroll_marker = scroll_marker->NextSibling()) {
+    const LayoutBox* target_box =
+        DynamicTo<LayoutBox>(To<PseudoElement>(scroll_marker->GetNode())
+                                 ->OriginatingElement()
+                                 ->GetLayoutObject());
+    PhysicalBoxStrut scroll_margin =
+        target_box->Style() ? target_box->Style()->ScrollMarginStrut()
+                            : PhysicalBoxStrut();
+    // Ignore sticky position offsets for the purposes of scrolling elements
+    // into view. See https://www.w3.org/TR/css-position-3/#stickypos-scroll for
+    // details
+    const MapCoordinatesFlags flag =
+        (RuntimeEnabledFeatures::CSSPositionStickyStaticScrollPositionEnabled())
+            ? kIgnoreStickyOffset
+            : 0;
+    PhysicalRect rect_to_scroll = AbsoluteToLocalRect(
+        target_box->AbsoluteBoundingBoxRectForScrollIntoView(), flag);
+    rect_to_scroll.Move(scroll_offset);
+    rect_to_scroll.Expand(scroll_margin);
+    ScrollOffset target_scroll_offset =
+        scroll_into_view_util::GetScrollOffsetToExpose(
+            *GetScrollableArea(), rect_to_scroll, scroll_margin,
+            scroll_into_view_util::PhysicalAlignmentFromSnapAlignStyle(
+                *target_box, kHorizontalScroll),
+            scroll_into_view_util::PhysicalAlignmentFromSnapAlignStyle(
+                *target_box, kVerticalScroll));
+    PhysicalOffset target_offset(LayoutUnit(target_scroll_offset.x()),
+                                 LayoutUnit(target_scroll_offset.y()));
+    if (target_offset.left <= scroll_offset.left &&
+        target_offset.top <= scroll_offset.top) {
+      selected = scroll_marker;
+    }
+  }
+  if (!selected) {
+    return;
+  }
+  auto* selected_element = To<PseudoElement>(selected->GetNode());
+  selected_element->Focus();
+  GetDocument().SetFocusedElement(
+      selected_element,
+      FocusParams(SelectionBehaviorOnFocus::kNone,
+                  mojom::blink::FocusType::kMouse, /*capabilities=*/nullptr));
+  selected_element->FocusStateChanged();
 }
 
 PositionWithAffinity LayoutBox::PositionForPointInFragments(

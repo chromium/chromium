@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -17,11 +18,12 @@ class RectF;
 
 namespace blink {
 
+class LayoutBox;
 class LayoutObject;
 class LayoutView;
+class ComputedStyle;
 struct PhysicalRect;
 class ScrollableArea;
-class ComputedStyle;
 class ScrollIntoViewOptions;
 
 namespace scroll_into_view_util {
@@ -80,6 +82,13 @@ CORE_EXPORT mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
 mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
     const ScrollIntoViewOptions& options,
     const ComputedStyle& computed_style);
+
+mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
+    const ComputedStyle& computed_style);
+
+mojom::blink::ScrollAlignment PhysicalAlignmentFromSnapAlignStyle(
+    const LayoutBox& box,
+    ScrollOrientation axis);
 
 }  // namespace scroll_into_view_util
 
