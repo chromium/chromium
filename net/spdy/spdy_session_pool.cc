@@ -228,6 +228,23 @@ base::WeakPtr<SpdySession> SpdySessionPool::FindAvailableSession(
   return base::WeakPtr<SpdySession>();
 }
 
+base::WeakPtr<SpdySession>
+SpdySessionPool::FindMatchingIpSessionForServiceEndpoint(
+    const SpdySessionKey& key,
+    const ServiceEndpoint& service_endpoint,
+    const std::set<std::string>& dns_aliases) {
+  CHECK(!HasAvailableSession(key, /*is_websocket=*/false));
+  CHECK(key.socket_tag() == SocketTag());
+
+  base::WeakPtr<SpdySession> session =
+      FindMatchingIpSession(key, service_endpoint.ipv6_endpoints, dns_aliases);
+  if (session) {
+    return session;
+  }
+  return FindMatchingIpSession(key, service_endpoint.ipv4_endpoints,
+                               dns_aliases);
+}
+
 bool SpdySessionPool::HasAvailableSession(const SpdySessionKey& key,
                                           bool is_websocket) const {
   const auto it = available_sessions_.find(key);
@@ -843,6 +860,47 @@ void SpdySessionPool::RemoveRequestInternal(
     spdy_session_request_map_.erase(request_map_iterator);
   }
   request->OnRemovedFromPool();
+}
+
+base::WeakPtr<SpdySession> SpdySessionPool::FindMatchingIpSession(
+    const SpdySessionKey& key,
+    const std::vector<IPEndPoint> ip_endpoints,
+    const std::set<std::string>& dns_aliases) {
+  for (const auto& endpoint : ip_endpoints) {
+    auto range = aliases_.equal_range(endpoint);
+    for (auto alias_it = range.first; alias_it != range.second; ++alias_it) {
+      // Found a potential alias.
+      const SpdySessionKey& alias_key = alias_it->second;
+      CHECK(alias_key.socket_tag() == SocketTag());
+
+      auto available_session_it = LookupAvailableSessionByKey(alias_key);
+      CHECK(available_session_it != available_sessions_.end());
+
+      SpdySessionKey::CompareForAliasingResult compare_result =
+          alias_key.CompareForAliasing(key);
+      // Keys must be aliasable.
+      if (!compare_result.is_potentially_aliasable) {
+        continue;
+      }
+
+      base::WeakPtr<SpdySession> session = available_session_it->second;
+      if (!session->VerifyDomainAuthentication(key.host_port_pair().host())) {
+        continue;
+      }
+
+      // The found available session can be used for the IPEndpoint that was
+      // resolved as an IP address to `key`.
+
+      // Add the session to the available session map so that we can find it as
+      // available for `key` next time.
+      MapKeyToAvailableSession(key, session, dns_aliases);
+      session->AddPooledAlias(key);
+
+      return session;
+    }
+  }
+
+  return nullptr;
 }
 
 }  // namespace net

@@ -153,7 +153,12 @@ class HttpStreamPool::Job
   void MaybeChangeServiceEndpointRequestPriority();
 
   // Called when service endpoint results have changed or finished.
-  void ProcessServiceEndpoindChanges();
+  void ProcessServiceEndpointChanges();
+
+  // Returns true when there is an active SPDY session that can be used for
+  // on-going requests after service endpoint results has changed. May notify
+  // requests of stream ready.
+  bool CanUseExistingSessionAfterEndpointChanges();
 
   // Calculate SSLConfig if it's not calculated yet and `this` has received
   // enough information to calculate it.
@@ -209,8 +214,7 @@ class HttpStreamPool::Job
 
   ProxyInfo proxy_info_;
 
-  // TODO(crbug.com/346835898): Implement ip-based pooling and enable this flag.
-  bool enable_ip_based_pooling_ = false;
+  bool enable_ip_based_pooling_ = true;
 
   // Holds requests that are waiting for notifications (a delegate method call
   // to indicate success or failure).

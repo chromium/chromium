@@ -67,9 +67,9 @@ HttpStreamPool::StreamResult HttpStreamPool::RequestStream(
     const NetLogWithSource& net_log) {
   SpdySessionKey spdy_session_key(
       HostPortPair::FromSchemeHostPort(stream_key.destination()),
-      stream_key.privacy_mode(), ProxyChain(), SessionUsage::kDestination,
-      stream_key.socket_tag(), stream_key.network_anonymization_key(),
-      stream_key.secure_dns_policy(),
+      stream_key.privacy_mode(), ProxyChain::Direct(),
+      SessionUsage::kDestination, stream_key.socket_tag(),
+      stream_key.network_anonymization_key(), stream_key.secure_dns_policy(),
       stream_key.disable_cert_network_fetches());
 
   base::WeakPtr<SpdySession> spdy_session =
@@ -177,9 +177,9 @@ HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroupForTesting(
     const HttpStreamKey& stream_key) {
   SpdySessionKey spdy_session_key(
       HostPortPair::FromSchemeHostPort(stream_key.destination()),
-      stream_key.privacy_mode(), ProxyChain(), SessionUsage::kDestination,
-      stream_key.socket_tag(), stream_key.network_anonymization_key(),
-      stream_key.secure_dns_policy(),
+      stream_key.privacy_mode(), ProxyChain::Direct(),
+      SessionUsage::kDestination, stream_key.socket_tag(),
+      stream_key.network_anonymization_key(), stream_key.secure_dns_policy(),
       stream_key.disable_cert_network_fetches());
   return GetOrCreateGroup(stream_key, std::move(spdy_session_key));
 }

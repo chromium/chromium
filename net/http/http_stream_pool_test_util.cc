@@ -10,6 +10,8 @@
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
@@ -22,6 +24,8 @@ std::unique_ptr<FakeStreamSocket> FakeStreamSocket::CreateForSpdy() {
                                 &ssl_info.connection_status);
   SSLConnectionStatusSetCipherSuite(0x1301 /* TLS_CHACHA20_POLY1305_SHA256 */,
                                     &ssl_info.connection_status);
+  ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
   stream->set_ssl_info(ssl_info);
   return stream;
 }

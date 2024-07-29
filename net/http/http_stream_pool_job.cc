@@ -149,7 +149,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
 }
 
 void HttpStreamPool::Job::OnServiceEndpointsUpdated() {
-  ProcessServiceEndpoindChanges();
+  ProcessServiceEndpointChanges();
 }
 
 void HttpStreamPool::Job::OnServiceEndpointRequestFinished(int rv) {
@@ -165,7 +165,7 @@ void HttpStreamPool::Job::OnServiceEndpointRequestFinished(int rv) {
   }
 
   CHECK(!service_endpoint_request_->GetEndpointResults().empty());
-  ProcessServiceEndpoindChanges();
+  ProcessServiceEndpointChanges();
 }
 
 int HttpStreamPool::Job::WaitForSSLConfigReady(
@@ -284,9 +284,37 @@ void HttpStreamPool::Job::MaybeChangeServiceEndpointRequestPriority() {
   }
 }
 
-void HttpStreamPool::Job::ProcessServiceEndpoindChanges() {
+void HttpStreamPool::Job::ProcessServiceEndpointChanges() {
+  if (CanUseExistingSessionAfterEndpointChanges()) {
+    return;
+  }
   MaybeCalculateSSLConfig();
   MaybeAttemptConnection();
+}
+
+bool HttpStreamPool::Job::CanUseExistingSessionAfterEndpointChanges() {
+  CHECK(service_endpoint_request_);
+  if (spdy_session_) {
+    return true;
+  }
+
+  if (!enable_ip_based_pooling_) {
+    return false;
+  }
+
+  for (const auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
+    spdy_session_ =
+        spdy_session_pool()->FindMatchingIpSessionForServiceEndpoint(
+            spdy_session_key(), endpoint,
+            service_endpoint_request_->GetDnsAliasResults());
+    if (spdy_session_) {
+      group_->Refresh();
+      CreateSpdyStreamAndNotify();
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void HttpStreamPool::Job::MaybeCalculateSSLConfig() {
