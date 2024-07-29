@@ -3284,28 +3284,6 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
   EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
 
-TEST_F(OnDeviceModelServiceControllerTest,
-       FailsWhenOnDeviceModelAdaptationMissing) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kOptimizationGuideComposeOnDeviceEval,
-       features::internal::kModelAdaptationCompose},
-      {});
-
-  Initialize();
-
-  base::HistogramTester histogram_tester;
-  auto session = test_controller_->CreateSession(
-      ModelBasedCapabilityKey::kCompose, base::DoNothing(),
-      logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_FALSE(session);
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
-      OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable, 1);
-}
-
 TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
@@ -3338,8 +3316,6 @@ TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_test.reason_);
-  EXPECT_EQ(OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable,
-            availability_observer_compose.reason_);
 
   on_device_model::AdaptationAssetPaths asset_paths;
   test_controller_->MaybeUpdateModelAdaptation(

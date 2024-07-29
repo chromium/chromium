@@ -146,19 +146,18 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
     case mojom::blink::ModelAvailabilityCheckResult::
         kNoFeatureExecutionNotEnabled:
       return "Model execution for this feature was not enabled.";
-    case mojom::blink::ModelAvailabilityCheckResult::
-        kNoModelAdaptationNotAvailable:
-      return "Model adaptation was required but not available.";
     case mojom::blink::ModelAvailabilityCheckResult::kNoValidationPending:
       return "Model validation is still pending.";
     case mojom::blink::ModelAvailabilityCheckResult::kNoValidationFailed:
       return "Model validation failed.";
     case mojom::blink::ModelAvailabilityCheckResult::kReadily:
     case mojom::blink::ModelAvailabilityCheckResult::kAfterDownload:
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kNoModelAdaptationNotAvailable:
       NOTREACHED_IN_MIGRATION();
   }
   NOTREACHED_NORETURN();
 }
-// LINT.ThenChange(//third_party/blink/public/mojom/ai.mojom:ModelAvailabilityCheckResult)
+// LINT.ThenChange(//third_party/blink/public/mojom/ai_manager.mojom:ModelAvailabilityCheckResult)
 
 }  // namespace blink
