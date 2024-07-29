@@ -46,10 +46,12 @@
 #include <stddef.h>
 
 #include <string>
+
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/strings/stringize_macros.h"
+#include "base/version_info/channel.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "google_apis/google_api_keys_mac.h"
@@ -609,6 +611,7 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingSetters) {
   EXPECT_TRUE(testcase::HasAPIKeyConfigured());
   EXPECT_TRUE(testcase::HasOAuthClientConfigured());
 
+  EXPECT_EQ(api_key, testcase::GetAPIKey(::version_info::Channel::STABLE));
   EXPECT_EQ(api_key, testcase::GetAPIKey());
 
   EXPECT_EQ(id_main, testcase::GetOAuth2ClientID(testcase::CLIENT_MAIN));
@@ -670,6 +673,8 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingConfig) {
   EXPECT_TRUE(testcase::HasAPIKeyConfigured());
   EXPECT_TRUE(testcase::HasOAuthClientConfigured());
 
+  EXPECT_EQ("config-API_KEY",
+            testcase::GetAPIKey(::version_info::Channel::STABLE));
   EXPECT_EQ("config-API_KEY", testcase::GetAPIKey());
   EXPECT_EQ("config-ID_MAIN",
             testcase::GetOAuth2ClientID(testcase::CLIENT_MAIN));

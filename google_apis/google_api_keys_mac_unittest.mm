@@ -38,6 +38,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/strings/stringize_macros.h"
+#include "base/version_info/channel.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/google_api_keys_mac.h"
 #include "google_apis/google_api_keys_utils.h"

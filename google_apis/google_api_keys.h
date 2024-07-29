@@ -14,6 +14,10 @@
 #include "build/chromeos_buildflags.h"
 #include "google_apis/buildflags.h"
 
+namespace version_info {
+enum class Channel;
+}
+
 // These functions enable you to retrieve keys to use for Google APIs
 // such as Translate and Safe Browsing.
 //
@@ -72,9 +76,23 @@ COMPONENT_EXPORT(GOOGLE_APIS) bool HasAPIKeyConfigured();
 //
 // Note that the key should be escaped for the context you use it in,
 // e.g. URL-escaped if you use it in a URL.
+//
+// If you want to attach the key to a network request, consider using
+// `AddDefaultAPIKeyToRequest()` rather than calling this method and manually
+// adding the key.
+COMPONENT_EXPORT(GOOGLE_APIS)
+std::string GetAPIKey(version_info::Channel channel);
+
+// Retrieves the API key, for the stable channel.
+//
+// DEPRECATED: Use `GetAPIKey(channel)` to get the right key for your
+// distribution channel instead of calling this function directly.
 COMPONENT_EXPORT(GOOGLE_APIS) std::string GetAPIKey();
 
 // Non-stable channels may have a different Google API key.
+//
+// DEPRECATED: Use `GetAPIKey(channel)` to get the right key for your
+// distribution channel instead of calling this function directly.
 COMPONENT_EXPORT(GOOGLE_APIS) std::string GetNonStableAPIKey();
 
 // Retrieves the Chrome Remote Desktop API key.
