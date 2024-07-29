@@ -250,14 +250,22 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // This enum describes the outcome an account chooser and is used for
   // histograms. Do not remove or modify existing values, but you may add new
   // values at the end. This enum should be kept in sync with
+  // AccountChooserResult in
+  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
   // FedCmAccountChooserResult in tools/metrics/histograms/enums.xml.
   enum class AccountChooserResult {
     kAccountRow,
     kCancelButton,
     kUseOtherAccountButton,
     kTabClosed,
+    // Android-specific
+    kSwipe,
+    // Android-specific
+    kBackPress,
+    // Android-specific
+    kTapScrim,
 
-    kMaxValue = kTabClosed
+    kMaxValue = kTapScrim
   };
 
   // views::WidgetObserver:

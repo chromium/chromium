@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
@@ -91,12 +92,43 @@ class AccountSelectionMediator {
         int NUM_ENTRIES = 6;
     }
 
+    /**
+     * The following integers are used for histograms. Do not remove or modify existing values, but
+     * you may add new values at the end and increase NUM_ENTRIES. This enum should be kept in sync
+     * with AccountChooserResult in
+     * chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h as well as with
+     * FedCmAccountChooserResult in tools/metrics/histograms/enums.xml.
+     */
+    @IntDef({
+        AccountChooserResult.ACCOUNT_ROW,
+        AccountChooserResult.CANCEL_BUTTON,
+        AccountChooserResult.USE_OTHER_ACCOUNT_BUTTON,
+        AccountChooserResult.TAB_CLOSED,
+        AccountChooserResult.SWIPE,
+        AccountChooserResult.BACK_PRESS,
+        AccountChooserResult.TAP_SCRIM,
+        AccountChooserResult.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    @interface AccountChooserResult {
+        int ACCOUNT_ROW = 0;
+        int CANCEL_BUTTON = 1;
+        int USE_OTHER_ACCOUNT_BUTTON = 2;
+        int TAB_CLOSED = 3;
+        int SWIPE = 4;
+        int BACK_PRESS = 5;
+        int TAP_SCRIM = 6;
+
+        int NUM_ENTRIES = 7;
+    }
+
     private boolean mRegisteredObservers;
     private boolean mWasDismissed;
     // Keeps track of the last bottom sheet seen by the BottomSheetObserver. Used to know whether a
     // sheet state change affects the BottomSheet owned by this object or not.
     private BottomSheetContent mLastSheetSeen;
-    private final Tab mTab;
+    @VisibleForTesting private final Tab mTab;
     private final AccountSelectionComponent.Delegate mDelegate;
     private final PropertyModel mModel;
     private final ModelList mSheetAccountItems;
@@ -141,6 +173,10 @@ class AccountSelectionMediator {
 
     // View to explicitly focus on for screen reader accessibility purposes.
     private View mFocusView;
+
+    // The current state of the account chooser if opened for metrics purposes. Histogram is only
+    // recorded for button mode.
+    private @Nullable Integer mAccountChooserState;
 
     private KeyboardVisibilityListener mKeyboardVisibilityListener =
             new KeyboardVisibilityListener() {
@@ -221,10 +257,37 @@ class AccountSelectionMediator {
                             } else {
                                 super.onSheetClosed(reason);
                                 @IdentityRequestDialogDismissReason
-                                int dismissReason =
-                                        (reason == BottomSheetController.StateChangeReason.SWIPE)
-                                                ? IdentityRequestDialogDismissReason.SWIPE
-                                                : IdentityRequestDialogDismissReason.OTHER;
+                                int dismissReason = IdentityRequestDialogDismissReason.OTHER;
+                                if (reason == BottomSheetController.StateChangeReason.SWIPE) {
+                                    dismissReason = IdentityRequestDialogDismissReason.SWIPE;
+                                    // mAccountChooserState is not null only if we want to record
+                                    // this metric, that is, a button mode explicit sign-in account
+                                    // chooser was shown.
+                                    mAccountChooserState =
+                                            mAccountChooserState != null
+                                                    ? AccountChooserResult.SWIPE
+                                                    : null;
+                                } else if (reason
+                                        == BottomSheetController.StateChangeReason.BACK_PRESS) {
+                                    dismissReason = IdentityRequestDialogDismissReason.BACK_PRESS;
+                                    // mAccountChooserState is not null only if we want to record
+                                    // this metric, that is, a button mode explicit sign-in account
+                                    // chooser was shown.
+                                    mAccountChooserState =
+                                            mAccountChooserState != null
+                                                    ? AccountChooserResult.BACK_PRESS
+                                                    : null;
+                                } else if (reason
+                                        == BottomSheetController.StateChangeReason.TAP_SCRIM) {
+                                    dismissReason = IdentityRequestDialogDismissReason.TAP_SCRIM;
+                                    // mAccountChooserState is not null only if we want to record
+                                    // this metric, that is, a button mode explicit sign-in account
+                                    // chooser was shown.
+                                    mAccountChooserState =
+                                            mAccountChooserState != null
+                                                    ? AccountChooserResult.TAP_SCRIM
+                                                    : null;
+                                }
                                 onDismissed(dismissReason);
                             }
                             return;
@@ -448,6 +511,14 @@ class AccountSelectionMediator {
         updateHeader();
     }
 
+    private void maybeRecordAccountChooserResult(int result) {
+        if (mAccountChooserState == null) return;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Blink.FedCm.Button.AccountChooserResult", result, SheetType.NUM_ENTRIES);
+        mAccountChooserState = null;
+    }
+
     void showVerifySheet(Account account) {
         if (mHeaderType == HeaderType.SIGN_IN || mHeaderType == HeaderType.REQUEST_PERMISSION) {
             mHeaderType = HeaderType.VERIFY;
@@ -504,6 +575,15 @@ class AccountSelectionMediator {
         // RP brand icon is fetched here, but not shown until the request permission dialog.
         if (mRpMode == RpMode.BUTTON) {
             fetchBrandIcon(clientMetadata.getBrandIconUrl(), bitmap -> updateRpBrandIcon(bitmap));
+        }
+
+        // This is a placeholder assuming the tab containing the account chooser will be closed.
+        // This will be updated upon user action i.e. clicking on account row, use
+        // other account button or swiped down. If we do not receive any of these actions by time
+        // onDismissed() is called, it means our placeholder assumption is true i.e. the user has
+        // closed the tab.
+        if (mRpMode == RpMode.BUTTON && !isAutoReauthn) {
+            mAccountChooserState = AccountChooserResult.TAB_CLOSED;
         }
     }
 
@@ -812,6 +892,7 @@ class AccountSelectionMediator {
         // This method only has an Account to match the type of the event listener.
         assert account == null;
         if (!shouldInputBeProcessed()) return;
+        maybeRecordAccountChooserResult(AccountChooserResult.USE_OTHER_ACCOUNT_BUTTON);
         mDelegate.onLoginToIdP(mIdpMetadata.getConfigUrl(), mIdpMetadata.getLoginUrl());
     }
 
@@ -827,11 +908,11 @@ class AccountSelectionMediator {
      * bottomsheet.
      *
      * @param selectedAccount is the account that the user tapped on. If the user instead tapped on
-     *         the continue button, it is the account displayed if this was the single account
-     *         chooser.
+     *     the continue button, it is the account displayed if this was the single account chooser.
      */
     void onClickAccountSelected(Account selectedAccount) {
         if (!shouldInputBeProcessed()) return;
+        maybeRecordAccountChooserResult(AccountChooserResult.ACCOUNT_ROW);
         onAccountSelected(selectedAccount);
     }
 
@@ -887,6 +968,9 @@ class AccountSelectionMediator {
     }
 
     void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
+        if (mAccountChooserState != null) {
+            maybeRecordAccountChooserResult(mAccountChooserState);
+        }
         dismissContent();
         mDelegate.onDismissed(dismissReason);
     }

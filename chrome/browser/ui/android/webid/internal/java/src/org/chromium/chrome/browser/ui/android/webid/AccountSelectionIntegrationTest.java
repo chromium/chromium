@@ -108,7 +108,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
 
         Espresso.pressBack();
 
-        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.BACK_PRESS);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
     }
 
@@ -249,7 +249,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
 
         Espresso.pressBack();
 
-        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.BACK_PRESS);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
     }
 
@@ -373,7 +373,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
 
         Espresso.pressBack();
 
-        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.BACK_PRESS);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
     }
 
