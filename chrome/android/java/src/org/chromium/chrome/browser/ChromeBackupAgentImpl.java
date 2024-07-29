@@ -90,6 +90,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         RestoreStatus.DEPRECATED_SIGNIN_TIMED_OUT,
         RestoreStatus.DEPRECATED_RESTORE_STATUS_RECORDED,
         RestoreStatus.SIGNIN_TIMED_OUT,
+        RestoreStatus.RESTORE_STARTED_NOT_FINISHED,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface RestoreStatus {
@@ -109,7 +110,11 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         int DEPRECATED_RESTORE_STATUS_RECORDED = 6;
         int SIGNIN_TIMED_OUT = 7;
 
-        int NUM_ENTRIES = 7;
+        // Recorded if `onRestore` was called but the restore flow died or timed out before it could
+        // record a more specific result.
+        int RESTORE_STARTED_NOT_FINISHED = 8;
+
+        int NUM_ENTRIES = RESTORE_STARTED_NOT_FINISHED;
     }
 
     @VisibleForTesting static final String RESTORE_STATUS = "android_restore_status";
@@ -366,6 +371,13 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         // TODO(aberent) Check that this is not running on the UI thread. Doing so, however, makes
         // testing difficult since the test code runs on the UI thread.
 
+        // TODO(https://crbug.com/353661640): Use return value to ensure `RestoreStatus` is provided
+        //         by return statements.
+        //
+        // Non-timeout return statements in this method call `setRestoreStatus` before returning -
+        // this is a fallback value that will be used if the restore flow times out or crashes.
+        setRestoreStatus(RestoreStatus.RESTORE_STARTED_NOT_FINISHED);
+
         // Check that the user hasn't already seen FRE (not sure if this can ever happen, but if it
         // does then restoring the backup will overwrite the user's choices).
         SharedPreferences sharedPrefs = ContextUtils.getAppSharedPreferences();
@@ -453,6 +465,36 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             // Something went wrong starting Chrome, skip the restore.
             setRestoreStatus(RestoreStatus.BROWSER_STARTUP_FAILED);
             return;
+        }
+
+        if (SigninFeatureMap.isEnabled(
+                        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            final CountDownLatch accountsLatch = new CountDownLatch(1);
+            PostTask.runSynchronously(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        AccountManagerFacadeProvider.getInstance()
+                                .getCoreAccountInfos()
+                                .then(
+                                        (ignored) -> {
+                                            accountsLatch.countDown();
+                                        });
+                    });
+            try {
+                // Explicit timeout is not needed here. In the scenario where accounts are not
+                // available - the restore flow will be stopped several lines below. So, having an
+                // explicit timeout would still result in the state not getting restored. Thus, it
+                // is cleaner to just wait without an explicit timeout and rely on the BackupManager
+                // killing the process if accounts never become available.
+                accountsLatch.await();
+            } catch (InterruptedException e) {
+                // Normally, this shouldn't happen (Chrome process will just get killed). Use
+                // `RESTORE_STARTED_NOT_FINISHED` as fallback in the unlikely scenario it happens.
+                setRestoreStatus(RestoreStatus.RESTORE_STARTED_NOT_FINISHED);
+                return;
+            }
         }
 
         @Nullable
