@@ -5430,16 +5430,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "ios-password-auth-on-entry",
-    "owners": ["eic@chromium.org", "bling-integrations-team@google.com"],
-    "expiry_milestone": 121
-  },
-  {
-    "name": "ios-password-auth-on-entry-v2",
-    "owners": ["eic@chromium.org", "bling-transactions@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "ios-password-bottom-sheet-autofocus",
     "owners": ["sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com"],
     "expiry_milestone": 140

@@ -600,12 +600,6 @@ const char kIOSKeyboardAccessoryUpgradeName[] =
 const char kIOSKeyboardAccessoryUpgradeDescription[] =
     "When enabled, the upgraded keyboard accessory UI will be presented.";
 
-const char kIOSPasswordAuthOnEntryV2Name[] =
-    "Password Manager Auth on Entry V2";
-const char kIOSPasswordAuthOnEntryV2Description[] =
-    "Requires Local Authentication before showing saved credentials in "
-    "Password Manager subpages.";
-
 const char kIOSChooseFromDriveName[] = "IOS Choose from Drive";
 const char kIOSChooseFromDriveDescription[] =
     "Enables the Choose from Drive feature on iOS.";

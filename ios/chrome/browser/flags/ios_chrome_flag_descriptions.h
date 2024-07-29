@@ -506,11 +506,6 @@ extern const char kIOSEditMenuHideSearchWebDescription[];
 extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];
 
-// Title and description for the flag to require Local Authentication before
-// accessing the any of the Password Manager surfaces.
-extern const char kIOSPasswordAuthOnEntryV2Name[];
-extern const char kIOSPasswordAuthOnEntryV2Description[];
-
 // Title and description for the flag to enable password bottom sheet triggering
 // on autofocus on IOS.
 extern const char kIOSPasswordBottomSheetAutofocusName[];
