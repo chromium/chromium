@@ -71,7 +71,7 @@ void LogIsAutofillProfileEnabledAtStartup(bool enabled) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.Address.IsEnabled.Startup", enabled);
 }
 
-void LogIsAutofillCreditCardEnabledAtStartup(bool enabled) {
+void LogIsAutofillPaymentMethodsEnabledAtStartup(bool enabled) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.CreditCard.IsEnabled.Startup", enabled);
 }
 
@@ -97,7 +97,7 @@ void LogIsAutofillProfileEnabledAtPageLoad(
       enabled);
 }
 
-void LogIsAutofillCreditCardEnabledAtPageLoad(
+void LogIsAutofillPaymentMethodsEnabledAtPageLoad(
     bool enabled,
     AutofillMetrics::PaymentsSigninState sync_state) {
   std::string name = "Autofill.CreditCard.IsEnabled.PageLoad";
