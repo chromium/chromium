@@ -3060,13 +3060,11 @@
     },
     {
       name: "PaintHoldingForIframes",
-      status: "test",
-      implied_by: ["ViewTransitionOnNavigationForIframes"],
+      status: "stable",
     },
     {
       name: "PaintHoldingForLocalIframes",
       status: "stable",
-      implied_by: ["ViewTransitionOnNavigationForIframes"],
     },
     {
       name: "PaintUnderInvalidationChecking",
