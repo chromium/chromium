@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/fixed_array.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/compositor_switches.h"
@@ -83,11 +84,7 @@ class PointScanControllerTest : public AshTestBase {
     diff_count_ = 0;
     row_diff_count_ = 0;
     col_diff_count_ = 0;
-    bool row_diff_tracker_[before_bmp_.height()];
-    for (int i = 0; i < before_bmp_.height(); ++i) {
-      row_diff_tracker_[i] = false;
-    }
-
+    base::FixedArray<bool> row_diff_tracker_(before_bmp_.height(), false);
     for (int x = 0; x < before_bmp_.width(); ++x) {
       bool col_diff = false;
       for (int y = 0; y < before_bmp_.height(); ++y) {
