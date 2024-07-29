@@ -12,15 +12,18 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+
+class PrefService;
 
 // ChromeBrowserStateManager implementation.
 class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
                                       public ChromeBrowserState::Delegate {
  public:
-  ChromeBrowserStateManagerImpl();
+  explicit ChromeBrowserStateManagerImpl(PrefService* local_state);
 
   ChromeBrowserStateManagerImpl(const ChromeBrowserStateManagerImpl&) = delete;
   ChromeBrowserStateManagerImpl& operator=(
@@ -74,8 +77,13 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
   // added yet.
   void AddBrowserStateToCache(ChromeBrowserState* browser_state);
 
+  // The PrefService storing the local state.
+  raw_ptr<PrefService> local_state_;
+
   // Holds the ChromeBrowserState instances that this instance has created.
   ChromeBrowserMap browser_states_;
+
+  // The owned BrowserStateInfoCache instance. Lazily created.
   std::unique_ptr<BrowserStateInfoCache> browser_state_info_cache_;
 };
 

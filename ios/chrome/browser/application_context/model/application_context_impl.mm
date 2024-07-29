@@ -320,7 +320,8 @@ ios::ChromeBrowserStateManager*
 ApplicationContextImpl::GetChromeBrowserStateManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!chrome_browser_state_manager_) {
-    chrome_browser_state_manager_.reset(new ChromeBrowserStateManagerImpl());
+    chrome_browser_state_manager_ =
+        std::make_unique<ChromeBrowserStateManagerImpl>(GetLocalState());
   }
   return chrome_browser_state_manager_.get();
 }

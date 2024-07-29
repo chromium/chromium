@@ -38,7 +38,8 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
  public:
   ChromeBrowserStateManagerImplTest()
       : web_task_environment_(
-            web::WebTaskEnvironment::IOThreadType::REAL_THREAD_DELAYED) {
+            web::WebTaskEnvironment::IOThreadType::REAL_THREAD_DELAYED),
+        browser_state_manager_(GetApplicationContext()->GetLocalState()) {
     TestingApplicationContext* application_context =
         TestingApplicationContext::GetGlobal();
 

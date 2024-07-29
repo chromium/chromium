@@ -8,6 +8,7 @@
 
 #import <utility>
 
+#import "base/check.h"
 #import "base/check_deref.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
@@ -31,7 +32,6 @@
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -114,7 +114,11 @@ base::FilePath GetUserDataDir() {
 
 }  // namespace
 
-ChromeBrowserStateManagerImpl::ChromeBrowserStateManagerImpl() {}
+ChromeBrowserStateManagerImpl::ChromeBrowserStateManagerImpl(
+    PrefService* local_state)
+    : local_state_(local_state) {
+  CHECK(local_state_);
+}
 
 ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {}
 
@@ -145,10 +149,8 @@ ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByPath(
 }
 
 std::string ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateName() const {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  DCHECK(local_state);
   std::string last_used_browser_state_name =
-      local_state->GetString(prefs::kBrowserStateLastUsed);
+      local_state_->GetString(prefs::kBrowserStateLastUsed);
   if (last_used_browser_state_name.empty()) {
     last_used_browser_state_name = kIOSChromeInitialBrowserState;
   }
@@ -159,8 +161,8 @@ std::string ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateName() const {
 BrowserStateInfoCache*
 ChromeBrowserStateManagerImpl::GetBrowserStateInfoCache() {
   if (!browser_state_info_cache_) {
-    browser_state_info_cache_ = std::make_unique<BrowserStateInfoCache>(
-        GetApplicationContext()->GetLocalState());
+    browser_state_info_cache_ =
+        std::make_unique<BrowserStateInfoCache>(local_state_.get());
   }
   return browser_state_info_cache_.get();
 }
@@ -175,9 +177,8 @@ ChromeBrowserStateManagerImpl::GetLoadedBrowserStates() {
 }
 
 void ChromeBrowserStateManagerImpl::LoadBrowserStates() {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
   const base::Value::List& last_active_browser_states =
-      CHECK_DEREF(local_state).GetList(prefs::kBrowserStatesLastActive);
+      local_state_->GetList(prefs::kBrowserStatesLastActive);
 
   std::set<std::string> last_active_browser_states_set;
   for (const base::Value& browser_state_id : last_active_browser_states) {
@@ -258,8 +259,7 @@ void ChromeBrowserStateManagerImpl::DoFinalInit(
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&BrowserStateSizeTask, path), base::Seconds(112));
 
-  LogNumberOfBrowserStates(
-      GetApplicationContext()->GetChromeBrowserStateManager());
+  LogNumberOfBrowserStates(this);
 }
 
 void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
