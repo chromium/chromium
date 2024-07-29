@@ -23075,6 +23075,7 @@
                 {
                     "name": "Phase2",
                     "enable_features": [
+                        "EnableBatchUploadFromSettings",
                         "EnablePasswordsAccountStorageForNonSyncingUsers",
                         "FeedBottomSyncStringRemoval",
                         "HideSettingsSignInPromo",
