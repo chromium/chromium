@@ -1,6 +1,6 @@
 {
     "archives": {
-        "default": {
+        "file://index.html": {
             "DEFAULT": "crossbench_android_speedometer_3.0_000.wprgo"
         }
     },

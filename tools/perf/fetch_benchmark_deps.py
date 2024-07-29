@@ -15,9 +15,12 @@ from six.moves import input  # pylint: disable=redefined-builtin
 from chrome_telemetry_build import chromium_config
 from core import benchmark_finders
 from core import path_util
+from page_sets import speedometer3_pages
 from py_utils import cloud_storage
 
 from telemetry.core import optparse_argparse_migration as oam
+from telemetry.core import platform as platform_module
+from telemetry.internal.util import binary_manager
 
 def _FetchDependenciesIfNeeded(story_set):
   """ Download files needed by a user story set. """
@@ -79,6 +82,20 @@ def _FetchDepsForBenchmark(benchmark):
   return deps
 
 
+def FetchDepsForCrossbench():
+  # TODO: Fetch all crossbench archive files when they are available.
+  story_set = speedometer3_pages.Speedometer30CrossbenchStory()
+  story_names = [s.name for s in story_set]
+  story_set.wpr_archive_info.DownloadArchivesIfNeeded(story_names=story_names)
+  platform = platform_module.GetHostPlatform()
+  binary_manager.InitDependencyManager(None)
+  binary_manager.FetchBinaryDependencies(
+      platform,
+      client_configs=[],
+      fetch_reference_chrome_binary=False,
+      dependency_filter=['wpr_go', 'httparchive_go'])
+
+
 def main(args):
   parser = argparse.ArgumentParser(
          description='Fetch the dependencies of perf benchmark(s).')
@@ -131,6 +148,8 @@ def main(args):
          options.platform in supported_platforms or
          'all' in supported_platforms):
         deps[b.Name()] = _FetchDepsForBenchmark(b)
+
+  FetchDepsForCrossbench()
 
   if options.output_deps:
     with open(options.output_deps, 'w') as outfile:
