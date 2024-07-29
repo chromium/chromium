@@ -12,6 +12,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/model/model_type_store.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace syncer {
 class ModelTypeChangeProcessor;
@@ -22,11 +24,13 @@ class PrefService;
 
 namespace ash::floating_sso {
 
-class FloatingSsoService : public KeyedService {
+class FloatingSsoService : public KeyedService,
+                           public network::mojom::CookieChangeListener {
  public:
   FloatingSsoService(
       PrefService* prefs,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      network::mojom::CookieManager* cookie_manager,
       syncer::OnceModelTypeStoreFactory create_store_callback);
   FloatingSsoService(const FloatingSsoService&) = delete;
   FloatingSsoService& operator=(const FloatingSsoService&) = delete;
@@ -36,7 +40,12 @@ class FloatingSsoService : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
+  // network::mojom::CookieChangeListener:
+  void OnCookieChange(const net::CookieChangeInfo& change) override;
+
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate();
+
+  FloatingSsoSyncBridge* GetBridgeForTesting() { return &bridge_; }
 
   // TODO: b/346354327 - temporary flag used for testing. Remove after
   // actual behavior is implemented.
@@ -48,9 +57,23 @@ class FloatingSsoService : public KeyedService {
   // apply cookies from Sync if needed. If not, stop all of the above.
   void StartOrStop();
 
+  void MaybeStartListening();
+  void BindToCookieManager();
+  void OnCookiesLoaded(const net::CookieList& cookies);
+  bool ShouldSyncCookie(const net::CanonicalCookie& cookie) const;
+  void OnConnectionError();
+  bool IsFloatingWorkspaceEnabled() const;
+
   raw_ptr<PrefService> prefs_ = nullptr;
+  const raw_ptr<network::mojom::CookieManager> cookie_manager_;
   FloatingSsoSyncBridge bridge_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // Whether we connect for the first time to the cookie manager or we are
+  // reconnecting after a disconnect.
+  bool is_initial_cookie_manager_bind_ = true;
+
+  mojo::Receiver<network::mojom::CookieChangeListener> receiver_{this};
 };
 
 }  // namespace ash::floating_sso

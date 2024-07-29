@@ -19,14 +19,17 @@ static_library("floating_sso") {
   ]
 
   deps = [
+    "//ash/constants:constants",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
     "//chrome/common",
     "//chrome/common:channel_info",
+    "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/sync/service",
+    "//content/public/browser",
     "//net",
   ]
 }
