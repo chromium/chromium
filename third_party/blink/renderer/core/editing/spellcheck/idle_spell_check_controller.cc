@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
 
+#include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -99,8 +100,10 @@ bool IdleSpellCheckController::IsSpellCheckingEnabled() const {
 }
 
 void IdleSpellCheckController::DisposeIdleCallback() {
-  if (idle_callback_handle_ != kInvalidHandle && GetExecutionContext())
-    GetDocument().CancelIdleCallback(idle_callback_handle_);
+  if (idle_callback_handle_ != kInvalidHandle && GetExecutionContext()) {
+    ScriptedIdleTaskController::From(*GetExecutionContext())
+        .CancelCallback(idle_callback_handle_);
+  }
   idle_callback_handle_ = kInvalidHandle;
 }
 
@@ -170,8 +173,9 @@ void IdleSpellCheckController::SetNeedsInvocation() {
 
   IdleRequestOptions* options = IdleRequestOptions::Create();
   options->setTimeout(kHotModeRequestTimeoutMS);
-  idle_callback_handle_ = GetDocument().RequestIdleCallback(
-      MakeGarbageCollected<IdleCallback>(this), options);
+  idle_callback_handle_ =
+      ScriptedIdleTaskController::From(CHECK_DEREF(GetExecutionContext()))
+          .RegisterCallback(MakeGarbageCollected<IdleCallback>(this), options);
   state_ = State::kHotModeRequested;
 }
 
@@ -201,8 +205,10 @@ void IdleSpellCheckController::ColdModeTimerFired() {
     return;
   }
 
-  idle_callback_handle_ = GetDocument().RequestIdleCallback(
-      MakeGarbageCollected<IdleCallback>(this), IdleRequestOptions::Create());
+  idle_callback_handle_ =
+      ScriptedIdleTaskController::From(CHECK_DEREF(GetExecutionContext()))
+          .RegisterCallback(MakeGarbageCollected<IdleCallback>(this),
+                            IdleRequestOptions::Create());
   state_ = State::kColdModeRequested;
 }
 
@@ -318,7 +324,10 @@ void IdleSpellCheckController::ForceInvocationForTesting() {
       break;
     case State::kHotModeRequested:
     case State::kColdModeRequested:
-      GetDocument().CancelIdleCallback(idle_callback_handle_);
+      if (GetExecutionContext()) {
+        ScriptedIdleTaskController::From(*GetExecutionContext())
+            .CancelCallback(idle_callback_handle_);
+      }
       Invoke(deadline);
       break;
     case State::kInactive:

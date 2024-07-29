@@ -326,7 +326,6 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_controller.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_size.h"
-#include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 #include "third_party/blink/renderer/core/script/detect_javascript_frameworks.h"
 #include "third_party/blink/renderer/core/script/script_runner.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -3082,8 +3081,6 @@ void Document::Shutdown() {
           AnchorElementMetricsSender::GetForFrame(GetFrame())) {
     sender->DocumentDetached(*this);
   }
-
-  scripted_idle_task_controller_.Clear();
 
   if (SvgExtensions())
     AccessSVGExtensions().PauseAnimations();
@@ -8181,31 +8178,6 @@ void Document::CancelAnimationFrame(int id) {
   scripted_animation_controller_->CancelFrameCallback(id);
 }
 
-ScriptedIdleTaskController& Document::EnsureScriptedIdleTaskController() {
-  if (!scripted_idle_task_controller_) {
-    scripted_idle_task_controller_ =
-        ScriptedIdleTaskController::Create(domWindow());
-    // We need to make sure that we don't start up if we're detached.
-    if (!domWindow() || domWindow()->IsContextDestroyed()) {
-      scripted_idle_task_controller_->ContextLifecycleStateChanged(
-          mojom::FrameLifecycleState::kFrozen);
-    }
-  }
-  return *scripted_idle_task_controller_;
-}
-
-int Document::RequestIdleCallback(IdleTask* idle_task,
-                                  const IdleRequestOptions* options) {
-  return EnsureScriptedIdleTaskController().RegisterCallback(idle_task,
-                                                             options);
-}
-
-void Document::CancelIdleCallback(int id) {
-  if (!scripted_idle_task_controller_)
-    return;
-  scripted_idle_task_controller_->CancelCallback(id);
-}
-
 DocumentLoader* Document::Loader() const {
   return GetFrame() ? GetFrame()->Loader().GetDocumentLoader() : nullptr;
 }
@@ -8865,7 +8837,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(document_timing_);
   visitor->Trace(media_query_matcher_);
   visitor->Trace(scripted_animation_controller_);
-  visitor->Trace(scripted_idle_task_controller_);
   visitor->Trace(text_autosizer_);
   visitor->Trace(element_data_cache_clear_timer_);
   visitor->Trace(element_data_cache_);
