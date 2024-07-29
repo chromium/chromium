@@ -8,6 +8,7 @@
 
 #import "base/functional/bind.h"
 #import "base/location.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
@@ -447,6 +448,9 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
 
   if (should_log_freshness) {
     RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+    base::UmaHistogramEnumeration(
+        "IOS.SafetyCheck.FreshnessTrigger",
+        IOSSafetyCheckFreshnessTrigger::kPasswordCheckStateChanged);
   }
 
   password_check_state_ = state;
@@ -503,6 +507,9 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
 
   if (should_log_freshness) {
     RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+    base::UmaHistogramEnumeration(
+        "IOS.SafetyCheck.FreshnessTrigger",
+        IOSSafetyCheckFreshnessTrigger::kUpdateChromeCheckStateChanged);
   }
 
   update_chrome_check_state_ = state;
