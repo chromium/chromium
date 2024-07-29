@@ -272,6 +272,18 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
         .component_name = "cros-tooltip",
         .gtest_name = "CrosTooltip",
     },
+    {
+        .script_src =
+            "chrome://resources/cros_components/accordion/accordion.js",
+        .component_name = "cros-accordion",
+        .gtest_name = "CrosAccordion",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/accordion/accordion_item.js",
+        .component_name = "cros-accordion-item",
+        .gtest_name = "CrosAccordionItem",
+    },
     // TODO(b:332970280): Bring orca-feedback back once we can support safeHTML
     // properly.
     // {
