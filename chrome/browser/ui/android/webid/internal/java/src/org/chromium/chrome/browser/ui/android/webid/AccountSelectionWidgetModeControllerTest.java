@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
@@ -31,6 +33,7 @@ import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
 
@@ -121,5 +124,36 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                 /* requestPermission= */ true);
 
         assertNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
+    }
+
+    @Test
+    public void testBrandIconDownloadFails() {
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                Callback<Bitmap> callback =
+                                        (Callback<Bitmap>) invocation.getArguments()[1];
+                                callback.onResult(null);
+                                return null;
+                            }
+                        })
+                .when(mMockImageFetcher)
+                .fetchImage(any(), any(Callback.class));
+
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(mAnaAccount),
+                mIdpMetadata,
+                mClientIdMetadata,
+                /* isAutoReauthn= */ false,
+                RpContext.SIGN_IN,
+                /* requestPermission= */ true);
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        // Brand icon should be transparent placeholder icon. This is useful so that the header text
+        // wrapping does not change in the case that the brand icon download succeeds.
+        assertNotNull(headerModel.get(IDP_BRAND_ICON));
     }
 }
