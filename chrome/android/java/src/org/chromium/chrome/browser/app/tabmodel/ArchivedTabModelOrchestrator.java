@@ -341,6 +341,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mTaskRunner.postDelayedTask(
                 mCallbackController.makeCancelable(this::runDeclutterAndScheduleNext),
                 TimeUnit.HOURS.toMillis(mTabArchiveSettings.getDeclutterIntervalTimeDeltaHours()));
+        saveState();
     }
 
     // Testing-specific methods
