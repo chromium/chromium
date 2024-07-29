@@ -59,7 +59,7 @@ const float kCornerRadius = 24;
 const CGFloat kTrackButtonHorizontalPadding = 14.0f;
 
 // The vertical padding for the track button.
-const CGFloat kTrackButtonVerticalPadding = 3.0f;
+const CGFloat kTrackButtonVerticalPadding = 4.0f;
 
 // Formats a price amount in micro-units into a localized string representation
 // for display.
@@ -518,7 +518,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
 
 - (void)setOrUpdateTrackButton {
   UIFont* font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightBold);
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
   NSDictionary* attributes = @{NSFontAttributeName : font};
   NSString* titleText =
       self.item.isPriceTracked
