@@ -442,7 +442,7 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityBrowsingWeb) {
       initWithActivityType:NSUserActivityTypeBrowsingWeb];
   // This URL is passed to application by iOS but is not used in this part
   // of application logic.
-  NSURL* nsurl = [NSURL URLWithString:@"http://goo.gl/foo/bar"];
+  NSURL* nsurl = [NSURL URLWithString:@"http://google.com/foo/bar"];
   [user_activity setWebpageURL:nsurl];
 
   BOOL result =

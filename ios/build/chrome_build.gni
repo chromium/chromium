@@ -59,7 +59,8 @@ declare_args() {
 
   # Value of the encryption export compliance code. See "Cryptography and
   # U.S. Export Compliance" in "Submitting the App to App Review" in the
-  # Apple developer documentation (https://goo.gl/yv1xEF).
+  # Apple developer documentation
+  # (https://developer.apple.com/documentation/security/complying_with_encryption_export_regulations).
   ios_encryption_export_compliance_code = ""
 
   # List of plist templates to merge when generating chrome Info.plist.
