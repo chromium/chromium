@@ -94,8 +94,5 @@ const CGFloat kTabGridBottomToolbarHeight = 44.0f;
 // Alpha of the background color of the toolbar.
 const CGFloat kToolbarBackgroundAlpha = 0.75;
 
-// Dimension of the identity image.
-const CGFloat kIdentityImageDimension = 24.0;
-
 // Duration for animations in the tab grid.
 const base::TimeDelta kAnimationDuration = base::Milliseconds(200);
