@@ -125,8 +125,7 @@ PickerModeType PickerModel::GetMode() const {
   }
 
   return chromeos::editor_helpers::NonWhitespaceAndSymbolsLength(
-             selected_text_, gfx::Range(0, selection_range_.end() -
-                                               selection_range_.start())) == 0
+             selected_text_, gfx::Range(0, selected_text_.size())) == 0
              ? PickerModeType::kNoSelection
              : PickerModeType::kHasSelection;
 }
