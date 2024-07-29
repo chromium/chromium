@@ -578,12 +578,24 @@ void ViewAccessibility::SetIsScrollable(bool is_scrollable) {
 }
 
 void ViewAccessibility::SetActiveDescendant(views::View& view) {
-  data_.AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
-                        view.GetViewAccessibility().GetUniqueId());
+  SetActiveDescendant(view.GetViewAccessibility().GetUniqueId());
+}
+
+void ViewAccessibility::SetActiveDescendant(ui::AXPlatformNodeId id) {
+  if (data_.GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId) ==
+      id) {
+    return;
+  }
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId, id);
+  NotifyEvent(ax::mojom::Event::kActiveDescendantChanged, true);
 }
 
 void ViewAccessibility::ClearActiveDescendant() {
+  if (!data_.HasIntAttribute(ax::mojom::IntAttribute::kActivedescendantId)) {
+    return;
+  }
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kActivedescendantId);
+  NotifyEvent(ax::mojom::Event::kActiveDescendantChanged, true);
 }
 
 void ViewAccessibility::SetIsInvisible(bool is_invisible) {

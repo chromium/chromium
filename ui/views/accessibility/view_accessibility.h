@@ -275,6 +275,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetIsScrollable(bool scrollable);
 
   void SetActiveDescendant(views::View& view);
+  void SetActiveDescendant(ui::AXPlatformNodeId id);
   void ClearActiveDescendant();
 
   void SetIsInvisible(bool is_invisible);

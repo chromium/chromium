@@ -206,8 +206,6 @@ void PickerSearchFieldView::SetTextfieldActiveDescendant(views::View* view) {
     textfield_->GetViewAccessibility().ClearActiveDescendant();
   }
 
-  textfield_->NotifyAccessibilityEvent(
-      ax::mojom::Event::kActiveDescendantChanged, true);
   active_descendant_tracker_.SetView(nullptr);
 }
 
