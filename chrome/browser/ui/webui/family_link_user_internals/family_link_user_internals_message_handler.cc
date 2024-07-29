@@ -221,8 +221,10 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
       AddSectionEntry(section_user, "Given name", account.given_name);
       AddSectionEntry(section_user, "Hosted domain", account.hosted_domain);
       AddSectionEntry(section_user, "Locale", account.locale);
-      AddSectionEntry(section_user, "Is child",
-                      TriboolToString(account.is_child_account));
+      AddSectionEntry(
+          section_user, "Is subject to parental controls",
+          TriboolToString(
+              account.capabilities.is_subject_to_parental_controls()));
       AddSectionEntry(section_user, "Is valid", account.IsValid());
     }
   }
