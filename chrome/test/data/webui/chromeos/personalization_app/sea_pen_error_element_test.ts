@@ -187,7 +187,9 @@ suite('SeaPenErrorElementTest', function() {
         const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
                                  '.error-message') as HTMLElement;
         assertTrue(!!errorMessage, 'an error message should be displayed');
-        assertEquals('unsupported language', errorMessage!.innerText);
+        assertEquals(
+            seaPenErrorElement.i18n('seaPenFreeformErrorUnsupportedLanguage'),
+            errorMessage!.innerText);
 
         const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
                               'iron-icon') as HTMLElement;
@@ -207,7 +209,9 @@ suite('SeaPenErrorElementTest', function() {
     const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
                              '.error-message') as HTMLElement;
     assertTrue(!!errorMessage, 'an error message should be displayed');
-    assertEquals('blocked outputs', errorMessage!.innerText);
+    assertEquals(
+        seaPenErrorElement.i18n('seaPenFreeformErrorBlockedOutputs'),
+        errorMessage!.innerText);
 
     const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
                           'iron-icon') as HTMLElement;

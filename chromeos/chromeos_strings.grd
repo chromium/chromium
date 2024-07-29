@@ -3389,10 +3389,16 @@
           Shuffle
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_INPUT_PLACEHOLDER" desc="Default text for an input field that is used to generate AI images.">
-          Describe the wallpaper you want to create or use a sample prompt
+        Describe the wallpaper you want to create or use a sample prompt
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
           Make sure you're connected to the internet and try again.
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_ERROR_UNSUPPORTED_LANGUAGE" desc="Error message displayed when the search query uses an unsupported language.">
+          This language isn't supported at this time
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_ERROR_BLOCKED_OUTPUTS" desc="Error message displayed when the search results were blocked.">
+          Can't create images of this. Try another prompt.
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_POWERED_BY_GOOGLE" desc="Section heading that indicates Google made these wallpapers.">
           Powered by Google AI

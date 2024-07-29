@@ -62,18 +62,16 @@ export class SeaPenErrorElement extends SeaPenErrorElementBase {
 
     if (isSeaPenTextInputEnabled()) {
       switch (statusCode) {
-        // TODO: b/345856242 - Update strings
         case MantaStatusCode.kUnsupportedLanguage:
-          return 'unsupported language';
+          return this.i18n('seaPenFreeformErrorUnsupportedLanguage');
         case MantaStatusCode.kBlockedOutputs:
-          return 'blocked outputs';
+          return this.i18n('seaPenFreeformErrorBlockedOutputs');
       }
     }
     return this.i18n('seaPenErrorGeneric');
   }
 
   private getErrorIllo_(statusCode: MantaStatusCode): string {
-    // TODO: b/347965383 - Add error illustrations
     switch (statusCode) {
       case MantaStatusCode.kNoInternetConnection:
         return 'personalization-shared-illo:network_error';
