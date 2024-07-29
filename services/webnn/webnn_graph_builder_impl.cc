@@ -6,11 +6,14 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
@@ -1996,6 +1999,16 @@ WebNNGraphBuilderImpl::~WebNNGraphBuilderImpl() = default;
 
 void WebNNGraphBuilderImpl::CreateGraph(mojom::GraphInfoPtr graph_info,
                                         CreateGraphCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (has_built_) {
+    context_->ReportBadGraphBuilderMessage(
+        kBadMessageOnBuiltGraphBuilder, base::PassKey<WebNNGraphBuilderImpl>());
+    return;
+  }
+
+  has_built_ = true;
+
   auto compute_resource_info =
       ValidateGraph(context_->properties(), *graph_info);
   if (!compute_resource_info.has_value()) {
@@ -2004,11 +2017,42 @@ void WebNNGraphBuilderImpl::CreateGraph(mojom::GraphInfoPtr graph_info,
     return;
   }
 
-  context_->CreateGraph(std::move(graph_info),
-                        *std::move(compute_resource_info), std::move(callback),
-                        base::PassKey<WebNNGraphBuilderImpl>());
+  context_->CreateGraphImpl(
+      std::move(graph_info), *std::move(compute_resource_info),
+      base::BindOnce(&WebNNGraphBuilderImpl::DidCreateGraph,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void WebNNGraphBuilderImpl::SetId(
+    mojo::ReceiverId id,
+    base::PassKey<WebNNContextImpl> /*pass_key*/) {
+  id_ = id;
+}
+
+void WebNNGraphBuilderImpl::DidCreateGraph(
+    CreateGraphCallback callback,
+    base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Ensure `this` is destroyed.
+  base::ScopedClosureRunner destroy_self_closure(base::BindOnce(
+      &WebNNGraphBuilderImpl::DestroySelf, weak_factory_.GetWeakPtr()));
+
+  if (!result.has_value()) {
+    std::move(callback).Run(
+        mojom::CreateGraphResult::NewError(std::move(result.error())));
+    return;
+  }
+
+  mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver;
+  std::move(callback).Run(mojom::CreateGraphResult::NewGraphRemote(
+      receiver.InitWithNewEndpointAndPassRemote()));
+
+  context_->TakeGraph(*std::move(result), std::move(receiver),
+                      base::PassKey<WebNNGraphBuilderImpl>());
+}
+
+// static
 std::optional<WebNNGraphImpl::ComputeResourceInfo>
 WebNNGraphBuilderImpl::ValidateGraph(
     const ContextProperties& context_properties,
@@ -2125,6 +2169,10 @@ bool WebNNGraphBuilderImpl::IsValidForTesting(
     const ContextProperties& context_properties,
     const mojom::GraphInfo& graph_info) {
   return ValidateGraph(context_properties, graph_info).has_value();
+}
+
+void WebNNGraphBuilderImpl::DestroySelf() {
+  context_->RemoveGraphBuilder(id_, base::PassKey<WebNNGraphBuilderImpl>());
 }
 
 }  // namespace webnn

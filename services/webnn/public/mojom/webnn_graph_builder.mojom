@@ -19,5 +19,8 @@ union CreateGraphResult {
 interface WebNNGraphBuilder {
   // Compiles and initializes a backend-specific computational graph described
   // by `graph_info`.
+  //
+  // This method may be called at most once. Any subsequent messages on this
+  // interface are signs of a misbehaving renderer.
   CreateGraph(GraphInfo graph_info) => (CreateGraphResult result);
 };

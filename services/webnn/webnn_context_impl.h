@@ -81,15 +81,26 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       const std::string& message,
       base::PassKey<WebNNGraphBuilderImpl> pass_key);
 
-  // Create a `WebNNGraphImpl` described by `graph_info` and
-  // `compute_resource_info`.
+  // This method will be called by `WebNNGraphBuilderImpl::CreateGraph()` after
+  // `graph_info` is validated. A backend subclass should implement this method
+  // to build and compile a platform specific graph asynchronously.
   //
-  // TODO(crbug.com/354724062): Destroy the calling `WebNNGraphBuilderImpl`
-  // after returning the result via `callback`.
-  void CreateGraph(mojom::GraphInfoPtr graph_info,
-                   WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-                   mojom::WebNNGraphBuilder::CreateGraphCallback callback,
-                   base::PassKey<WebNNGraphBuilderImpl> pass_key);
+  // TODO(crbug.com/354724062): Move this to either `WebNNGraphImpl` or
+  // `WebNNGraphBuilderImpl`.
+  virtual void CreateGraphImpl(
+      mojom::GraphInfoPtr graph_info,
+      WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      CreateGraphImplCallback callback) = 0;
+
+  // Pass ownership of a newly-created `graph_impl` to this context.
+  void TakeGraph(
+      std::unique_ptr<WebNNGraphImpl> graph_impl,
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> graph_pending_receiver,
+      base::PassKey<WebNNGraphBuilderImpl> pass_key);
+
+  // Called by a graph builder to destroy itself.
+  void RemoveGraphBuilder(mojo::ReceiverId graph_builder_id,
+                          base::PassKey<WebNNGraphBuilderImpl> pass_key);
 
   // Get context properties with op support limits that are intersection
   // between WebNN generic limits and backend specific limits.
@@ -112,21 +123,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       override;
   void CreateBuffer(mojom::BufferInfoPtr buffer_info,
                     CreateBufferCallback callback) override;
-
-  // This method will be called by `CreateGraph()` after the graph info is
-  // validated. A backend subclass should implement this method to build and
-  // compile a platform specific graph asynchronously.
-  //
-  // TODO(crbug.com/354724062): Move this to either `WebNNGraphImpl` or
-  // `WebNNGraphBuilderImpl`.
-  virtual void CreateGraphImpl(
-      mojom::GraphInfoPtr graph_info,
-      WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-      CreateGraphImplCallback callback) = 0;
-
-  void DidCreateWebNNGraphImpl(
-      mojom::WebNNGraphBuilder::CreateGraphCallback callback,
-      base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr> result);
 
   // This method will be called by `CreateBuffer()` after the buffer info is
   // validated. A backend subclass should implement this method to create and
@@ -165,9 +161,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
  private:
   // Graph builders owned by this context.
-  //
-  // TODO(crbug.com/354724062): Ensure these graph builders destroy themselves
-  // once `build()` is called.
   mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraphBuilder>
       graph_builder_impls_;
 

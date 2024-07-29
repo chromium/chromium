@@ -2302,15 +2302,6 @@ void MLGraphBuilder::DidCreateWebNNGraph(
     webnn::mojom::blink::CreateGraphResultPtr result) {
   CHECK(has_built_);
 
-  // Once `CreateGraph()` is called, any subsequent messages on mojo pipe are
-  // invalid. Destroy the pipe to release resources held by the receiver.
-  //
-  // TODO(crbug.com/354724062): Move pipe disconnection logic to //services so
-  // that we can ReportBadMessage if subsequent messages are received. The
-  // current code may allow build() to be called more than once if the second
-  // call does not await completion of the first.
-  remote_.reset();
-
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid()) {
     return;

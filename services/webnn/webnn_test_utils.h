@@ -515,6 +515,10 @@ class GraphInfoBuilder final {
   // tests.
   mojom::GraphInfoPtr CloneGraphInfo() const;
 
+  // TODO(crbug.com/354724062): Consider deprecating `CloneGraphInfo()` in favor
+  // of this method.
+  mojom::GraphInfoPtr TakeGraphInfo();
+
  private:
   uint64_t BuildOperand(
       const std::vector<uint32_t>& dimensions,
@@ -524,6 +528,9 @@ class GraphInfoBuilder final {
   mojom::GraphInfoPtr graph_info_;
   uint64_t operand_id_ = 0;
 };
+
+// A default set of WebNNContext properties for testing purposes.
+ContextProperties GetContextPropertiesForTesting();
 
 }  // namespace webnn
 

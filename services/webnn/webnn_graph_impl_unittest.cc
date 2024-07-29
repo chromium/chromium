@@ -44,38 +44,12 @@ namespace webnn {
 
 namespace {
 
-ContextProperties GetContextPropertiesForTesting() {
-  // A default set of WebNNContext properties for testing purposes.
-  return WebNNContextImpl::IntersectWithBaseProperties(
-      ContextProperties(InputOperandLayout::kNchw,
-                        {/*input=*/SupportedDataTypes::All(),
-                         /*constant=*/SupportedDataTypes::All(),
-                         /*arg_min_max_input=*/SupportedDataTypes::All(),
-                         /*arg_min_max_output=*/
-                         {OperandDataType::kInt32, OperandDataType::kInt64},
-                         /*concat_inputs=*/SupportedDataTypes::All(),
-                         /*elu_input=*/SupportedDataTypes::All(),
-                         /*gather_input=*/SupportedDataTypes::All(),
-                         /*gather_indices=*/SupportedDataTypes::All(),
-                         /*gelu_input=*/SupportedDataTypes::All(),
-                         /*leaky_relu_input=*/SupportedDataTypes::All(),
-                         /*relu_input=*/SupportedDataTypes::All(),
-                         /*sigmoid_input=*/SupportedDataTypes::All(),
-                         /*slice_input=*/SupportedDataTypes::All(),
-                         /*softmax_input=*/SupportedDataTypes::All(),
-                         /*softplus_input=*/SupportedDataTypes::All(),
-                         /*softsign_input=*/SupportedDataTypes::All(),
-                         /*split_input=*/SupportedDataTypes::All(),
-                         /*where_condition=*/SupportedDataTypes::All(),
-                         /*where_value=*/SupportedDataTypes::All()}));
-}
-
 // A fake WebNNGraph Mojo interface implementation that binds a pipe for
 // computing graph message.
 class FakeWebNNGraphImpl final : public WebNNGraphImpl {
  public:
-  explicit FakeWebNNGraphImpl(WebNNContextImpl* context,
-                              ComputeResourceInfo compute_resource_info)
+  FakeWebNNGraphImpl(WebNNContextImpl* context,
+                     ComputeResourceInfo compute_resource_info)
       : WebNNGraphImpl(context, std::move(compute_resource_info)) {}
   ~FakeWebNNGraphImpl() override = default;
 
@@ -110,7 +84,7 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
 // buffer creation message.
 class FakeWebNNBufferImpl final : public WebNNBufferImpl {
  public:
-  explicit FakeWebNNBufferImpl(
+  FakeWebNNBufferImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       WebNNContextImpl* context,
       mojom::BufferInfoPtr buffer_info)

@@ -5,6 +5,7 @@
 #include "services/webnn/webnn_test_utils.h"
 
 #include "base/check_is_test.h"
+#include "services/webnn/webnn_context_impl.h"
 
 namespace webnn {
 
@@ -431,6 +432,35 @@ mojom::GraphInfoPtr GraphInfoBuilder::CloneGraphInfo() const {
         constant_buffer.Clone();
   }
   return cloned_graph_info;
+}
+
+mojom::GraphInfoPtr GraphInfoBuilder::TakeGraphInfo() {
+  return std::move(graph_info_);
+}
+
+ContextProperties GetContextPropertiesForTesting() {
+  return WebNNContextImpl::IntersectWithBaseProperties(
+      ContextProperties(InputOperandLayout::kNchw,
+                        {/*input=*/SupportedDataTypes::All(),
+                         /*constant=*/SupportedDataTypes::All(),
+                         /*arg_min_max_input=*/SupportedDataTypes::All(),
+                         /*arg_min_max_output=*/
+                         {OperandDataType::kInt32, OperandDataType::kInt64},
+                         /*concat_inputs=*/SupportedDataTypes::All(),
+                         /*elu_input=*/SupportedDataTypes::All(),
+                         /*gather_input=*/SupportedDataTypes::All(),
+                         /*gather_indices=*/SupportedDataTypes::All(),
+                         /*gelu_input=*/SupportedDataTypes::All(),
+                         /*leaky_relu_input=*/SupportedDataTypes::All(),
+                         /*relu_input=*/SupportedDataTypes::All(),
+                         /*sigmoid_input=*/SupportedDataTypes::All(),
+                         /*slice_input=*/SupportedDataTypes::All(),
+                         /*softmax_input=*/SupportedDataTypes::All(),
+                         /*softplus_input=*/SupportedDataTypes::All(),
+                         /*softsign_input=*/SupportedDataTypes::All(),
+                         /*split_input=*/SupportedDataTypes::All(),
+                         /*where_condition=*/SupportedDataTypes::All(),
+                         /*where_value=*/SupportedDataTypes::All()}));
 }
 
 }  // namespace webnn

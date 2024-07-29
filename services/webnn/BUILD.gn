@@ -195,6 +195,7 @@ source_set("tests") {
 
   sources = [
     "webnn_context_provider_impl_unittest.cc",
+    "webnn_graph_builder_impl_unittest.cc",
     "webnn_graph_impl_unittest.cc",
     "webnn_test_utils.cc",
     "webnn_test_utils.h",

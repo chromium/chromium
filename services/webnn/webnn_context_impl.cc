@@ -55,22 +55,28 @@ void WebNNContextImpl::ReportBadGraphBuilderMessage(
   graph_builder_impls_.ReportBadMessage(message);
 }
 
-void WebNNContextImpl::CreateGraph(
-    mojom::GraphInfoPtr graph_info,
-    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-    mojom::WebNNGraphBuilder::CreateGraphCallback callback,
+void WebNNContextImpl::TakeGraph(
+    std::unique_ptr<WebNNGraphImpl> graph_impl,
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> graph_pending_receiver,
     base::PassKey<WebNNGraphBuilderImpl> pass_key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  graph_impls_.Add(std::move(graph_impl), std::move(graph_pending_receiver));
+}
 
-  CreateGraphImpl(std::move(graph_info), std::move(compute_resource_info),
-                  base::BindOnce(&WebNNContextImpl::DidCreateWebNNGraphImpl,
-                                 AsWeakPtr(), std::move(callback)));
+void WebNNContextImpl::RemoveGraphBuilder(
+    mojo::ReceiverId graph_builder_id,
+    base::PassKey<WebNNGraphBuilderImpl> /*pass_key*/) {
+  graph_builder_impls_.Remove(graph_builder_id);
 }
 
 void WebNNContextImpl::CreateGraphBuilder(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraphBuilder> receiver) {
-  graph_builder_impls_.Add(std::make_unique<WebNNGraphBuilderImpl>(*this),
-                           std::move(receiver));
+  auto graph_builder = std::make_unique<WebNNGraphBuilderImpl>(*this);
+  WebNNGraphBuilderImpl* graph_builder_ptr = graph_builder.get();
+
+  mojo::ReceiverId id =
+      graph_builder_impls_.Add(std::move(graph_builder), std::move(receiver));
+
+  graph_builder_ptr->SetId(id, base::PassKey<WebNNContextImpl>());
 }
 
 void WebNNContextImpl::CreateBuffer(
@@ -112,24 +118,6 @@ void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
   // Upon calling erase, the handle will no longer refer to a valid
   // `WebNNBufferImpl`.
   buffer_impls_.erase(it);
-}
-
-void WebNNContextImpl::DidCreateWebNNGraphImpl(
-    mojom::WebNNGraphBuilder::CreateGraphCallback callback,
-    base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!result.has_value()) {
-    std::move(callback).Run(
-        mojom::CreateGraphResult::NewError(std::move(result.error())));
-    return;
-  }
-
-  mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver;
-  std::move(callback).Run(mojom::CreateGraphResult::NewGraphRemote(
-      receiver.InitWithNewEndpointAndPassRemote()));
-
-  graph_impls_.Add(*std::move(result), std::move(receiver));
 }
 
 void WebNNContextImpl::OnLost(std::string_view message) {

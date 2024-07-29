@@ -22,6 +22,16 @@ promise_test(async t => {
   const a = builder.input('a', kExampleInputDescriptor);
   const b = builder.input('b', kExampleInputDescriptor);
   const c = builder.add(a, b);
+  const graph_promise_not_awaited = builder.build({c});
+
+  await promise_rejects_dom(t, 'InvalidStateError', builder.build({c}));
+}, 'Throw if attempting to build a second graph without awaiting the first');
+
+promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
+  const a = builder.input('a', kExampleInputDescriptor);
+  const b = builder.input('b', kExampleInputDescriptor);
+  const c = builder.add(a, b);
   const graph = await builder.build({c});
 
   assert_throws_dom('InvalidStateError', () => builder.sub(a, b));
