@@ -25,13 +25,6 @@ namespace {
 const char kProfileName1[] = "Profile1";
 const char kProfileName2[] = "Profile2";
 
-// Returns the name of the ChromeBrowserState.
-std::string GetChromeBrowserStateName(ChromeBrowserState* browser_state) {
-  // The name of the ChromeBrowserState is the basename of its StatePath.
-  // This is an invariant of ChromeBrowserStateManagerImpl.
-  return browser_state->GetStatePath().BaseName().AsUTF8Unsafe();
-}
-
 }  // namespace
 
 class ChromeBrowserStateManagerImplTest : public PlatformTest {
@@ -106,7 +99,7 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
       // The name of the ChromeBrowserState is the basename of its StatePath.
       // This is an invariant of ChromeBrowserStateManagerImpl.
       const std::string browser_state_name =
-          GetChromeBrowserStateName(browser_state);
+          browser_state->GetBrowserStateName();
 
       CHECK(!base::Contains(browser_state_names, browser_state_name));
       browser_state_names.insert(browser_state_name);
@@ -139,7 +132,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates) {
       browser_state_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   ASSERT_TRUE(browser_state);
-  EXPECT_EQ(GetChromeBrowserStateName(browser_state),
+  EXPECT_EQ(browser_state->GetBrowserStateName(),
             kIOSChromeInitialBrowserState);
   EXPECT_EQ(GetLoadedBrowserStateNames(),
             (std::set<std::string>{kIOSChromeInitialBrowserState}));
@@ -176,7 +169,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_1) {
       browser_state_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   ASSERT_TRUE(browser_state);
-  EXPECT_EQ(GetChromeBrowserStateName(browser_state), kProfileName1);
+  EXPECT_EQ(browser_state->GetBrowserStateName(), kProfileName1);
   EXPECT_EQ(GetLoadedBrowserStateNames(),
             (std::set<std::string>{kProfileName1, kProfileName2}));
 }
@@ -209,7 +202,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_2) {
       browser_state_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   ASSERT_TRUE(browser_state);
-  EXPECT_EQ(GetChromeBrowserStateName(browser_state), kProfileName1);
+  EXPECT_EQ(browser_state->GetBrowserStateName(), kProfileName1);
   EXPECT_EQ(GetLoadedBrowserStateNames(),
             (std::set<std::string>{kProfileName1}));
 }
@@ -245,7 +238,7 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_3) {
       browser_state_manager().GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   ASSERT_TRUE(browser_state);
-  EXPECT_EQ(GetChromeBrowserStateName(browser_state),
+  EXPECT_EQ(browser_state->GetBrowserStateName(),
             kIOSChromeInitialBrowserState);
   EXPECT_EQ(
       GetLoadedBrowserStateNames(),
