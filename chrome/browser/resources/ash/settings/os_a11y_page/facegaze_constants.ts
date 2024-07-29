@@ -81,8 +81,14 @@ export class FaceGazeUtils {
         return 'Look right';
       case FacialGesture.EYES_LOOK_UP:
         return 'Look up';
+      case FacialGesture.JAW_LEFT:
+        return 'Open mouth shift left';
       case FacialGesture.JAW_OPEN:
         return 'Open your mouth wide';
+      case FacialGesture.JAW_RIGHT:
+        return 'Open mouth shift left';
+      case FacialGesture.MOUTH_FUNNEL:
+        return 'Mouth funnel shape';
       case FacialGesture.MOUTH_LEFT:
         return 'Stretch left corner of your mouth';
       case FacialGesture.MOUTH_PUCKER:

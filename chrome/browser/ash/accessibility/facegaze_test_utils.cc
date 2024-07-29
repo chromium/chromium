@@ -64,8 +64,14 @@ std::string ToString(const FaceGazeGesture& gesture) {
       return "eyesLookRight";
     case FaceGazeGesture::EYES_LOOK_UP:
       return "eyesLookUp";
+    case FaceGazeGesture::JAW_LEFT:
+      return "jawLeft";
     case FaceGazeGesture::JAW_OPEN:
       return "jawOpen";
+    case FaceGazeGesture::JAW_RIGHT:
+      return "jawRight";
+    case FaceGazeGesture::MOUTH_FUNNEL:
+      return "mouthFunnel";
     case FaceGazeGesture::MOUTH_LEFT:
       return "mouthLeft";
     case FaceGazeGesture::MOUTH_PUCKER:
@@ -111,8 +117,14 @@ std::string ToString(const MediapipeGesture& gesture) {
       return "eyeSquintLeft";
     case MediapipeGesture::EYE_SQUINT_RIGHT:
       return "eyeSquintRight";
+    case MediapipeGesture::JAW_LEFT:
+      return "jawLeft";
     case MediapipeGesture::JAW_OPEN:
       return "jawOpen";
+    case MediapipeGesture::JAW_RIGHT:
+      return "jawRight";
+    case MediapipeGesture::MOUTH_FUNNEL:
+      return "mouthFunnel";
     case MediapipeGesture::MOUTH_LEFT:
       return "mouthLeft";
     case MediapipeGesture::MOUTH_PUCKER:
