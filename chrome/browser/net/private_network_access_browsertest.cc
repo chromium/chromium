@@ -39,6 +39,7 @@
 #include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1435,6 +1436,68 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessAutoReloadBrowserTest,
   // Observe second navigation, which succeeds.
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
+}
+
+// ================
+// 0.0.0.0 TESTS
+// ================
+
+// This test verifies that a 0.0.0.0 subresource is blocked on a nonsecure
+// public URL.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       NullIPBlockedOnNonsecure) {
+  if constexpr (BUILDFLAG(IS_WIN)) {
+    GTEST_SKIP() << "0.0.0.0 behavior varies across platforms and is "
+                    "unreachable on Windows.";
+  }
+
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+  GURL url = PublicNonSecureURL(*server);
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  GURL subresource_url = server->GetURL("0.0.0.0", "/cors-ok.txt");
+  EXPECT_EQ(false, content::EvalJs(web_contents(),
+                                   content::JsReplace(R"(
+    fetch($1).then(response => true).catch(error => false)
+  )",
+                                                      subresource_url)));
+}
+
+class PrivateNetworkAccessWithNullIPKillswitchTest
+    : public PrivateNetworkAccessBrowserTestBase {
+ public:
+  PrivateNetworkAccessWithNullIPKillswitchTest()
+      : PrivateNetworkAccessBrowserTestBase(
+            {
+                blink::features::kPlzDedicatedWorker,
+                features::kBlockInsecurePrivateNetworkRequests,
+                features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
+                features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
+                features::kPrivateNetworkAccessSendPreflights,
+                features::kPrivateNetworkAccessForNavigations,
+                features::kPrivateNetworkAccessForWorkers,
+                network::features::kTreatNullIPAsPublicAddressSpace,
+            },
+            {}) {}
+};
+
+// This test verifies that 0.0.0.0 subresources are not blocked when the
+// killswitch feature is enabled.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithNullIPKillswitchTest,
+                       NullIPNotBlockedWithKillswitch) {
+  if constexpr (BUILDFLAG(IS_WIN)) {
+    GTEST_SKIP() << "0.0.0.0 behavior varies across platforms and is "
+                    "unreachable on Windows.";
+  }
+
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+  GURL url = PublicNonSecureURL(*server);
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  GURL subresource_url = server->GetURL("0.0.0.0", "/cors-ok.txt");
+  EXPECT_EQ(true, content::EvalJs(web_contents(),
+                                  content::JsReplace(R"(
+    fetch($1).then(response => response.ok)
+  )",
+                                                     subresource_url)));
 }
 
 }  // namespace
