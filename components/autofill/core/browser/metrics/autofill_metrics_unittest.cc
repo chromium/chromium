@@ -6473,9 +6473,9 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
       const auto* const entry = field_entries[i].get();
 
       DenseSet<AutofillStatus> autofill_status_vector = {
-          AutofillStatus::kIsFocusable, AutofillStatus::kWasFocused,
+          AutofillStatus::kIsFocusable, AutofillStatus::kWasFocusedByTapOrClick,
           AutofillStatus::kSuggestionWasAvailable,
-          AutofillStatus::kSuggestionWasShown};
+          AutofillStatus::kSuggestionWasShown, AutofillStatus::kWasFocused};
       std::map<std::string, int64_t> expected = {
           {UFIT::kFormSessionIdentifierName,
            AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -6554,7 +6554,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
       if (i == 0) {
         autofill_status_vector = {
             AutofillStatus::kIsFocusable,
-            AutofillStatus::kWasFocused,
+            AutofillStatus::kWasFocusedByTapOrClick,
             AutofillStatus::kWasAutofillTriggered,
             AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
             AutofillStatus::kSuggestionWasAvailable,
@@ -6563,7 +6563,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
             AutofillStatus::kUserTypedIntoField,
             AutofillStatus::kFilledValueWasModified,
             AutofillStatus::kHadTypedOrFilledValueAtSubmission,
-            AutofillStatus::kWasAutofilledAfterSecurityPolicy};
+            AutofillStatus::kWasAutofilledAfterSecurityPolicy,
+            AutofillStatus::kWasFocused};
         field_log_events_count = 4;
       } else if (i == 1) {
         autofill_status_vector = {

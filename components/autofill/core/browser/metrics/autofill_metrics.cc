@@ -2243,7 +2243,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   // Set the fields with autofill information according to Autofill2.FieldInfo
   // UKM schema:
   // https://docs.google.com/document/d/1ZH0JbL6bES3cD4KqZWsGR6n8I-rhnkx6no6nQOgYq5w/
-  OptionalBoolean was_focused = OptionalBoolean::kFalse;
+  OptionalBoolean was_focused_by_tap_or_click = OptionalBoolean::kFalse;
   OptionalBoolean suggestion_was_available = OptionalBoolean::kUndefined;
   OptionalBoolean suggestion_was_shown = OptionalBoolean::kUndefined;
   OptionalBoolean suggestion_was_accepted = OptionalBoolean::kUndefined;
@@ -2341,7 +2341,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
                   "need to be updated.");
     if (auto* event =
             absl::get_if<AskForValuesToFillFieldLogEvent>(&log_event)) {
-      was_focused = OptionalBoolean::kTrue;
+      was_focused_by_tap_or_click = OptionalBoolean::kTrue;
       suggestion_was_available |= event->has_suggestion;
       suggestion_was_shown |= event->suggestion_is_shown;
       if (suggestion_was_shown == OptionalBoolean::kTrue &&
@@ -2468,7 +2468,9 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   SetStatusVector(AutofillStatus::kUserTypedIntoField,
                   OptionalBooleanToBool(user_typed_into_field));
   SetStatusVector(AutofillStatus::kWasFocused,
-                  OptionalBooleanToBool(was_focused));
+                  OptionalBooleanToBool(OptionalBoolean(field.was_focused())));
+  SetStatusVector(AutofillStatus::kWasFocusedByTapOrClick,
+                  OptionalBooleanToBool(was_focused_by_tap_or_click));
   SetStatusVector(AutofillStatus::kIsInSubFrame,
                   form.ToFormData().host_frame() != field.host_frame());
 
@@ -2479,7 +2481,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
         OptionalBooleanToBool(filling_prevented_by_iframe_security_policy));
   }
 
-  if (was_focused == OptionalBoolean::kTrue) {
+  if (was_focused_by_tap_or_click == OptionalBoolean::kTrue) {
     SetStatusVector(AutofillStatus::kSuggestionWasAvailable,
                     OptionalBooleanToBool(suggestion_was_available));
     SetStatusVector(AutofillStatus::kSuggestionWasShown,
