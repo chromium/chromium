@@ -37,6 +37,31 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
       public views::ViewObserver,
       public InSessionAuthTokenProvider {
  public:
+  class TestApi {
+   public:
+    explicit TestApi(ActiveSessionAuthControllerImpl* controller);
+    ~TestApi();
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
+    // Returns the known-to-be-available factors that `ActiveSessionAuthView`
+    // was rendered with.
+    AuthFactorSet GetAvailableFactors() const;
+
+    // Simulates submitting the `password` to cryptohome as if the user
+    // manually entered it.
+    void SubmitPassword(const std::string& password);
+
+    // Simulates submitting the `pin` to cryptohome as if the user
+    // manually entered it.
+    void SubmitPin(const std::string& pin);
+
+    void Close();
+
+   private:
+    const raw_ptr<ActiveSessionAuthControllerImpl> controller_;
+  };
+
   ActiveSessionAuthControllerImpl();
   ActiveSessionAuthControllerImpl(const ActiveSessionAuthControllerImpl&) =
       delete;
@@ -98,6 +123,8 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   std::unique_ptr<AuthPerformer> auth_performer_;
 
   std::unique_ptr<UserContext> user_context_;
+
+  AuthFactorSet available_factors_;
 
   base::WeakPtrFactory<ActiveSessionAuthControllerImpl> weak_ptr_factory_{this};
 };
