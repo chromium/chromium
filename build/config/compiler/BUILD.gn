@@ -69,7 +69,12 @@ declare_args() {
 
   # Enable fatal linker warnings. Building Chromium with certain versions
   # of binutils can cause linker warning.
-  fatal_linker_warnings = true
+  # TODO(crbug.com/356176455): Temporarily disable fatal_linker_warnings on
+  # iOS coverage builds when targeting x64 due to a linker warning. Either fix
+  # and revert, or revert this after the next clang roll when crbug.com/346575276
+  # is fixed.
+  fatal_linker_warnings =
+      !(is_ios && use_clang_coverage && !use_lld && target_cpu == "x64")
 
   # Build with C++ RTTI enabled. Chromium builds without RTTI by default,
   # but some sanitizers are known to require it, like CFI diagnostics
