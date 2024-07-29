@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -53,21 +54,51 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   void InitCookiesDialogButton();
 
   // Sets `third_party_cookies_title_` and `third_party_cookies_description_`
-  // text using `cookie_info`.
+  // text using:
+  // `protections_on`: status of the COOKIES/TRACKING_PROTECTION content setting
+  // `enforcement`: type of enforcement on the protection (e.g. by policy, user
+  // setting)
+  // `status: current 3PC blocking status
+  // `blocking_status`: label for the status of the protection (e.g. allowed,
+  // limited, blocked)
+  // `expiration`: duration of site exception
   void SetThirdPartyCookiesTitleAndDescription(
-      const CookiesNewInfo& cookie_info);
+      bool protections_on,
+      CookieControlsEnforcement enforcement,
+      content_settings::TrackingProtectionBlockingStatus status,
+      CookieBlocking3pcdStatus blocking_status,
+      base::Time expiration);
 
-  // Sets properties for `third_party_cookies_toggle_` using `cookie_info`.
-  void SetThirdPartyCookiesToggle(const CookiesNewInfo& cookie_info);
+  // Sets properties for `third_party_cookies_toggle_` using:
+  // `protections_on`: status of the COOKIES/TRACKING_PROTECTION content setting
+  // `status: current 3PC blocking status
+  void SetThirdPartyCookiesToggle(
+      bool protections_on,
+      content_settings::TrackingProtectionBlockingStatus status);
 
-  // Sets `cookie_description_label_` text and style using `blocking_status`,
-  // `enforcement`, and `is_otr`.
+  // Sets `cookie_description_label_` text and style using:
+  // `blocking_status`: label for the status of the protection (e.g. allowed,
+  // limited, blocked)
+  // `enforcement`: type of enforcement on the protection (e.g. by policy, user
+  // setting)
+  // `is_otr: whether the current profile is "off the record"
   void SetDescriptionLabel(CookieBlocking3pcdStatus blocking_status,
                            CookieControlsEnforcement enforcement,
                            bool is_otr);
 
-  // Updates the new third-party cookies section using |cookie_info|.
-  void SetThirdPartyCookiesInfo(const CookiesNewInfo& cookie_info);
+  // Updates the new third-party cookies section using:
+  // `protections_on`: status of the COOKIES/TRACKING_PROTECTION content setting
+  // `controls_visible`: whether toggle is visible
+  // `blocking_status`: label for the status of the protection (e.g. allowed,
+  // limited, blocked)
+  // `expiration`: duration of site exception
+  // `feature: list of tracking protection features
+  void SetThirdPartyCookiesInfo(
+      bool protections_on,
+      bool controls_visible,
+      CookieBlocking3pcdStatus blocking_status,
+      base::Time expiration,
+      content_settings::TrackingProtectionFeature feature);
 
   // Updates toggles state according to info.
   void UpdateBlockingThirdPartyCookiesToggle(bool are_cookies_blocked);
@@ -85,6 +116,9 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // hidden and is only shown when third-party cookies are blocked or there is
   // an active exception.
   void AddThirdPartyCookiesContainer();
+
+  std::u16string GetStatusLabel(
+      content_settings::TrackingProtectionBlockingStatus blocking_status);
 
   base::OnceClosure initialized_callback_ = base::NullCallback();
 
