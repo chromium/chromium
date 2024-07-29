@@ -22,8 +22,6 @@
 @end
 
 @implementation TabGroupsPanelCoordinator {
-  // Regular browser.
-  base::WeakPtr<Browser> _regularBrowser;
   // Mutator that handles toolbars changes.
   __weak id<GridToolbarsMutator> _toolbarsMutator;
   // Delegate that handles toolbars actions.
@@ -48,7 +46,6 @@
   self = [super initWithBaseViewController:baseViewController
                                    browser:regularBrowser];
   if (self) {
-    _regularBrowser = regularBrowser->AsWeakPtr();
     _toolbarsMutator = toolbarsMutator;
     _toolbarTabGridDelegate = toolbarTabGridDelegate;
     _disabledViewControllerDelegate = disabledViewControllerDelegate;
@@ -76,8 +73,8 @@
 
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-          _regularBrowser->GetBrowserState());
-  WebStateList* regularWebStateList = _regularBrowser->GetWebStateList();
+          self.browser->GetBrowserState());
+  WebStateList* regularWebStateList = self.browser->GetWebStateList();
 
   _mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:tabGroupSyncService
@@ -111,7 +108,7 @@
            openGroupWithSyncID:(const base::Uuid&)syncID {
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-          _regularBrowser->GetBrowserState());
+          self.browser->GetBrowserState());
   tabGroupSyncService->OpenTabGroup(
       syncID,
       std::make_unique<tab_groups::IOSTabGroupActionContext>(self.browser));
