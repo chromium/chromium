@@ -81,6 +81,14 @@ BASE_FEATURE(kPlusAddressGlobalToggle,
              "PlusAddressGlobalToggle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+// When enabled, mobile manual fallbacks for addresses and passwords show plus
+// address filling information.
+BASE_FEATURE(kPlusAddressIOSManualFallbackEnabled,
+             "PlusAddressIOSManualFallbackEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, loading states during plus address creation on Android are more
 // refined.
