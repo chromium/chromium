@@ -4,24 +4,37 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {PerDeviceInstallRowElement} from 'chrome://os-settings/os_settings.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {CompanionAppInfo, CompanionAppState, PerDeviceInstallRowElement} from 'chrome://os-settings/os_settings.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {clearBody} from '../utils.js';
 
+const defaultAppInfo: CompanionAppInfo = {
+  packageId: 'packageId',
+  appName: 'AppName',
+  actionLink: 'www.example123.com',
+  iconUrl: 'data:image/png;base64,gg==',
+  state: CompanionAppState.kAvailable,
+};
+
 suite(PerDeviceInstallRowElement.is, () => {
   let installRow: PerDeviceInstallRowElement;
 
-  async function createInstallRow() {
+  async function createInstallRow(appInfo: CompanionAppInfo) {
     clearBody();
     installRow = document.createElement(PerDeviceInstallRowElement.is);
+    installRow.appInfo = appInfo;
     document.body.appendChild(installRow);
     return flushTasks();
   }
 
-  test('Initialize per-device-install-row', async () => {
-    await createInstallRow();
-    assertTrue(!!installRow.shadowRoot!.querySelector('.app-info-container'));
+  test('App label and button displayed correctly', async () => {
+    await createInstallRow(defaultAppInfo);
+    const appLabel =
+        strictQuery('#appName', installRow.shadowRoot, HTMLSpanElement);
+    assertEquals(
+        `Install ${defaultAppInfo.appName}`, appLabel.textContent!.trim());
   });
 });

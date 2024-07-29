@@ -16,12 +16,6 @@
   .subsection-subtitle {
     padding-top: 15px;
   }
-
-  .app-info-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
 </style>
 <div id="mouse">
   <per-device-subsection-header
@@ -37,20 +31,10 @@
         label="$i18n{mouseSwapButtonsLabel}" pref="{{primaryRightPref}}">
     </settings-toggle-button>
   </template>
-  <!--TODO(b/329686601): Replace placeholder text when localization strings
-    available.-->
   <div class="subsection">
     <template is="dom-if" if="[[showInstallAppRow(mouse.appInfo)]]">
-      <div class="app-info-container">
-        <div class="app-info">
-          <span id="appName">[[computeInstallAppLabel(mouse.appInfo)]]</span>
-        </div>
-        <cr-button id="installButton"
-            on-click="onInstallCompanionAppButtonClicked"
-            aria-labelledby="appName">
-          $i18n{installAppButton}
-        </cr-button>
-      </div>
+      <per-device-install-row app-info="[[mouse.appInfo]]">
+      </per-device-install-row>
     </template>
     <template is="dom-if" if="[[allowScrollSettings_]]">
       <h2 class="subsection-subtitle">$i18n{mouseCursor}</h2>
@@ -161,12 +145,9 @@
       </cr-link-row>
     </template>
     <template is="dom-if" if="[[isCompanionAppInstalled(mouse.appInfo)]]">
-      <cr-link-row id="openApp"
-        class="hr bottom-divider" on-click="onCompanionAppRowClick"
-        aria-describedby="mouseName"
-        label="[[openAppLabel]]"
-        external>
-      </cr-link-row>
+      <per-device-app-installed-row id="AppInstalledRow"
+          app-info="[[mouse.appInfo]]">
+      </per-device-app-installed-row>
     </template>
   </div>
 </div>

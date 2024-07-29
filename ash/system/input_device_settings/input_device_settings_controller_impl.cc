@@ -1926,6 +1926,7 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
 
   RefreshCachedKeyboardSettings();
   RefreshBatteryInfoForConnectedDevices();
+  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
@@ -1947,6 +1948,7 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
 
   RefreshCachedTouchpadSettings();
   RefreshBatteryInfoForConnectedDevices();
+  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
@@ -2021,6 +2023,7 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
   }
   RefreshStoredLoginScreenGraphicsTabletSettings();
   RefreshBatteryInfoForConnectedDevices();
+  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::RestoreDefaultKeyboardRemappings(

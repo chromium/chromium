@@ -165,7 +165,7 @@ export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_s
 export {FkeyRowElement} from './device_page/fkey_row.js';
 export {SettingsGraphicsTabletSubpageElement} from './device_page/graphics_tablet_subpage.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
-export {AcceleratorAction, BatteryInfo, Fkey, GraphicsTablet, InputDeviceSettingsPolicy, Keyboard, KeyEvent, MetaKey, ModifierKey, Mouse, PolicyStatus, ShortcutInputProviderInterface, SimulateRightClickModifier, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier, TopRowActionKey, Vkey} from './device_page/input_device_settings_types.js';
+export {AcceleratorAction, BatteryInfo, CompanionAppInfo, CompanionAppState, Fkey, GraphicsTablet, InputDeviceSettingsPolicy, Keyboard, KeyEvent, MetaKey, ModifierKey, Mouse, PolicyStatus, ShortcutInputProviderInterface, SimulateRightClickModifier, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier, TopRowActionKey, Vkey} from './device_page/input_device_settings_types.js';
 export {KeyboardRemapModifierKeyRowElement} from './device_page/keyboard_remap_modifier_key_row.js';
 export {KeyboardSixPackKeyRowElement, sixPackKeyProperties} from './device_page/keyboard_six_pack_key_row.js';
 export {PerDeviceAppInstalledRowElement} from './device_page/per_device_app_installed_row.js';

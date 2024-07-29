@@ -8,6 +8,10 @@
     icon="os-settings:device-keyboard">
 </per-device-subsection-header>
 <div class="subsection">
+  <template is="dom-if" if="[[showInstallAppRow(keyboard.appInfo)]]">
+    <per-device-install-row app-info="[[keyboard.appInfo]]">
+    </per-device-install-row>
+  </template>
   <template is="dom-if" if="[[!isChromeOsKeyboard(keyboard)]]" restamp>
     <settings-toggle-button
         inverted="true"
@@ -75,4 +79,8 @@
       sub-label="[[remapKeyboardKeysSublabel]]"
       deep-link-focus-id$="[[Setting.kKeyboardRemapKeys]]">
   </cr-link-row>
+  <template is="dom-if" if="[[isCompanionAppInstalled(keyboard.appInfo)]]">
+    <per-device-app-installed-row app-info="[[keyboard.appInfo]]">
+    </per-device-app-installed-row>
+  </template>
 </div>

@@ -11,6 +11,7 @@
 import '../icons.html.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../controls/settings_radio_group.js';
@@ -19,6 +20,8 @@ import '../controls/settings_toggle_button.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import './input_device_settings_shared.css.js';
+import './per_device_app_installed_row.js';
+import './per_device_install_row.js';
 import './per_device_keyboard_remap_keys.js';
 import './per_device_subsection_header.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
@@ -39,7 +42,7 @@ import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from
 import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings, MetaKey, ModifierKey, SixPackKeyInfo, SixPackShortcutModifier} from './input_device_settings_types.js';
+import {CompanionAppState, InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings, MetaKey, ModifierKey, SixPackKeyInfo, SixPackShortcutModifier} from './input_device_settings_types.js';
 import {getPrefPolicyFields, settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
@@ -242,6 +245,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     }
   }
 
+  private showInstallAppRow(): boolean {
+    return this.keyboard.appInfo?.state === CompanionAppState.kAvailable;
+  }
+
   private updateSettingsToCurrentPrefs(): void {
     // `updateSettingsToCurrentPrefs` gets called when the `keyboard` object
     // gets updated. This subsection element can be reused multiple times so we
@@ -400,6 +407,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     } else {
       return this.i18n('keyboardSendFunctionKeysDescription');
     }
+  }
+
+  private isCompanionAppInstalled(): boolean {
+    return this.keyboard.appInfo?.state === CompanionAppState.kInstalled;
   }
 }
 

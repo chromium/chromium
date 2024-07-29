@@ -69,6 +69,7 @@ export type PointingStick = InputDeviceSettingsTypes.PointingStick;
 export type GraphicsTablet = InputDeviceSettingsTypes.GraphicsTablet;
 
 export type BatteryInfo = InputDeviceSettingsTypes.BatteryInfo;
+export type CompanionAppInfo = InputDeviceSettingsTypes.CompanionAppInfo;
 
 export interface Stylus {
   // Unique per device based on this VID/PID pair as follows: "<vid>:<pid>"

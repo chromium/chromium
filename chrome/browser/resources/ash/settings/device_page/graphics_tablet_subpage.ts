@@ -11,6 +11,8 @@
 import '../icons.html.js';
 import '../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
+import './per_device_app_installed_row.js';
+import './per_device_install_row.js';
 import './per_device_subsection_header.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -25,7 +27,8 @@ import {PrefsState} from '../common/types.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './graphics_tablet_subpage.html.js';
-import {GraphicsTablet, GraphicsTabletButtonConfig} from './input_device_settings_types.js';
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {CompanionAppInfo, CompanionAppState, GraphicsTablet, GraphicsTabletButtonConfig, InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
 import {getDeviceStateChangesToAnnounce} from './input_device_settings_utils.js';
 
 const SettingsGraphicsTabletSubpageElementBase =
@@ -82,6 +85,8 @@ export class SettingsGraphicsTabletSubpageElement extends
   private currentPenChanged: boolean;
   private currentTabletChanged: boolean;
   private deviceId: number;
+  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
 
   override currentRouteChanged(route: Route): void {
     // Avoid override deviceId, currentPenChanged, currentTabletChanged when on
@@ -152,6 +157,10 @@ export class SettingsGraphicsTabletSubpageElement extends
     this.currentTabletChanged = true;
   }
 
+  private showInstallAppRow(appInfo: CompanionAppInfo|null): boolean {
+    return appInfo?.state === CompanionAppState.kAvailable;
+  }
+
   private onCustomizePenButtonsClick(e: PointerEvent): void {
     Router.getInstance().navigateTo(
         routes.CUSTOMIZE_PEN_BUTTONS,
@@ -178,6 +187,10 @@ export class SettingsGraphicsTabletSubpageElement extends
     return new URLSearchParams({
       graphicsTabletId: encodeURIComponent(graphicsTabletId),
     });
+  }
+
+  private isCompanionAppInstalled(appInfo: CompanionAppInfo|null): boolean {
+    return appInfo?.state === CompanionAppState.kInstalled;
   }
 }
 

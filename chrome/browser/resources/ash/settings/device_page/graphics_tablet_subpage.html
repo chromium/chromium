@@ -26,6 +26,11 @@
       </per-device-subsection-header>
       <div class="subsection">
         <template is="dom-if"
+            if="[[showInstallAppRow(graphicsTablet.appInfo)]]">
+          <per-device-install-row app-info="[[graphicsTablet.appInfo]]">
+          </per-device-install-row>
+        </template>
+        <template is="dom-if"
             if="[[showCustomizeTabletButtonsRow(graphicsTablet)]]">
           <cr-link-row id="customizeTabletButtons"
               class="bottom-divider" on-click="onCustomizeTabletButtonsClick"
@@ -40,4 +45,9 @@
         </cr-link-row>
       </div>
     </div>
+    <template is="dom-if"
+        if="[[isCompanionAppInstalled(graphicsTablet.appInfo)]]">
+      <per-device-app-installed-row app-info="[[graphicsTablet.appInfo]]">
+      </per-device-app-installed-row>
+    </template>
 </template>

@@ -1,3 +1,12 @@
 <style include="settings-shared input-device-settings-shared">
+  #openApp {
+    padding-left: 0px;
+  }
 </style>
-<div class="app-installed-row"></div>
+<cr-link-row
+    id="openApp"
+    class="hr"
+    on-click="onCompanionAppRowClick"
+    label="[[openAppLabel]]"
+    external>
+</cr-link-row>
