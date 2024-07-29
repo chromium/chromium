@@ -198,6 +198,7 @@ test("ios_chrome_unittests") {
     # Add unit_tests target here.
     "//ios/chrome/app:unit_tests",
     "//ios/chrome/app/application_delegate:unit_tests",
+    "//ios/chrome/app/background_refresh:unit_tests",
     "//ios/chrome/app/profile:unit_tests",
     "//ios/chrome/app/spotlight:unit_tests",
     "//ios/chrome/app/startup:unit_tests",

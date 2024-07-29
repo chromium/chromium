@@ -12,9 +12,7 @@
 
 @end
 
-@implementation AppRefreshProvider {
-  base::TimeDelta _refreshInterval;
-}
+@implementation AppRefreshProvider
 
 - (instancetype)init {
   if (self = [super init]) {

@@ -21,7 +21,7 @@
 // for this.
 @property(nonatomic, readonly) NSString* identifier;
 
-// Refresh interval for this provider. Default is one hour.
+// Refresh interval for this provider. Default is 15 minutes.
 @property(nonatomic, readonly) base::TimeDelta refreshInterval;
 
 // Last *completed* run time for the provider's operations. Backed by a user
@@ -36,6 +36,7 @@
 // superclass implementation.
 - (void)handleRefreshWithCompletion:(ProceduralBlock)completion;
 
+// TODO(crbug.com/354918188): Implement cancellation.
 // Terminate the running task immediately.
 - (void)cancelRefresh;
 

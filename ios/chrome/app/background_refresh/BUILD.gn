@@ -30,3 +30,13 @@ source_set("background_refresh") {
     "UserNotifications.framework",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_refresh_provider_unittest.mm" ]
+  deps = [
+    ":background_refresh",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

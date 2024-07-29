@@ -33,20 +33,8 @@
 }
 
 - (void)addAppRefreshProvider:(AppRefreshProvider*)provider {
+  CHECK(provider);
   [self.providers addObject:provider];
-}
-
-- (void)registerBackgroundRefreshTask {
-  auto handler = ^(BGTask* task) {
-    [self systemTriggeredRefreshForTask:task];
-  };
-
-  // TODO(crbug.com/354919106):  Consider moving this task to a queue known to
-  // Chromium, so it's easy to safely thread hop.
-  [BGTaskScheduler.sharedScheduler
-      registerForTaskWithIdentifier:kAppBackgroundRefreshTaskIdentifier
-                         usingQueue:nil
-                      launchHandler:handler];
 }
 
 - (void)requestAppRefreshWithDelay:(NSTimeInterval)delay {
@@ -86,6 +74,21 @@
     [[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:
                                            kAppBackgroundRefreshTaskIdentifier];
   }
+}
+
+#pragma mark - Private
+
+- (void)registerBackgroundRefreshTask {
+  auto handler = ^(BGTask* task) {
+    [self systemTriggeredRefreshForTask:task];
+  };
+
+  // TODO(crbug.com/354919106):  Consider moving this task to a queue known to
+  // Chromium, so it's easy to safely thread hop.
+  [BGTaskScheduler.sharedScheduler
+      registerForTaskWithIdentifier:kAppBackgroundRefreshTaskIdentifier
+                         usingQueue:nil
+                      launchHandler:handler];
 }
 
 // Debugging note: To induce the scheduler to call this task, you should
