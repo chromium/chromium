@@ -124,6 +124,9 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   // Returns the policy::PolicyScope stored in the given |scope_pref|.
   policy::PolicyScope GetPolicyScope(const char* scope_pref) const;
 
+  // Returns ClientMetadata populated with minimum required information
+  std::unique_ptr<ClientMetadata> GetBasicClientMetadata(Profile* profile);
+
   // Obtain a ClientMetadata instance corresponding to the current
   // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-
   // based service provider and false when using a local service provider.

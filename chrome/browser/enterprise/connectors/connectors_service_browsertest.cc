@@ -676,9 +676,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
               settings.value().cloud_or_local_settings.dm_token());
     if (enterprise_connectors_enabled_on_mgs()) {
       ASSERT_FALSE(ContainsClientId(settings.value()));
-    } else {
-      ASSERT_FALSE(settings.value().client_metadata);
     }
+    ASSERT_TRUE(settings.value().client_metadata);
     ASSERT_FALSE(settings.value().per_profile);
   }
 #else
@@ -701,9 +700,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                   settings.value().cloud_or_local_settings.dm_token());
         if (enterprise_connectors_enabled_on_mgs()) {
           ASSERT_FALSE(ContainsClientId(settings.value()));
-        } else {
-          ASSERT_FALSE(settings.value().client_metadata);
         }
+        ASSERT_TRUE(settings.value().client_metadata);
         ASSERT_EQ(management_domain, kDomain1);
       }
       break;
@@ -714,9 +712,12 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                   settings.value().cloud_or_local_settings.dm_token());
         if (enterprise_connectors_enabled_on_mgs()) {
           ASSERT_FALSE(ContainsClientId(settings.value()));
-        } else {
-          ASSERT_FALSE(settings.value().client_metadata);
         }
+        ASSERT_TRUE(settings.value().client_metadata);
+        ASSERT_FALSE(
+            settings.value().client_metadata->profile().dm_token().empty());
+        ASSERT_FALSE(
+            settings.value().client_metadata->device().dm_token().empty());
       } else {
         ASSERT_EQ("path_user",
                   settings.value().cloud_or_local_settings.local_path());
@@ -733,9 +734,13 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                   settings.value().cloud_or_local_settings.dm_token());
         if (enterprise_connectors_enabled_on_mgs()) {
           ASSERT_FALSE(ContainsClientId(settings.value()));
-        } else {
-          ASSERT_FALSE(settings.value().client_metadata);
         }
+        ASSERT_TRUE(settings.value().client_metadata);
+        ASSERT_FALSE(
+            settings.value().client_metadata->profile().dm_token().empty());
+        ASSERT_TRUE(
+            settings.value().client_metadata->device().dm_token().empty());
+
       } else {
         ASSERT_EQ("path_user",
                   settings.value().cloud_or_local_settings.local_path());
@@ -796,9 +801,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                   settings.value().cloud_or_local_settings.dm_token());
         if (enterprise_connectors_enabled_on_mgs()) {
           ASSERT_FALSE(ContainsClientId(settings.value()));
-        } else {
-          ASSERT_FALSE(settings.value().client_metadata);
         }
+        ASSERT_TRUE(settings.value().client_metadata);
         ASSERT_TRUE(settings.value().per_profile);
         break;
       case ManagementStatus::UNMANAGED:
@@ -807,9 +811,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                   settings.value().cloud_or_local_settings.dm_token());
         if (enterprise_connectors_enabled_on_mgs()) {
           ASSERT_FALSE(ContainsClientId(settings.value()));
-        } else {
-          ASSERT_FALSE(settings.value().client_metadata);
         }
+        ASSERT_TRUE(settings.value().client_metadata);
         ASSERT_TRUE(settings.value().per_profile);
         break;
     }
