@@ -1570,3 +1570,25 @@ mega_cq_excluded_gardener_rotations = [
     # "cft" builders are very red.
     "cft",
 ]
+
+standalone_trybot_excluded_builders = [
+    "android_blink_rel",  # Same reason 'tryserver.blink' is excluded below.
+    "linux-layout-tests-edit-ng",  # Unclear why this one is standalone.
+    # The GPU optional-CQ bots likely have some special coverage/testing
+    # requirements. But being standalone shouldn't be a requirement.
+    "android_optional_gpu_tests_rel",
+    "linux_optional_gpu_tests_rel",
+    "mac_optional_gpu_tests_rel",
+    "win_optional_gpu_tests_rel",
+    # The UTR-tester recipe doesn't currently support real CI-try mirroring.
+    "linux-utr-tester",
+    "win-utr-tester",
+]
+
+standalone_trybot_excluded_builder_groups = [
+    # These bots are used to generate new web-test expectations for pending
+    # CLs, a use-case for which a CI mirror wouldn't make much sense. For more
+    # info, see:
+    # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md#rebaselining-using-try-jobs
+    "tryserver.blink",
+]

@@ -8,7 +8,13 @@ load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys", "kinds", "triggerer")
 load("//project.star", "settings")
 load("./args.star", "args")
-load("./builder_exemptions.star", "mega_cq_excluded_builders", "mega_cq_excluded_gardener_rotations")
+load(
+    "./builder_exemptions.star",
+    "mega_cq_excluded_builders",
+    "mega_cq_excluded_gardener_rotations",
+    "standalone_trybot_excluded_builder_groups",
+    "standalone_trybot_excluded_builders",
+)
 load("./builder_url.star", "linkify_builder")
 load("./chrome_settings.star", "per_builder_outputs_config")
 load("./enums.star", "enums")
@@ -820,6 +826,11 @@ def _set_builder_config_property(ctx):
             if rotations and not mirroring_builders and not is_excluded:
                 fail("{} is on a sheriff/gardener rotation, but lacks a matching trybot".format(builder.name))
 
+            if (bucket_name == "try" and not mirrors and
+                builder_properties.get("builder_group") not in standalone_trybot_excluded_builder_groups and
+                builder.name not in standalone_trybot_excluded_builders):
+                fail(builder.name + " must not be a stand-alone trybot. Please add a corresponding CI bot for it to mirror.")
+
             # Put most gardened CI bots' trybots onto the mega CQ. We skip a
             # trybot if any of the following are true:
             # - It doesn't run a normal Chromium trybot recipe
@@ -844,7 +855,7 @@ def _set_builder_config_property(ctx):
                 all_mirror_rotations += mirror_rotations
                 if not mirror_rotations:
                     is_excluded = True
-                if json.decode(builder.properties)["recipe"] not in allowed_trybot_recipes:
+                if builder_properties["recipe"] not in allowed_trybot_recipes:
                     is_excluded = True
                 if mirror_id["builder"] in mega_cq_excluded_builders:
                     is_excluded = True
