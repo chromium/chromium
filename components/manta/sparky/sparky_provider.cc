@@ -319,6 +319,9 @@ void SparkyProvider::OnDialogResponse(std::unique_ptr<SparkyContext>,
       if (action.has_launch_app_id()) {
         sparky_delegate_->LaunchApp(action.launch_app_id());
       }
+      if (action.has_click()) {
+        sparky_delegate_->Click(action.click().x_pos(), action.click().y_pos());
+      }
     }
   }
 
