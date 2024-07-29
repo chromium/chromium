@@ -282,15 +282,24 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
   }
 
   if (!IsUsbChargerConnected() && !IsBatteryPresent()) {
-    info->icon_badge = &kUnifiedMenuBatteryXIcon;
-    info->badge_outline = &kUnifiedMenuBatteryXOutlineMaskIcon;
+    info->icon_badge = chromeos::features::IsBatteryBadgeIconEnabled()
+                           ? &kUnifiedMenuBatteryXIcon
+                           : &kUnifiedMenuBatteryXLegacyIcon;
+    info->badge_outline = chromeos::features::IsBatteryBadgeIconEnabled()
+                              ? &kUnifiedMenuBatteryXOutlineMaskIcon
+                              : &kUnifiedMenuBatteryXOutlineMaskLegacyIcon;
     info->charge_percent = 0;
     return;
   }
 
   if (IsUsbChargerConnected()) {
-    info->icon_badge = &kUnifiedMenuBatteryUnreliableIcon;
-    info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineMaskIcon;
+    info->icon_badge = chromeos::features::IsBatteryBadgeIconEnabled()
+                           ? &kUnifiedMenuBatteryUnreliableIcon
+                           : &kUnifiedMenuBatteryUnreliableLegacyIcon;
+    info->badge_outline =
+        chromeos::features::IsBatteryBadgeIconEnabled()
+            ? &kUnifiedMenuBatteryUnreliableOutlineMaskIcon
+            : &kUnifiedMenuBatteryUnreliableOutlineMaskLegacyIcon;
   } else if (IsLinePowerConnected()) {
     info->icon_badge = chromeos::features::IsBatteryBadgeIconEnabled()
                            ? &kUnifiedMenuBatteryBoltIcon
