@@ -8,13 +8,13 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './icons.html.js';
-import './viewer-download-controls.js';
-import './viewer-page-selector.js';
-import './pdf-shared.css.js';
-import './shared-vars.css.js';
+import './viewer_download_controls.js';
+import './viewer_page_selector.js';
+import './pdf_shared.css.js';
+import './shared_vars.css.js';
 // <if expr="enable_ink">
-import './viewer-annotations-bar.js';
-import './viewer-annotations-mode-dialog.js';
+import './viewer_annotations_bar.js';
+import './viewer_annotations_mode_dialog.js';
 // </if>
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -31,7 +31,7 @@ import {PluginController, PluginControllerEventType} from '../controller.js';
 // </if>
 import {record, UserAction} from '../metrics.js';
 
-import {getTemplate} from './viewer-toolbar.html.js';
+import {getTemplate} from './viewer_toolbar.html.js';
 
 declare global {
   interface HTMLElementEventMap {

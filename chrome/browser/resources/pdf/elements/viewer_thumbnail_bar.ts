@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './viewer-thumbnail.js';
+import './viewer_thumbnail.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -12,8 +12,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PluginController, PluginControllerEventType} from '../controller.js';
 
-import {getTemplate} from './viewer-thumbnail-bar.html.js';
-import type {ViewerThumbnailElement} from './viewer-thumbnail.js';
+import {getTemplate} from './viewer_thumbnail_bar.html.js';
+import type {ViewerThumbnailElement} from './viewer_thumbnail.js';
 
 export interface ViewerThumbnailBarElement {
   $: {

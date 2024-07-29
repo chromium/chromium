@@ -6,7 +6,7 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
 
-import type {ViewerSidePanelElement} from './viewer-side-panel.js';
+import type {ViewerSidePanelElement} from './viewer_side_panel.js';
 
 export function getHtml(this: ViewerSidePanelElement) {
   // clang-format off
