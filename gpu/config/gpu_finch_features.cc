@@ -448,11 +448,7 @@ BASE_FEATURE(kD3DBackingUploadWithUpdateSubresource,
 // restarting a gpu service.
 BASE_FEATURE(kHandleOverlaysSwapFailure,
              "HandleOverlaysSwapFailure",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
