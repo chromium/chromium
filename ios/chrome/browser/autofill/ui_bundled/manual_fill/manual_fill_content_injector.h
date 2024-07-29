@@ -53,6 +53,9 @@
 // @param formSuggestion The suggestion to fill out the form with.
 - (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion;
 
+// Indicates whether the current form is password-related.
+- (BOOL)isActiveFormAPasswordForm;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_CONTENT_INJECTOR_H_

@@ -79,15 +79,16 @@
   // Initialize `passwordMediator` with a nil `profilePasswordStore` and
   // 'accountPasswordStore` as these arguments are only used to create a
   // PasswordCounterObserver, which is not needed in this case.
-  self.passwordMediator =
-      [[ManualFillPasswordMediator alloc] initWithFaviconLoader:faviconLoader
-                                                       webState:webState
-                                                    syncService:syncService
-                                                            URL:GURL()
-                                       invokedOnObfuscatedField:NO
-                                           profilePasswordStore:nil
-                                           accountPasswordStore:nil
-                                         showAutofillFormButton:YES];
+  self.passwordMediator = [[ManualFillPasswordMediator alloc]
+         initWithFaviconLoader:faviconLoader
+                      webState:webState
+                   syncService:syncService
+                           URL:GURL()
+      invokedOnObfuscatedField:NO
+          profilePasswordStore:nil
+          accountPasswordStore:nil
+        showAutofillFormButton:[self.injectionHandler
+                                       isActiveFormAPasswordForm]];
   [self.passwordMediator
       setSavedPasswordsPresenter:_savedPasswordsPresenter.get()];
   [self.passwordMediator fetchAllPasswords];

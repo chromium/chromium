@@ -23,7 +23,10 @@
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ManualFallbackCreditCardTableViewMatcher;
+using chrome_test_util::ManualFallbackOtherPasswordsDismissMatcher;
+using chrome_test_util::ManualFallbackOtherPasswordsMatcher;
 using chrome_test_util::ManualFallbackPasswordTableViewMatcher;
 using chrome_test_util::ManualFallbackProfilesTableViewMatcher;
 using manual_fill::ManualFillDataType;
@@ -261,6 +264,11 @@ id<GREYMatcher> AutofillFormButton() {
 
   // Disable the password bottom sheet.
   [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+
+  // Mock successful reauth for opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 }
 
 - (void)tearDown {
@@ -270,6 +278,8 @@ id<GREYMatcher> AutofillFormButton() {
   [AutofillAppInterface clearProfilePasswordStore];
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearProfilesStore];
+
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
 // Opens the expanded manual fill view for a given `dataType`. `fieldToFill` is
@@ -296,6 +306,25 @@ id<GREYMatcher> AutofillFormButton() {
 
   // Confirm that the expanded manual fill view is visible.
   [[EarlGrey selectElementWithMatcher:ExpandedManualFillView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)openAllPasswordListFromPasswordTab {
+  // Tap the "Select Password..." action.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
+      performAction:grey_tap()];
+
+  // Acknowledge concerns using other passwords on a website.
+  id<GREYMatcher> confirmDialogButton =
+      grey_allOf(ButtonWithAccessibilityLabelId(
+                     IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE),
+                 grey_interactable(), nullptr);
+  [[EarlGrey selectElementWithMatcher:confirmDialogButton]
+      performAction:grey_tap()];
+
+  // Verify that the all password list is visible.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -478,17 +507,23 @@ id<GREYMatcher> AutofillFormButton() {
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
+  // Navigate to the address tab and check that the "Autofill Form" button does
+  // not exist.
+  [[EarlGrey selectElementWithMatcher:SegmentedControlAddressTab()]
       performAction:grey_tap()];
-
-  // Check that the "Autofill Form" button does not exist.
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_notVisible()];
 
-  [[EarlGrey selectElementWithMatcher:SegmentedControlAddressTab()]
+  // Navigate to the password tab and check that the "Autofill Form" button does
+  // not exist.
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
       performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_notVisible()];
 
-  // Check that the "Autofill Form" button does not exist.
+  // Navigate to the all password list and check that the "Autofill Form"
+  // button does not exist.
+  [self openAllPasswordListFromPasswordTab];
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_notVisible()];
 }
@@ -505,17 +540,29 @@ id<GREYMatcher> AutofillFormButton() {
   [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
                                   fieldToFill:kNameFieldID];
 
-  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
-      performAction:grey_tap()];
+  // Scroll down and check that the "Autofill Form" button exists.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Check that the "Autofill Form" button does not exist.
+  // Navigate to the payment tab and check that the "Autofill Form" button does
+  // not exist.
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPaymentMethodTab()]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_notVisible()];
 
-  [[EarlGrey selectElementWithMatcher:SegmentedControlPaymentMethodTab()]
+  // Navigate to the password tab and check that the "Autofill Form" button does
+  // not exist.
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
       performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_notVisible()];
 
-  // Check that the "Autofill Form" button does not exist.
+  // Navigate to the all password list and check that the "Autofill Form"
+  // button does not exist.
+  [self openAllPasswordListFromPasswordTab];
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_notVisible()];
 }
@@ -535,19 +582,27 @@ id<GREYMatcher> AutofillFormButton() {
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
+  // Navigate to the address tab and check that the "Autofill Form" button does
+  // not exist.
   [[EarlGrey selectElementWithMatcher:SegmentedControlAddressTab()]
       performAction:grey_tap()];
-
-  // Check that the "Autofill Form" button does not exist.
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_notVisible()];
 
+  // Navigate to the payment tab and check that the "Autofill Form" button does
+  // not exist.
   [[EarlGrey selectElementWithMatcher:SegmentedControlPaymentMethodTab()]
       performAction:grey_tap()];
-
-  // Check that the "Autofill Form" button does not exist.
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_notVisible()];
+
+  // Go back to the password tab to open the all password list. Check that the
+  // "Autofill Form" button exists.
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
+      performAction:grey_tap()];
+  [self openAllPasswordListFromPasswordTab];
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the "Autofill Form" button does not exist for all of the data
