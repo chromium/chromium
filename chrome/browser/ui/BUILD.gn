@@ -2532,8 +2532,6 @@ static_library("ui") {
       "webui/ash/vm/vm_ui.h",
       "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.cc",
       "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h",
-      "webui/extensions/ash/kiosk_apps_handler.cc",
-      "webui/extensions/ash/kiosk_apps_handler.h",
       "webui/help/help_utils_chromeos.cc",
       "webui/help/help_utils_chromeos.h",
       "webui/help/version_updater_chromeos.cc",

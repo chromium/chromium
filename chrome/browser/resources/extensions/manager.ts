@@ -24,10 +24,6 @@ import './sidebar.js';
 import './site_permissions/site_permissions.js';
 import './site_permissions/site_permissions_by_site.js';
 import './toolbar.js';
-// <if expr="chromeos_ash">
-import './kiosk_dialog.js';
-
-// </if>
 
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
@@ -39,9 +35,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {ActivityLogExtensionPlaceholder} from './activity_log/activity_log.js';
 import type {ExtensionsDetailViewElement} from './detail_view.js';
 import type {ExtensionsItemListElement} from './item_list.js';
-// <if expr="chromeos_ash">
-import {KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
-// </if>
 import {getTemplate} from './manager.html.js';
 import type {PageState} from './navigation_helper.js';
 import {Dialog, navigation, Page} from './navigation_helper.js';
@@ -210,18 +203,6 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
        * page.
        */
       fromActivityLog_: Boolean,
-
-      // <if expr="chromeos_ash">
-      kioskEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showKioskDialog_: {
-        type: Boolean,
-        value: false,
-      },
-      // </if>
     };
   }
 
@@ -250,11 +231,6 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
   private showOptionsDialog_: boolean;
   private fromActivityLog_: boolean;
   private pageInitializedResolver_: PromiseResolver<void>;
-
-  // <if expr="chromeos_ash">
-  private kioskEnabled_: boolean;
-  private showKioskDialog_: boolean;
-  // </if>
 
   private currentPage_: PageState|null;
   private navigationListener_: number|null = null;
@@ -312,13 +288,6 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
       service.getItemStateChangedTarget().addListener(
           this.onItemStateChanged_.bind(this));
     });
-
-    // <if expr="chromeos_ash">
-    KioskBrowserProxyImpl.getInstance().initializeKioskAppSettings().then(
-        params => {
-          this.kioskEnabled_ = params.kioskEnabled;
-        });
-    // </if>
   }
 
   override connectedCallback() {
@@ -764,16 +733,6 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     this.installWarnings_ = null;
     this.showInstallWarningsDialog_ = false;
   }
-
-  // <if expr="chromeos_ash">
-  private onKioskClick_() {
-    this.showKioskDialog_ = true;
-  }
-
-  private onKioskDialogClose_() {
-    this.showKioskDialog_ = false;
-  }
-  // </if>
 }
 
 declare global {

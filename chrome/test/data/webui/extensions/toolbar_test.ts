@@ -6,10 +6,6 @@ import type {ExtensionsToolbarElement} from 'chrome://extensions/extensions.js';
 import {getToastManager} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// <if expr="chromeos_ash">
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
-
-// </if>
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo, testVisible} from './test_util.js';
@@ -25,10 +21,6 @@ suite('ExtensionToolbarTest', function() {
     toolbar.inDevMode = false;
     toolbar.devModeControlledByPolicy = false;
     toolbar.isChildAccount = false;
-
-    // <if expr="chromeos_ash">
-    toolbar.kioskEnabled = false;
-    // </if>
 
     mockDelegate = new TestService();
     toolbar.set('delegate', mockDelegate);
@@ -171,17 +163,4 @@ suite('ExtensionToolbarTest', function() {
     toolbar.narrow = false;
     assertFalse(toolbar.$.toolbar.showMenu);
   });
-
-  // <if expr="chromeos_ash">
-  test('KioskMode', function() {
-    const button = toolbar.$.kioskExtensions;
-    assertTrue(button.hidden);
-    toolbar.kioskEnabled = true;
-    assertFalse(button.hidden);
-
-    const whenTapped = eventToPromise('kiosk-tap', toolbar);
-    button.click();
-    return whenTapped;
-  });
-  // </if>
 });
