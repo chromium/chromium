@@ -603,11 +603,6 @@ bool IsSkiaGraphiteSupportedByDevice(const base::CommandLine* command_line) {
   }
 #if BUILDFLAG(IS_MAC)
   // The following code tries to match angle::IsMetalRendererAvailable().
-  // ANGLE requires at least macOS 10.13 for Metal 2.0.
-  const int macos_version = base::mac::MacOSVersion();
-  if (macos_version < 10'13'00) {
-    return false;
-  }
   auto model_name_split = base::SysInfo::SplitHardwareModelNameDoNotUse(
       base::SysInfo::HardwareModelName());
   if (model_name_split.has_value()) {

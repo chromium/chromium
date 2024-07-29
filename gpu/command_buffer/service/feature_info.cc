@@ -208,10 +208,7 @@ FeatureInfo::FeatureInfo(
   feature_flags_.chromium_image_ycbcr_p010 = base::Contains(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::P010);
-#elif BUILDFLAG(IS_MAC)
-  feature_flags_.chromium_image_ycbcr_p010 =
-      base::mac::MacOSMajorVersion() >= 11;
-#elif BUILDFLAG(IS_IOS)
+#elif BUILDFLAG(IS_APPLE)
   feature_flags_.chromium_image_ycbcr_p010 = true;
 #endif
 }
