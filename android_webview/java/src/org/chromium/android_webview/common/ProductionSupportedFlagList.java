@@ -526,6 +526,9 @@ public final class ProductionSupportedFlagList {
                 "Enable the use of an increased parse slice size per command buffer before"
                         + " each forced context switch."),
         Flag.baseFeature(
+                BlinkFeatures.REPORT_EVENT_TIMING_AT_VISIBILITY_CHANGE,
+                "Report event timing to UKM at visibility change."),
+        Flag.baseFeature(
                 BlinkFeatures.RUN_TEXT_INPUT_UPDATE_POST_LIFECYCLE,
                 "Runs code to update IME state at the end of a lifecycle update "
                         + "rather than the beginning."),
