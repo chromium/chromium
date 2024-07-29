@@ -99,6 +99,7 @@ class FrameNodeImpl
   bool IsAdFrame() const override;
   bool IsHoldingWebLock() const override;
   bool IsHoldingIndexedDBLock() const override;
+  bool HadUserActivation() const override;
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   bool IsAudible() const override;
@@ -125,6 +126,7 @@ class FrameNodeImpl
 
   // Setters are not thread safe.
   void SetIsCurrent(bool is_current);
+  void SetHadUserActivation();
   void SetIsHoldingWebLock(bool is_holding_weblock);
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
@@ -294,6 +296,12 @@ class FrameNodeImpl
       LifecycleState,
       &FrameNodeObserver::OnFrameLifecycleStateChanged>
       lifecycle_state_{LifecycleState::kRunning};
+
+  // Indicates if the frame has been interacted with.
+  ObservedProperty::NotifiesOnlyOnChanges<
+      bool,
+      &FrameNodeObserver::OnHadUserActivationChanged>
+      had_user_activation_{false};
 
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsAdFrameChanged>

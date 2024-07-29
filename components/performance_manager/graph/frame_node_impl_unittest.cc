@@ -153,6 +153,7 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
   MOCK_METHOD1(OnFrameIsHoldingIndexedDBLockChanged, void(const FrameNode*));
   MOCK_METHOD2(OnPriorityAndReasonChanged,
                void(const FrameNode*, const PriorityAndReason& previous_value));
+  MOCK_METHOD1(OnHadUserActivationChanged, void(const FrameNode*));
   MOCK_METHOD1(OnHadFormInteractionChanged, void(const FrameNode*));
   MOCK_METHOD1(OnHadUserEditsChanged, void(const FrameNode*));
   MOCK_METHOD1(OnIsAudibleChanged, void(const FrameNode*));
@@ -450,6 +451,29 @@ TEST_F(FrameNodeImplTest, Priority) {
       PriorityAndReason(base::TaskPriority::LOWEST, nullptr));
   EXPECT_EQ(PriorityAndReason(base::TaskPriority::LOWEST, nullptr),
             frame_node->GetPriorityAndReason());
+  testing::Mock::VerifyAndClear(&obs);
+
+  graph()->RemoveFrameNodeObserver(&obs);
+}
+
+TEST_F(FrameNodeImplTest, UserActivation) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
+
+  MockObserver obs;
+  graph()->AddFrameNodeObserver(&obs);
+
+  EXPECT_FALSE(frame_node->HadFormInteraction());
+
+  EXPECT_CALL(obs, OnHadUserActivationChanged(frame_node.get()));
+  frame_node->SetHadUserActivation();
+  EXPECT_TRUE(frame_node->HadUserActivation());
+  testing::Mock::VerifyAndClear(&obs);
+
+  EXPECT_CALL(obs, OnHadUserActivationChanged(frame_node.get())).Times(0);
+  frame_node->SetHadUserActivation();
+  EXPECT_TRUE(frame_node->HadUserActivation());
   testing::Mock::VerifyAndClear(&obs);
 
   graph()->RemoveFrameNodeObserver(&obs);

@@ -80,6 +80,8 @@ class PerformanceManagerTabHelper
       bool is_capturing_media_stream) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void FrameReceivedUserActivation(
+      content::RenderFrameHost* render_frame_host) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
   void InnerWebContentsAttached(content::WebContents* inner_web_contents,
                                 content::RenderFrameHost* render_frame_host,

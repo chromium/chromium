@@ -476,6 +476,19 @@ void PerformanceManagerTabHelper::
       permission_controller_subscription_id_);
 }
 
+void PerformanceManagerTabHelper::FrameReceivedUserActivation(
+    content::RenderFrameHost* render_frame_host) {
+  // Ignore notifications that are received after the frame was deleted.
+  auto frame_it = frames_.find(render_frame_host);
+  if (frame_it == frames_.end()) {
+    return;
+  }
+  auto* frame_node = frame_it->second.get();
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE, base::BindOnce(&FrameNodeImpl::SetHadUserActivation,
+                                base::Unretained(frame_node)));
+}
+
 void PerformanceManagerTabHelper::TitleWasSet(content::NavigationEntry* entry) {
   DCHECK(page_node_);
 

@@ -191,6 +191,9 @@ class FrameNode : public TypedNode<FrameNode> {
   // this frame's network requests.
   virtual NodeSetView<const WorkerNode*> GetChildWorkerNodes() const = 0;
 
+  // Returns true if the frame has been interacted with at least once.
+  virtual bool HadUserActivation() const = 0;
+
   // Returns true if at least one form of the frame has been interacted with.
   virtual bool HadFormInteraction() const = 0;
 
@@ -296,6 +299,9 @@ class FrameNodeObserver : public base::CheckedObserver {
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) = 0;
 
+  // Called when the frame is interacted with by the user.
+  virtual void OnHadUserActivationChanged(const FrameNode* frame_node) = 0;
+
   // Called when the frame receives a form interaction.
   virtual void OnHadFormInteractionChanged(const FrameNode* frame_node) = 0;
 
@@ -365,6 +371,7 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   void OnPriorityAndReasonChanged(
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) override {}
+  void OnHadUserActivationChanged(const FrameNode* frame_node) override {}
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override {}
   void OnHadUserEditsChanged(const FrameNode* frame_node) override {}
   void OnIsAudibleChanged(const FrameNode* frame_node) override {}

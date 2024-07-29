@@ -206,6 +206,11 @@ bool FrameNodeImpl::IsHoldingIndexedDBLock() const {
   return is_holding_indexeddb_lock_.value();
 }
 
+bool FrameNodeImpl::HadUserActivation() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return had_user_activation_.value();
+}
+
 bool FrameNodeImpl::HadFormInteraction() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return document_.had_form_interaction.value();
@@ -331,6 +336,11 @@ void FrameNodeImpl::SetIsCurrent(bool is_current) {
   // here. (altimin suggests simply relying on RFH::GetLifecycleState to
   // correctly track "active" frame nodes instead of using "current", and not
   // checking this invariant.)
+}
+
+void FrameNodeImpl::SetHadUserActivation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  had_user_activation_.SetAndMaybeNotify(this, true);
 }
 
 void FrameNodeImpl::SetIsHoldingWebLock(bool is_holding_weblock) {
