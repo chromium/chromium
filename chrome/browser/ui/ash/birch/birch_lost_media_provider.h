@@ -91,6 +91,9 @@ class ASH_EXPORT BirchLostMediaProvider
   mojo::Receiver<media_session::mojom::MediaControllerObserver>
       media_observer_receiver_{this};
 
+  // Whether the media is playing (it might be paused or stopped).
+  bool is_playing_ = false;
+
   // The title of the media item.
   std::u16string media_title_;
 

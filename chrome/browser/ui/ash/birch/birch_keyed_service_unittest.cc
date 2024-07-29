@@ -58,6 +58,7 @@
 #include "components/sync_sessions/synced_session.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
+#include "services/media_session/public/mojom/media_session.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -491,9 +492,13 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     GetLostMediaProvider()->MediaSessionMetadataChanged(metadata);
   }
 
-  void SimulateMediaSessionInfoChanged(SecondaryIconType type) {
+  void SimulateMediaSessionInfoChanged(bool is_playing,
+                                       SecondaryIconType type) {
     media_session::mojom::MediaSessionInfoPtr info(
         media_session::mojom::MediaSessionInfo::New());
+    info->playback_state =
+        is_playing ? media_session::mojom::MediaPlaybackState::kPlaying
+                   : media_session::mojom::MediaPlaybackState::kPaused;
     info->audio_video_states =
         std::vector<media_session::mojom::MediaAudioVideoState>();
     media_session::mojom::MediaAudioVideoState state;
@@ -948,7 +953,8 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider_AudioItem) {
   EXPECT_EQ(model->GetLostMediaItemsForTest().size(), 0u);
 
   SimulateMediaMetadataInit();
-  SimulateMediaSessionInfoChanged(SecondaryIconType::kLostMediaAudio);
+  SimulateMediaSessionInfoChanged(/*is_playing=*/true,
+                                  SecondaryIconType::kLostMediaAudio);
   lost_media_provider->RequestBirchDataFetch();
   model->SetCalendarItems(std::vector<BirchCalendarItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());
@@ -985,6 +991,34 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider_AudioItem) {
   ASSERT_EQ(lost_media_items.size(), 0u);
 }
 
+TEST_F(BirchKeyedServiceTest, LostMediaProvider_PausedDoesNotShow) {
+  BirchModel* model = Shell::Get()->birch_model();
+  BirchDataProvider* lost_media_provider =
+      birch_keyed_service()->GetLostMediaProvider();
+  ClearMediaApps();
+
+  // Simulate a piece of media.
+  SimulateMediaMetadataInit();
+
+  // Simulate a paused audio stream.
+  SimulateMediaSessionInfoChanged(/*is_playing=*/false,
+                                  SecondaryIconType::kLostMediaAudio);
+  lost_media_provider->RequestBirchDataFetch();
+  auto& lost_media_items = model->GetLostMediaItemsForTest();
+
+  // The media item does not appear in the model.
+  EXPECT_EQ(lost_media_items.size(), 0u);
+
+  // Simulate a playing audio stream.
+  SimulateMediaSessionInfoChanged(/*is_playing=*/true,
+                                  SecondaryIconType::kLostMediaAudio);
+  lost_media_provider->RequestBirchDataFetch();
+  lost_media_items = model->GetLostMediaItemsForTest();
+
+  // The media item appears in the model.
+  EXPECT_EQ(lost_media_items.size(), 1u);
+}
+
 TEST_F(BirchKeyedServiceTest, LostMediaProvider_VideoItem) {
   BirchModel* model = Shell::Get()->birch_model();
   BirchDataProvider* lost_media_provider =
@@ -994,7 +1028,8 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider_VideoItem) {
   EXPECT_EQ(model->GetLostMediaItemsForTest().size(), 0u);
 
   SimulateMediaMetadataInit();
-  SimulateMediaSessionInfoChanged(SecondaryIconType::kLostMediaVideo);
+  SimulateMediaSessionInfoChanged(/*is_playing=*/true,
+                                  SecondaryIconType::kLostMediaVideo);
   lost_media_provider->RequestBirchDataFetch();
   model->SetCalendarItems(std::vector<BirchCalendarItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());

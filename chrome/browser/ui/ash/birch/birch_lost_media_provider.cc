@@ -20,6 +20,7 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "components/favicon/core/favicon_service.h"
 #include "services/media_session/public/cpp/media_session_service.h"
+#include "services/media_session/public/mojom/media_session.mojom-shared.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -71,6 +72,9 @@ void BirchLostMediaProvider::MediaSessionInfoChanged(
     secondary_icon_type_ = SecondaryIconType::kUnknown;
     return;
   }
+
+  is_playing_ = media_session_info->playback_state ==
+                media_session::mojom::MediaPlaybackState::kPlaying;
 
   if (media_session_info->audio_video_states.has_value() &&
       !media_session_info->audio_video_states->empty()) {
@@ -133,8 +137,8 @@ void BirchLostMediaProvider::OnVideoConferencingDataAvailable(
 void BirchLostMediaProvider::SetMediaAppsFromMediaController() {
   // Returns early if no media controller is bound or if pertinent media app
   // details are missing.
-  if (!media_controller_remote_.is_bound() || media_title_.empty() ||
-      source_url_.empty()) {
+  if (!media_controller_remote_.is_bound() || !is_playing_ ||
+      media_title_.empty() || source_url_.empty()) {
     Shell::Get()->birch_model()->SetLostMediaItems({});
     return;
   }
