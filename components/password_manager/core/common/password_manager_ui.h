@@ -83,6 +83,9 @@ enum State {
 
   // Passkey was successfully created and saved.
   PASSKEY_SAVED_CONFIRMATION_STATE,
+
+  // Passkey was successfully deleted.
+  PASSKEY_DELETED_CONFIRMATION_STATE,
 };
 
 }  // namespace password_manager::ui

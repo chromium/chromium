@@ -248,6 +248,11 @@ void ManagePasswordsState::OnPasskeySaved(const std::u16string& username,
   SetState(password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE);
 }
 
+void ManagePasswordsState::OnPasskeyDeleted() {
+  ClearData();
+  SetState(password_manager::ui::PASSKEY_DELETED_CONFIRMATION_STATE);
+}
+
 void ManagePasswordsState::TransitionToState(
     password_manager::ui::State state) {
   CHECK_NE(password_manager::ui::INACTIVE_STATE, state_);

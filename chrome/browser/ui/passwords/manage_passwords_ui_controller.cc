@@ -526,6 +526,12 @@ void ManagePasswordsUIController::OnPasskeySaved(const std::u16string& username,
   UpdateBubbleAndIconVisibility();
 }
 
+void ManagePasswordsUIController::OnPasskeyDeleted() {
+  passwords_data_.OnPasskeyDeleted();
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  UpdateBubbleAndIconVisibility();
+}
+
 void ManagePasswordsUIController::OnAddUsernameSaveClicked(
     const std::u16string& username,
     const password_manager::PasswordForm& form_to_update) {

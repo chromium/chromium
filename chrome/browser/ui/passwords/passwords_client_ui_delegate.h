@@ -123,6 +123,10 @@ class PasswordsClientUIDelegate {
   virtual void OnPasskeySaved(const std::u16string& username,
                               bool gpm_pin_created) = 0;
 
+  // Called when a passkey has just been deleted to display a confirmation of
+  // that to the user.
+  virtual void OnPasskeyDeleted() = 0;
+
  protected:
   virtual ~PasswordsClientUIDelegate() = default;
 };
