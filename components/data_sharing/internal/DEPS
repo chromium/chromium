@@ -5,6 +5,7 @@ include_rules = [
   "+components/sync/protocol",
   "+components/sync/test",
   "+net/http",
+  "+net/base",
   "+services/network/public/cpp",
   "+services/network/test",
 ]

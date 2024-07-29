@@ -15,6 +15,7 @@
 #include "components/data_sharing/internal/android/data_sharing_conversion_bridge.h"
 #include "components/data_sharing/internal/android/data_sharing_network_loader_android.h"
 #include "components/data_sharing/public/data_sharing_service.h"
+#include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/data_sharing/internal/jni_headers/DataSharingServiceImpl_jni.h"
@@ -227,6 +228,34 @@ bool DataSharingServiceAndroid::IsEmptyService(
 ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetNetworkLoader(
     JNIEnv* env) {
   return network_loader_->GetJavaObject();
+}
+
+ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetDataSharingURL(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_group_id,
+    const JavaParamRef<jstring>& j_access_token) {
+  // Note that this function is only passing the required fields to the native
+  // service.
+  std::string group_id = ConvertJavaStringToUTF8(env, j_group_id);
+  std::string access_token = ConvertJavaStringToUTF8(env, j_access_token);
+  std::unique_ptr<GURL> url = data_sharing_service_->GetDataSharingURL(
+      GroupData(GroupId(group_id), /*display_name*/ "", /*members*/ {},
+                access_token));
+
+  if (url) {
+    return url::GURLAndroid::FromNativeGURL(env, *url);
+  } else {
+    return ScopedJavaLocalRef<jobject>();
+  }
+}
+
+ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::ParseDataSharingURL(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_url) {
+  DataSharingService::ParseURLResult parse_result =
+      data_sharing_service_->ParseDataSharingURL(
+          url::GURLAndroid::ToNativeGURL(env, j_url));
+  return DataSharingConversionBridge::CreateParseURLResult(env, parse_result);
 }
 
 ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetJavaObject() {

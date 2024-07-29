@@ -113,4 +113,20 @@ DataSharingConversionBridge::CreatePeopleGroupActionOutcome(JNIEnv* env,
       AttachCurrentThread(), value);
 }
 
+// static
+ScopedJavaLocalRef<jobject> DataSharingConversionBridge::CreateParseURLResult(
+    JNIEnv* env,
+    const DataSharingService::ParseURLResult& data) {
+  ScopedJavaLocalRef<jobject> j_group_data;
+  DataSharingService::ParseURLStatus status =
+      DataSharingService::ParseURLStatus::kUnknown;
+  if (data.has_value()) {
+    j_group_data = CreateJavaGroupToken(env, data.value());
+  } else {
+    status = data.error();
+  }
+  return Java_DataSharingConversionBridge_createParseURLResult(
+      env, j_group_data, static_cast<int>(status));
+}
+
 }  // namespace data_sharing

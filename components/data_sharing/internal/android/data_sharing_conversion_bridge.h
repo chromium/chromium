@@ -53,6 +53,12 @@ class DataSharingConversionBridge {
   // support primitive type int.
   static ScopedJavaLocalRef<jobject> CreatePeopleGroupActionOutcome(JNIEnv* env,
                                                                     int value);
+
+  // Creates an object of
+  // org.chromium.components.data_sharing.DataSharingService.ParseURLResult.
+  static ScopedJavaLocalRef<jobject> CreateParseURLResult(
+      JNIEnv* env,
+      const DataSharingService::ParseURLResult& data);
 };
 
 }  // namespace data_sharing

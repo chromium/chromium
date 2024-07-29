@@ -16,6 +16,7 @@
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
+#include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/model/entity_change.h"
@@ -36,6 +37,11 @@ namespace {
 
 using base::test::RunClosure;
 using testing::Eq;
+
+const char kGroupId[] = "/?-group_id";
+const char kEncodedGroupId[] = "%2F%3F-group_id";
+const char kTokenBlob[] = "/?-_token";
+const char kEncodedTokenBlob[] = "%2F%3F-_token";
 
 sync_pb::CollaborationGroupSpecifics MakeCollaborationGroupSpecifics(
     const GroupId& id) {
@@ -388,6 +394,58 @@ TEST_F(DataSharingServiceImplTest, ShouldNotifyObserverOnGroupChange) {
         std::move(entity_changes));
   }
   run_loop.Run();
+}
+
+TEST_F(DataSharingServiceImplTest, ParseDataSharingURL) {
+  GroupData group_data = GroupData();
+  group_data.group_token =
+      GroupToken(data_sharing::GroupId(kGroupId), kTokenBlob);
+  GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
+                  "?group_id=" + kGroupId + "&token_blob=" + kTokenBlob);
+
+  DataSharingService::ParseURLResult result =
+      data_sharing_service_->ParseDataSharingURL(url);
+
+  // Verify valid path.
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(group_data.group_token.group_id.value(),
+            result.value().group_id.value());
+  EXPECT_EQ(group_data.group_token.access_token, result.value().access_token);
+
+  // Verify host/path error.
+  std::string invalid = "https://www.test.com/";
+  url = GURL(invalid + "?group_id=" + kGroupId + "&token_blob=" + kTokenBlob);
+  result = data_sharing_service_->ParseDataSharingURL(url);
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            DataSharingService::ParseURLStatus::kHostOrPathMismatchFailure);
+
+  // Verify query missing error.
+  url = GURL(data_sharing::features::kDataSharingURL.Get() +
+             "?group_id=" + kGroupId);
+  result = data_sharing_service_->ParseDataSharingURL(url);
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            DataSharingService::ParseURLStatus::kQueryMissingFailure);
+}
+
+TEST_F(DataSharingServiceImplTest, GetDataSharingURL) {
+  GroupData group_data = GroupData();
+  group_data.group_token =
+      GroupToken(data_sharing::GroupId(kGroupId), kTokenBlob);
+  GURL url = GURL(data_sharing::features::kDataSharingURL.Get() + "?group_id=" +
+                  kEncodedGroupId + "&token_blob=" + kEncodedTokenBlob);
+
+  std::unique_ptr<GURL> result_url =
+      data_sharing_service_->GetDataSharingURL(group_data);
+
+  // Verify valid path.
+  EXPECT_TRUE(result_url);
+  EXPECT_EQ(url, *result_url);
+
+  // Verify invalid group data.
+  result_url = data_sharing_service_->GetDataSharingURL(GroupData());
+  EXPECT_FALSE(result_url);
 }
 
 }  // namespace data_sharing

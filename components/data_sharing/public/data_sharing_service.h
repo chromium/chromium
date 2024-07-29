@@ -58,10 +58,20 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     kPersistentFailure = 3
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.components.data_sharing)
+  enum class ParseURLStatus {
+    kUnknown = 0,
+    kSuccess = 1,
+    kHostOrPathMismatchFailure = 2,
+    kQueryMissingFailure = 3
+  };
+
   using GroupDataOrFailureOutcome =
       base::expected<GroupData, PeopleGroupActionFailure>;
   using GroupsDataSetOrFailureOutcome =
       base::expected<std::set<GroupData>, PeopleGroupActionFailure>;
+  using ParseURLResult = base::expected<GroupToken, ParseURLStatus>;
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns a Java object of the type DataSharingService for the given
@@ -131,6 +141,17 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
 
   // Called when a data sharing type URL has been intercepted.
   virtual void HandleShareURLNavigationIntercepted(const GURL& url) = 0;
+
+  // Create a data sharing URL used for sharing. This does not validate if the
+  // group is still active nor guarantee that the URL is not expired. The caller
+  // needs to get the valid group info from the other APIs above.
+  virtual std::unique_ptr<GURL> GetDataSharingURL(
+      const GroupData& group_data) = 0;
+
+  // Parse and validate a data sharing URL. This simply parses the url. The
+  // returned group may not be valid, the caller needs to check ReadGroup or
+  // other apis to validate the group.
+  virtual ParseURLResult ParseDataSharingURL(const GURL& url) = 0;
 };
 
 }  // namespace data_sharing

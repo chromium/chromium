@@ -6,6 +6,7 @@ package org.chromium.components.data_sharing;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -49,6 +50,24 @@ public interface DataSharingService {
                 List<GroupData> groupDataSet, @PeopleGroupActionFailure int actionFailure) {
             this.groupDataSet = groupDataSet;
             this.actionFailure = actionFailure;
+        }
+    }
+
+    /** Result that contains a groupToken and an status of the action that was requested. */
+    public static class ParseURLResult {
+        /**
+         * The group data requested.
+         *
+         * <p>Can be null if the action failed. Please check `status` for more info.
+         */
+        public final GroupToken groupToken;
+
+        /** Result of the action */
+        public final @ParseURLStatus int status;
+
+        ParseURLResult(GroupToken groupToken, int status) {
+            this.groupToken = groupToken;
+            this.status = status;
         }
     }
 
@@ -155,4 +174,20 @@ public interface DataSharingService {
      * @return {@link UserDataHost} that manages {@link UserData} objects attached to.
      */
     UserDataHost getUserDataHost();
+
+    /**
+     * Create a data sharing URL used for sharing.
+     *
+     * @param groupData The group information needed to create the URL.
+     * @return Associated data sharing GURL if successful, else returns null.
+     */
+    GURL getDataSharingURL(GroupData groupData);
+
+    /**
+     * Parse and validate a data sharing URL.
+     *
+     * @param url The url to be parsed.
+     * @return The parsing result as ParseURLResult.
+     */
+    ParseURLResult parseDataSharingURL(GURL url);
 }

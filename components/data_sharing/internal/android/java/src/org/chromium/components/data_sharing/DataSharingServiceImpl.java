@@ -10,6 +10,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
+import org.chromium.url.GURL;
 
 /**
  * Java side of the JNI bridge between DataSharingServiceImpl in Java and C++. All method calls are
@@ -92,6 +93,18 @@ public class DataSharingServiceImpl implements DataSharingService {
         return mUserDataHost;
     }
 
+    @Override
+    public GURL getDataSharingURL(GroupData groupData) {
+        return DataSharingServiceImplJni.get()
+                .getDataSharingURL(
+                        mNativePtr, groupData.groupToken.groupId, groupData.groupToken.accessToken);
+    }
+
+    @Override
+    public DataSharingService.ParseURLResult parseDataSharingURL(GURL url) {
+        return DataSharingServiceImplJni.get().parseDataSharingURL(mNativePtr, url);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -132,5 +145,11 @@ public class DataSharingServiceImpl implements DataSharingService {
         boolean isEmptyService(long nativeDataSharingServiceAndroid, DataSharingServiceImpl caller);
 
         DataSharingNetworkLoader getNetworkLoader(long nativeDataSharingServiceAndroid);
+
+        GURL getDataSharingURL(
+                long nativeDataSharingServiceAndroid, String groupId, String accessToken);
+
+        DataSharingService.ParseURLResult parseDataSharingURL(
+                long nativeDataSharingServiceAndroid, GURL url);
     }
 }

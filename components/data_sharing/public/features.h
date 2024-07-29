@@ -6,12 +6,15 @@
 #define COMPONENTS_DATA_SHARING_PUBLIC_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace data_sharing::features {
 
 // Core feature flag for data sharing. Disabling this feature ensures an empty
 // implementation of the service is returned.
 BASE_DECLARE_FEATURE(kDataSharingFeature);
+
+extern const base::FeatureParam<std::string> kDataSharingURL;
 
 }  // namespace data_sharing::features
 

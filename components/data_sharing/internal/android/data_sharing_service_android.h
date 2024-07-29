@@ -47,6 +47,13 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
                     const JavaParamRef<jobject>& j_callback);
   bool IsEmptyService(JNIEnv* env, const JavaParamRef<jobject>& j_caller);
   ScopedJavaLocalRef<jobject> GetNetworkLoader(JNIEnv* env);
+  ScopedJavaLocalRef<jobject> GetDataSharingURL(
+      JNIEnv* env,
+      const JavaParamRef<jstring>& group_id,
+      const JavaParamRef<jstring>& access_token);
+  ScopedJavaLocalRef<jobject> ParseDataSharingURL(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& j_url);
 
   // Returns the DataSharingServiceImpl java object.
   ScopedJavaLocalRef<jobject> GetJavaObject();
