@@ -882,6 +882,22 @@
       },
     },
   },
+  'mac_15_arm64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'os': 'Mac-15',
+      },
+    },
+  },
+  'mac_15_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-15',
+      },
+    },
+  },
   'mac_arm64_apple_m1_gpu_experimental': {
     'swarming': {
       'dimensions': {

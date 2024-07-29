@@ -522,3 +522,77 @@ blink_mac_builder(
     cpu = cpu.ARM64,
     contact_team_email = "chrome-blink-engprod@google.com",
 )
+
+blink_mac_builder(
+    name = "mac15-blink-rel",
+    description_html = """\
+    Runs web tests against content-shell on Mac 15 (Intel) as a
+    <a href="https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md#rebaselining-using-try-jobs">standalone trybot to generate new web test expectations</a>.\
+    """,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "chrome_with_codecs",
+            "minimal_symbols",
+            "mac",
+            "x64",
+        ],
+    ),
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-blink-engprod@google.com",
+)
+
+blink_mac_builder(
+    name = "mac15.arm64-blink-rel",
+    description_html = """\
+    Runs web tests against content-shell on Mac 15 (Intel) as a
+    <a href="https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md#rebaselining-using-try-jobs">standalone trybot to generate new web test expectations</a>.\
+    """,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "chrome_with_codecs",
+            "mac",
+            "arm64",
+            "minimal_symbols",
+        ],
+    ),
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-blink-engprod@google.com",
+)
