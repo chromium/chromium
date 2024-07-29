@@ -92,6 +92,25 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_relu_operator_desc
        /*relu_input=*/DataTypeConstraint::kFloat16To32,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_sigmoid_operator_desc#tensor-support
+       /*sigmoid_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_slice_operator_desc#tensor-support
+       /*slice_input=*/kFloat16To32Ints8To32,
+
+       // Softmax is emulated when the feature level is less than 5.1.
+       // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_softmax1_operator_desc
+       /*softmax_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_relu_operator_desc#tensor-support
+       /*softplus_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_softsign_operator_desc#tensor-support
+       /*softsign_input=*/DataTypeConstraint::kFloat16To32,
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_split_operator_desc#tensor-support
+       /*split_input=*/kFloat16To32Ints8To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_if_operator_desc
        /*where_condition=*/DataTypeConstraint::kUint8,
        /*where_value=*/kFloat16To32Ints8To32});
@@ -99,6 +118,8 @@ ContextProperties ContextImplDml::GetProperties(
   if (feature_level >= DML_FEATURE_LEVEL_4_1) {
     properties.data_type_limits.concat_inputs = SupportedDataTypes::All();
     properties.data_type_limits.gather_input = SupportedDataTypes::All();
+    properties.data_type_limits.slice_input = SupportedDataTypes::All();
+    properties.data_type_limits.split_input = SupportedDataTypes::All();
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_5_0) {

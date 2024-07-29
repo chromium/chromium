@@ -623,12 +623,10 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
                                                       OperandDataType::kFloat32,
                                                       OperandDataType::kInt32};
 
-  // Note that INT16, and UINT16 is also supported by CoreML, but WebNN
-  // does not have corresponding types. See docs here:
-  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather
-  static constexpr SupportedDataTypes kGatherInputSupportedDataTypes{
+  static constexpr SupportedDataTypes kFloat16To32Int8To32AndUint8{
       OperandDataType::kFloat32, OperandDataType::kFloat16,
       OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
+
   static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes{
       OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
 
@@ -645,12 +643,27 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        kArgMinMaxOutputSupportedDataTypes,
        /*concat_inputs=*/kFloatsAndInt32,
        /*elu_input=*/DataTypeConstraint::kFloat16To32,
-       /*gather_input=*/kGatherInputSupportedDataTypes,
+       // Note that INT16, and UINT16 is also supported by CoreML, but WebNN
+       // does not have corresponding types. See docs here:
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather
+       /*gather_input=*/kFloat16To32Int8To32AndUint8,
        /*gather_indices=*/
        kGatherIndicesSupportedDataTypes,
        /*gelu_input=*/DataTypeConstraint::kFloat16To32,
        /*leaky_relu_input=*/DataTypeConstraint::kFloat16To32,
        /*relu_input=*/DataTypeConstraint::kFloat16To32,
+       /*sigmoid_input=*/DataTypeConstraint::kFloat16To32,
+       // Note that BOOL, INT16, and UINT16 is also supported by CoreML, but
+       // WebNN does not have corresponding types. See docs here:
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.tensor_transformation.slice_by_size
+       /*slice_input=*/kFloat16To32Int8To32AndUint8,
+       /*softmax_input=*/DataTypeConstraint::kFloat16To32,
+       /*softplus_input=*/DataTypeConstraint::kFloat16To32,
+       /*softsign_input=*/DataTypeConstraint::kFloat16To32,
+       // Note that BOOL is also supported by CoreML, but WebNN does not have a
+       // corresponding BOOL type. See docs here:
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.split
+       /*split_input=*/kFloatsAndInt32,
        /*where_condition=*/DataTypeConstraint::kUint8,
        // Note that BOOL is also supported by CoreML, but WebNN does not have a
        // corresponding BOOL type. See docs here:
@@ -835,27 +848,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kSigmoid: {
-        RETURN_IF_ERROR(AddUnaryOperation(
-            SupportedDataType::kFloats, kOpSigmoidTypeName,
-            *operation->get_sigmoid(), block, operand_op_name));
-        break;
-      }
-      case mojom::Operation::Tag::kSoftplus: {
-        RETURN_IF_ERROR(AddUnaryOperation(
-            SupportedDataType::kFloats, kOpSoftplusTypeName,
-            *operation->get_softplus(), block, operand_op_name));
-        break;
-      }
-      case mojom::Operation::Tag::kSoftsign: {
-        RETURN_IF_ERROR(AddUnaryOperation(
-            SupportedDataType::kFloats, kOpSoftsignTypeName,
-            *operation->get_softsign(), block, operand_op_name));
-        break;
-      }
-      case mojom::Operation::Tag::kTanh: {
-        RETURN_IF_ERROR(
-            AddUnaryOperation(SupportedDataType::kFloats, kOpTanhTypeName,
-                              *operation->get_tanh(), block, operand_op_name));
+        CHECK(context_properties_.data_type_limits.sigmoid_input.Has(
+            MILDataTypeToOperandType(
+                GetOperandInfo(operation->get_sigmoid()->input_operand_id)
+                    .mil_data_type)));
+        AddUnaryOperation(kOpSigmoidTypeName, *operation->get_sigmoid(), block);
         break;
       }
       case mojom::Operation::Tag::kSlice: {
@@ -865,6 +862,30 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kSoftmax: {
         RETURN_IF_ERROR(
             AddOperationForSoftmax(*operation->get_softmax(), block));
+        break;
+      }
+      case mojom::Operation::Tag::kSoftplus: {
+        CHECK(context_properties_.data_type_limits.softplus_input.Has(
+            MILDataTypeToOperandType(
+                GetOperandInfo(operation->get_softplus()->input_operand_id)
+                    .mil_data_type)));
+        AddUnaryOperation(kOpSoftplusTypeName, *operation->get_softplus(),
+                          block);
+        break;
+      }
+      case mojom::Operation::Tag::kSoftsign: {
+        CHECK(context_properties_.data_type_limits.softsign_input.Has(
+            MILDataTypeToOperandType(
+                GetOperandInfo(operation->get_softsign()->input_operand_id)
+                    .mil_data_type)));
+        AddUnaryOperation(kOpSoftsignTypeName, *operation->get_softsign(),
+                          block);
+        break;
+      }
+      case mojom::Operation::Tag::kTanh: {
+        RETURN_IF_ERROR(
+            AddUnaryOperation(SupportedDataType::kFloats, kOpTanhTypeName,
+                              *operation->get_tanh(), block, operand_op_name));
         break;
       }
       case mojom::Operation::Tag::kTranspose: {
@@ -1143,6 +1164,15 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddUnaryOperation(
   return AddUnaryOperation(supported_data_type, op_name,
                            operation.input_operand_id,
                            operation.output_operand_id, block, operand_op_name);
+}
+
+template <typename T>
+void GraphBuilderCoreml::AddUnaryOperation(
+    std::string_view op_name,
+    const T& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  AddUnaryOperation(op_name, operation.input_operand_id,
+                    operation.output_operand_id, block);
 }
 
 base::expected<void, mojom::ErrorPtr>
@@ -2519,21 +2549,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForSlice(
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
-  // Note that BOOL, INT16, and UINT16 is also supported by CoreML, but WebNN
-  // does not have corresponding types. See docs here:
-  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.tensor_transformation.slice_by_size
-  static constexpr auto kSupportedSliceOpsTypes =
-      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-          {CoreML::Specification::MILSpec::DataType::FLOAT32,
-           CoreML::Specification::MILSpec::DataType::FLOAT16,
-           CoreML::Specification::MILSpec::DataType::INT8,
-           CoreML::Specification::MILSpec::DataType::INT32,
-           CoreML::Specification::MILSpec::DataType::UINT8});
-  if (!kSupportedSliceOpsTypes.contains(input_operand_info.mil_data_type)) {
-    return NewNotSupportedError(NotSupportedInputArgumentTypeError(
-        ops::kSlice,
-        MILDataTypeToOperandType(input_operand_info.mil_data_type)));
-  }
+  CHECK(context_properties_.data_type_limits.slice_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpSliceTypeName);
@@ -2568,7 +2585,8 @@ GraphBuilderCoreml::AddOperationForSoftmax(
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
-  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+  CHECK(context_properties_.data_type_limits.softmax_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpSoftmaxTypeName);

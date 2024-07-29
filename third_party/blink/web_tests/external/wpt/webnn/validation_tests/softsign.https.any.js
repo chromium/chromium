@@ -6,4 +6,4 @@
 
 validateInputFromAnotherBuilder('softsign');
 
-validateUnaryOperation('softsign', floatingPointTypes);
+validateSingleInputOperation('softsign');

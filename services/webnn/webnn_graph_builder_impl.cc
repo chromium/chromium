@@ -1615,7 +1615,8 @@ bool ValidateReshape(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateSlice(const IdToOperandMap& id_to_operand_map,
+bool ValidateSlice(const ContextProperties& context_properties,
+                   const IdToOperandMap& id_to_operand_map,
                    const mojom::Slice& slice,
                    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(slice.input_operand_id)) {
@@ -1632,7 +1633,7 @@ bool ValidateSlice(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateSliceAndInferOutput(
-      input->descriptor, ConvertToSliceAttributes(slice));
+      context_properties, input->descriptor, ConvertToSliceAttributes(slice));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1643,7 +1644,8 @@ bool ValidateSlice(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
+bool ValidateSoftmax(const ContextProperties& context_properties,
+                     const IdToOperandMap& id_to_operand_map,
                      const mojom::Softmax& softmax,
                      base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(softmax.input_operand_id)) {
@@ -1658,7 +1660,7 @@ bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
     return false;
   }
   auto validated_output = ValidateSoftmaxAndInferOutput(
-      input->descriptor, softmax.axis, softmax.label);
+      context_properties, input->descriptor, softmax.axis, softmax.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1669,7 +1671,8 @@ bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateSplit(const IdToOperandMap& id_to_operand_map,
+bool ValidateSplit(const ContextProperties& context_properties,
+                   const IdToOperandMap& id_to_operand_map,
                    const mojom::Split& split,
                    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(split.input_operand_id)) {
@@ -1697,7 +1700,7 @@ bool ValidateSplit(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateSplitAndInferOutput(
-      input->descriptor,
+      context_properties, input->descriptor,
       {.splits = splits, .axis = split.axis, .label = split.label});
   if (!validated_output.has_value()) {
     return false;
@@ -1945,26 +1948,29 @@ bool ValidateOperation(const ContextProperties& context_properties,
           id_to_operand_map, *operation.get_relu(),
           context_properties.data_type_limits.relu_input, processed_operands);
     case mojom::Operation::Tag::kSlice:
-      return ValidateSlice(id_to_operand_map, *operation.get_slice(),
-                           processed_operands);
+      return ValidateSlice(context_properties, id_to_operand_map,
+                           *operation.get_slice(), processed_operands);
     case mojom::Operation::Tag::kSigmoid:
-      return ValidateUnaryOperation(id_to_operand_map, *operation.get_sigmoid(),
-                                    DataTypeConstraint::kFloat16To32,
-                                    processed_operands);
+      return ValidateUnaryOperation(
+          id_to_operand_map, *operation.get_sigmoid(),
+          context_properties.data_type_limits.sigmoid_input,
+          processed_operands);
     case mojom::Operation::Tag::kSoftmax:
-      return ValidateSoftmax(id_to_operand_map, *operation.get_softmax(),
-                             processed_operands);
+      return ValidateSoftmax(context_properties, id_to_operand_map,
+                             *operation.get_softmax(), processed_operands);
     case mojom::Operation::Tag::kSoftplus:
       return ValidateUnaryOperation(
           id_to_operand_map, *operation.get_softplus(),
-          DataTypeConstraint::kFloat16To32, processed_operands);
+          context_properties.data_type_limits.softplus_input,
+          processed_operands);
     case mojom::Operation::Tag::kSoftsign:
       return ValidateUnaryOperation(
           id_to_operand_map, *operation.get_softsign(),
-          DataTypeConstraint::kFloat16To32, processed_operands);
+          context_properties.data_type_limits.softsign_input,
+          processed_operands);
     case mojom::Operation::Tag::kSplit:
-      return ValidateSplit(id_to_operand_map, *operation.get_split(),
-                           processed_operands);
+      return ValidateSplit(context_properties, id_to_operand_map,
+                           *operation.get_split(), processed_operands);
     case mojom::Operation::Tag::kTanh:
       return ValidateUnaryOperation(id_to_operand_map, *operation.get_tanh(),
                                     DataTypeConstraint::kFloat16To32,

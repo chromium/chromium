@@ -41,7 +41,7 @@ dictionary MLGatherSupportLimits {
   MLSupportLimits indices;
 };
 
-dictionary MLUnarySupportLimits {
+dictionary MLSingleInputSupportLimits {
   MLSupportLimits input;
   MLSupportLimits output;
 };
@@ -60,11 +60,17 @@ dictionary MLOpSupportLimits {
   MLArgMinMaxSupportLimits argMin;
   MLArgMinMaxSupportLimits argMax;
   MLConcatSupportLimits concat;
-  MLUnarySupportLimits elu;
+  MLSingleInputSupportLimits elu;
   MLGatherSupportLimits gather;
-  MLUnarySupportLimits gelu;
-  MLUnarySupportLimits leakyRelu;
-  MLUnarySupportLimits relu;
+  MLSingleInputSupportLimits gelu;
+  MLSingleInputSupportLimits leakyRelu;
+  MLSingleInputSupportLimits relu;
+  MLSingleInputSupportLimits sigmoid;
+  MLSingleInputSupportLimits slice;
+  MLSingleInputSupportLimits softmax;
+  MLSingleInputSupportLimits softplus;
+  MLSingleInputSupportLimits softsign;
+  MLSingleInputSupportLimits split;
   MLWhereSupportLimits where;
 };
 

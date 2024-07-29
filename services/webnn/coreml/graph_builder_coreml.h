@@ -192,6 +192,10 @@ class GraphBuilderCoreml {
       const T& operation,
       CoreML::Specification::MILSpec::Block& block,
       std::string_view operand_op_name);
+  template <typename T>
+  void AddUnaryOperation(std::string_view op_name,
+                         const T& operation,
+                         CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddUnaryFloatsOperationWithEpsilon(
       std::string_view op_name,

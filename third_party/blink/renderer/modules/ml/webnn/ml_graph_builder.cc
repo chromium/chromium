@@ -1981,7 +1981,8 @@ MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
   // input. And the input data type must be one of the floating point types.
   return BuildUnaryOperator(
       this, exception_state, webnn::mojom::blink::Operation::Tag::kSigmoid,
-      webnn::DataTypeConstraint::kFloat16To32, input, options);
+      ml_context_->GetProperties().data_type_limits.sigmoid_input, input,
+      options);
 }
 
 MLOperand* MLGraphBuilder::slice(const MLOperand* input,
@@ -1999,7 +2000,8 @@ MLOperand* MLGraphBuilder::slice(const MLOperand* input,
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::ValidateSliceAndInferOutput(input->Descriptor(), attributes));
+      webnn::ValidateSliceAndInferOutput(ml_context_->GetProperties(),
+                                         input->Descriptor(), attributes));
 
   auto* slice =
       MakeGarbageCollected<MLSliceOperator>(this, starts, sizes, options);
@@ -2019,7 +2021,8 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::ValidateSoftmaxAndInferOutput(input->Descriptor(), axis,
+      webnn::ValidateSoftmaxAndInferOutput(ml_context_->GetProperties(),
+                                           input->Descriptor(), axis,
                                            options->label().Utf8()));
 
   auto* softmax = MakeGarbageCollected<MLSoftmaxOperator>(this, axis, options);
@@ -2050,16 +2053,13 @@ MLOperand* MLGraphBuilder::softplus(const MLOperand* input,
   THROW_AND_RETURN_IF_BUILT(nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
-  // The current spec doesn't specify the operand data type constraints of
-  // softplus. An issue has been filed to track it:
-  // https://github.com/webmachinelearning/webnn/issues/283.
-  //
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softplus, the output
   // tensor of softplus has the same type and dimensions as its input.
   return BuildUnaryOperator(
       this, exception_state, webnn::mojom::blink::Operation::Tag::kSoftplus,
-      webnn::DataTypeConstraint::kFloat16To32, input, options);
+      ml_context_->GetProperties().data_type_limits.softplus_input, input,
+      options);
 }
 
 MLOperand* MLGraphBuilder::softsign(const MLOperand* input,
@@ -2068,17 +2068,13 @@ MLOperand* MLGraphBuilder::softsign(const MLOperand* input,
   THROW_AND_RETURN_IF_BUILT(nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
-  // The input data type must be one of the floating point types.
-  // The current spec doesn't specify the operand data type constraints of
-  // softsign, an issue has been filed to track it-
-  // https://github.com/webmachinelearning/webnn/issues/283.
-  //
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softsign, the output tensor
   // of softsign has the same data type and dimensions as its input.
   return BuildUnaryOperator(
       this, exception_state, webnn::mojom::blink::Operation::Tag::kSoftsign,
-      webnn::DataTypeConstraint::kFloat16To32, input, options);
+      ml_context_->GetProperties().data_type_limits.softsign_input, input,
+      options);
 }
 
 HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
@@ -2091,9 +2087,10 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
                                  HeapVector<Member<const MLOperand>>());
 
   auto validated_outputs = webnn::ValidateSplitAndInferOutput(
-      input->Descriptor(), {.splits = splits,
-                            .axis = options->axis(),
-                            .label = options->label().Utf8()});
+      ml_context_->GetProperties(), input->Descriptor(),
+      {.splits = splits,
+       .axis = options->axis(),
+       .label = options->label().Utf8()});
   if (!validated_outputs.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
     return {};
@@ -2118,9 +2115,10 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
                                  HeapVector<Member<const MLOperand>>());
 
   auto validated_outputs = webnn::ValidateSplitAndInferOutput(
-      input->Descriptor(), {.splits = splits,
-                            .axis = options->axis(),
-                            .label = options->label().Utf8()});
+      ml_context_->GetProperties(), input->Descriptor(),
+      {.splits = splits,
+       .axis = options->axis(),
+       .label = options->label().Utf8()});
   if (!validated_outputs.has_value()) {
     exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
     return {};

@@ -60,6 +60,12 @@ ContextProperties GetContextPropertiesForTesting() {
                          /*gelu_input=*/SupportedDataTypes::All(),
                          /*leaky_relu_input=*/SupportedDataTypes::All(),
                          /*relu_input=*/SupportedDataTypes::All(),
+                         /*sigmoid_input=*/SupportedDataTypes::All(),
+                         /*slice_input=*/SupportedDataTypes::All(),
+                         /*softmax_input=*/SupportedDataTypes::All(),
+                         /*softplus_input=*/SupportedDataTypes::All(),
+                         /*softsign_input=*/SupportedDataTypes::All(),
+                         /*split_input=*/SupportedDataTypes::All(),
                          /*where_condition=*/SupportedDataTypes::All(),
                          /*where_value=*/SupportedDataTypes::All()}));
 }
@@ -5542,14 +5548,6 @@ TEST_F(WebNNGraphImplTest, FloatingPointUnaryTest) {
         .Test();
   }
   {
-    // Test the operator for 3-D tensor with float16 input.
-    FloatingPointUnaryTester{
-        .input = {.type = OperandDataType::kFloat16, .dimensions = {2, 6, 4}},
-        .output = {.type = OperandDataType::kFloat16, .dimensions = {2, 6, 4}},
-        .expected = true}
-        .Test();
-  }
-  {
     // Test the invalid graph for the output shapes are not as expected.
     FloatingPointUnaryTester{
         .input = {.type = OperandDataType::kFloat32, .dimensions = {4, 2}},
@@ -5694,15 +5692,6 @@ TEST_F(WebNNGraphImplTest, SoftmaxTest) {
     SoftmaxTester{
         .input = {.type = OperandDataType::kFloat32, .dimensions = {2, 2}},
         .output = {.type = OperandDataType::kFloat32, .dimensions = {2, 2}},
-        .axis = 1,
-        .expected = true}
-        .Test();
-  }
-  {
-    // Test softmax operator for input operand with [1, 4] dimensions.
-    SoftmaxTester{
-        .input = {.type = OperandDataType::kFloat16, .dimensions = {1, 4}},
-        .output = {.type = OperandDataType::kFloat16, .dimensions = {1, 4}},
         .axis = 1,
         .expected = true}
         .Test();

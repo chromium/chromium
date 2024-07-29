@@ -272,6 +272,13 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
   static constexpr SupportedDataTypes kFloat32{OperandDataType::kFloat32};
   static constexpr SupportedDataTypes kEluSupportedDataTypes{
       OperandDataType::kFloat32, OperandDataType::kInt8};
+  static constexpr SupportedDataTypes kSliceSupportedDataTypes{
+      OperandDataType::kFloat32, OperandDataType::kInt64,
+      OperandDataType::kInt32,   OperandDataType::kUint32,
+      OperandDataType::kInt8,    OperandDataType::kUint8};
+  static constexpr SupportedDataTypes kSplitSupportedDataTypes{
+      OperandDataType::kFloat32, OperandDataType::kInt64,
+      OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
   return ContextProperties(
       InputOperandLayout::kNhwc,
       {/*input=*/SupportedDataTypes::All(),
@@ -285,6 +292,12 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*gelu_input=*/kFloat32,
        /*leaky_relu_input=*/kFloat32,
        /*relu_input=*/kFloat32,
+       /*sigmoid_input=*/kFloat32,
+       /*slice_input=*/kSliceSupportedDataTypes,
+       /*softmax_input=*/kFloat32,
+       /*softplus_input=*/kFloat32,
+       /*softsign_input=*/kFloat32,
+       /*split_input=*/kSplitSupportedDataTypes,
        /*where_condition=*/DataTypeConstraint::kUint8,
        /*where_value=*/SupportedDataTypes::All()});
 }
@@ -2727,9 +2740,7 @@ auto GraphBuilderTflite::SerializeSoftplus(const mojom::Softplus& softplus)
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
   const mojom::Operand& input_operand = GetOperand(softplus.input_operand_id);
-  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
-    return base::unexpected("The 16-bit float data type isn't supported.");
-  }
+  CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
 
   // Emulate the softplus operation whose calculation follows the expression
   // `ln(1 + exp(x))`.
@@ -2770,9 +2781,7 @@ auto GraphBuilderTflite::SerializeSoftsign(const mojom::Softsign& softsign)
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
   const mojom::Operand& input_operand = GetOperand(softsign.input_operand_id);
-  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
-    return base::unexpected("The 16-bit float data type isn't supported.");
-  }
+  CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
 
   // Emulate the softsign operation whose calculation follows the expression
   // `x / (1 + |x|)`.

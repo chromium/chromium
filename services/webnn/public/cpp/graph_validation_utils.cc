@@ -359,13 +359,16 @@ std::string DataTypeConstraintToString(
 }
 
 base::expected<OperandDescriptor, std::string> ValidateSoftmaxAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     uint32_t axis,
     std::string_view label) {
-  // The input data type must be one of the floating point types.
-  if (!IsFloatingPointType(input.data_type())) {
+  if (!context_properties.data_type_limits.softmax_input.Has(
+          input.data_type())) {
     return base::unexpected(ErrorWithLabel(
-        label, "The input data type must be one of the floating point types."));
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.softmax_input)));
   }
   if (axis >= input.Rank()) {
     return base::unexpected(
@@ -406,10 +409,17 @@ base::expected<OperandDescriptor, std::string> ValidateArgMinMaxAndInferOutput(
 }
 
 base::expected<std::vector<OperandDescriptor>, std::string>
-ValidateSplitAndInferOutput(const OperandDescriptor& input,
+ValidateSplitAndInferOutput(const ContextProperties& context_properties,
+                            const OperandDescriptor& input,
                             const SplitAttribute& attributes) {
-  std::vector<OperandDescriptor> outputs;
   const std::string& label = attributes.label;
+  if (!context_properties.data_type_limits.split_input.Has(input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.split_input)));
+  }
+
   if (attributes.axis >= input.Rank()) {
     return base::unexpected(ErrorWithLabel(
         label,
@@ -419,6 +429,8 @@ ValidateSplitAndInferOutput(const OperandDescriptor& input,
 
   static_assert(absl::variant_size<decltype(attributes.splits)>() == 2,
                 "When adding new variants update the branches below.");
+
+  std::vector<OperandDescriptor> outputs;
   if (absl::holds_alternative<uint32_t>(attributes.splits)) {
     uint32_t splits = absl::get<uint32_t>(attributes.splits);
     if (splits == 0) {
@@ -2029,6 +2041,7 @@ SliceAttributes::SliceAttributes(SliceAttributes&& other) = default;
 SliceAttributes& SliceAttributes::operator=(SliceAttributes&& other) = default;
 
 base::expected<OperandDescriptor, std::string> ValidateSliceAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     const SliceAttributes& attributes) {
   const std::string& label = attributes.label;
@@ -2036,6 +2049,13 @@ base::expected<OperandDescriptor, std::string> ValidateSliceAndInferOutput(
   if (input_rank == 0) {
     return base::unexpected(
         ErrorWithLabel(label, "The input should not be a scalar."));
+  }
+
+  if (!context_properties.data_type_limits.slice_input.Has(input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.slice_input)));
   }
 
   if (attributes.starts.size() != input_rank) {

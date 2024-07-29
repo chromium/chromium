@@ -58,6 +58,30 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.relu_input;
   }
+  static webnn::SupportedDataTypes sigmoid_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.sigmoid_input;
+  }
+  static webnn::SupportedDataTypes slice_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.slice_input;
+  }
+  static webnn::SupportedDataTypes softmax_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.softmax_input;
+  }
+  static webnn::SupportedDataTypes softplus_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.softplus_input;
+  }
+  static webnn::SupportedDataTypes softsign_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.softsign_input;
+  }
+  static webnn::SupportedDataTypes split_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.split_input;
+  }
   static webnn::SupportedDataTypes where_condition(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.where_condition;
@@ -79,6 +103,12 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadGeluInput(&out->gelu_input) &&
            data.ReadLeakyReluInput(&out->leaky_relu_input) &&
            data.ReadReluInput(&out->relu_input) &&
+           data.ReadSigmoidInput(&out->sigmoid_input) &&
+           data.ReadSliceInput(&out->slice_input) &&
+           data.ReadSoftmaxInput(&out->softmax_input) &&
+           data.ReadSoftplusInput(&out->softplus_input) &&
+           data.ReadSoftsignInput(&out->softsign_input) &&
+           data.ReadSplitInput(&out->split_input) &&
            data.ReadWhereCondition(&out->where_condition) &&
            data.ReadWhereValue(&out->where_value);
   }

@@ -84,6 +84,12 @@ struct DataTypeLimits {
   SupportedDataTypes gelu_input;
   SupportedDataTypes leaky_relu_input;
   SupportedDataTypes relu_input;
+  SupportedDataTypes sigmoid_input;
+  SupportedDataTypes slice_input;
+  SupportedDataTypes softmax_input;
+  SupportedDataTypes softplus_input;
+  SupportedDataTypes softsign_input;
+  SupportedDataTypes split_input;
   SupportedDataTypes where_condition;
   SupportedDataTypes where_value;
 };

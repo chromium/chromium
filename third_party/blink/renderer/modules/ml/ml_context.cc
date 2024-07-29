@@ -29,8 +29,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_op_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_single_input_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_support_limits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_unary_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_where_support_limits.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
@@ -197,7 +197,7 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       properties_.data_type_limits.concat_inputs));
   op_support_limits->setConcat(concat);
 
-  MLUnarySupportLimits* elu = MLUnarySupportLimits::Create();
+  MLSingleInputSupportLimits* elu = MLSingleInputSupportLimits::Create();
   elu->setInput(SupportedDataTypesToSupportLimits(
       properties_.data_type_limits.elu_input));
   elu->setOutput(SupportedDataTypesToSupportLimits(
@@ -211,26 +211,68 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       properties_.data_type_limits.gather_indices));
   op_support_limits->setGather(gather);
 
-  MLUnarySupportLimits* gelu = MLUnarySupportLimits::Create();
+  MLSingleInputSupportLimits* gelu = MLSingleInputSupportLimits::Create();
   gelu->setInput(SupportedDataTypesToSupportLimits(
       properties_.data_type_limits.gelu_input));
   gelu->setOutput(SupportedDataTypesToSupportLimits(
       properties_.data_type_limits.gelu_input));
   op_support_limits->setGelu(gelu);
 
-  MLUnarySupportLimits* leaky_relu = MLUnarySupportLimits::Create();
+  MLSingleInputSupportLimits* leaky_relu = MLSingleInputSupportLimits::Create();
   leaky_relu->setInput(SupportedDataTypesToSupportLimits(
       properties_.data_type_limits.leaky_relu_input));
   leaky_relu->setOutput(SupportedDataTypesToSupportLimits(
       properties_.data_type_limits.leaky_relu_input));
   op_support_limits->setLeakyRelu(leaky_relu);
 
-  MLUnarySupportLimits* relu = MLUnarySupportLimits::Create();
+  MLSingleInputSupportLimits* relu = MLSingleInputSupportLimits::Create();
   relu->setInput(SupportedDataTypesToSupportLimits(
       properties_.data_type_limits.relu_input));
   relu->setOutput(SupportedDataTypesToSupportLimits(
       properties_.data_type_limits.relu_input));
   op_support_limits->setRelu(relu);
+
+  MLSingleInputSupportLimits* sigmoid = MLSingleInputSupportLimits::Create();
+  sigmoid->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.sigmoid_input));
+  sigmoid->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.sigmoid_input));
+  op_support_limits->setSigmoid(sigmoid);
+
+  MLSingleInputSupportLimits* slice = MLSingleInputSupportLimits::Create();
+  slice->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.slice_input));
+  slice->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.slice_input));
+  op_support_limits->setSlice(slice);
+
+  MLSingleInputSupportLimits* softmax = MLSingleInputSupportLimits::Create();
+  softmax->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.softmax_input));
+  softmax->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.softmax_input));
+  op_support_limits->setSoftmax(softmax);
+
+  MLSingleInputSupportLimits* softplus = MLSingleInputSupportLimits::Create();
+  softplus->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.softplus_input));
+  softplus->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.softplus_input));
+  op_support_limits->setSoftplus(softplus);
+
+  MLSingleInputSupportLimits* softsign = MLSingleInputSupportLimits::Create();
+  softsign->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.softsign_input));
+  softsign->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.softsign_input));
+  op_support_limits->setSoftsign(softsign);
+
+  MLSingleInputSupportLimits* split = MLSingleInputSupportLimits::Create();
+  split->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.split_input));
+  split->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.split_input));
+  op_support_limits->setSplit(split);
 
   MLWhereSupportLimits* where = MLWhereSupportLimits::Create();
   where->setCondition(SupportedDataTypesToSupportLimits(

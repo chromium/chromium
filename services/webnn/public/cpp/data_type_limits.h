@@ -24,6 +24,12 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes gelu_input,
                  SupportedDataTypes leaky_relu_input,
                  SupportedDataTypes relu_input,
+                 SupportedDataTypes sigmoid_input,
+                 SupportedDataTypes slice_input,
+                 SupportedDataTypes softmax_input,
+                 SupportedDataTypes softplus_input,
+                 SupportedDataTypes softsign_input,
+                 SupportedDataTypes split_input,
                  SupportedDataTypes where_condition,
                  SupportedDataTypes where_value);
 
@@ -48,6 +54,12 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes gelu_input;
   SupportedDataTypes leaky_relu_input;
   SupportedDataTypes relu_input;
+  SupportedDataTypes sigmoid_input;
+  SupportedDataTypes slice_input;
+  SupportedDataTypes softmax_input;
+  SupportedDataTypes softplus_input;
+  SupportedDataTypes softsign_input;
+  SupportedDataTypes split_input;
   SupportedDataTypes where_condition;
   SupportedDataTypes where_value;
 };
@@ -63,6 +75,12 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.gelu_input == rhs.gelu_input &&
          lhs.leaky_relu_input == rhs.leaky_relu_input &&
          lhs.relu_input == rhs.relu_input &&
+         lhs.sigmoid_input == rhs.sigmoid_input &&
+         lhs.slice_input == rhs.slice_input &&
+         lhs.softmax_input == rhs.softmax_input &&
+         lhs.softplus_input == rhs.softplus_input &&
+         lhs.softsign_input == rhs.softsign_input &&
+         lhs.split_input == rhs.split_input &&
          lhs.where_condition == rhs.where_condition &&
          lhs.where_value == rhs.where_value;
 }

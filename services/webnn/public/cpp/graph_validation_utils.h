@@ -393,7 +393,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax.
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateSoftmaxAndInferOutput(const OperandDescriptor& input,
+    ValidateSoftmaxAndInferOutput(const ContextProperties& context_properties,
+                                  const OperandDescriptor& input,
                                   uint32_t axis,
                                   std::string_view label);
 
@@ -416,7 +417,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) SplitAttribute {
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-split
 base::expected<std::vector<OperandDescriptor>, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateSplitAndInferOutput(const OperandDescriptor& input,
+    ValidateSplitAndInferOutput(const ContextProperties& context_properties,
+                                const OperandDescriptor& input,
                                 const SplitAttribute& attributes);
 
 // Validate and infer output information of batchNormalization operator defined
@@ -591,7 +593,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-slice
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateSliceAndInferOutput(const OperandDescriptor& input,
+    ValidateSliceAndInferOutput(const ContextProperties& context_properties,
+                                const OperandDescriptor& input,
                                 const SliceAttributes& attributes);
 
 // Validate and infer output information of reduce operator defined in

@@ -166,6 +166,14 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.relu_input.RetainAll(
       DataTypeConstraint::kFloat16To32Int8To32);
+  backend_context_properties.data_type_limits.sigmoid_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.softmax_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.softplus_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.softsign_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.where_condition.RetainAll(
       DataTypeConstraint::kUint8);
   return backend_context_properties;
