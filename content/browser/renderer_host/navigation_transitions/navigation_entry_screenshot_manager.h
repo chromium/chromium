@@ -38,6 +38,9 @@ class CONTENT_EXPORT NavigationEntryScreenshotManager {
                           size_t size);
   void OnScreenshotRemoved(NavigationEntryScreenshotCacheEvictor* cache,
                            size_t size);
+  void OnScreenshotCompressed(NavigationEntryScreenshotCacheEvictor* cache,
+                              size_t old_size,
+                              size_t new_size);
 
   // Called when a cache's owning `NavigationController` becomes visible. This
   // cache is the the most recently used cache.

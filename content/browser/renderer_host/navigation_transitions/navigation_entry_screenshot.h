@@ -48,6 +48,8 @@ class CONTENT_EXPORT NavigationEntryScreenshot
  public:
   const static void* const kUserDataKey;
 
+  static void DisableCompressionForTesting();
+
   NavigationEntryScreenshot(const SkBitmap& bitmap, int navigation_entry_id);
   NavigationEntryScreenshot(const NavigationEntryScreenshot&) = delete;
   NavigationEntryScreenshot& operator=(const NavigationEntryScreenshot&) =
@@ -75,13 +77,21 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   int navigation_entry_id() const { return navigation_entry_id_; }
 
   SkBitmap GetBitmapForTesting() const;
+  size_t CompressedSizeForTesting() const;
 
  private:
-  // TODO(crbug.com/40256003):
-  // - ETC1 compression on a non-UI browser thread.
-  // - Self evict after X amount of time.
-  // - Write-to-disk for entry restore and releasing memory (consult with CSA).
-  const cc::UIResourceBitmap bitmap_;
+  void OnCompressionFinished(sk_sp<SkPixelRef> compressed_bitmap);
+
+  const cc::UIResourceBitmap& GetBitmap() const;
+
+  // The uncompressed bitmap cached when navigating away from this navigation
+  // entry.
+  std::optional<cc::UIResourceBitmap> bitmap_;
+
+  // The compressed bitmap generated on a worker thread. `bitmap_` is discarded
+  // when the compressed bitmap is available and this screenshot is no longer
+  // being displayed in the UI.
+  std::optional<cc::UIResourceBitmap> compressed_bitmap_;
 
   // Set if this screenshot is being tracked by the `cache_`. The cache is
   // guaranteed to outlive the screenshot, if the screenshot is tracked.
@@ -94,6 +104,8 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   // This screenshot is cached for the navigation entry of
   // `navigation_entry_id_`.
   const int navigation_entry_id_;
+
+  base::WeakPtrFactory<NavigationEntryScreenshot> weak_factory_{this};
 };
 
 }  // namespace content

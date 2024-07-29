@@ -48,6 +48,9 @@ class NavigationEntryScreenshotCacheEvictor {
 class CONTENT_EXPORT NavigationEntryScreenshotCache
     : public NavigationEntryScreenshotCacheEvictor {
  public:
+  using CompressedCallback = base::OnceCallback<void(int nav_entry_index)>;
+  static void SetCompressedCallbackForTesting(CompressedCallback callback);
+
   explicit NavigationEntryScreenshotCache(
       base::SafeRef<NavigationEntryScreenshotManager> manager,
       NavigationControllerImpl* nav_controller);
@@ -77,6 +80,10 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
   // Called by the `NavigationScreenshot` when the hosting navigation entry is
   // deleted.
   void OnNavigationEntryGone(int navigation_entry_id);
+
+  // Called by `NavigationScreenshot` when the cached screenshot has been
+  // compressed.
+  void OnScreenshotCompressed(int navigation_entry_id, size_t new_size);
 
   // Called when a navigation request has finished.
   void OnNavigationFinished(const NavigationRequest& navigation_request);

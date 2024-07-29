@@ -16,6 +16,13 @@
 namespace content {
 
 namespace {
+
+NavigationEntryScreenshotCache::CompressedCallback& GetTestCallback() {
+  static base::NoDestructor<NavigationEntryScreenshotCache::CompressedCallback>
+      instance;
+  return *instance;
+}
+
 std::unique_ptr<NavigationEntryScreenshot> RemoveScreenshotFromEntry(
     NavigationEntry* entry) {
   CHECK(entry);
@@ -34,6 +41,12 @@ bool AreBackForwardTransitionsEnabled() {
   // TODO(crbug.com/40256003): We might want to disable this feature on
   // low-end devices.
   return base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions);
+}
+
+// static
+void NavigationEntryScreenshotCache::SetCompressedCallbackForTesting(
+    CompressedCallback callback) {
+  GetTestCallback() = std::move(callback);
 }
 
 NavigationEntryScreenshotCache::NavigationEntryScreenshotCache(
@@ -152,6 +165,23 @@ void NavigationEntryScreenshotCache::OnNavigationEntryGone(
   const size_t size = it->second;
   cached_screenshots_.erase(it);
   manager_->OnScreenshotRemoved(this, size);
+}
+
+void NavigationEntryScreenshotCache::OnScreenshotCompressed(
+    int navigation_entry_id,
+    size_t new_size) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto it = cached_screenshots_.find(navigation_entry_id);
+  CHECK(it != cached_screenshots_.end());
+
+  const size_t old_size = it->second;
+  it->second = new_size;
+  manager_->OnScreenshotCompressed(this, old_size, new_size);
+
+  if (GetTestCallback()) {
+    std::move(GetTestCallback())
+        .Run(nav_controller_->GetEntryIndexWithUniqueID(navigation_entry_id));
+  }
 }
 
 void NavigationEntryScreenshotCache::EvictScreenshotsUntilUnderBudgetOrEmpty() {
