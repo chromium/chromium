@@ -21,10 +21,6 @@
 - (void)showConfirmationDialogWithAlertTitle:(NSString*)alertTitle
                             alertDescription:(NSString*)alertDescription;
 
-// Show the "set passcode" dialog for when a user has no auth setup on their
-// device.
-- (void)showSetPasscodeForMovePasswordsToAccountDialog;
-
 // Shows the snackbar confirming to the user that their local passwords have
 // been saved to their account.
 - (void)showMovedToAccountSnackbarWithPasswordCount:(int)count

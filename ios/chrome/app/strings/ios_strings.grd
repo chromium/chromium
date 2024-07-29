@@ -3319,9 +3319,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SECTION_TITLE" desc="Section title in settings &gt; password, about saving all local passwords to the user's account. [iOS Only]">
         Use Passwords on All Your Devices
       </message>
-      <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SET_UP_SCREENLOCK_CONTENT" desc="Message informing the user that in order to save local passwords to their account, a screen lock needs to be set up on the device. This is shown as an alert message after the user tries to save local passwords to their account. [Length: about two lines] [iOS only]">
-        To save passwords in your account, you must first set a passcode on your device.
-      </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SNACKBAR_MESSAGE" desc="Snackbar message in settings &gt; password, about local passwords having been saved into the user's account. [iOS Only]">
         {COUNT, plural,
         =1 {Password saved in your Google Account, {EMAIL}}

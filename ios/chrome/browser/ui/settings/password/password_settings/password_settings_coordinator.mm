@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_bulk_move_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_export_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
@@ -46,8 +45,6 @@
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-using password_manager::features::IsAuthOnEntryV2Enabled;
 
 namespace {
 
@@ -341,28 +338,7 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 
 - (void)showAuthenticationForMovePasswordsToAccountWithMessage:
     (NSString*)message {
-  // No need to auth if AuthOnEntryV2 is enabled, since user is presumed to have
-  // just recently authed.
-  if (IsAuthOnEntryV2Enabled()) {
-    [_mediator userDidStartBulkMoveLocalPasswordsToAccountFlow];
-    return;
-  }
-
-  if ([_reauthModule canAttemptReauth]) {
-    __weak __typeof(self) weakSelf = self;
-    void (^onReauthenticationFinished)(ReauthenticationResult) = ^(
-        ReauthenticationResult result) {
-      [weakSelf
-          onReauthenticationFinishedForMoveLocalPasswordsToAccountWithResult:
-              result];
-    };
-
-    [_reauthModule attemptReauthWithLocalizedReason:message
-                               canReusePreviousAuth:NO
-                                            handler:onReauthenticationFinished];
-  } else {
-    [self showSetPasscodeForMovePasswordsToAccountDialog];
-  }
+  [_mediator userDidStartBulkMoveLocalPasswordsToAccountFlow];
 }
 
 - (void)showConfirmationDialogWithAlertTitle:(NSString*)alertTitle
@@ -414,13 +390,6 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
       presentViewController:movePasswordsConfirmation
                    animated:YES
                  completion:nil];
-}
-
-- (void)showSetPasscodeForMovePasswordsToAccountDialog {
-  [self
-      showSetPasscodeDialogWithContent:
-          l10n_util::GetNSString(
-              IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SET_UP_SCREENLOCK_CONTENT)];
 }
 
 - (void)showMovedToAccountSnackbarWithPasswordCount:(int)count
@@ -640,11 +609,6 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 // Local authentication is required every time the current
 // scene is backgrounded and foregrounded until reauthCoordinator is stopped.
 - (void)startReauthCoordinatorWithAuthOnStart:(BOOL)authOnStart {
-  // No-op if Auth on Entry is not enabled for the password manager.
-  if (!IsAuthOnEntryV2Enabled()) {
-    return;
-  }
-
   if (_reauthCoordinator) {
     // The previous reauth coordinator should have been stopped and deallocated
     // by now. Create a crash report without crashing and gracefully handle the
@@ -689,25 +653,13 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 - (void)restartReauthCoordinator {
   // Restart reauth coordinator so it monitors scene state changes and requests
   // local authentication after the scene goes to the background.
-  if (IsAuthOnEntryV2Enabled()) {
-    [self startReauthCoordinatorWithAuthOnStart:NO];
-  }
+  [self startReauthCoordinatorWithAuthOnStart:NO];
 }
 
 // Starts the export passwords flow after the user confirmed the corresponding
 // alert.
 - (void)onStartExportFlowConfirmed {
   [_mediator userDidStartExportFlow];
-}
-
-// Starts the flow for moving local passwords to account if local authentication
-// was successful.
-- (void)onReauthenticationFinishedForMoveLocalPasswordsToAccountWithResult:
-    (ReauthenticationResult)result {
-  // On auth success, move passwords. Otherwise, do nothing.
-  if (result == ReauthenticationResult::kSuccess) {
-    [_mediator userDidStartBulkMoveLocalPasswordsToAccountFlow];
-  }
 }
 
 // Cancels the password export flow.
