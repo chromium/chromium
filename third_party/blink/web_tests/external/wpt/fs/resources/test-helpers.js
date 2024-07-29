@@ -123,6 +123,10 @@ async function cleanup_writable(test, value) {
   });
 }
 
+function getUniqueName(name) {
+  return `unique${Date.now()}${Math.random().toString().slice(2)}`;
+}
+
 function createFileHandles(dir, ...fileNames) {
   return Promise.all(
       fileNames.map(fileName => dir.getFileHandle(fileName, {create: true})));
