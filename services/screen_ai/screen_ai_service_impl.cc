@@ -5,6 +5,7 @@
 #include "services/screen_ai/screen_ai_service_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -93,77 +94,66 @@ ui::AXNodeID ComputeMainNode(
 
 // The library accepts simple pointers to model data retrieval functions, hence
 // callback functions with linked object are not safe to pass.
-// Since library initialization functions are called in a single thread process,
-// we choose the active model data instance before calling the library
-// initializer and release it when initialization is completed.
-PreloadedModelData* g_active_model_data_instance = nullptr;
+// This global variable keeps the pointer the only instance of this class.
+ModelDataHolder* g_model_data_holder_instance = nullptr;
 
-// Keeps the content of model files, and replies to calls for copying them.
-class PreloadedModelData {
+// Keeps the handles of model files, and replies to calls for copying their
+// content.
+class ModelDataHolder {
  public:
-  PreloadedModelData(const PreloadedModelData&) = delete;
-  PreloadedModelData& operator=(const PreloadedModelData&) = delete;
-  ~PreloadedModelData() { CHECK_NE(g_active_model_data_instance, this); }
+  ModelDataHolder() {
+    CHECK(!g_model_data_holder_instance);
+    g_model_data_holder_instance = this;
+  }
 
-  static std::unique_ptr<PreloadedModelData> Create(
-      base::flat_map<base::FilePath, base::File> model_files) {
-    return base::WrapUnique<PreloadedModelData>(
-        new PreloadedModelData(std::move(model_files)));
+  ModelDataHolder(const ModelDataHolder&) = delete;
+  ModelDataHolder& operator=(const ModelDataHolder&) = delete;
+
+  ~ModelDataHolder() {
+    CHECK_EQ(g_model_data_holder_instance, this);
+    g_model_data_holder_instance = nullptr;
   }
 
   // Returns 0 if file is not found.
   static uint32_t GetDataSize(const char* relative_file_path) {
-    CHECK(g_active_model_data_instance);
-    return base::Contains(g_active_model_data_instance->data_,
-                          relative_file_path)
-               ? g_active_model_data_instance->data_[relative_file_path].size()
-               : 0;
+    CHECK(g_model_data_holder_instance);
+    base::File* model_file =
+        g_model_data_holder_instance->GetModelFile(relative_file_path);
+    return model_file ? model_file->GetLength() : 0;
   }
 
-  // Assumes that `buffer` has enough size.
+  // Copies content of the file in `relative_file_path` to `buffer`. Expects
+  // that `buffer_size` would be enough for the entire file content.
   static void CopyData(const char* relative_file_path,
                        uint32_t buffer_size,
                        char* buffer) {
-    CHECK(g_active_model_data_instance);
-    CHECK(base::Contains(g_active_model_data_instance->data_,
-                         relative_file_path));
-    const std::vector<char>& data =
-        g_active_model_data_instance->data_[relative_file_path];
-    CHECK_GE(buffer_size, data.size());
-    memcpy(buffer, data.data(), data.size());
+    CHECK(g_model_data_holder_instance);
+    base::File* model_file =
+        g_model_data_holder_instance->GetModelFile(relative_file_path);
+    CHECK(model_file);
+
+    int64_t length = model_file->GetLength();
+    CHECK_GE(buffer_size, length);
+    CHECK_EQ(model_file->Read(0, buffer, length), length);
   }
 
-  void SetAsActive(bool assign) {
-    if (assign) {
-      g_active_model_data_instance = this;
-    } else {
-      g_active_model_data_instance = nullptr;
+  void AddModelFiles(base::flat_map<base::FilePath, base::File> model_files) {
+    for (auto& model_file : model_files) {
+      model_files_[model_file.first.MaybeAsASCII()] =
+          std::move(model_file.second);
     }
+  }
+
+  // Returns the file handle for `relative_file_path` if it exists.
+  base::File* GetModelFile(const char* relative_file_path) {
+    if (!base::Contains(model_files_, relative_file_path)) {
+      return nullptr;
+    }
+    return &model_files_[relative_file_path];
   }
 
  private:
-  explicit PreloadedModelData(
-      base::flat_map<base::FilePath, base::File> model_files) {
-    for (auto& model_file : model_files) {
-      std::vector<char> buffer;
-      int64_t length = model_file.second.GetLength();
-      if (length < 0) {
-        VLOG(0) << "Could not query Screen AI model file's length: "
-                << model_file.first;
-        continue;
-      }
-
-      buffer.resize(length);
-      if (model_file.second.Read(0, buffer.data(), length) != length) {
-        VLOG(0) << "Could not read Screen AI model file's content: "
-                << model_file.first;
-        continue;
-      }
-      data_[model_file.first.MaybeAsASCII()] = std::move(buffer);
-    }
-  }
-
-  std::map<std::string, std::vector<char>> data_;
+  std::map<std::string, base::File> model_files_;
 };
 
 ScreenAIService::ScreenAIService(
@@ -173,6 +163,7 @@ ScreenAIService::ScreenAIService(
       main_content_extraction_receiver_(this) {
   screen_ai_annotators_.set_disconnect_handler(base::BindRepeating(
       &ScreenAIService::ReceiverDisconnected, weak_ptr_factory_.GetWeakPtr()));
+  model_data_holder_ = std::make_unique<ModelDataHolder>();
 }
 
 ScreenAIService::~ScreenAIService() = default;
@@ -209,8 +200,8 @@ void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
     library_->EnableDebugMode();
   }
 
-  library_->SetFileContentFunctions(&PreloadedModelData::GetDataSize,
-                                    &PreloadedModelData::CopyData);
+  library_->SetFileContentFunctions(&ModelDataHolder::GetDataSize,
+                                    &ModelDataHolder::CopyData);
 }
 
 void ScreenAIService::InitializeMainContentExtraction(
@@ -228,27 +219,9 @@ void ScreenAIService::InitializeMainContentExtraction(
     base::Process::TerminateCurrentProcessImmediately(-1);
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&PreloadedModelData::Create, std::move(model_files)),
-      base::BindOnce(&ScreenAIService::InitializeMainContentExtractionInternal,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(main_content_extractor_service_receiver),
-                     std::move(callback)));
-}
+  model_data_holder_->AddModelFiles(std::move(model_files));
 
-void ScreenAIService::InitializeMainContentExtractionInternal(
-    mojo::PendingReceiver<mojom::MainContentExtractionService>
-        main_content_extractor_service_receiver,
-    InitializeMainContentExtractionCallback callback,
-    std::unique_ptr<PreloadedModelData> model_data) {
-  // `model_data` contains the content of the model files and its accessors are
-  // passed to the library. It should be kept in memory until after library
-  // initialization.
-  model_data->SetAsActive(true);
   bool init_successful = library_->InitMainContentExtraction();
-  model_data->SetAsActive(false);
   base::UmaHistogramBoolean(
       "Accessibility.ScreenAI.MainContentExtraction.Initialized",
       init_successful);
@@ -279,26 +252,10 @@ void ScreenAIService::InitializeOCR(
     std::move(callback).Run(false);
     base::Process::TerminateCurrentProcessImmediately(-1);
   }
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&PreloadedModelData::Create, std::move(model_files)),
-      base::BindOnce(&ScreenAIService::InitializeOCRInternal,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(ocr_service_receiver), std::move(callback)));
-}
 
-void ScreenAIService::InitializeOCRInternal(
-    mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
-    InitializeOCRCallback callback,
-    std::unique_ptr<PreloadedModelData> model_data) {
-  // `model_data` contains the content of the model files and its accessors are
-  // passed to the library. It should be kept in memory until after library
-  // initialization.
-  model_data->SetAsActive(true);
+  model_data_holder_->AddModelFiles(std::move(model_files));
+
   bool init_successful = library_->InitOCR();
-  model_data->SetAsActive(false);
-
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Initialized",
                             init_successful);
 

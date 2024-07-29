@@ -34,7 +34,7 @@ class UkmRecorder;
 
 namespace screen_ai {
 
-class PreloadedModelData;
+class ModelDataHolder;
 
 // Uses a local machine intelligence library to augment the accessibility
 // tree. Functionalities include running OCR on images and extracting the main
@@ -111,21 +111,10 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
 
-  void InitializeMainContentExtractionInternal(
-      mojo::PendingReceiver<mojom::MainContentExtractionService>
-          main_content_extractor_service_receiver,
-      InitializeMainContentExtractionCallback callback,
-      std::unique_ptr<PreloadedModelData> model_data);
-
-  void InitializeOCRInternal(
-      mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
-      InitializeOCRCallback callback,
-      std::unique_ptr<PreloadedModelData> model_data);
-
-  // Takes as input an AXTreeUpdate and references to an empty AXTree and
-  // vector of ints. Unseriazes |snapshot| into |tree|. Runs the libary
-  // ExtractMainContent function whose return value sets |content_node_ids|.
-  // If |content_node_ids| is empty; returns false; otherwise, returns true.
+  // Takes as input as `AXTreeUpdate` and references to an empty AXTree and
+  // vector of ints. Unserializes `snapshot` into `tree`. Runs the library
+  // `ExtractMainContent` function whose return value sets `content_node_ids`.
+  // If `content_node_ids` is empty; returns false; otherwise, returns true.
   bool ExtractMainContentInternal(
       const ui::AXTreeUpdate& snapshot,
       ui::AXTree& tree,
@@ -142,6 +131,9 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   mojo::Receiver<mojom::OCRService> ocr_receiver_;
   mojo::Receiver<mojom::MainContentExtractionService>
       main_content_extraction_receiver_;
+
+  // Keeps handles for all model data files.
+  std::unique_ptr<ModelDataHolder> model_data_holder_;
 
   // Client type for each OCR receiver.
   std::map<mojo::ReceiverId, mojom::OcrClientType> ocr_client_types_;
