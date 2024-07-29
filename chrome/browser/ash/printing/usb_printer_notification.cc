@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/printing/usb_printer_notification.h"
 
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image.h"
@@ -43,11 +41,7 @@ UsbPrinterNotification::UsbPrinterNotification(
       profile_(profile) {
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.vector_small_image = &kNotificationPrintingIcon;
-  if (chromeos::features::IsJellyEnabled()) {
-    rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
-  } else {
-    rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
-  }
+  rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
       std::u16string(),  // title
