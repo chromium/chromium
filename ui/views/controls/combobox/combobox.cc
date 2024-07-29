@@ -160,6 +160,7 @@ Combobox::Combobox(ui::ComboboxModel* model) {
             combobox->GetEnabled() ? ui::kColorComboboxBackground
                                    : ui::kColorComboboxBackgroundDisabled);
         combobox->UpdateBorder();
+        combobox->UpdateAccessibleDefaultActionVerb();
       },
       base::Unretained(this)));
 
@@ -173,6 +174,7 @@ Combobox::Combobox(ui::ComboboxModel* model) {
 
   GetViewAccessibility().SetProperties(ax::mojom::Role::kComboBoxSelect);
   UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessibleDefaultActionVerb();
 }
 
 Combobox::~Combobox() {
@@ -495,9 +497,6 @@ void Combobox::OnBlur() {
 void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
 
-  if (GetEnabled()) {
-    node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
-  }
   if (selected_index_.has_value()) {
     node_data->SetValue(model_->GetItemAt(selected_index_.value()));
     node_data->AddIntAttribute(
@@ -795,6 +794,15 @@ void Combobox::UpdateExpandedCollapsedAccessibleState() const {
     GetViewAccessibility().SetIsExpanded();
   } else {
     GetViewAccessibility().SetIsCollapsed();
+  }
+}
+
+void Combobox::UpdateAccessibleDefaultActionVerb() {
+  if (GetEnabled()) {
+    GetViewAccessibility().SetDefaultActionVerb(
+        ax::mojom::DefaultActionVerb::kOpen);
+  } else {
+    GetViewAccessibility().RemoveDefaultActionVerb();
   }
 }
 

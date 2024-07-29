@@ -694,6 +694,26 @@ TEST_F(ComboboxTest, ExpandedCollapsedAccessibleState) {
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
 }
 
+TEST_F(ComboboxTest, AccessibleDefaultActionVerb) {
+  InitCombobox(nullptr);
+  ui::AXNodeData node_data;
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(ax::mojom::DefaultActionVerb::kOpen,
+            node_data.GetDefaultActionVerb());
+
+  node_data = ui::AXNodeData();
+  combobox()->SetEnabled(false);
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(
+      node_data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+
+  node_data = ui::AXNodeData();
+  combobox()->SetEnabled(true);
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(ax::mojom::DefaultActionVerb::kOpen,
+            node_data.GetDefaultActionVerb());
+}
+
 TEST_F(ComboboxTest, NotifyOnClickWithMouse) {
   InitCombobox(nullptr);
 

@@ -206,6 +206,8 @@ class VIEWS_EXPORT Combobox : public View,
   // Sets the expanded/collapsed accessible state of the view.
   void UpdateExpandedCollapsedAccessibleState() const;
 
+  void UpdateAccessibleDefaultActionVerb();
+
   // Optionally used to tie the lifetime of the model to this combobox. See
   // constructor.
   std::unique_ptr<ui::ComboboxModel> owned_model_;
@@ -274,8 +276,8 @@ class VIEWS_EXPORT Combobox : public View,
   // destroyed.
   std::unique_ptr<MenuRunner> menu_runner_;
 
-  // Called to update background color and border when the combobox is
-  // enabled/disabled.
+  // Called to update background color, border and default action verb in
+  // accessibility cache when the combobox is enabled/disabled.
   base::CallbackListSubscription enabled_changed_subscription_;
 
   // When true, the size of contents is defined by the widest label in the menu.

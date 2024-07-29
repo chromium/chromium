@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -86,6 +87,7 @@ class Arrow : public Button {
 
     ConfigureComboboxButtonInkDrop(this);
     GetViewAccessibility().SetProperties(ax::mojom::Role::kButton);
+    UpdateAccessibleDefaultActionVerb();
   }
   Arrow(const Arrow&) = delete;
   Arrow& operator=(const Arrow&) = delete;
@@ -112,10 +114,21 @@ class Arrow : public Button {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     Button::GetAccessibleNodeData(node_data);
     node_data->SetHasPopup(ax::mojom::HasPopup::kMenu);
+  }
+
+  void UpdateAccessibleDefaultActionVerb() {
     if (GetEnabled()) {
-      node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
+      GetViewAccessibility().SetDefaultActionVerb(
+          ax::mojom::DefaultActionVerb::kOpen);
+    } else {
+      GetViewAccessibility().RemoveDefaultActionVerb();
     }
   }
+
+  base::CallbackListSubscription enabled_changed_subscription_ =
+      AddEnabledChangedCallback(
+          base::BindRepeating(&Arrow::UpdateAccessibleDefaultActionVerb,
+                              base::Unretained(this)));
 };
 
 BEGIN_METADATA(Arrow)
