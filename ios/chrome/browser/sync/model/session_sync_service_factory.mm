@@ -59,21 +59,17 @@ bool ShouldSyncURLImpl(const GURL& url) {
 class SyncSessionsClientImpl final : public sync_sessions::SyncSessionsClient {
  public:
   SyncSessionsClientImpl(
-      const base::FilePath& browser_state_path,
       PrefService* pref_service,
       BrowserList* browser_list,
       history::HistoryService* history_service,
       syncer::DeviceInfoSyncService* device_info_service,
-      syncer::ModelTypeStoreService* model_type_store_service)
+      syncer::ModelTypeStoreService* model_type_store_service,
+      syncer::SyncableService::StartSyncFlare start_sync_flare)
       : history_service_(history_service),
         device_info_service_(device_info_service),
         model_type_store_service_(model_type_store_service),
         window_delegates_getter_(browser_list),
-        local_session_event_router_(
-            browser_list,
-            this,
-            ios::sync_start_util::GetFlareForSyncableService(
-                browser_state_path)),
+        local_session_event_router_(browser_list, this, start_sync_flare),
         session_sync_prefs_(pref_service) {}
 
   SyncSessionsClientImpl(const SyncSessionsClientImpl&) = delete;
@@ -169,10 +165,11 @@ SessionSyncServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<sync_sessions::SessionSyncServiceImpl>(
       ::GetChannel(),
       std::make_unique<SyncSessionsClientImpl>(
-          browser_state->GetStatePath(), browser_state->GetPrefs(),
+          browser_state->GetPrefs(),
           BrowserListFactory::GetForBrowserState(browser_state),
           ios::HistoryServiceFactory::GetForBrowserState(
               browser_state, ServiceAccessType::EXPLICIT_ACCESS),
           DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state),
-          ModelTypeStoreServiceFactory::GetForBrowserState(browser_state)));
+          ModelTypeStoreServiceFactory::GetForBrowserState(browser_state),
+          ios::sync_start_util::GetFlareForSyncableService(browser_state)));
 }
