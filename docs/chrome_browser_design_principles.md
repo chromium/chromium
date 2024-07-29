@@ -104,7 +104,17 @@ code. Some code is used on Android.
                   in the .h file and does not necessarily introduce a dependency
                   on //chrome, since the returned service can be defined in
                   //components.
-    * `GlobalFeatures` (member of `BrowserProcess`)
+    * GlobalFeatures.
+        * Features which are scoped to the entire process and span multiple
+          Profiles should be members of GlobalFeatures.
+        * GlobalFeatures is a member of BrowserProcess and they have similar
+          lifetime semantics. The main difference is that historically
+          BrowserProcess used the antipattern of lazy instantiation, and the
+          setup of TestingBrowserProcess encourages divergence between test
+          logic and production logic. On the other hand, GlobalFeatures is
+          always instantiated.
+            * This is not making any statements about initialization (e.g.
+              performing non-trivial setup).
     * The core controller should not be a `NoDestructor` singleton.
 * Global functions should not access non-global state.
     * Pure functions do not access global state and are allowed. e.g. `base::UTF8ToWide()`

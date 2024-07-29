@@ -485,6 +485,9 @@ class BrowserProcessImpl : public BrowserProcess,
   std::optional<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
       additional_provider_for_test_;
 
+  // Do not add new members to this class. Instead use GlobalFeatures. See
+  // browser_process.h file level comments for more details.
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
