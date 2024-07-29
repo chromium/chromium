@@ -2390,10 +2390,6 @@ BASE_FEATURE(kOverviewDeskNavigation,
              "OverviewDeskNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOverviewNewFocus,
-             "OverviewNewFocus",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Jelly colors and components to appear in the Parent Access Widget
 // if jelly-colors is also enabled.
 BASE_FEATURE(kParentAccessJelly,
@@ -4417,10 +4413,6 @@ bool IsOsSyncConsentRevampEnabled() {
 
 bool IsOverviewDeskNavigationEnabled() {
   return base::FeatureList::IsEnabled(kOverviewDeskNavigation);
-}
-
-bool IsOverviewNewFocusEnabled() {
-  return base::FeatureList::IsEnabled(kOverviewNewFocus);
 }
 
 bool IsPasspointSettingsEnabled() {

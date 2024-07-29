@@ -43,7 +43,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_drop_target.h"
 #include "ash/wm/overview/overview_focus_cycler.h"
-#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_group_item.h"
@@ -5106,11 +5105,7 @@ TEST_F(SnapGroupOverviewTest, CtrlPlusWToCloseFocusedItemInGroupInOverview) {
 
   auto* event_generator = GetEventGenerator();
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
-  if (auto* focus_cycler_old = overview_session->focus_cycler_old()) {
-    EXPECT_TRUE(focus_cycler_old->GetFocusedItem());
-  } else {
-    EXPECT_TRUE(overview_session->focus_cycler()->GetOverviewFocusedView());
-  }
+  EXPECT_TRUE(overview_session->focus_cycler()->GetOverviewFocusedView());
 
   // Since the window will be deleted in overview, release the ownership to
   // avoid double deletion.

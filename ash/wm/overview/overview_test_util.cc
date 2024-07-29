@@ -8,7 +8,6 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"

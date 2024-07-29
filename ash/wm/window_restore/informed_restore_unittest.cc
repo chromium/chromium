@@ -753,9 +753,6 @@ TEST_F(InformedRestoreTest, ZoomDisplay) {
 }
 
 TEST_F(InformedRestoreTest, InformedRestoreWidgetTabTraversal) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kOverviewNewFocus);
-
   StartOverviewSession(MakeTestAppIds(1));
 
   views::Widget* widget =

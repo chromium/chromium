@@ -249,8 +249,7 @@ bool IsApplistActiveInTabletMode(const aura::Window* active_window) {
 void ShowDeskRemovalUndoToast(const std::string& toast_id,
                               base::RepeatingClosure dismiss_callback,
                               base::OnceClosure expired_callback,
-                              bool use_persistent_toast,
-                              bool activate) {
+                              bool use_persistent_toast) {
   // If ChromeVox is enabled, then we want the toast to be infinite duration.
   ToastData undo_toast_data(
       toast_id, ash::ToastCatalogName::kUndoCloseAll,
@@ -264,7 +263,7 @@ void ShowDeskRemovalUndoToast(const std::string& toast_id,
   undo_toast_data.show_on_all_root_windows = true;
   undo_toast_data.dismiss_callback = std::move(dismiss_callback);
   undo_toast_data.expired_callback = std::move(expired_callback);
-  undo_toast_data.activatable = activate;
+  undo_toast_data.activatable = use_persistent_toast;
   ToastManager::Get()->Show(std::move(undo_toast_data));
 }
 
@@ -2021,10 +2020,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
         base::BindOnce(&DesksController::MaybeCommitPendingDeskRemoval,
                        base::Unretained(this),
                        temporary_removed_desk_->toast_id()),
-        // TODO: Remove `activate` argument once new focus is launched.
-        temporary_removed_desk_->is_toast_persistent(),
-        temporary_removed_desk_->is_toast_persistent() &&
-            (!in_overview || features::IsOverviewNewFocusEnabled()));
+        temporary_removed_desk_->is_toast_persistent());
 
     // This method will be invoked on both undo and expired toast.
     base::UmaHistogramBoolean(kCloseAllTotalHistogramName, true);

@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "ash/ash_export.h"
-#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ui/base/models/image_model.h"
@@ -28,6 +27,7 @@ class Widget;
 }  // namespace views
 
 namespace ash {
+class OverviewItemBase;
 
 // Returns true if an overview session is active.
 ASH_EXPORT bool IsInOverviewSession();
@@ -109,8 +109,6 @@ bool ShouldUseTabletModeGridLayout();
 // Returns a Rect by rounding the values of the given RectF in a way that
 // returns the same size for SizeF regardless of its origin.
 ASH_EXPORT gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect);
-
-void MoveFocusToView(OverviewFocusableView* target_view);
 
 // Determines if an `item` is eligible for snapping in Overview. Snapping is
 // disallowed for `OverviewGroupItem`s holding two `OverviewItem`s.

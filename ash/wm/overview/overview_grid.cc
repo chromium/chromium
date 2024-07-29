@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/metrics/histogram_macros.h"
@@ -55,8 +54,6 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_drop_target.h"
-#include "ash/wm/overview/overview_focus_cycler_old.h"
-#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
@@ -97,8 +94,6 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/app_restore/full_restore_utils.h"
-#include "overview_focus_cycler_old.h"
-#include "overview_session.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -312,13 +307,7 @@ std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
-  // If Chromevox is on, let the widget be activatable.
-  const bool spoken_feedback_enabled =
-      Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
-  params.activatable =
-      (spoken_feedback_enabled || features::IsOverviewNewFocusEnabled())
-          ? views::Widget::InitParams::Activatable::kYes
-          : views::Widget::InitParams::Activatable::kNo;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = "SaveDeskButtonContainerWidget";
   params.accept_events = true;

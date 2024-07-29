@@ -19,7 +19,6 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_test_util.h"

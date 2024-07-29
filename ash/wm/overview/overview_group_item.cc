@@ -11,8 +11,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_focus_cycler_old.h"
-#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_group_container_view.h"
 #include "ash/wm/overview/overview_item.h"

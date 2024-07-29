@@ -80,7 +80,6 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_item.h"
