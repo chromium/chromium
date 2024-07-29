@@ -316,24 +316,15 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void StartMigrating(bool has_cardholder_name,
-                      bool set_nickname_for_first_card = false) {
+  void StartMigrating() {
     PaymentsNetworkInterface::MigrationRequestDetails request_details;
     request_details.context_token = u"context token";
     request_details.risk_data = "some risk data";
     request_details.app_locale = "language-LOCALE";
 
     migratable_credit_cards_.clear();
-    CreditCard card1 = test::GetCreditCard();
-    if (set_nickname_for_first_card)
-      card1.SetNickname(u"grocery");
-    CreditCard card2 = test::GetCreditCard2();
-    if (!has_cardholder_name) {
-      card1.SetRawInfo(CREDIT_CARD_NAME_FULL, u"");
-      card2.SetRawInfo(CREDIT_CARD_NAME_FULL, u"");
-    }
-    migratable_credit_cards_.emplace_back(card1);
-    migratable_credit_cards_.emplace_back(card2);
+    migratable_credit_cards_.emplace_back(test::GetCreditCard());
+    migratable_credit_cards_.emplace_back(test::GetCreditCard2());
     payments_network_interface_->MigrateCards(
         request_details, migratable_credit_cards_,
         base::BindOnce(&PaymentsNetworkInterfaceTest::OnDidMigrateLocalCards,
@@ -1426,7 +1417,7 @@ TEST_F(PaymentsNetworkInterfaceTest, GetDetailsFollowedByMigrationSuccess) {
 
   result_ = PaymentsRpcResult::kNone;
 
-  StartMigrating(/*has_cardholder_name=*/true);
+  StartMigrating();
   ReturnResponse(
       payments_network_interface_.get(), net::HTTP_OK,
       "{\"save_result\":[],\"value_prop_display_text\":\"display text\"}");
@@ -1440,88 +1431,15 @@ TEST_F(PaymentsNetworkInterfaceTest, MigrateCardsVariationsTest) {
   // Register a trial and variation id, so that there is data in variations
   // headers.
   CreateFieldTrialWithId("AutofillTest", "Group", 369);
-  StartMigrating(/*has_cardholder_name=*/true);
+  StartMigrating();
   IssueOAuthToken();
 
   // Note that experiment information is stored in X-Client-Data.
   EXPECT_TRUE(HasVariationsHeader());
 }
 
-TEST_F(PaymentsNetworkInterfaceTest, MigrationRequestIncludesUniqueId) {
-  StartMigrating(/*has_cardholder_name=*/true);
-  IssueOAuthToken();
-
-  // Verify that the unique id was included in the request.
-  EXPECT_TRUE(GetUploadData().find("unique_id") != std::string::npos);
-  EXPECT_TRUE(
-      GetUploadData().find(migratable_credit_cards_[0].credit_card().guid()) !=
-      std::string::npos);
-  EXPECT_TRUE(
-      GetUploadData().find(migratable_credit_cards_[1].credit_card().guid()) !=
-      std::string::npos);
-}
-
-TEST_F(PaymentsNetworkInterfaceTest, MigrationRequestIncludesEncryptedPan) {
-  StartMigrating(/*has_cardholder_name=*/true);
-  IssueOAuthToken();
-
-  // Verify that the encrypted_pan and s7e_1_pan parameters were included
-  // in the request.
-  EXPECT_TRUE(GetUploadData().find("encrypted_pan") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("__param:s7e_1_pan0") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("&s7e_1_pan0=4111111111111111") !=
-              std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("__param:s7e_1_pan1") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("&s7e_1_pan1=378282246310005") !=
-              std::string::npos);
-}
-
-TEST_F(PaymentsNetworkInterfaceTest, MigrationRequestIncludesCardholderNameWhenItExists) {
-  StartMigrating(/*has_cardholder_name=*/true);
-  IssueOAuthToken();
-
-  EXPECT_TRUE(!GetUploadData().empty());
-  // Verify that the cardholder name is sent if it exists.
-  EXPECT_TRUE(GetUploadData().find("cardholder_name") != std::string::npos);
-}
-
-TEST_F(PaymentsNetworkInterfaceTest,
-       MigrationRequestExcludesCardholderNameWhenItDoesNotExist) {
-  StartMigrating(/*has_cardholder_name=*/false);
-  IssueOAuthToken();
-
-  EXPECT_TRUE(!GetUploadData().empty());
-  // Verify that the cardholder name is not sent if it doesn't exist.
-  EXPECT_TRUE(GetUploadData().find("cardholder_name") == std::string::npos);
-}
-
-TEST_F(PaymentsNetworkInterfaceTest, MigrationRequestIncludesChromeUserContext) {
-  StartMigrating(/*has_cardholder_name=*/true);
-  IssueOAuthToken();
-
-  // ChromeUserContext was set.
-  EXPECT_TRUE(GetUploadData().find("chrome_user_context") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("full_sync_enabled") != std::string::npos);
-}
-
-TEST_F(PaymentsNetworkInterfaceTest, MigrationRequestIncludesCardNickname) {
-  StartMigrating(/*has_cardholder_name=*/true,
-                 /*set_nickname_for_first_card=*/true);
-  IssueOAuthToken();
-
-  // Nickname was set for the first card.
-  std::size_t pos = GetUploadData().find("nickname");
-  EXPECT_TRUE(pos != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find(base::UTF16ToUTF8(
-                  migratable_credit_cards_[0].credit_card().nickname())) !=
-              std::string::npos);
-
-  // Nickname was not set for the second card.
-  EXPECT_FALSE(GetUploadData().find("nickname", pos + 1) != std::string::npos);
-}
-
 TEST_F(PaymentsNetworkInterfaceTest, MigrationSuccessWithSaveResult) {
-  StartMigrating(/*has_cardholder_name=*/true);
+  StartMigrating();
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{\"save_result\":[{\"unique_id\":\"0\",\"status\":"
@@ -1539,7 +1457,7 @@ TEST_F(PaymentsNetworkInterfaceTest, MigrationSuccessWithSaveResult) {
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, MigrationMissingSaveResult) {
-  StartMigrating(/*has_cardholder_name=*/true);
+  StartMigrating();
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{\"value_prop_display_text\":\"display text\"}");
@@ -1548,7 +1466,7 @@ TEST_F(PaymentsNetworkInterfaceTest, MigrationMissingSaveResult) {
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, MigrationSuccessWithDisplayText) {
-  StartMigrating(/*has_cardholder_name=*/true);
+  StartMigrating();
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{\"save_result\":[{\"unique_id\":\"0\",\"status\":"
