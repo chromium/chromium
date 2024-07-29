@@ -61,7 +61,8 @@ ArchivableCredential* TestPasskeyCredential() {
                                                rpId:@"rpId"
                                          privateKey:StringToData("privateKey")
                                           encrypted:StringToData("encrypted")
-                                       creationTime:kJan1st2024];
+                                       creationTime:kJan1st2024
+                                       lastUsedTime:kJan1st2024];
 }
 
 class CredentialProviderMigratorTest : public PlatformTest {
@@ -178,6 +179,8 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   EXPECT_EQ(passkeys[0].user_name(), expected.user_name());
   EXPECT_EQ(passkeys[0].user_display_name(), expected.user_display_name());
   EXPECT_EQ(passkeys[0].creation_time(), expected.creation_time());
+  EXPECT_EQ(passkeys[0].last_used_time_windows_epoch_micros(),
+            expected.last_used_time_windows_epoch_micros());
 }
 
 }  // namespace

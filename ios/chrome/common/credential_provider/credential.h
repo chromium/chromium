@@ -61,6 +61,9 @@
 // Passkey creation time. Used by passkeys only.
 @property(nonatomic, readonly) int64_t creationTime;
 
+// Passkey last used time. Used by passkeys only.
+@property(nonatomic, assign) int64_t lastUsedTime;
+
 // Whether the credential is a passkey.
 - (BOOL)isPasskey;
 

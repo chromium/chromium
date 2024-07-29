@@ -34,6 +34,8 @@ sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(
   credential_specifics.set_rp_id(SysNSStringToUTF8(credential.rpId));
   credential_specifics.set_user_id(DataToString(credential.userId));
   credential_specifics.set_creation_time(credential.creationTime);
+  credential_specifics.set_last_used_time_windows_epoch_micros(
+      credential.lastUsedTime);
 
   if ([credential.privateKey length] > 0) {
     credential_specifics.set_private_key(DataToString(credential.privateKey));
@@ -63,7 +65,8 @@ sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(
                           rpId:SysUTF8ToNSString(passkey.rp_id())
                     privateKey:StringToData(passkey.private_key())
                      encrypted:StringToData(passkey.encrypted())
-                  creationTime:passkey.creation_time()];
+                  creationTime:passkey.creation_time()
+                  lastUsedTime:passkey.last_used_time_windows_epoch_micros()];
 }
 
 @end

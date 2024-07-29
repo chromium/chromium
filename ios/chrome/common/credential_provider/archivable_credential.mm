@@ -25,6 +25,7 @@ NSString* const kACRpIdKey = @"rpId";
 NSString* const kACPrivateKeyKey = @"privateKey";
 NSString* const kACEncryptedKey = @"encrypted";
 NSString* const kACCreationTimeKey = @"creationTime";
+NSString* const kACLastUsedTimeKey = @"lastUsedTime";
 
 // Returns whether the strings are the same (including if both are nil) or if
 // both strings have the same contents.
@@ -70,6 +71,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 @synthesize privateKey = _privateKey;
 @synthesize encrypted = _encrypted;
 @synthesize creationTime = _creationTime;
+@synthesize lastUsedTime = _lastUsedTime;
 
 - (instancetype)initWithFavicon:(NSString*)favicon
                      credential:(id<Credential>)credential {
@@ -85,7 +87,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                             rpId:credential.rpId
                       privateKey:credential.privateKey
                        encrypted:credential.encrypted
-                    creationTime:credential.creationTime];
+                    creationTime:credential.creationTime
+                    lastUsedTime:credential.lastUsedTime];
   } else {
     // Use the password initializer
     self = [self initWithFavicon:credential.favicon
@@ -132,7 +135,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                            rpId:(NSString*)rpId
                      privateKey:(NSData*)privateKey
                       encrypted:(NSData*)encrypted
-                   creationTime:(int64_t)creationTime {
+                   creationTime:(int64_t)creationTime
+                   lastUsedTime:(int64_t)lastUsedTime {
   CHECK(credentialId.length > 0);
   self = [super init];
   if (self) {
@@ -147,6 +151,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     _privateKey = privateKey;
     _encrypted = encrypted;
     _creationTime = creationTime;
+    _lastUsedTime = lastUsedTime;
   }
   return self;
 }
@@ -193,7 +198,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
            stringsAreEqual(self.rpId, otherCredential.rpId) &&
            dataAreEqual(self.privateKey, otherCredential.privateKey) &&
            dataAreEqual(self.encrypted, otherCredential.encrypted) &&
-           self.creationTime == otherCredential.creationTime;
+           self.creationTime == otherCredential.creationTime &&
+           self.lastUsedTime == otherCredential.lastUsedTime;
   }
 }
 
@@ -222,6 +228,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     [coder encodeObject:self.privateKey forKey:kACPrivateKeyKey];
     [coder encodeObject:self.encrypted forKey:kACEncryptedKey];
     [coder encodeInt64:self.creationTime forKey:kACCreationTimeKey];
+    [coder encodeInt64:self.lastUsedTime forKey:kACLastUsedTimeKey];
   } else {
     [coder encodeObject:self.password forKey:kACPasswordKey];
     [coder encodeInt64:self.rank forKey:kACRankKey];
@@ -247,7 +254,9 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                     rpId:[coder decodeNSStringForKey:kACRpIdKey]
               privateKey:[coder decodeNSDataForKey:kACPrivateKeyKey]
                encrypted:[coder decodeNSDataForKey:kACEncryptedKey]
-            creationTime:[coder decodeInt64ForKey:kACCreationTimeKey]];
+            creationTime:[coder decodeInt64ForKey:kACCreationTimeKey]
+            lastUsedTime:[coder decodeInt64ForKey:kACLastUsedTimeKey]];
+
   } else {
     // Use the password initializer
     return [self

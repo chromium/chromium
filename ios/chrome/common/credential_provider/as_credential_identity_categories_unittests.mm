@@ -55,7 +55,8 @@ TEST_F(ASPasskeyCredentialIdentity_CredentialTest, create) {
                     rpId:@"rpId"
               privateKey:StringToData("privateKey")
                encrypted:StringToData("encrypted")
-            creationTime:kJan1st2024];
+            creationTime:kJan1st2024
+            lastUsedTime:kJan1st2024];
     ASPasskeyCredentialIdentity* credentialIdentity =
         [[ASPasskeyCredentialIdentity alloc] cr_initWithCredential:credential];
 

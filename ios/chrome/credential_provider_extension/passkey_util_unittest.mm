@@ -42,7 +42,8 @@ ArchivableCredential* TestPasskeyCredential() {
                                                rpId:@"rpId"
                                          privateKey:StringToData("privateKey")
                                           encrypted:StringToData("encrypted")
-                                       creationTime:kJan1st2024];
+                                       creationTime:kJan1st2024
+                                       lastUsedTime:kJan1st2024];
 }
 
 }  // namespace
