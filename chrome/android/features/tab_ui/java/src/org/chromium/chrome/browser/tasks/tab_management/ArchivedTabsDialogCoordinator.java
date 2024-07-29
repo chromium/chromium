@@ -389,7 +389,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 new TabListEditorCoordinator(
                         mContext,
                         mRootView,
-                        /* parentView= */ mView,
+                        /* parentView= */ mView.findViewById(R.id.tab_list_editor_container),
                         mBrowserControlsStateProvider,
                         mArchivedTabModelOrchestrator
                                 .getTabModelSelector()

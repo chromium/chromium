@@ -14,13 +14,22 @@ found in the LICENSE file.
         android:id="@+id/tab_list_editor_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toTopOf="@id/close_all_tabs_button_container_border" />
+    <View
+        android:id="@+id/close_all_tabs_button_container_border"
+        style="@style/HorizontalDivider"
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:background="@macro/divider_line_bg_color"
+        app:layout_constraintBottom_toTopOf="@id/close_all_tabs_button_container" />
 
     <FrameLayout
         android:id="@+id/close_all_tabs_button_container"
+        android:background="@macro/default_bg_color"
         android:layout_width="match_parent"
         android:layout_height="92dp"
         app:layout_constraintStart_toStartOf="parent"
