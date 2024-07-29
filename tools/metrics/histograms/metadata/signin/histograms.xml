@@ -1250,6 +1250,29 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Intercept.Heuristic.SupervisionState.{InterceptType}"
+    enum="SinginInterceptSupervisionState" expires_after="2024-11-03">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the supervision state of the intercepted user when the sign-in
+    interception bubble is displayed, for different interception types that
+    suport supervised user parametrization. This histograms records values for
+    interceptions that happen when {InterceptType}.
+  </summary>
+  <token key="InterceptType">
+    <variant name="ChromeSignin"
+        summary="the user signs in to a local profile."/>
+    <variant name="MultiUser"
+        summary="the user signs in an existing profile of the primary user
+                 and a new profile is created for them."/>
+    <variant name="Switch"
+        summary="the user signs in to an existing profile of the primary user
+                 and a profile for this user already exists."/>
+  </token>
+</histogram>
+
 <histogram name="Signin.Intercept.HeuristicLatency" units="ms"
     expires_after="2025-01-05">
   <owner>ljjlee@google.com</owner>

@@ -862,6 +862,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Read DB failed (bad entry)"/>
 </enum>
 
+<!-- LINT.IfChange(SinginInterceptSupervisionState) -->
+
+<enum name="SinginInterceptSupervisionState">
+  <int value="0" label="Regular, non-supervised, user"/>
+  <int value="1" label="Supervised user"/>
+  <int value="2" label="Supervision status unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/dice_web_signin_interceptor.h:SinginInterceptSupervisionState) -->
+
 <enum name="SourceForRefreshTokenOperation">
   <int value="0" label="Unknown"/>
   <int value="1" label="TokenService::LoadCredentials"/>
