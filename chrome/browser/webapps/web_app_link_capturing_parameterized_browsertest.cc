@@ -55,6 +55,7 @@ constexpr char kValueLink[] = "LINK";
 constexpr char kValueButton[] = "BTN";
 constexpr char kValueLeftClick[] = "LEFT";
 constexpr char kValueMiddleClick[] = "MIDDLE";
+constexpr char kValueShiftClick[] = "SHIFT";
 constexpr char kValueOpener[] = "OPENER";
 constexpr char kValueNoOpener[] = "NO_OPENER";
 constexpr char kValueTargetSelf[] = "SELF";
@@ -149,10 +150,7 @@ std::string_view ToParamString(NavigationElement element) {
 }
 
 // The method of interacting with the element:
-enum class ClickMethod {
-  kLeftClick,
-  kMiddleClick,
-};
+enum class ClickMethod { kLeftClick, kMiddleClick, kShiftClick };
 
 std::string ToJsonString(ClickMethod click) {
   switch (click) {
@@ -160,6 +158,8 @@ std::string ToJsonString(ClickMethod click) {
       return kValueLeftClick;
     case ClickMethod::kMiddleClick:
       return kValueMiddleClick;
+    case ClickMethod::kShiftClick:
+      return kValueShiftClick;
   }
 }
 
@@ -169,6 +169,8 @@ std::string_view ToParamString(ClickMethod click) {
       return "LeftClick";
     case ClickMethod::kMiddleClick:
       return "MiddleClick";
+    case ClickMethod::kShiftClick:
+      return "ShiftClick";
   }
 }
 
@@ -287,14 +289,14 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
 //
 // Example usage:
 // out/Default/browser_tests \
-// --gtest_filter=*WebAppLinkCapturingBrowserTestParameterized.* \
+// --gtest_filter=*WebAppLinkCapturingParameterizedBrowserTest.* \
 // --rebaseline-link-capturing-test
 //
-class WebAppLinkCapturingBrowserTestParameterized
+class WebAppLinkCapturingParameterizedBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<LinkCaptureTestParam> {
  public:
-  WebAppLinkCapturingBrowserTestParameterized() {
+  WebAppLinkCapturingParameterizedBrowserTest() {
     InitializeTestExpectations();
   }
 
@@ -424,8 +426,17 @@ class WebAppLinkCapturingBrowserTestParameterized
   bool SimulateClickOnElement(content::WebContents* contents,
                               std::string element_id,
                               ClickMethod click) {
-    std::string properties =
-        click == ClickMethod::kMiddleClick ? "{ctrlKey: true}" : "{}";
+    auto GetClickProperties = [](ClickMethod click) -> std::string {
+      switch (click) {
+        case ClickMethod::kLeftClick:
+          return "{}";
+        case ClickMethod::kMiddleClick:
+          return "{ctrlKey: true}";
+        case ClickMethod::kShiftClick:
+          return "{shiftKey: true}";
+      }
+    };
+    std::string properties = GetClickProperties(click);
     std::string js =
         "simulateClick(\"" + element_id + "\", " + properties + ")";
     return ExecJs(contents, js);
@@ -662,7 +673,7 @@ class WebAppLinkCapturingBrowserTestParameterized
 // Intentionally disabled -- this can be enabled manually on Linux to verify
 // link capturing use-cases. Expectations for other platforms might be different
 // and need to be generated separately.
-IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTestParameterized,
+IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
                        DISABLED_CheckLinkCaptureCombinations) {
   testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
 
@@ -677,7 +688,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTestParameterized,
   std::string element_id = GetElementId();
 
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &WebAppLinkCapturingBrowserTestParameterized::SimulateRedirectHandler,
+      &WebAppLinkCapturingParameterizedBrowserTest::SimulateRedirectHandler,
       base::Unretained(this)));
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -781,12 +792,12 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTestParameterized,
 }
 
 // Pro-tip: To run only one combination from the below list, supply this...
-// WebAppLinkCapturingBrowserTestParameterized.CheckLinkCaptureCombinations/foo
+// WebAppLinkCapturingParameterizedBrowserTest.CheckLinkCaptureCombinations/foo
 // Where foo can be: AppWnd_ScopeA2A_ViaLink_LeftClick_WithOpener_TargetSelf
 // See ParamToString above for possible values.
 INSTANTIATE_TEST_SUITE_P(
     All,
-    WebAppLinkCapturingBrowserTestParameterized,
+    WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
@@ -802,8 +813,9 @@ INSTANTIATE_TEST_SUITE_P(
             NavigationElement::kElementButton  // Navigate via button.
             ),
         testing::Values(
-            ClickMethod::kLeftClick,   // Simulate left-mouse click.
-            ClickMethod::kMiddleClick  // Simulate middle-mouse click
+            ClickMethod::kLeftClick,    // Simulate left-mouse click.
+            ClickMethod::kMiddleClick,  // Simulate middle-mouse click.
+            ClickMethod::kShiftClick    // Simulate shift click.
             ),
         testing::Values(OpenerMode::kOpener,   // Supply 'opener' property.
                         OpenerMode::kNoOpener  // Supply 'noopener' property.
