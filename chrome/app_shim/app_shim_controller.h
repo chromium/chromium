@@ -202,6 +202,8 @@ class AppShimController
   void NotificationPermissionStatusChanged(
       mac_notifications::mojom::PermissionStatus status);
 
+  bool WebAppIsAdHocSigned() const;
+
   // Helper function to set up a connection to the AppShimListener at the given
   // Mach endpoint name.
   static mojo::PlatformChannelEndpoint ConnectToBrowser(

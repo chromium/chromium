@@ -195,7 +195,7 @@ AppShimController::AppShimController(const Params& params)
   // need it is that we might miss some notification actions, which again is
   // harmless.
   if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
-      app_mode::UseAdHocSigningForWebAppShims()) {
+      WebAppIsAdHocSigned()) {
     // `notification_service_` needs to be created early during start up to make
     // sure it is able to install its delegate before the OS attempts to inform
     // it of any notification actions that might have happened.
@@ -798,7 +798,7 @@ void AppShimController::BindNotificationService(
   // default on supported platforms, change this to always use the
   // UNUserNotification API (and not support notification attribution on other
   // platforms at all).
-  if (app_mode::UseAdHocSigningForWebAppShims()) {
+  if (WebAppIsAdHocSigned()) {
     // While the constructor should have created the `notification_service_`
     // instance already, it is possible that the base::FeatureList state at the
     // time did not match the current Chrome state, so make sure to create the
@@ -836,7 +836,7 @@ void AppShimController::BindNotificationService(
 
 mac_notifications::MacNotificationServiceUN*
 AppShimController::notification_service_un() {
-  if (!app_mode::UseAdHocSigningForWebAppShims()) {
+  if (WebAppIsAdHocSigned()) {
     return nullptr;
   }
   return static_cast<mac_notifications::MacNotificationServiceUN*>(
@@ -939,4 +939,10 @@ void AppShimController::BindChildHistogramFetcherFactory(
     mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
         receiver) {
   metrics::ChildHistogramFetcherFactoryImpl::Create(std::move(receiver));
+}
+
+bool AppShimController::WebAppIsAdHocSigned() const {
+  NSNumber* isAdHocSigned =
+      NSBundle.mainBundle.infoDictionary[app_mode::kCrAppModeIsAdHocSignedKey];
+  return isAdHocSigned.boolValue;
 }

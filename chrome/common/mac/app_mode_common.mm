@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
-#include "chrome/common/chrome_features.h"
 #include "components/version_info/version_info.h"
 #include "mojo/core/embedder/embedder.h"
 
@@ -58,6 +57,7 @@ NSString* const kCrAppModeProfileDirKey = @"CrAppModeProfileDir";
 NSString* const kCrAppModeProfileNameKey = @"CrAppModeProfileName";
 NSString* const kCrAppModeMajorVersionKey = @"CrAppModeMajorVersionKey";
 NSString* const kCrAppModeMinorVersionKey = @"CrAppModeMinorVersionKey";
+NSString* const kCrAppModeIsAdHocSignedKey = @"CrAppModeIsAdhocSigned";
 
 NSString* const kLastRunAppBundlePathPrefsKey = @"LastRunAppBundlePath";
 
@@ -117,19 +117,6 @@ ChromeConnectionConfig ChromeConnectionConfig::DecodeFromPath(
 
   return {.framework_version = parts[0],
           .is_mojo_ipcz_enabled = parts[1] == "1"};
-}
-
-bool UseAdHocSigningForWebAppShims() {
-  if (@available(macOS 11.7, *)) {
-    // macOS 11.7 and above can code sign at runtime without requiring that the
-    // developer tools be installed.
-    return base::FeatureList::IsEnabled(
-        features::kUseAdHocSigningForWebAppShims);
-  }
-
-  // Code signing on older macOS versions invokes `codesign_allocate` from the
-  // developer tools, so we can't do it at runtime.
-  return false;
 }
 
 }  // namespace app_mode

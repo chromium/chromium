@@ -24,6 +24,10 @@ std::string GetBundleIdentifierForShim(
     const std::string& app_id,
     const base::FilePath& profile_path = base::FilePath());
 
+// Returns true when running on version of macOS that can perform code signing
+// at runtime and the UseAdHocSigningForWebAppShims feature is enabled.
+bool UseAdHocSigningForWebAppShims();
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_MAC_WEB_APP_SHORTCUT_MAC_H_

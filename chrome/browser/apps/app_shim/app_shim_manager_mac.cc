@@ -1305,7 +1305,7 @@ void RecordSignatureValidationResult(SignatureValidationResult result) {
 
 bool AppShimManager::IsAcceptablyCodeSigned(pid_t pid) const {
   static const bool requires_adhoc_signature =
-      app_mode::UseAdHocSigningForWebAppShims();
+      web_app::UseAdHocSigningForWebAppShims();
 
   if (requires_adhoc_signature && IsAcceptablyAdHocCodeSigned(pid)) {
     RecordSignatureValidationResult(SignatureValidationResult::kSuccessAdHoc);
