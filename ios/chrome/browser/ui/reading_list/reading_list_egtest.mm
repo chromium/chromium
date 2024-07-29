@@ -499,7 +499,14 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that navigating back to an offline page is still displaying the error
 // page and don't mess the navigation stack.
-- (void)testNavigateBackToDistilledPage {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testNavigateBackToDistilledPage \
+  DISABLED_testNavigateBackToDistilledPage
+#else
+#define MAYBE_testNavigateBackToDistilledPage testNavigateBackToDistilledPage
+#endif
+- (void)MAYBE_testNavigateBackToDistilledPage {
   [ReadingListAppInterface forceConnectionToWifi];
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   GURL nonDistillablePageURL(self.testServer->GetURL(kNonDistillableURL));
@@ -550,7 +557,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Tests that sharing a web page to the Reading List results in a snackbar
 // appearing, and that the Reading List entry is present in the Reading List.
 // Loads offline version via context menu.
-- (void)testSavingToReadingListAndLoadDistilled {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSavingToReadingListAndLoadDistilled \
+  DISABLED_testSavingToReadingListAndLoadDistilled
+#else
+#define MAYBE_testSavingToReadingListAndLoadDistilled \
+  testSavingToReadingListAndLoadDistilled
+#endif
+- (void)MAYBE_testSavingToReadingListAndLoadDistilled {
   [ReadingListAppInterface forceConnectionToWifi];
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   GURL nonDistillablePageURL(self.testServer->GetURL(kNonDistillableURL));
@@ -605,7 +620,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests that offline page does not request online resources.
-- (void)testSavingToReadingListAndLoadDistilledNoOnlineResource {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSavingToReadingListAndLoadDistilledNoOnlineResource \
+  DISABLED_testSavingToReadingListAndLoadDistilledNoOnlineResource
+#else
+#define MAYBE_testSavingToReadingListAndLoadDistilledNoOnlineResource \
+  testSavingToReadingListAndLoadDistilledNoOnlineResource
+#endif
+- (void)MAYBE_testSavingToReadingListAndLoadDistilledNoOnlineResource {
   self.serverServesRedImage = false;
   [ReadingListAppInterface forceConnectionToWifi];
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
@@ -651,7 +674,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Tests that sharing a web page to the Reading List results in a snackbar
 // appearing, and that the Reading List entry is present in the Reading List.
 // Loads online version by tapping on entry.
-- (void)testSavingToReadingListAndLoadNormal {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSavingToReadingListAndLoadNormal \
+  DISABLED_testSavingToReadingListAndLoadNormal
+#else
+#define MAYBE_testSavingToReadingListAndLoadNormal \
+  testSavingToReadingListAndLoadNormal
+#endif
+- (void)MAYBE_testSavingToReadingListAndLoadNormal {
   [ReadingListAppInterface forceConnectionToWifi];
   GURL distillableURL = self.testServer->GetURL(kDistillableURL);
   // Open http://potato
@@ -766,7 +797,14 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests that only the "Edit" button is showing when not editing.
-- (void)testVisibleButtonsNonEditingMode {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testVisibleButtonsNonEditingMode \
+  DISABLED_testVisibleButtonsNonEditingMode
+#else
+#define MAYBE_testVisibleButtonsNonEditingMode testVisibleButtonsNonEditingMode
+#endif
+- (void)MAYBE_testVisibleButtonsNonEditingMode {
   GREYAssertNil(
       [ReadingListAppInterface addEntryWithURL:[NSURL URLWithString:kUnreadURL]
                                          title:kUnreadTitle
@@ -783,7 +821,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that only the "Cancel", "Delete All Read" and "Mark All…" buttons are
 // showing when not editing.
-- (void)testVisibleButtonsEditingModeEmptySelection {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testVisibleButtonsEditingModeEmptySelection \
+  DISABLED_testVisibleButtonsEditingModeEmptySelection
+#else
+#define MAYBE_testVisibleButtonsEditingModeEmptySelection \
+  testVisibleButtonsEditingModeEmptySelection
+#endif
+- (void)MAYBE_testVisibleButtonsEditingModeEmptySelection {
   AddEntriesAndEnterEdit();
 
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteButtonID);
@@ -795,7 +841,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that only the "Cancel", "Delete" and "Mark Unread" buttons are showing
 // when not editing.
-- (void)testVisibleButtonsOnlyReadEntrySelected {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testVisibleButtonsOnlyReadEntrySelected \
+  DISABLED_testVisibleButtonsOnlyReadEntrySelected
+#else
+#define MAYBE_testVisibleButtonsOnlyReadEntrySelected \
+  testVisibleButtonsOnlyReadEntrySelected
+#endif
+- (void)MAYBE_testVisibleButtonsOnlyReadEntrySelected {
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle);
 
@@ -808,7 +862,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that the "Cancel", "Edit" and "Mark Unread" buttons are not visible
 // after delete (using swipe).
-- (void)testVisibleButtonsAfterSwipeDeletion {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testVisibleButtonsAfterSwipeDeletion \
+  DISABLED_testVisibleButtonsAfterSwipeDeletion
+#else
+#define MAYBE_testVisibleButtonsAfterSwipeDeletion \
+  testVisibleButtonsAfterSwipeDeletion
+#endif
+- (void)MAYBE_testVisibleButtonsAfterSwipeDeletion {
   AddEntriesAndOpenReadingList();
 
   [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kReadTitle)]
@@ -848,7 +910,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that only the "Cancel", "Delete" and "Mark Read" buttons are showing
 // when not editing.
-- (void)testVisibleButtonsOnlyUnreadEntrySelected {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testVisibleButtonsOnlyUnreadEntrySelected \
+  DISABLED_testVisibleButtonsOnlyUnreadEntrySelected
+#else
+#define MAYBE_testVisibleButtonsOnlyUnreadEntrySelected \
+  testVisibleButtonsOnlyUnreadEntrySelected
+#endif
+- (void)MAYBE_testVisibleButtonsOnlyUnreadEntrySelected {
   AddEntriesAndEnterEdit();
   TapEntry(kUnreadTitle);
 
@@ -860,7 +930,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that only the "Cancel", "Delete" and "Mark…" buttons are showing when
 // not editing.
-- (void)testVisibleButtonsMixedEntriesSelected {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testVisibleButtonsMixedEntriesSelected \
+  DISABLED_testVisibleButtonsMixedEntriesSelected
+#else
+#define MAYBE_testVisibleButtonsMixedEntriesSelected \
+  testVisibleButtonsMixedEntriesSelected
+#endif
+- (void)MAYBE_testVisibleButtonsMixedEntriesSelected {
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle);
   TapEntry(kUnreadTitle);
@@ -873,7 +951,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the deletion of selected entries.
-- (void)testDeleteEntries {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testDeleteEntries DISABLED_testDeleteEntries
+#else
+#define MAYBE_testDeleteEntries testDeleteEntries
+#endif
+- (void)MAYBE_testDeleteEntries {
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle2);
 
@@ -922,7 +1006,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the deletion of all read entries.
-- (void)testDeleteAllReadEntries {
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testDeleteAllReadEntries DISABLED_testDeleteAllReadEntries
+#else
+#define MAYBE_testDeleteAllReadEntries testDeleteAllReadEntries
+#endif
+- (void)MAYBE_testDeleteAllReadEntries {
   AddEntriesAndEnterEdit();
 
   TapToolbarButtonWithID(kReadingListToolbarDeleteAllReadButtonID);
@@ -940,7 +1029,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Marks all unread entries as read.
-- (void)testMarkAllRead {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMarkAllRead DISABLED_testMarkAllRead
+#else
+#define MAYBE_testMarkAllRead testMarkAllRead
+#endif
+- (void)MAYBE_testMarkAllRead {
   AddEntriesAndEnterEdit();
 
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
@@ -960,7 +1055,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Marks all read entries as unread.
-- (void)testMarkAllUnread {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMarkAllUnread DISABLED_testMarkAllUnread
+#else
+#define MAYBE_testMarkAllUnread testMarkAllUnread
+#endif
+- (void)MAYBE_testMarkAllUnread {
   AddEntriesAndEnterEdit();
 
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
@@ -981,7 +1082,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Marks all read entries as unread, when there is a lot of entries. This is to
 // prevent crbug.com/1013708 and crbug.com/1246283 from regressing.
-- (void)testMarkAllUnreadLotOfEntry {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMarkAllUnreadLotOfEntry DISABLED_testMarkAllUnreadLotOfEntry
+#else
+#define MAYBE_testMarkAllUnreadLotOfEntry testMarkAllUnreadLotOfEntry
+#endif
+- (void)MAYBE_testMarkAllUnreadLotOfEntry {
   AddLotOfEntriesAndEnterEdit();
 
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
@@ -995,7 +1102,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Selects an unread entry and mark it as read.
-- (void)testMarkEntriesRead {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMarkEntriesRead DISABLED_testMarkEntriesRead
+#else
+#define MAYBE_testMarkEntriesRead testMarkEntriesRead
+#endif
+- (void)MAYBE_testMarkEntriesRead {
   AddEntriesAndEnterEdit();
   TapEntry(kUnreadTitle);
 
@@ -1012,7 +1125,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Selects an read entry and mark it as unread.
-- (void)testMarkEntriesUnread {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMarkEntriesUnread DISABLED_testMarkEntriesUnread
+#else
+#define MAYBE_testMarkEntriesUnread testMarkEntriesUnread
+#endif
+- (void)MAYBE_testMarkEntriesUnread {
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle);
 
@@ -1029,7 +1148,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Selects read and unread entries and mark them as unread.
-- (void)testMarkMixedEntriesUnread {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMarkMixedEntriesUnread DISABLED_testMarkMixedEntriesUnread
+#else
+#define MAYBE_testMarkMixedEntriesUnread testMarkMixedEntriesUnread
+#endif
+- (void)MAYBE_testMarkMixedEntriesUnread {
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle);
   TapEntry(kUnreadTitle);
@@ -1050,7 +1175,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Selects read and unread entries and mark them as read.
-- (void)testMarkMixedEntriesRead {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMarkMixedEntriesRead DISABLED_testMarkMixedEntriesRead
+#else
+#define MAYBE_testMarkMixedEntriesRead testMarkMixedEntriesRead
+#endif
+- (void)MAYBE_testMarkMixedEntriesRead {
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle);
   TapEntry(kUnreadTitle);
@@ -1072,7 +1203,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that you can delete multiple read items in the Reading List without
 // creating a crash (crbug.com/701956).
-- (void)testDeleteMultipleItems {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testDeleteMultipleItems DISABLED_testDeleteMultipleItems
+#else
+#define MAYBE_testDeleteMultipleItems testDeleteMultipleItems
+#endif
+- (void)MAYBE_testDeleteMultipleItems {
   // Add entries.
   for (int i = 0; i < 11; i++) {
     NSURL* url =
@@ -1141,7 +1278,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Copy Link context menu action for a reading list entry.
-- (void)testContextMenuCopyLink {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuCopyLink DISABLED_testContextMenuCopyLink
+#else
+#define MAYBE_testContextMenuCopyLink testContextMenuCopyLink
+#endif
+- (void)MAYBE_testContextMenuCopyLink {
   AddEntriesAndOpenReadingList();
   LongPressEntry(kReadTitle);
 
@@ -1150,7 +1293,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Open in New Tab context menu action for a reading list entry.
-- (void)testContextMenuOpenInNewTab {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuOpenInNewTab DISABLED_testContextMenuOpenInNewTab
+#else
+#define MAYBE_testContextMenuOpenInNewTab testContextMenuOpenInNewTab
+#endif
+- (void)MAYBE_testContextMenuOpenInNewTab {
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
@@ -1163,7 +1312,14 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests display and selection of 'Open in New Incognito Tab' in a context menu
 // on a history entry.
-- (void)testContextMenuOpenInIncognito {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuOpenInIncognito \
+  DISABLED_testContextMenuOpenInIncognito
+#else
+#define MAYBE_testContextMenuOpenInIncognito testContextMenuOpenInIncognito
+#endif
+- (void)MAYBE_testContextMenuOpenInIncognito {
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
@@ -1175,7 +1331,14 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
-- (void)testContextMenuMarkAsReadAndBack {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuMarkAsReadAndBack \
+  DISABLED_testContextMenuMarkAsReadAndBack
+#else
+#define MAYBE_testContextMenuMarkAsReadAndBack testContextMenuMarkAsReadAndBack
+#endif
+- (void)MAYBE_testContextMenuMarkAsReadAndBack {
   AddEntriesAndOpenReadingList();
 
   AssertAllEntriesVisible();
@@ -1216,7 +1379,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Share context menu action for a reading list entry.
-- (void)testContextMenuShare {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuShare DISABLED_testContextMenuShare
+#else
+#define MAYBE_testContextMenuShare testContextMenuShare
+#endif
+- (void)MAYBE_testContextMenuShare {
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
@@ -1226,7 +1395,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Delete context menu action for a reading list entry.
-- (void)testContextMenuDelete {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testContextMenuDelete DISABLED_testContextMenuDelete
+#else
+#define MAYBE_testContextMenuDelete testContextMenuDelete
+#endif
+- (void)MAYBE_testContextMenuDelete {
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
@@ -1239,7 +1414,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Tests that review account settings promo is shown if the user is signed in
 // only but reading list account storage is off and gets removed after enabling
 // the toggle.
-- (void)testReviewAccountSettingsPromoWithReadingListToggleDisabled {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testReviewAccountSettingsPromoWithReadingListToggleDisabled \
+  DISABLED_testReviewAccountSettingsPromoWithReadingListToggleDisabled
+#else
+#define MAYBE_testReviewAccountSettingsPromoWithReadingListToggleDisabled \
+  testReviewAccountSettingsPromoWithReadingListToggleDisabled
+#endif
+- (void)MAYBE_testReviewAccountSettingsPromoWithReadingListToggleDisabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
@@ -1279,7 +1462,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that review account settings promo is not shown if the user is signed
 // in only and reading list account storage is already enabled.
-- (void)testAccountSettingsPromoIfSyncToSigninEnabledWithReadingListOn {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testAccountSettingsPromoIfSyncToSigninEnabledWithReadingListOn \
+  DISABLED_testAccountSettingsPromoIfSyncToSigninEnabledWithReadingListOn
+#else
+#define MAYBE_testAccountSettingsPromoIfSyncToSigninEnabledWithReadingListOn \
+  testAccountSettingsPromoIfSyncToSigninEnabledWithReadingListOn
+#endif
+- (void)MAYBE_AccountSettingsPromoIfSyncToSigninEnabledWithReadingListOn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
@@ -1289,7 +1480,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that account settings are viewed from the reading list manager and
 // account gets removed.
-- (void)testAccountSettingsViewedFroReadingListManager {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testAccountSettingsViewedFroReadingListManager \
+  DISABLED_testAccountSettingsViewedFroReadingListManager
+#else
+#define MAYBE_testAccountSettingsViewedFroReadingListManager \
+  testAccountSettingsViewedFroReadingListManager
+#endif
+- (void)MAYBE_testAccountSettingsViewedFroReadingListManager {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
@@ -1355,7 +1554,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests review account settings promo changes to a sign-in promo after signing
 // out from account settings.
-- (void)testSignOutFromAccountSettingsFromReadingListManager {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSignOutFromAccountSettingsFromReadingListManager \
+  DISABLED_testSignOutFromAccountSettingsFromReadingListManager
+#else
+#define MAYBE_testSignOutFromAccountSettingsFromReadingListManager \
+  testSignOutFromAccountSettingsFromReadingListManager
+#endif
+- (void)MAYBE_testSignOutFromAccountSettingsFromReadingListManager {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
@@ -1420,7 +1627,14 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests the review account settings promo does not show after signing in as
 // reading list gets enabled by default on sign-in.
-- (void)testNoReviewAccountSettingsPromo {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testNoReviewAccountSettingsPromo \
+  DISABLED_testNoReviewAccountSettingsPromo
+#else
+#define MAYBE_testNoReviewAccountSettingsPromo testNoReviewAccountSettingsPromo
+#endif
+- (void)MAYBE_testNoReviewAccountSettingsPromo {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
@@ -1460,7 +1674,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that reading list type gets disabled as it was before signing in when
 // the snackbar undo is tapped.
-- (void)testUndoSignInTypeDisabled {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testUndoSignInTypeDisabled DISABLED_testUndoSignInTypeDisabled
+#else
+#define MAYBE_testUndoSignInTypeDisabled testUndoSignInTypeDisabled
+#endif
+- (void)MAYBE_testUndoSignInTypeDisabled {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
@@ -1506,7 +1726,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that reading list type remains enabled as it was before signing in even
 // when the snackbar undo is tapped.
-- (void)testUndoSignInTypeEnabled {
+// TODO(crbug.com/356127902): This test is flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testUndoSignInTypeEnabled DISABLED_testUndoSignInTypeEnabled
+#else
+#define MAYBE_testUndoSignInTypeEnabled testUndoSignInTypeEnabled
+#endif
+- (void)MAYBE_testUndoSignInTypeEnabled {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
