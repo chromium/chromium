@@ -6,11 +6,49 @@
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+constexpr CGFloat kTitleLogoSpacing = 3.0;
+constexpr CGFloat kLogoTitleFontMultiplier = 1.75;
+
+// Creates the google drive branded title view for the navigation.
+BrandedNavigationItemTitleView* CreateGoogleDriveImageView() {
+  BrandedNavigationItemTitleView* title_view =
+      [[BrandedNavigationItemTitleView alloc] init];
+  title_view.title =
+      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_DRIVE);
+  title_view.imageLogo = MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      kGoogleFullSymbol, UIFont.labelFontSize * kLogoTitleFontMultiplier));
+  title_view.titleLogoSpacing = kTitleLogoSpacing;
+  return title_view;
+}
+#else
+// Creates the google drive title label for the navigation.
+UILabel* CreateGoogleDriveTitleLabel() {
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  titleLabel.text =
+      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_GOOGLE_DRIVE);
+  titleLabel.textAlignment = NSTextAlignmentLeft;
+  titleLabel.adjustsFontSizeToFitWidth = YES;
+  titleLabel.minimumScaleFactor = 0.1;
+  return titleLabel;
+}
+#endif
+
+}  // namespace
 
 @implementation DriveFilePickerTableViewController
 
@@ -23,13 +61,19 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  // If this is the root of the navigation controller, add a "Cancel" button.
+  // If this is the root of the navigation controller, add a "Cancel" button and
+  // the branded google drive title.
   if (self == self.navigationController.viewControllers.firstObject) {
     UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
         initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                              target:self
                              action:@selector(cancelSelection)];
     self.navigationItem.leftBarButtonItem = cancelButton;
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+    self.navigationItem.titleView = CreateGoogleDriveImageView();
+#else
+    self.navigationItem.titleView = CreateGoogleDriveTitleLabel();
+#endif
   }
 
   // Add a "Confirm" button to confirm the selection.
