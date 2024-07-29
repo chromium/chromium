@@ -85,6 +85,10 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
     return setting_overlay_->get_background_for_testing();
   }
 
+  views::View* blur_view() const {
+    return setting_overlay_->get_blur_view_for_testing();
+  }
+
   const views::Widget* widget() const { return widget_.get(); }
 
   using UiResult = AutoPipSettingView::UiResult;
@@ -123,6 +127,7 @@ TEST_F(AutoPipSettingOverlayViewTest, TestViewInitialization) {
   EXPECT_EQ(
       background()->GetColorProvider()->GetColor(kColorPipWindowBackground),
       background()->GetBackground()->get_color());
+  EXPECT_EQ(4.0f, blur_view()->layer()->background_blur());
 }
 
 TEST_F(AutoPipSettingOverlayViewTest, TestBackgroundLayerAnimation) {
