@@ -720,13 +720,13 @@ void WallpaperControllerImpl::SetDecodedCustomWallpaper(
   if (preview_mode) {
     DCHECK(is_active_user);
     confirm_preview_wallpaper_callback_ = base::BindOnce(
-        &WallpaperControllerImpl::SaveAndSetWallpaper,
-        weak_factory_.GetWeakPtr(), account_id, IsEphemeralUser(account_id),
-        file_name, file_path, WallpaperType::kCustomized, layout,
+        &WallpaperControllerImpl::SaveAndSetWallpaper, base::Unretained(this),
+        account_id, IsEphemeralUser(account_id), file_name, file_path,
+        WallpaperType::kCustomized, layout,
         /*show_wallpaper=*/false, image);
     reload_preview_wallpaper_callback_ = base::BindRepeating(
-        &WallpaperControllerImpl::ShowWallpaperImage,
-        weak_factory_.GetWeakPtr(), image,
+        &WallpaperControllerImpl::ShowWallpaperImage, base::Unretained(this),
+        image,
         WallpaperInfo{/*in_location=*/std::string(), layout,
                       WallpaperType::kCustomized, base::Time::Now(), file_path},
         /*preview_mode=*/true, /*is_override=*/false);
@@ -2077,11 +2077,11 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
     DCHECK(is_active_user);
     std::move(callback).Run(/*success=*/true);
     confirm_preview_wallpaper_callback_ = base::BindOnce(
-        &WallpaperControllerImpl::SetWallpaperImpl, weak_factory_.GetWeakPtr(),
+        &WallpaperControllerImpl::SetWallpaperImpl, base::Unretained(this),
         account_id, wallpaper_info, image, /*show_wallpaper=*/false);
     reload_preview_wallpaper_callback_ =
         base::BindRepeating(&WallpaperControllerImpl::ShowWallpaperImage,
-                            weak_factory_.GetWeakPtr(), image, wallpaper_info,
+                            base::Unretained(this), image, wallpaper_info,
                             /*preview_mode=*/true, /*is_override=*/false);
     // Show the preview wallpaper.
     reload_preview_wallpaper_callback_.Run();
@@ -2292,12 +2292,12 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded(
   if (params.preview_mode) {
     DCHECK(is_active_user);
     confirm_preview_wallpaper_callback_ = base::BindOnce(
-        &WallpaperControllerImpl::SetWallpaperImpl, weak_factory_.GetWeakPtr(),
+        &WallpaperControllerImpl::SetWallpaperImpl, base::Unretained(this),
         params.account_id, wallpaper_info, image,
         /*show_wallpaper=*/false);
     reload_preview_wallpaper_callback_ =
         base::BindRepeating(&WallpaperControllerImpl::ShowWallpaperImage,
-                            weak_factory_.GetWeakPtr(), image, wallpaper_info,
+                            base::Unretained(this), image, wallpaper_info,
                             /*preview_mode=*/true, /*is_override=*/false);
 
     // Show the preview wallpaper.
