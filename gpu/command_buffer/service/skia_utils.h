@@ -76,8 +76,11 @@ GPU_GLES2_EXPORT skgpu::graphite::ContextOptions
 GetDefaultGraphiteContextOptions(const GpuDriverBugWorkarounds& workarounds);
 
 // Dumps "skia/gpu_resources/graphite_context{&context}" and
-// "skia/gpu_resources/gpu_main_graphite_recorder{&recorder}"  with total cache
-// usage of each. Designed for background dumps.
+// "skia/gpu_resources/gpu_main_graphite_recorder{&recorder}" with total cache
+// usage of each. For the latter, dumps the statistics of the recorder's
+// ImageProvider under
+// "skia/gpu_resources/gpu_main_graphite_image_provider{&recorder-clientImageProvider()}".
+// Designed for background dumps.
 void DumpBackgroundGraphiteMemoryStatistics(
     const skgpu::graphite::Context* context,
     const skgpu::graphite::Recorder* recorder,

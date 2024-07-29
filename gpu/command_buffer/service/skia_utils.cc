@@ -10,6 +10,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/feature_info.h"
+#include "gpu/command_buffer/service/graphite_image_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
@@ -173,6 +174,19 @@ void DumpBackgroundGraphiteMemoryStatistics(
   recorder_dump->AddScalar(MemoryAllocatorDump::kNameSize,
                            MemoryAllocatorDump::kUnitsBytes,
                            recorder->currentBudgetedBytes());
+
+  // The ImageProvider's bytes are not included in the recorder's budgeted
+  // bytes as they are owned by Chrome, so dump them separately.
+  const auto* image_provider = static_cast<const gpu::GraphiteImageProvider*>(
+      recorder->clientImageProvider());
+  std::string image_provider_dump_name = base::StringPrintf(
+      "skia/gpu_resources/gpu_main_graphite_image_provider_0x%" PRIXPTR,
+      reinterpret_cast<uintptr_t>(image_provider));
+  MemoryAllocatorDump* image_provider_dump =
+      pmd->CreateAllocatorDump(image_provider_dump_name);
+  image_provider_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                                 MemoryAllocatorDump::kUnitsBytes,
+                                 image_provider->CurrentSizeInBytes());
 }
 
 GLuint GetGrGLBackendTextureFormat(

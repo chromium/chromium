@@ -33,6 +33,8 @@ class GraphiteImageProvider : public skgpu::graphite::ImageProvider {
 
   void ClearImageCache();
 
+  size_t CurrentSizeInBytes() const { return current_cache_bytes_; }
+
  private:
   // This class caches images based on a Skia utility that maps images to keys
   // intended to be used for this purpose.
