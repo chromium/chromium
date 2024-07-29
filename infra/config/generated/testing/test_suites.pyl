@@ -1103,11 +1103,11 @@
           'junit-swarming-emulator',
         ],
         'remove_mixins': [
-          'walleye',
-          'pie_fleet',
           'emulator-4-cores',
           'nougat-x86-emulator',
           'oreo-x86-emulator',
+          'walleye',
+          'pie_fleet',
         ],
       },
       'base_junit_tests': {
@@ -1355,11 +1355,11 @@
           'junit-swarming-emulator',
         ],
         'remove_mixins': [
-          'walleye',
-          'pie_fleet',
           'emulator-4-cores',
           'nougat-x86-emulator',
           'oreo-x86-emulator',
+          'walleye',
+          'pie_fleet',
         ],
       },
       'webapk_client_junit_tests': {

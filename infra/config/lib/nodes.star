@@ -345,7 +345,11 @@ def _create_link_node_type(kind, parent_node_type, child_node_type):
                 fail("kind of {} is not {}".format(parent_key, parent_kind))
             parent_node = graph.node(parent_key)
             children = []
-            for link_node in graph.children(parent_key, kind):
+
+            # The unique keys use the string representation of an incrementing
+            # number, which makes the ordering of them seem somewhat chaotic, so
+            # get the link nodes in definition order
+            for link_node in graph.children(parent_key, kind, graph.DEFINITION_ORDER):
                 for ref_node in graph.children(link_node.key, child_node_type.ref_kind):
                     children.append(child_node_type.follow_ref(ref_node, parent_node))
             return children
@@ -355,7 +359,10 @@ def _create_link_node_type(kind, parent_node_type, child_node_type):
                 fail("kind of {} is not {}".format(child_key, child_kind))
             parents = []
             for ref_node in graph.parents(child_key, child_node_type.ref_kind):
-                for link_node in graph.parents(ref_node.key, kind):
+                # The unique keys use the string representation of an
+                # incrementing number, which makes the ordering of them seem
+                # somewhat chaotic, so get the link nodes in definition order
+                for link_node in graph.parents(ref_node.key, kind, graph.DEFINITION_ORDER):
                     parents.extend(graph.parents(link_node.key, parent_kind))
             return parents
 
@@ -370,7 +377,11 @@ def _create_link_node_type(kind, parent_node_type, child_node_type):
             if parent_key.kind != parent_kind:
                 fail("kind of {} is not {}".format(parent_key, parent_kind))
             children = []
-            for link in graph.children(parent_key, kind):
+
+            # The unique keys use the string representation of an incrementing
+            # number, which makes the ordering of them seem somewhat chaotic, so
+            # get the link nodes in definition order
+            for link in graph.children(parent_key, kind, graph.DEFINITION_ORDER):
                 children.extend(graph.children(link.key, child_kind))
             return children
 
@@ -378,7 +389,11 @@ def _create_link_node_type(kind, parent_node_type, child_node_type):
             if child_key.kind != child_kind:
                 fail("kind of {} is not {}".format(child_key, child_kind))
             parents = []
-            for link in graph.parents(child_key, kind):
+
+            # The unique keys use the string representation of an incrementing
+            # number, which makes the ordering of them seem somewhat chaotic, so
+            # get the link nodes in definition order
+            for link in graph.parents(child_key, kind, graph.DEFINITION_ORDER):
                 parents.extend(graph.parents(link.key, parent_kind))
             return parents
 
