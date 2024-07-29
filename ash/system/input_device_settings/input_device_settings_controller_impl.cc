@@ -263,10 +263,11 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
 mojom::MousePtr BuildMojomMouse(
     const ui::InputDevice& mouse,
     mojom::CustomizationRestriction customization_restriction,
-    mojom::MouseButtonConfig mouse_button_config) {
+    mojom::MouseButtonConfig mouse_button_config,
+    const std::string& name) {
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
   mojom_mouse->id = mouse.id;
-  mojom_mouse->name = mouse.name;
+  mojom_mouse->name = name;
   mojom_mouse->customization_restriction = customization_restriction;
   mojom_mouse->mouse_button_config = mouse_button_config;
   mojom_mouse->device_key =
@@ -311,7 +312,12 @@ mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
     mojom::CustomizationRestriction customization_restriction,
     mojom::GraphicsTabletButtonConfig graphics_tablet_button_config) {
   mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
-  mojom_graphics_tablet->name = graphics_tablet.name;
+  auto* metadata = GetGraphicsTabletMetadata(graphics_tablet);
+  std::string name = features::IsWelcomeExperienceEnabled() && metadata &&
+                             metadata->name.has_value()
+                         ? metadata->name.value()
+                         : graphics_tablet.name;
+  mojom_graphics_tablet->name = name;
   mojom_graphics_tablet->id = graphics_tablet.id;
   mojom_graphics_tablet->customization_restriction = customization_restriction;
   mojom_graphics_tablet->graphics_tablet_button_config =
@@ -1839,6 +1845,15 @@ void InputDeviceSettingsControllerImpl::DispatchGraphicsTabletSettingsChanged(
   }
 }
 
+std::string GetMouseName(const ui::InputDevice& mouse) {
+  const auto* mouse_metadata = GetMouseMetadata(mouse);
+  if (!features::IsWelcomeExperienceEnabled() || !mouse_metadata ||
+      !mouse_metadata->name.has_value()) {
+    return mouse.name;
+  }
+  return mouse_metadata->name.value();
+}
+
 mojom::CustomizationRestriction
 InputDeviceSettingsControllerImpl::GetMouseCustomizationRestriction(
     const ui::InputDevice& mouse) {
@@ -1940,7 +1955,7 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
   for (const auto& mouse : mice_to_add) {
     auto mojom_mouse =
         BuildMojomMouse(mouse, GetMouseCustomizationRestriction(mouse),
-                        GetMouseButtonConfig(mouse));
+                        GetMouseButtonConfig(mouse), GetMouseName(mouse));
     InitializeMouseSettings(mojom_mouse.get());
     if (ShouldFetchDeviceImage()) {
       GetDeviceImage(mojom_mouse->device_key, mojom_mouse->id);

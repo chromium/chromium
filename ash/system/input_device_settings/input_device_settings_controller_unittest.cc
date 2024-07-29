@@ -2126,4 +2126,24 @@ TEST_F(InputDeviceSettingsControllerTest, CompanionAppStateUpdated) {
   ASSERT_EQ(mojom::CompanionAppState::kInstalled, mouse->app_info->state);
 }
 
+TEST_F(InputDeviceSettingsControllerTest, MarketingNameOverridesGeneric) {
+  const ui::InputDevice kMouseWithMarketingName(44, ui::INPUT_DEVICE_USB,
+                                                "kMouseWithMarketingName",
+                                                /*phys=*/"",
+                                                /*sys_path=*/base::FilePath(),
+                                                /*vendor=*/0x046d,
+                                                /*product=*/0x405e,
+                                                /*version=*/0x0003);
+  // Add two mice, one with a known marketing name and one without.
+  fake_device_manager_->AddFakeMouse(kSampleMouseUsb);
+  fake_device_manager_->AddFakeMouse(kMouseWithMarketingName);
+
+  auto* sample_mouse = controller_->GetMouse(kSampleMouseUsb.id);
+  auto* mouse_with_marketing_name =
+      controller_->GetMouse(kMouseWithMarketingName.id);
+
+  ASSERT_EQ(kSampleMouseUsb.name, sample_mouse->name);
+  ASSERT_EQ("M720 Triathlon", mouse_with_marketing_name->name);
+}
+
 }  // namespace ash

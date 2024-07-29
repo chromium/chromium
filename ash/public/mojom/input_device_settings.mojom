@@ -480,4 +480,6 @@ enum CustomizationRestriction {
   kAllowHorizontalScrollWheelRewrites = 5,
   // Allow tab events in addition to normal mouse events to be rewritten.
   kAllowTabEventRewrites = 6,
+  // Allow F-key events in addition to normal mouse events to be rewritten.
+  kAllowFKeyRewrites = 7,
 };

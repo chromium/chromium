@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_METADATA_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "base/containers/flat_map.h"
@@ -34,14 +35,31 @@ enum class DeviceImageDestination {
 };
 
 struct ASH_EXPORT MouseMetadata {
+  MouseMetadata();
+  MouseMetadata(mojom::CustomizationRestriction customization_restriction,
+                mojom::MouseButtonConfig config,
+                std::optional<std::string> name = std::nullopt);
+  ~MouseMetadata();
+  MouseMetadata(const MouseMetadata& other);
+
   mojom::CustomizationRestriction customization_restriction;
   mojom::MouseButtonConfig mouse_button_config;
+  std::optional<std::string> name = std::nullopt;
   bool operator==(const MouseMetadata& other) const;
 };
 
 struct ASH_EXPORT GraphicsTabletMetadata {
+  GraphicsTabletMetadata();
+  GraphicsTabletMetadata(
+      mojom::CustomizationRestriction customization_restriction,
+      mojom::GraphicsTabletButtonConfig config,
+      std::optional<std::string> name = std::nullopt);
+  ~GraphicsTabletMetadata();
+  GraphicsTabletMetadata(const GraphicsTabletMetadata& other);
+
   mojom::CustomizationRestriction customization_restriction;
   mojom::GraphicsTabletButtonConfig graphics_tablet_button_config;
+  std::optional<std::string> name = std::nullopt;
   bool operator==(const GraphicsTabletMetadata& other) const;
 };
 
