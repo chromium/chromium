@@ -808,6 +808,20 @@ BASE_FEATURE(kAutofillUpdateLowQualityTokenOnImport,
              "AutofillUpdateLowQualityTokenOnImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutofillUKMExperimentalFields,
+             "AutofillUKMExperimentalFields",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket0{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket0", ""};
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket1{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket1", ""};
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket2{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket2", ""};
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket3{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket3", ""};
+const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket4{
+    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket4", ""};
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.

@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -35,6 +36,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/language/core/browser/language_usage_metrics.h"
@@ -2647,6 +2649,117 @@ void AutofillMetrics::FormInteractionsUkmLogger::
                 .InMilliseconds()));
   }
   builder.Record(ukm_recorder_);
+}
+
+void AutofillMetrics::FormInteractionsUkmLogger::
+    LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
+        const FormStructure& form_structure) {
+  if (!CanLog()) {
+    return;
+  }
+
+  // Number of non-empty experimental fields found for each of the 5 buckets.
+  std::array<int, 5> num_experimental_fields = {0, 0, 0, 0, 0};
+
+  // Build icu::RegexPattern* from experiment parameters.
+  static base::NoDestructor<AutofillRegexCache> regex_cache(ThreadSafe(false));
+  auto compile_pattern =
+      [](const std::string& pattern) -> const icu::RegexPattern* {
+    return pattern.empty()
+               ? nullptr
+               : regex_cache->GetRegexPattern(base::UTF8ToUTF16(pattern));
+  };
+  std::array<const icu::RegexPattern*, 5> kRegexPatterns = {
+      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket0.Get()),
+      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket1.Get()),
+      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket2.Get()),
+      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket3.Get()),
+      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket4.Get())};
+
+  // Determine whether `pattern` matches `value`.
+  auto matches = [](const std::u16string& value,
+                    const icu::RegexPattern& pattern) {
+    return !value.empty() && autofill::MatchesRegex(value, pattern);
+  };
+  // Count in `num_experimental_fields[i]` if `pattern[i]` matches the label,
+  // id_attribute or name_attribute of `field`. Returns true if any pattern
+  // matched.
+  auto count_experimental_field = [&](const AutofillField& field) {
+    bool found_experimental_fields = false;
+    for (size_t i = 0; i < kRegexPatterns.size(); ++i) {
+      const icu::RegexPattern* pattern = kRegexPatterns[i];
+      if (pattern && (matches(field.label(), *pattern) ||
+                      matches(field.id_attribute(), *pattern) ||
+                      matches(field.name_attribute(), *pattern))) {
+        ++num_experimental_fields[i];
+        found_experimental_fields = true;
+      }
+    }
+    return found_experimental_fields;
+  };
+
+  // Count which patterns matched for fields that were non-empty and had a
+  // typing or filling event.
+  bool found_experimental_fields = false;
+  for (const std::unique_ptr<AutofillField>& field : form_structure.fields()) {
+    OptionalBoolean has_typed_or_filled_value_at_submission =
+        OptionalBoolean::kUndefined;
+
+    const std::vector<AutofillField::FieldLogEventType>& field_log_events =
+        field->field_log_events();
+
+    for (const AutofillField::FieldLogEventType& log_event : field_log_events) {
+      if (auto* event = absl::get_if<FillFieldLogEvent>(&log_event)) {
+        if (event->filling_prevented_by_iframe_security_policy ==
+            OptionalBoolean::kFalse) {
+          has_typed_or_filled_value_at_submission =
+              event->had_value_after_filling;
+        }
+      }
+
+      if (auto* event = absl::get_if<TypingFieldLogEvent>(&log_event)) {
+        has_typed_or_filled_value_at_submission = event->has_value_after_typing;
+      }
+    }
+
+    // The value of has_typed_or_filled_value_at_submission does not capture
+    // correctly if javascript clears a field. It only indicates that the last
+    // user action (filling or autofill) led to a value.
+    if (has_typed_or_filled_value_at_submission == OptionalBoolean::kTrue) {
+      found_experimental_fields |= count_experimental_field(*field);
+    }
+  }
+
+  // Report the results.
+  if (found_experimental_fields) {
+    ukm::builders::Autofill2_SubmittedFormWithExperimentalFields builder(
+        GetSourceId());
+    builder
+        .SetFormSessionIdentifier(AutofillMetrics::FormGlobalIdToHash64Bit(
+            form_structure.global_id()))
+        .SetFormSignature(HashFormSignature(form_structure.form_signature()));
+    if (num_experimental_fields[0]) {
+      builder.SetNumberOfNonEmptyExperimentalFields0(
+          num_experimental_fields[0]);
+    }
+    if (num_experimental_fields[1]) {
+      builder.SetNumberOfNonEmptyExperimentalFields1(
+          num_experimental_fields[1]);
+    }
+    if (num_experimental_fields[2]) {
+      builder.SetNumberOfNonEmptyExperimentalFields2(
+          num_experimental_fields[2]);
+    }
+    if (num_experimental_fields[3]) {
+      builder.SetNumberOfNonEmptyExperimentalFields3(
+          num_experimental_fields[3]);
+    }
+    if (num_experimental_fields[4]) {
+      builder.SetNumberOfNonEmptyExperimentalFields4(
+          num_experimental_fields[4]);
+    }
+    builder.Record(ukm_recorder_);
+  }
 }
 
 void AutofillMetrics::FormInteractionsUkmLogger::

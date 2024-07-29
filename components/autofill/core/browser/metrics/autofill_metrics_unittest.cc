@@ -143,6 +143,8 @@ using UkmFieldInfoAfterSubmissionType =
     ukm::builders::Autofill2_FieldInfoAfterSubmission;
 using UkmFormSummaryType = ukm::builders::Autofill2_FormSummary;
 using UkmFocusedComplexFormType = ukm::builders::Autofill2_FocusedComplexForm;
+using UkmSubmittedFormWithExperimentalFieldsType =
+    ukm::builders::Autofill2_SubmittedFormWithExperimentalFields;
 using ExpectedUkmMetricsRecord = std::vector<ExpectedUkmMetricsPair>;
 using ExpectedUkmMetrics = std::vector<ExpectedUkmMetricsRecord>;
 
@@ -7993,6 +7995,84 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
   for (const auto& [metric, value] : expected) {
     test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
   }
+}
+
+TEST_F(AutofillMetricsFromLogEventsTest,
+       LogAutofillFormWithExperimentalFieldsCountAtFormRemove) {
+  base::FieldTrialParams feature_parameters{
+      {features::kAutofillUKMExperimentalFieldsBucket0.name, "label1"},
+      {features::kAutofillUKMExperimentalFieldsBucket4.name, "field2"},
+  };
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAutofillUKMExperimentalFields,
+                             feature_parameters}},
+      /*disabled_features=*/{});
+  FormData form = test::GetFormData(test::FormDescription{
+      .fields = {
+          // This matches bucket 0, has a value, has typing -> gets reported.
+          {.label = u"label1", .name_attribute = u"field1", .value = u"foo"},
+          // This matches bucket 4, has a value, has typing -> get reported.
+          {.label = u"", .name_attribute = u"field2", .value = u"foo"},
+          // This matches bucket 4, has a value, has typing -> get reported.
+          {.label = u"", .id_attribute = u"field2", .value = u"foo"},
+          // This matches bucket 0, HAS NO VALUE, has typing
+          // -> does NOT get reported.
+          {.label = u"label1", .name_attribute = u"field3"},
+          // This MATCHES NO BUCKET, has a value, has typing leading to empty
+          // string.
+          // -> does NOT get reported.
+          {.label = u"label2", .name_attribute = u"field4", .value = u"foo"},
+          // This matches bucket 0, has a value, HAS NO TYPING
+          // -> does not gets reported.
+          {.label = u"label1", .name_attribute = u"field1", .value = u"foo"},
+      }});
+
+  FormStructure form_structure(form);
+  form_structure.field(0)->AppendLogEventIfNotRepeated(
+      TypingFieldLogEvent{.has_value_after_typing = OptionalBoolean::kTrue});
+  form_structure.field(1)->AppendLogEventIfNotRepeated(
+      TypingFieldLogEvent{.has_value_after_typing = OptionalBoolean::kTrue});
+  form_structure.field(2)->AppendLogEventIfNotRepeated(
+      TypingFieldLogEvent{.has_value_after_typing = OptionalBoolean::kTrue});
+  // Typing leads to empty string:
+  form_structure.field(3)->AppendLogEventIfNotRepeated(
+      TypingFieldLogEvent{.has_value_after_typing = OptionalBoolean::kFalse});
+  form_structure.field(4)->AppendLogEventIfNotRepeated(
+      TypingFieldLogEvent{.has_value_after_typing = OptionalBoolean::kTrue});
+  // No typing on field 5.
+
+  AutofillMetrics::FormInteractionsUkmLogger logger(autofill_client_.get(),
+                                                    &test_ukm_recorder());
+  logger.LogAutofillFormWithExperimentalFieldsCountAtFormRemove(form_structure);
+
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      UkmSubmittedFormWithExperimentalFieldsType::kEntryName);
+  ASSERT_EQ(1u, ukm_entries.size());
+  const auto* const entry = ukm_entries[0].get();
+  test_ukm_recorder().ExpectEntryMetric(
+      entry,
+      UkmSubmittedFormWithExperimentalFieldsType::kFormSessionIdentifierName,
+      AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id()));
+  test_ukm_recorder().ExpectEntryMetric(
+      entry,
+      UkmSubmittedFormWithExperimentalFieldsType::
+          kNumberOfNonEmptyExperimentalFields0Name,
+      1);
+  EXPECT_FALSE(test_ukm_recorder().EntryHasMetric(
+      entry, UkmSubmittedFormWithExperimentalFieldsType::
+                 kNumberOfNonEmptyExperimentalFields1Name));
+  EXPECT_FALSE(test_ukm_recorder().EntryHasMetric(
+      entry, UkmSubmittedFormWithExperimentalFieldsType::
+                 kNumberOfNonEmptyExperimentalFields2Name));
+  EXPECT_FALSE(test_ukm_recorder().EntryHasMetric(
+      entry, UkmSubmittedFormWithExperimentalFieldsType::
+                 kNumberOfNonEmptyExperimentalFields3Name));
+  test_ukm_recorder().ExpectEntryMetric(
+      entry,
+      UkmSubmittedFormWithExperimentalFieldsType::
+          kNumberOfNonEmptyExperimentalFields4Name,
+      2);
 }
 
 }  // namespace autofill::autofill_metrics
