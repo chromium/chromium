@@ -24,6 +24,7 @@ import org.chromium.android_webview.JsReplyProxy;
 import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
+import org.chromium.android_webview.common.BackgroundThreadExecutor;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -36,14 +37,14 @@ import org.chromium.content_public.browser.MessagePort;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for blocking mature sites for supervised users.
  *
- * These tests only check the url loading part of the integration, not
- * the call to GMS core which would check if the current user can load
- * a particular url.
+ * <p>These tests only check the url loading part of the integration, not the call to GMS core which
+ * would check if the current user can load a particular url.
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
@@ -254,15 +255,26 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     private static class TestPlatformServiceBridge extends PlatformServiceBridge {
         private class TestAwSupervisedUserUrlClassifierDelegate
                 implements AwSupervisedUserUrlClassifierDelegate {
+            // Post callback responses to a background thread to emulate how the production code
+            // works.
+            private final Executor mExecutor =
+                    new BackgroundThreadExecutor("TEST_BACKGROUND_THREAD");
+
             @Override
             public void shouldBlockUrl(GURL requestUrl, @NonNull final Callback<Boolean> callback) {
                 String path = requestUrl.getPath();
 
                 if (path.equals(SAFE_SITE_PATH) || path.equals(SAFE_SITE_IFRAME_PATH)) {
-                    callback.onResult(false);
+                    mExecutor.execute(
+                            () -> {
+                                callback.onResult(false);
+                            });
                     return;
                 } else if (path.equals(MATURE_SITE_PATH) || path.equals(MATURE_SITE_IFRAME_PATH)) {
-                    callback.onResult(true);
+                    mExecutor.execute(
+                            () -> {
+                                callback.onResult(true);
+                            });
                     return;
                 }
                 assert false;

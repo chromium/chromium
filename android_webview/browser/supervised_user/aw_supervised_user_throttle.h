@@ -21,6 +21,9 @@ namespace android_webview {
 // until all the checks are done. It cancels the load if any URLs turn out to
 // be bad.
 //
+// Methods on this class should be called on the UI thread. Instances of this
+// class can be created on any thread.
+//
 // Lifetime: Temporary. Created and destroyed for every URL request.
 class AwSupervisedUserThrottle : public blink::URLLoaderThrottle {
  public:
@@ -51,9 +54,9 @@ class AwSupervisedUserThrottle : public blink::URLLoaderThrottle {
   void CheckShouldBlockUrl(const GURL& url);
   void OnShouldBlockUrlResult(bool shouldBlockUrl);
 
-  bool deferred_ = false;
-  bool blocked_ = false;
-  size_t pending_checks_ = 0;
+  bool deferred_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool blocked_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  size_t pending_checks_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   const raw_ptr<AwSupervisedUserUrlClassifier> url_classifier_;
   SEQUENCE_CHECKER(sequence_checker_);
