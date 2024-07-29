@@ -13,6 +13,8 @@ static_library("babelorca") {
     "oauth_token_fetcher.h",
     "token_data_wrapper.h",
     "token_fetcher.h",
+    "token_manager.cc",
+    "token_manager.h",
   ]
 
   deps = [
@@ -40,10 +42,14 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "oauth_token_fetcher_unittest.cc" ]
+  sources = [
+    "oauth_token_fetcher_unittest.cc",
+    "token_manager_unittest.cc",
+  ]
 
   deps = [
     ":babelorca",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/signin/public/base",
