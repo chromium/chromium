@@ -7,12 +7,9 @@ import './logo.js';
 import './strings.m.js';
 import 'chrome://resources/cr_components/searchbox/realbox.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
-import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
@@ -22,10 +19,12 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import {BackgroundManager} from './background_manager.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
 import type {IframeElement} from './iframe.js';
@@ -112,8 +111,7 @@ function ensureLazyLoaded() {
   document.body.appendChild(script);
 }
 
-const AppElementBase = HelpBubbleMixin(PolymerElement) as
-    {new (): PolymerElement & HelpBubbleMixinInterface};
+const AppElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export interface AppElement {
   $: {
@@ -127,102 +125,45 @@ export class AppElement extends AppElementBase {
     return 'ntp-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      oneGoogleBarIframeOrigin_: {
-        type: String,
-        value: OGB_IFRAME_ORIGIN,
-      },
-
-      oneGoogleBarIframePath_: {
-        type: String,
-        value: () => {
-          const params = new URLSearchParams();
-          params.set(
-              'paramsencoded',
-              btoa(window.location.search.replace(/^[?]/, '&')));
-          return `${OGB_IFRAME_ORIGIN}/one-google-bar?${params}`;
-        },
-      },
-
-      theme_: {
-        observer: 'onThemeChange_',
-        type: Object,
-      },
-
-      showCustomize_: {
-        type: Boolean,
-        value: () =>
-            WindowProxy.getInstance().url.searchParams.has(CUSTOMIZE_URL_PARAM),
-      },
-
-      showCustomizeChromeText_: {
-        type: Boolean,
-        computed:
-            `computeShowCustomizeChromeText_(wallpaperSearchButtonEnabled_,
-            showBackgroundImage_)`,
-      },
+      oneGoogleBarIframeOrigin_: {type: String},
+      oneGoogleBarIframePath_: {type: String},
+      oneGoogleBarLoaded_: {type: Boolean},
+      theme_: {type: Object},
+      showCustomize_: {type: Boolean},
+      showCustomizeChromeText_: {type: Boolean},
 
       showWallpaperSearch_: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      selectedCustomizeDialogPage_: {
-        type: String,
-        value: () =>
-            WindowProxy.getInstance().url.searchParams.get(CUSTOMIZE_URL_PARAM),
-      },
-
-      showVoiceSearchOverlay_: Boolean,
+      selectedCustomizeDialogPage_: {type: String},
+      showVoiceSearchOverlay_: {type: Boolean},
 
       showBackgroundImage_: {
-        computed: 'computeShowBackgroundImage_(theme_)',
-        observer: 'onShowBackgroundImageChange_',
-        reflectToAttribute: true,
+        reflect: true,
         type: Boolean,
       },
 
-      backgroundImageAttribution1_: {
-        type: String,
-        computed: `computeBackgroundImageAttribution1_(theme_)`,
-      },
-
-      backgroundImageAttribution2_: {
-        type: String,
-        computed: `computeBackgroundImageAttribution2_(theme_)`,
-      },
-
-      backgroundImageAttributionUrl_: {
-        type: String,
-        computed: `computeBackgroundImageAttributionUrl_(theme_)`,
-      },
-
-      backgroundColor_: {
-        computed: 'computeBackgroundColor_(showBackgroundImage_, theme_)',
-        type: Object,
-      },
+      backgroundImageAttribution1_: {type: String},
+      backgroundImageAttribution2_: {type: String},
+      backgroundImageAttributionUrl_: {type: String},
+      backgroundColor_: {type: Object},
 
       // Used in cr-realbox component via host-context.
-      colorSourceIsBaseline: {
-        type: Boolean,
-        computed: 'computeColorSourceIsBaseline(theme_)',
-      },
-
-      logoColor_: {
-        type: String,
-        computed: 'computeLogoColor_(theme_)',
-      },
-
-      singleColoredLogo_: {
-        computed: 'computeSingleColoredLogo_(theme_)',
-        type: Boolean,
-      },
+      colorSourceIsBaseline: {type: Boolean},
+      logoColor_: {type: String},
+      singleColoredLogo_: {type: Boolean},
 
       /**
        * Whether the secondary side can be shown based on the feature state and
@@ -230,8 +171,7 @@ export class AppElement extends AppElementBase {
        */
       realboxCanShowSecondarySide: {
         type: Boolean,
-        value: () => realboxCanShowSecondarySideMediaQueryList.matches,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /**
@@ -240,83 +180,46 @@ export class AppElement extends AppElementBase {
        */
       realboxHadSecondarySide: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
         notify: true,
       },
 
       realboxIsTall_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('realboxIsTall'),
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      realboxShown_: {
-        type: Boolean,
-        computed: 'computeRealboxShown_(theme_, showLensUploadDialog_)',
-      },
+      realboxShown_: {type: Boolean},
 
       /* Searchbox width behavior. */
       realboxWidthBehavior_: {
         type: String,
-        value: () => loadTimeData.getString('realboxWidthBehavior'),
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      logoEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('logoEnabled'),
-      },
-
-      oneGoogleBarEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('oneGoogleBarEnabled'),
-      },
-
-      shortcutsEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('shortcutsEnabled'),
-      },
-
-      singleRowShortcutsEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('singleRowShortcutsEnabled'),
-      },
-
-      middleSlotPromoEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('middleSlotPromoEnabled'),
-      },
-
-      modulesEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('modulesEnabled'),
-      },
+      logoEnabled_: {type: Boolean},
+      oneGoogleBarEnabled_: {type: Boolean},
+      shortcutsEnabled_: {type: Boolean},
+      singleRowShortcutsEnabled_: {type: Boolean},
+      middleSlotPromoEnabled_: {type: Boolean},
+      modulesEnabled_: {type: Boolean},
 
       modulesRedesignedEnabled_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('modulesRedesignedEnabled'),
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       wideModulesEnabled_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('wideModulesEnabled'),
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      middleSlotPromoLoaded_: {
-        type: Boolean,
-        value: false,
-      },
-
-      modulesLoaded_: {
-        type: Boolean,
-        value: false,
-      },
+      middleSlotPromoLoaded_: {type: Boolean},
+      modulesLoaded_: {type: Boolean},
 
       modulesShownToUser: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /**
@@ -324,81 +227,79 @@ export class AppElement extends AppElementBase {
        * are loaded. If modules are disabled, the promo is shown as soon as it
        * is loaded.
        */
-      promoAndModulesLoaded_: {
-        type: Boolean,
-        computed: `computePromoAndModulesLoaded_(middleSlotPromoLoaded_,
-            modulesLoaded_)`,
-        observer: 'onPromoAndModulesLoadedChange_',
-      },
+      promoAndModulesLoaded_: {type: Boolean},
 
-      showLensUploadDialog_: Boolean,
+      showLensUploadDialog_: {type: Boolean},
 
       /**
        * If true, renders additional elements that were not deemed crucial to
        * to show up immediately on load.
        */
-      lazyRender_: Boolean,
+      lazyRender_: {type: Boolean},
 
-      scrolledToTop_: {
-        type: Boolean,
-        value: document.documentElement.scrollTop <= 0,
-      },
+      scrolledToTop_: {type: Boolean},
 
       wallpaperSearchButtonAnimationEnabled_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('wallpaperSearchButtonAnimationEnabled'),
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       wallpaperSearchButtonEnabled_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('wallpaperSearchButtonEnabled'),
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  static get observers() {
-    return [
-      'updateOneGoogleBarAppearance_(oneGoogleBarLoaded_, theme_)',
-    ];
-  }
-
-  private oneGoogleBarIframePath_: string;
-  private oneGoogleBarLoaded_: boolean;
-  private theme_: Theme;
-  private showCustomize_: boolean;
-  private showCustomizeChromeText_: boolean;
-  private showWallpaperSearch_: boolean;
+  protected oneGoogleBarIframeOrigin_: string = OGB_IFRAME_ORIGIN;
+  protected oneGoogleBarIframePath_: string;
+  protected oneGoogleBarLoaded_: boolean;
+  protected theme_?: Theme;
+  protected showCustomize_: boolean;
+  protected showCustomizeChromeText_: boolean;
+  protected showWallpaperSearch_: boolean = false;
   private selectedCustomizeDialogPage_: string|null;
-  private showVoiceSearchOverlay_: boolean;
-  private showBackgroundImage_: boolean;
-  private backgroundImageAttribution1_: string;
-  private backgroundImageAttribution2_: string;
-  private backgroundImageAttributionUrl_: string;
-  private backgroundColor_: SkColor;
-  private logoColor_: string;
-  private singleColoredLogo_: boolean;
+  protected showVoiceSearchOverlay_: boolean = false;
+  protected showBackgroundImage_: boolean;
+  protected backgroundImageAttribution1_: string;
+  protected backgroundImageAttribution2_: string;
+  protected backgroundImageAttributionUrl_: string;
+  protected backgroundColor_: SkColor|null;
+  protected colorSourceIsBaseline: boolean;
+  protected logoColor_: SkColor|null = null;
+  protected singleColoredLogo_: boolean;
   realboxCanShowSecondarySide: boolean;
   realboxHadSecondarySide: boolean;
-  private realboxShown_: boolean;
-  private showLensUploadDialog_: boolean = false;
-  private logoEnabled_: boolean;
-  private oneGoogleBarEnabled_: boolean;
-  private shortcutsEnabled_: boolean;
+  protected realboxIsTall_ = loadTimeData.getBoolean('realboxIsTall');
+  protected realboxShown_: boolean;
+  protected realboxWidthBehavior_: string =
+      loadTimeData.getString('realboxWidthBehavior');
+  protected showLensUploadDialog_: boolean = false;
+  protected logoEnabled_: boolean = loadTimeData.getBoolean('logoEnabled');
+  protected oneGoogleBarEnabled_: boolean =
+      loadTimeData.getBoolean('oneGoogleBarEnabled');
+  protected shortcutsEnabled_: boolean =
+      loadTimeData.getBoolean('shortcutsEnabled');
+  protected singleRowShortcutsEnabled_: boolean =
+      loadTimeData.getBoolean('singleRowShortcutsEnabled');
   private modulesFreShown: boolean;
-  private middleSlotPromoEnabled_: boolean;
-  private modulesEnabled_: boolean;
-  private modulesRedesignedEnabled_: boolean;
-  private middleSlotPromoLoaded_: boolean;
-  private modulesLoaded_: boolean;
-  private modulesShownToUser: boolean;
-  private promoAndModulesLoaded_: boolean;
-  private lazyRender_: boolean;
-  private scrolledToTop_: boolean;
-  private wallpaperSearchButtonAnimationEnabled_: boolean;
-  private wallpaperSearchButtonEnabled_: boolean;
+  protected middleSlotPromoEnabled_: boolean =
+      loadTimeData.getBoolean('middleSlotPromoEnabled');
+  protected modulesEnabled_: boolean =
+      loadTimeData.getBoolean('modulesEnabled');
+  protected modulesRedesignedEnabled_: boolean =
+      loadTimeData.getBoolean('modulesRedesignedEnabled');
+  protected wideModulesEnabled_ = loadTimeData.getBoolean('wideModulesEnabled');
+  private middleSlotPromoLoaded_: boolean = false;
+  private modulesLoaded_: boolean = false;
+  protected modulesShownToUser: boolean;
+  protected promoAndModulesLoaded_: boolean = false;
+  protected lazyRender_: boolean;
+  protected scrolledToTop_: boolean = document.documentElement.scrollTop <= 0;
+  private wallpaperSearchButtonAnimationEnabled_: boolean =
+      loadTimeData.getBoolean('wallpaperSearchButtonAnimationEnabled');
+  protected wallpaperSearchButtonEnabled_: boolean =
+      loadTimeData.getBoolean('wallpaperSearchButtonEnabled');
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -420,6 +321,22 @@ export class AppElement extends AppElementBase {
     this.backgroundManager_ = BackgroundManager.getInstance();
     this.shouldPrintPerformance_ =
         new URLSearchParams(location.search).has('print_perf');
+
+    this.oneGoogleBarIframePath_ = (() => {
+      const params = new URLSearchParams();
+      params.set(
+          'paramsencoded', btoa(window.location.search.replace(/^[?]/, '&')));
+      return `${OGB_IFRAME_ORIGIN}/one-google-bar?${params}`;
+    })();
+
+    this.showCustomize_ =
+        WindowProxy.getInstance().url.searchParams.has(CUSTOMIZE_URL_PARAM);
+
+    this.selectedCustomizeDialogPage_ =
+        WindowProxy.getInstance().url.searchParams.get(CUSTOMIZE_URL_PARAM);
+
+    this.realboxCanShowSecondarySide =
+        realboxCanShowSecondarySideMediaQueryList.matches;
 
     /**
      * Initialized with the start of the performance timeline in case the
@@ -547,8 +464,7 @@ export class AppElement extends AppElementBase {
     this.eventTracker_.removeAll();
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.pageHandler_.onAppRendered(WindowProxy.getInstance().now());
     // Let the browser breathe and then render remaining elements.
     WindowProxy.getInstance().waitForLazyRender().then(() => {
@@ -557,6 +473,71 @@ export class AppElement extends AppElementBase {
     });
     this.printPerformance_();
     performance.measure('app-creation', 'app-creation-start');
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('theme_')) {
+      this.showBackgroundImage_ = this.computeShowBackgroundImage_();
+      this.backgroundImageAttribution1_ =
+          this.computeBackgroundImageAttribution1_();
+      this.backgroundImageAttribution2_ =
+          this.computeBackgroundImageAttribution2_();
+      this.backgroundImageAttributionUrl_ =
+          this.computeBackgroundImageAttributionUrl_();
+      this.colorSourceIsBaseline = this.computeColorSourceIsBaseline();
+      this.logoColor_ = this.computeLogoColor_();
+      this.singleColoredLogo_ = this.computeSingleColoredLogo_();
+    }
+
+    // theme_, showBackgroundImage_
+    this.backgroundColor_ = this.computeBackgroundColor_();
+
+    // theme_, showLensUploadDialog_
+    this.realboxShown_ = this.computeRealboxShown_();
+
+    // middleSlotPromoLoaded_, modulesLoaded_
+    this.promoAndModulesLoaded_ = this.computePromoAndModulesLoaded_();
+
+    // wallpaperSearchButtonEnabled_, showBackgroundImage_
+    this.showCustomizeChromeText_ = this.computeShowCustomizeChromeText_();
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('lazyRender_') && this.lazyRender_) {
+      this.onLazyRendered_();
+    }
+
+    if (changedPrivateProperties.has('theme_')) {
+      this.onThemeChange_();
+    }
+
+    if (changedPrivateProperties.has('logoColor_')) {
+      this.style.setProperty(
+          '--ntp-logo-color', this.rgbaOrInherit_(this.logoColor_));
+    }
+
+    if (changedPrivateProperties.has('showBackgroundImage_')) {
+      this.onShowBackgroundImageChange_();
+    }
+
+    if (changedPrivateProperties.has('promoAndModulesLoaded_')) {
+      this.onPromoAndModulesLoadedChange_();
+    }
+
+    if (changedPrivateProperties.has('oneGoogleBarLoaded_') ||
+        changedPrivateProperties.has('theme_')) {
+      this.updateOneGoogleBarAppearance_();
+    }
   }
 
   // Called to update the OGB of relevant NTP state changes.
@@ -593,10 +574,9 @@ export class AppElement extends AppElementBase {
         '';
   }
 
-  private computeRealboxShown_(theme: Theme, showLensUploadDialog: boolean):
-      boolean {
+  private computeRealboxShown_(): boolean {
     // Do not show the realbox if the upload dialog is showing.
-    return theme && !showLensUploadDialog;
+    return !!this.theme_ && !this.showLensUploadDialog_;
   }
 
   private computePromoAndModulesLoaded_(): boolean {
@@ -621,20 +601,20 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private onOpenVoiceSearch_() {
+  protected onOpenVoiceSearch_() {
     this.showVoiceSearchOverlay_ = true;
     recordVoiceAction(VoiceAction.ACTIVATE_SEARCH_BOX);
   }
 
-  private onOpenLensSearch_() {
+  protected onOpenLensSearch_() {
     this.showLensUploadDialog_ = true;
   }
 
-  private onCloseLensSearch_() {
+  protected onCloseLensSearch_() {
     this.showLensUploadDialog_ = false;
   }
 
-  private onCustomizeClick_() {
+  protected onCustomizeClick_() {
     // Let side panel decide what page or section to show.
     this.selectedCustomizeDialogPage_ = null;
     this.setCustomizeChromeSidePanelVisible_(!this.showCustomize_);
@@ -644,7 +624,7 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private onWallpaperSearchClick_() {
+  protected onWallpaperSearchClick_() {
     // Close the side panel if Wallpaper Search is open.
     if (this.showCustomize_ && this.showWallpaperSearch_) {
       this.selectedCustomizeDialogPage_ = null;
@@ -664,7 +644,7 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private onVoiceSearchOverlayClose_() {
+  protected onVoiceSearchOverlayClose_() {
     this.showVoiceSearchOverlay_ = false;
   }
 
@@ -698,6 +678,12 @@ export class AppElement extends AppElementBase {
   private onThemeChange_() {
     if (this.theme_) {
       this.backgroundManager_.setBackgroundColor(this.theme_.backgroundColor);
+      this.style.setProperty(
+          '--color-new-tab-page-attribution-foreground',
+          this.rgbaOrInherit_(this.theme_.textColor));
+      this.style.setProperty(
+          '--color-new-tab-page-most-visited-foreground',
+          this.rgbaOrInherit_(this.theme_.textColor));
     }
     this.updateBackgroundImagePath_();
   }
@@ -752,24 +738,28 @@ export class AppElement extends AppElementBase {
   }
 
   private computeBackgroundColor_(): SkColor|null {
-    if (this.showBackgroundImage_) {
+    if (this.showBackgroundImage_ || !this.theme_) {
       return null;
     }
-    return this.theme_ && this.theme_.backgroundColor;
+
+    return this.theme_.backgroundColor;
   }
 
   private computeColorSourceIsBaseline(): boolean {
-    return this.theme_.isBaseline;
+    return !!this.theme_ && this.theme_.isBaseline;
   }
 
   private computeLogoColor_(): SkColor|null {
-    return this.theme_ &&
-        (this.theme_.logoColor ||
-         (this.theme_.isDark ? hexColorToSkColor('#ffffff') : null));
+    if (!this.theme_) {
+      return null;
+    }
+
+    return this.theme_.logoColor ||
+        (this.theme_.isDark ? hexColorToSkColor('#ffffff') : null);
   }
 
   private computeSingleColoredLogo_(): boolean {
-    return this.theme_ && (!!this.theme_.logoColor || this.theme_.isDark);
+    return !!this.theme_ && (!!this.theme_.logoColor || this.theme_.isDark);
   }
 
   /**
@@ -867,15 +857,15 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private onMiddleSlotPromoLoaded_() {
+  protected onMiddleSlotPromoLoaded_() {
     this.middleSlotPromoLoaded_ = true;
   }
 
-  private onModulesLoaded_() {
+  protected onModulesLoaded_() {
     this.modulesLoaded_ = true;
   }
 
-  private onCustomizeModule_() {
+  protected onCustomizeModule_() {
     this.showCustomize_ = true;
     this.selectedCustomizeDialogPage_ = CustomizeDialogPage.MODULES;
     recordCustomizeChromeOpen(NtpCustomizeChromeEntryPoint.MODULE);
@@ -940,7 +930,7 @@ export class AppElement extends AppElementBase {
     });
   }
 
-  private onWebstoreToastButtonClick_() {
+  protected onWebstoreToastButtonClick_() {
     window.location.assign(
         `https://chrome.google.com/webstore/category/collection/chrome_color_themes?hl=${
             window.navigator.language}`);
@@ -977,6 +967,23 @@ export class AppElement extends AppElementBase {
       }
     }
     recordClick(NtpElement.OTHER);
+  }
+
+  protected isThemeDark_(): boolean {
+    return !!this.theme_ && this.theme_.isDark;
+  }
+
+  protected showThemeAttribution_(): boolean {
+    return !!this.theme_?.backgroundImage?.attributionUrl;
+  }
+
+  protected onRealboxHadSecondarySideChanged_(
+      e: CustomEvent<{value: boolean}>) {
+    this.realboxHadSecondarySide = e.detail.value;
+  }
+
+  protected onModulesShownToUserChanged_(e: CustomEvent<{value: boolean}>) {
+    this.modulesShownToUser = e.detail.value;
   }
 }
 

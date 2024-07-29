@@ -33,6 +33,7 @@ all_web_component_files = [
                           ] + modules_web_component_files
 
 all_css_files = [
+                  "app.css",
                   "doodle_share_dialog.css",
                   "iframe.css",
                   "lens_form.css",

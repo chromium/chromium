@@ -125,15 +125,6 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
   const DeepQuery kWallpaperSearchButton = {"ntp-app",
                                             "#wallpaperSearchButton"};
 
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementHiddenEvent);
-  StateChange wallpaper_search_button_hidden;
-  wallpaper_search_button_hidden.type =
-      StateChange::Type::kExistsAndConditionTrue;
-  wallpaper_search_button_hidden.where = kWallpaperSearchButton;
-  wallpaper_search_button_hidden.event = kElementHiddenEvent;
-  wallpaper_search_button_hidden.test_function =
-      "(el) => el.offsetParent === null";
-
   RunTestSequence(
       // 1. Open the NTP.
       Steps(InstrumentTab(kNewTabPageElementId, 0), Do([=]() {
@@ -158,8 +149,8 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
             static_cast<int>(
                 optimization_guide::prefs::FeatureOptInState::kDisabled));
       }),
-      // 4. Ensure the wallpaper search button is hidden.
-      WaitForStateChange(kNewTabPageElementId, wallpaper_search_button_hidden),
+      // 4. Ensure the wallpaper search button is not in the DOM.
+      WaitForElementExists(kNewTabPageElementId, kWallpaperSearchButton, false),
       // 5. Turn wallpaper search setting on.
       Do([=]() {
         browser()->profile()->GetPrefs()->SetInteger(
@@ -168,8 +159,9 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
             static_cast<int>(
                 optimization_guide::prefs::FeatureOptInState::kEnabled));
       }),
-      // 6. Ensure the wallpaper search button is still hidden.
-      WaitForStateChange(kNewTabPageElementId, wallpaper_search_button_hidden));
+      // 6. Ensure the wallpaper search button is still not in the DOM.
+      WaitForElementExists(kNewTabPageElementId, kWallpaperSearchButton,
+                           false));
 }
 
 class WallpaperSearchOptimizationGuideInteractiveTest
