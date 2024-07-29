@@ -84,17 +84,10 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
  private:
   // Handlers for WebUI messages.
   void HandleToggleFakeEnrollmentAndCompleteLogin(const std::string& user,
-                                                  const std::string& gaia_id,
-                                                  const std::string& password,
-                                                  bool using_saml,
                                                   int license_type);
   void HandleClose(const std::string& reason);
-  void HandleCompleteLogin(const std::string& user,
-                           const std::string& gaia_id,
-                           const std::string& password,
-                           bool using_saml,
-                           int license_type);
-  void CompleteAuthWithCookies(login::OnlineSigninArtifacts,
+  void HandleCompleteLogin(const std::string& user, int license_type);
+  void CompleteAuthWithCookies(const std::string& user,
                                int license_type,
                                login::GaiaCookiesData cookies);
   void HandleIdentifierEntered(const std::string& email);

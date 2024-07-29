@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/tpm_manager/fake_tpm_manager_client.h"
@@ -51,10 +50,6 @@ constexpr char kTestEnrollmentToken[] = "test-enrollment-token";
 
 const test::UIPath kEnterpriseEnrollmentDialogue = {kEnterpriseEnrollment,
                                                     "step-signin"};
-
-constexpr char kTestUserEmail[] = "testuser@test.com";
-constexpr char kTestUserGaiaId[] = "test_user_gaia_id";
-constexpr char kTestUserPassword[] = "test_user_password";
 
 const test::UIPath kEnterpriseEnrollmentSkipDialogue = {
     kEnterpriseEnrollment, "skipConfirmationDialog"};
@@ -111,16 +106,6 @@ class EnrollmentScreenTest : public OobeBaseTest {
         WizardController::default_controller()->screen_manager());
     EXPECT_TRUE(enrollment_screen);
     return enrollment_screen;
-  }
-
-  login::OnlineSigninArtifacts CreateFakeSigninArtifacts() {
-    login::OnlineSigninArtifacts signin_artifacts;
-    signin_artifacts.email = kTestUserEmail;
-    signin_artifacts.gaia_id = kTestUserGaiaId;
-    signin_artifacts.password = kTestUserPassword;
-    signin_artifacts.using_saml = false;
-
-    return signin_artifacts;
   }
 
   policy::EnrollmentConfig CreateConfig(
@@ -234,8 +219,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   enrollment_helper_.SetupClearAuth();
 
   enrollment_screen()->OnLoginDone(
-      CreateFakeSigninArtifacts(),
-      static_cast<int>(policy::LicenseType::kEnterprise),
+      "testuser@test.com", static_cast<int>(policy::LicenseType::kEnterprise),
       test::EnrollmentHelperMixin::kTestAuthCode);
 
   enrollment_ui_.WaitForScreenExit();
@@ -347,8 +331,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   enrollment_helper_.SetupClearAuth();
 
   enrollment_screen()->OnLoginDone(
-      CreateFakeSigninArtifacts(),
-      static_cast<int>(policy::LicenseType::kEnterprise),
+      "testuser@test.com", static_cast<int>(policy::LicenseType::kEnterprise),
       test::EnrollmentHelperMixin::kTestAuthCode);
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
@@ -492,8 +475,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, ManualEnrollmentSuccess) {
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
 
   enrollment_screen()->OnLoginDone(
-      CreateFakeSigninArtifacts(),
-      static_cast<int>(policy::LicenseType::kEnterprise),
+      "testuser@test.com", static_cast<int>(policy::LicenseType::kEnterprise),
       test::EnrollmentHelperMixin::kTestAuthCode);
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
@@ -614,8 +596,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   enrollment_helper_.SetupClearAuth();
 
   enrollment_screen()->OnLoginDone(
-      CreateFakeSigninArtifacts(),
-      static_cast<int>(policy::LicenseType::kEnterprise),
+      "testuser@test.com", static_cast<int>(policy::LicenseType::kEnterprise),
       test::EnrollmentHelperMixin::kTestAuthCode);
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
@@ -726,8 +707,7 @@ IN_PROC_BROWSER_TEST_P(ManualEnrollmentErrorScreenTest,
   test::OobeJS().ExpectHasNoAttribute("licenseType", {"enterprise-enrollment"});
 
   enrollment_screen()->OnLoginDone(
-      CreateFakeSigninArtifacts(),
-      static_cast<int>(policy::LicenseType::kEnterprise),
+      "testuser@test.com", static_cast<int>(policy::LicenseType::kEnterprise),
       test::EnrollmentHelperMixin::kTestAuthCode);
 
   // Expect that the screen ends up on error screen.

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
 
 #include <algorithm>
-#include <memory>
 #include <utility>
 #include <vector>
 
@@ -600,9 +599,6 @@ void EnrollmentScreenHandler::ShowSkipConfirmationDialog() {
 // EnrollmentScreenHandler, private -----------------------------
 void EnrollmentScreenHandler::HandleToggleFakeEnrollmentAndCompleteLogin(
     const std::string& user,
-    const std::string& gaia_id,
-    const std::string& password,
-    bool using_saml,
     int license_type) {
   // This method should only be used on test images.
   base::SysInfo::CrashIfChromeOSNonTestImage();
@@ -614,7 +610,7 @@ void EnrollmentScreenHandler::HandleToggleFakeEnrollmentAndCompleteLogin(
   WizardController::SkipEnrollmentPromptsForTesting();
   use_fake_login_for_testing_ = true;
 
-  HandleCompleteLogin(user, gaia_id, password, using_saml, license_type);
+  HandleCompleteLogin(user, license_type);
 }
 
 void EnrollmentScreenHandler::HandleClose(const std::string& reason) {
@@ -629,9 +625,6 @@ void EnrollmentScreenHandler::HandleClose(const std::string& reason) {
 }
 
 void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
-                                                  const std::string& gaia_id,
-                                                  const std::string& password,
-                                                  bool using_saml,
                                                   int license_type) {
   // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
@@ -648,12 +641,6 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
   DCHECK_EQ(signin_partition_manager->GetCurrentStoragePartitionName(),
             signin_partition_name_);
 
-  login::OnlineSigninArtifacts signin_artifacts;
-  signin_artifacts.email = user;
-  signin_artifacts.gaia_id = gaia_id;
-  signin_artifacts.password = password;
-  signin_artifacts.using_saml = using_saml;
-
   if (!gaia_cookie_retriever_) {
     gaia_cookie_retriever_ = std::make_unique<GaiaCookieRetriever>(
         signin_partition_name_, signin_partition_manager,
@@ -664,17 +651,15 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
 
   gaia_cookie_retriever_->RetrieveCookies(
       base::BindOnce(&EnrollmentScreenHandler::CompleteAuthWithCookies,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(signin_artifacts), license_type));
+                     weak_ptr_factory_.GetWeakPtr(), user, license_type));
 }
 
 void EnrollmentScreenHandler::CompleteAuthWithCookies(
-    login::OnlineSigninArtifacts signin_artifacts,
+    const std::string& user,
     int license_type,
     login::GaiaCookiesData cookies) {
   DCHECK(controller_);
-  signin_artifacts.email = gaia::SanitizeEmail(signin_artifacts.email);
-  controller_->OnLoginDone(std::move(signin_artifacts), license_type,
+  controller_->OnLoginDone(gaia::SanitizeEmail(user), license_type,
                            cookies.auth_code);
 }
 

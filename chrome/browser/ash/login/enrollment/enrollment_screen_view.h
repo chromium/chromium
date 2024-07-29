@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 
 class GoogleServiceAuthError;
 
@@ -30,7 +29,7 @@ class EnrollmentScreenView {
    public:
     virtual ~Controller() = default;
 
-    virtual void OnLoginDone(login::OnlineSigninArtifacts signin_artifacts,
+    virtual void OnLoginDone(const std::string& user,
                              int license_type,
                              const std::string& auth_code) = 0;
     virtual void OnRetry() = 0;
