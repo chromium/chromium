@@ -40,6 +40,10 @@ group("api_implementations") {
     public_deps +=
         [ "//chrome/browser/chromeos/extensions/smart_card_provider_private" ]
   }
+
+  if (is_chromeos_ash) {
+    public_deps += [ "//chrome/browser/extensions/api/crash_report_private" ]
+  }
 }
 
 # The step necessary to generate the code to register the corresponding

@@ -1189,8 +1189,6 @@ source_set("extensions") {
 
   if (is_chromeos_ash) {
     sources += [
-      "api/crash_report_private/crash_report_private_api.cc",
-      "api/crash_report_private/crash_report_private_api.h",
       "api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.cc",
       "api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.h",
       "api/file_handlers/non_native_file_system_delegate_chromeos.cc",
