@@ -990,6 +990,11 @@
     ]
   },
   "android_arm64-builder-perf-pgo": {},
+  "android_arm64_high_end-builder-perf": {
+    "additional_compile_targets": [
+      "trichrome_google_64_32_minimal_apks"
+    ]
+  },
   "chromecast-linux-builder-perf": {
     "additional_compile_targets": [
       "cast_shell"

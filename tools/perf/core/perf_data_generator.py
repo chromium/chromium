@@ -422,6 +422,10 @@ BUILDERS = {
         },
         'perf_trigger': False,
     },
+    'android_arm64_high_end-builder-perf': {
+        'additional_compile_targets': ['trichrome_google_64_32_minimal_apks'],
+        'pinpoint_additional_compile_targets': [],
+    },
     'linux-builder-perf': {
         'additional_compile_targets': [
             'chromedriver_group',
