@@ -1953,6 +1953,11 @@ config("default_warnings") {
 
         # TODO(crbug.com/344680447): Fix and re-enable.
         cflags_cc += [ "-Wno-missing-template-arg-list-after-template-kw" ]
+
+        if (llvm_force_head_revision) {
+          # TODO(crbug.com/356172342): Fix and re-enable.
+          cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
+        }
       }
     }
 
