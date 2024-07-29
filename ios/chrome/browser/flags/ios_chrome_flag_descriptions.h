@@ -461,10 +461,6 @@ extern const char kHttpsUpgradesDescription[];
 extern const char kIdentityDiscAccountMenuName[];
 extern const char kIdentityDiscAccountMenuDescription[];
 
-// Title and description for the flag to enable identity confirmation snackbar.
-extern const char kIdentityConfirmationSnackbarName[];
-extern const char kIdentityConfirmationSnackbarDescription[];
-
 // Title and description for the flag that updates the inactive tab from a
 // header to a button.
 extern const char kInactiveTabButtonRefactoringName[];
