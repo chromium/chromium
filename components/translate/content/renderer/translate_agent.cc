@@ -615,19 +615,16 @@ void TranslateAgent::NotifyBrowserTranslationFailed(TranslateErrors error) {
 
 const mojo::Remote<mojom::ContentTranslateDriver>&
 TranslateAgent::GetTranslateHandler() {
-  if (!translate_handler_) {
-    render_frame()->GetBrowserInterfaceBroker().GetInterface(
-        translate_handler_.BindNewPipeAndPassReceiver());
-    return translate_handler_;
+  if (translate_handler_) {
+    if (translate_handler_.is_connected()) {
+      return translate_handler_;
+    }
+    // The translate handler can become unbound or disconnected in testing
+    // so this catches that case and reconnects so `this` can connect to
+    // the driver in the browser.
+    translate_handler_.reset();
   }
 
-  // The translate handler can become unbound or disconnected in testing
-  // so this catches that case and reconnects so `this` can connect to
-  // the driver in the browser.
-  if (translate_handler_.is_bound() && translate_handler_.is_connected())
-    return translate_handler_;
-
-  translate_handler_.reset();
   render_frame()->GetBrowserInterfaceBroker().GetInterface(
       translate_handler_.BindNewPipeAndPassReceiver());
   return translate_handler_;
