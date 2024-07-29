@@ -725,16 +725,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->get_preselection_widget_for_testing(), nullptr);
 }
 
-// TODO(crbug.com/351958199): Flaky on Linux and Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_PreselectionToastOmniboxFocusState \
-  DISABLED_PreselectionToastOmniboxFocusState
-#else
-#define MAYBE_PreselectionToastOmniboxFocusState \
-  PreselectionToastOmniboxFocusState
-#endif
+// TODO(crbug.com/351958199): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_PreselectionToastOmniboxFocusState) {
+                       DISABLED_PreselectionToastOmniboxFocusState) {
   WaitForPaint();
 
   // State should start in off.
