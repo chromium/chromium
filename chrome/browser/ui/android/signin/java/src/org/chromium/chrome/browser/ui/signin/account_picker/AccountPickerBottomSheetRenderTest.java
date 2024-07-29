@@ -35,10 +35,10 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -389,7 +389,7 @@ public class AccountPickerBottomSheetRenderTest {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndCheckSigninInProgressView(
-                "signin_in_progress_sheet_replace_sync_with_signin_promos_enabled");
+                "signin_in_progress_sheet_after_collapsed_sheet");
     }
 
     @Test
@@ -405,6 +405,22 @@ public class AccountPickerBottomSheetRenderTest {
         clickContinueButtonAndWaitForErrorView();
         mAccountPickerDelegate.setSwitchToTryAgainView(false);
         clickContinueButtonAndCheckSigninInProgressView("signin_in_progress_sheet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testTryAgainButtonOnSignInGeneralErrorSheet_replaceSyncWithSigninPromosEnabled(
+            boolean nightModeEnabled) throws IOException {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        mAccountPickerDelegate.setSwitchToTryAgainView(true);
+        buildAndShowCollapsedBottomSheet();
+        clickContinueButtonAndWaitForErrorView();
+        mAccountPickerDelegate.setSwitchToTryAgainView(false);
+        clickContinueButtonAndCheckSigninInProgressView(
+                "signin_in_progress_sheet_after_error_sheet");
     }
 
     @Test
@@ -547,6 +563,11 @@ public class AccountPickerBottomSheetRenderTest {
                 });
         CriteriaHelper.pollUiThread(
                 bottomSheetView.findViewById(R.id.account_picker_signin_spinner_view)::isShown);
+
+        // Wait for the end of layout updates, since the progress view height can change after the
+        // view is shown.
+        ViewUtils.waitForStableView(bottomSheetView);
+
         // Currently the ProgressBar animation cannot be disabled with animations disabled.
         // Hide the ProgressBar manually here to enable checks of other elements on the screen.
         // TODO(crbug.com/40144184): Delete this line.
@@ -556,7 +577,15 @@ public class AccountPickerBottomSheetRenderTest {
                             .findViewById(R.id.account_picker_signin_spinner_view)
                             .setVisibility(View.INVISIBLE);
                 });
-        mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(), testId);
+
+        // To cover the sign-in in progress view's height in test, the container is used instead of
+        // the bottom sheet content view to ensure the bottom sheet has a colored background with
+        // correct height in the screenshot.
+        // This is needed since the sign-in in progress view's height is defined by the previously
+        // shown view's height, and can change from one test to another.
+        View bottomSheetContainer =
+                mActivityTestRule.getActivity().findViewById(R.id.sheet_container);
+        mRenderTestRule.render(bottomSheetContainer, testId);
     }
 
     private void expandBottomSheet() {
