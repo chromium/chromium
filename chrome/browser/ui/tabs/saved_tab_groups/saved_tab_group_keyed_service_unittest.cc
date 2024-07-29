@@ -1072,16 +1072,16 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, SaveGroupIsPinned) {
       browser->tab_strip_model()->AddToNewGroup({1});
   const tab_groups::TabGroupId tab_group_id_3 =
       browser->tab_strip_model()->AddToNewGroup({2});
-  service()->SaveGroup(tab_group_id_1);
-  service()->SaveGroup(tab_group_id_2);
+  service()->SaveGroup(tab_group_id_1, /*is_pinned=*/true);
+  service()->SaveGroup(tab_group_id_2, /*is_pinned=*/true);
   service()->SaveGroup(tab_group_id_3, /*is_pinned=*/true);
 
   auto saved_tab_groups = service()->model()->saved_tab_groups();
 
-  // Tab Group 3 is placed in front of the others.
+  // Pinning reverses the saving order.
   ASSERT_EQ(tab_group_id_3, saved_tab_groups[0].local_group_id());
-  ASSERT_EQ(tab_group_id_1, saved_tab_groups[1].local_group_id());
-  ASSERT_EQ(tab_group_id_2, saved_tab_groups[2].local_group_id());
+  ASSERT_EQ(tab_group_id_2, saved_tab_groups[1].local_group_id());
+  ASSERT_EQ(tab_group_id_1, saved_tab_groups[2].local_group_id());
 }
 
 // Tests TabGroupsSaveV2 specific interactions. In this mode, all tab groups are

@@ -167,12 +167,10 @@ class TabGroupSyncServiceTest : public testing::Test {
         test::CreateSavedTabGroupTab("Aramis", u"One For All", id_3,
                                      /*position=*/2)};
 
-    group_1_ = SavedTabGroup(title_1, color_1, group_1_tabs, std::nullopt, id_1,
+    group_1_ = SavedTabGroup(title_1, color_1, group_1_tabs, 0, id_1,
                              local_group_id_1_);
-    group_2_ =
-        SavedTabGroup(title_2, color_2, group_2_tabs, std::nullopt, id_2);
-    group_3_ =
-        SavedTabGroup(title_3, color_3, group_3_tabs, std::nullopt, id_3);
+    group_2_ = SavedTabGroup(title_2, color_2, group_2_tabs, 1, id_2);
+    group_3_ = SavedTabGroup(title_3, color_3, group_3_tabs, 2, id_3);
 
     group_1_.SetCreatorCacheGuid(kTestCacheGuid);
     group_2_.SetCreatorCacheGuid(kTestCacheGuid);
