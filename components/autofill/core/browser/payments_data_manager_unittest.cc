@@ -661,6 +661,8 @@ TEST_F(PaymentsDataManagerTest, UpdateLocalCvc) {
 
 // Test that verify add, update, remove server cvc function working as expected.
 TEST_F(PaymentsDataManagerTest, ServerCvc) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
   const std::u16string kCvc = u"111";
   CreditCard credit_card = test::GetMaskedServerCard();
   SetServerCards({credit_card});
@@ -694,6 +696,8 @@ TEST_F(PaymentsDataManagerTest, ServerCvc) {
 
 // Test that verify clear server cvc function working as expected.
 TEST_F(PaymentsDataManagerTest, ClearServerCvc) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
   // Add a server card cvc.
   const std::u16string kCvc = u"111";
   CreditCard credit_card = test::GetMaskedServerCard();

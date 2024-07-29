@@ -861,94 +861,118 @@ TEST_F(PaymentsAutofillTableTest, RemoveOriginURLsModifiedBetween) {
 }
 
 TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
-  std::vector<CreditCard> inputs;
-  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
-  inputs[0].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Paul F. Tompkins");
-  inputs[0].SetRawInfo(CREDIT_CARD_EXP_MONTH, u"1");
-  inputs[0].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2020");
-  inputs[0].SetRawInfo(CREDIT_CARD_NUMBER, u"4444");
-  inputs[0].SetNetworkForMaskedCard(kVisaCard);
-  inputs[0].set_card_issuer(CreditCard::Issuer::kExternalIssuer);
-  inputs[0].set_instrument_id(321);
-  inputs[0].set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::kUnenrolled);
-  inputs[0].set_virtual_card_enrollment_type(
-      CreditCard::VirtualCardEnrollmentType::kIssuer);
-  inputs[0].set_product_description(u"Fake description");
-  inputs[0].set_cvc(u"000");
+  for (bool is_cvc_storage_flag_enabled : {true, false}) {
+    base::test::ScopedFeatureList features;
+    if (is_cvc_storage_flag_enabled) {
+      features.InitAndEnableFeature(
+          features::kAutofillEnableCvcStorageAndFilling);
+    } else {
+      features.InitAndDisableFeature(
+          features::kAutofillEnableCvcStorageAndFilling);
+    }
 
-  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b456");
-  inputs[1].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Rick Roman");
-  inputs[1].SetRawInfo(CREDIT_CARD_EXP_MONTH, u"12");
-  inputs[1].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"1997");
-  inputs[1].SetRawInfo(CREDIT_CARD_NUMBER, u"1111");
-  inputs[1].SetNetworkForMaskedCard(kVisaCard);
-  std::u16string nickname = u"Grocery card";
-  inputs[1].SetNickname(nickname);
-  inputs[1].set_card_issuer(CreditCard::Issuer::kExternalIssuer);
-  inputs[1].set_issuer_id("amex");
-  inputs[1].set_instrument_id(123);
-  inputs[1].set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  inputs[1].set_virtual_card_enrollment_type(
-      CreditCard::VirtualCardEnrollmentType::kNetwork);
-  inputs[1].set_card_art_url(GURL("https://www.example.com"));
-  inputs[1].set_product_terms_url(GURL("https://www.example_term.com"));
-  inputs[1].set_cvc(u"111");
+    std::vector<CreditCard> inputs;
+    inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
+    inputs[0].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Paul F. Tompkins");
+    inputs[0].SetRawInfo(CREDIT_CARD_EXP_MONTH, u"1");
+    inputs[0].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2020");
+    inputs[0].SetRawInfo(CREDIT_CARD_NUMBER, u"4444");
+    inputs[0].SetNetworkForMaskedCard(kVisaCard);
+    inputs[0].set_card_issuer(CreditCard::Issuer::kExternalIssuer);
+    inputs[0].set_instrument_id(321);
+    inputs[0].set_virtual_card_enrollment_state(
+        CreditCard::VirtualCardEnrollmentState::kUnenrolled);
+    inputs[0].set_virtual_card_enrollment_type(
+        CreditCard::VirtualCardEnrollmentType::kIssuer);
+    inputs[0].set_product_description(u"Fake description");
+    inputs[0].set_cvc(u"000");
 
-  test::SetServerCreditCards(table_.get(), inputs);
+    inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b456");
+    inputs[1].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Rick Roman");
+    inputs[1].SetRawInfo(CREDIT_CARD_EXP_MONTH, u"12");
+    inputs[1].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"1997");
+    inputs[1].SetRawInfo(CREDIT_CARD_NUMBER, u"1111");
+    inputs[1].SetNetworkForMaskedCard(kVisaCard);
+    std::u16string nickname = u"Grocery card";
+    inputs[1].SetNickname(nickname);
+    inputs[1].set_card_issuer(CreditCard::Issuer::kExternalIssuer);
+    inputs[1].set_issuer_id("amex");
+    inputs[1].set_instrument_id(123);
+    inputs[1].set_virtual_card_enrollment_state(
+        CreditCard::VirtualCardEnrollmentState::kEnrolled);
+    inputs[1].set_virtual_card_enrollment_type(
+        CreditCard::VirtualCardEnrollmentType::kNetwork);
+    inputs[1].set_card_art_url(GURL("https://www.example.com"));
+    inputs[1].set_product_terms_url(GURL("https://www.example_term.com"));
+    inputs[1].set_cvc(u"111");
 
-  std::vector<std::unique_ptr<CreditCard>> outputs;
-  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
-  ASSERT_EQ(inputs.size(), outputs.size());
+    test::SetServerCreditCards(table_.get(), inputs);
 
-  // Ordering isn't guaranteed, so fix the ordering if it's backwards.
-  if (outputs[1]->server_id() == inputs[0].server_id())
-    std::swap(outputs[0], outputs[1]);
+    std::vector<std::unique_ptr<CreditCard>> outputs;
+    ASSERT_TRUE(table_->GetServerCreditCards(outputs));
+    ASSERT_EQ(inputs.size(), outputs.size());
 
-  // GUIDs for server cards are dynamically generated so will be different
-  // after reading from the DB. Check they're valid, but otherwise don't count
-  // them in the comparison.
-  inputs[0].set_guid(std::string());
-  inputs[1].set_guid(std::string());
-  outputs[0]->set_guid(std::string());
-  outputs[1]->set_guid(std::string());
+    // Ordering isn't guaranteed, so fix the ordering if it's backwards.
+    if (outputs[1]->server_id() == inputs[0].server_id()) {
+      std::swap(outputs[0], outputs[1]);
+    }
 
-  EXPECT_EQ(inputs[0], *outputs[0]);
-  EXPECT_EQ(inputs[1], *outputs[1]);
+    // GUIDs for server cards are dynamically generated so will be different
+    // after reading from the DB. Check they're valid, but otherwise don't count
+    // them in the comparison.
+    inputs[0].set_guid(std::string());
+    inputs[1].set_guid(std::string());
+    outputs[0]->set_guid(std::string());
+    outputs[1]->set_guid(std::string());
 
-  EXPECT_TRUE(outputs[0]->nickname().empty());
-  EXPECT_EQ(nickname, outputs[1]->nickname());
+    if (!is_cvc_storage_flag_enabled) {
+      // Verify that CVC values are not present on the output entries and then
+      // clear the same from the input entries to allow the comparison between
+      // input and output.
+      EXPECT_TRUE(outputs[0]->cvc().empty());
+      EXPECT_TRUE(outputs[1]->cvc().empty());
 
-  EXPECT_EQ(CreditCard::Issuer::kExternalIssuer, outputs[0]->card_issuer());
-  EXPECT_EQ(CreditCard::Issuer::kExternalIssuer, outputs[1]->card_issuer());
-  EXPECT_EQ("", outputs[0]->issuer_id());
-  EXPECT_EQ("amex", outputs[1]->issuer_id());
+      inputs[0].clear_cvc();
+      inputs[1].clear_cvc();
+    }
+    EXPECT_EQ(inputs[0], *outputs[0]);
+    EXPECT_EQ(inputs[1], *outputs[1]);
 
-  EXPECT_EQ(321, outputs[0]->instrument_id());
-  EXPECT_EQ(123, outputs[1]->instrument_id());
+    EXPECT_TRUE(outputs[0]->nickname().empty());
+    EXPECT_EQ(nickname, outputs[1]->nickname());
 
-  EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::kUnenrolled,
-            outputs[0]->virtual_card_enrollment_state());
-  EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::kEnrolled,
-            outputs[1]->virtual_card_enrollment_state());
+    EXPECT_EQ(CreditCard::Issuer::kExternalIssuer, outputs[0]->card_issuer());
+    EXPECT_EQ(CreditCard::Issuer::kExternalIssuer, outputs[1]->card_issuer());
+    EXPECT_EQ("", outputs[0]->issuer_id());
+    EXPECT_EQ("amex", outputs[1]->issuer_id());
 
-  EXPECT_EQ(CreditCard::VirtualCardEnrollmentType::kIssuer,
-            outputs[0]->virtual_card_enrollment_type());
-  EXPECT_EQ(CreditCard::VirtualCardEnrollmentType::kNetwork,
-            outputs[1]->virtual_card_enrollment_type());
+    EXPECT_EQ(321, outputs[0]->instrument_id());
+    EXPECT_EQ(123, outputs[1]->instrument_id());
 
-  EXPECT_EQ(GURL(), outputs[0]->card_art_url());
-  EXPECT_EQ(GURL("https://www.example.com"), outputs[1]->card_art_url());
+    EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::kUnenrolled,
+              outputs[0]->virtual_card_enrollment_state());
+    EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::kEnrolled,
+              outputs[1]->virtual_card_enrollment_state());
 
-  EXPECT_EQ(GURL(), outputs[0]->product_terms_url());
-  EXPECT_EQ(GURL("https://www.example_term.com"),
-            outputs[1]->product_terms_url());
+    EXPECT_EQ(CreditCard::VirtualCardEnrollmentType::kIssuer,
+              outputs[0]->virtual_card_enrollment_type());
+    EXPECT_EQ(CreditCard::VirtualCardEnrollmentType::kNetwork,
+              outputs[1]->virtual_card_enrollment_type());
 
-  EXPECT_EQ(u"Fake description", outputs[0]->product_description());
+    EXPECT_EQ(GURL(), outputs[0]->card_art_url());
+    EXPECT_EQ(GURL("https://www.example.com"), outputs[1]->card_art_url());
 
-  EXPECT_EQ(inputs[0].cvc(), outputs[0]->cvc());
-  EXPECT_EQ(inputs[1].cvc(), outputs[1]->cvc());
+    EXPECT_EQ(GURL(), outputs[0]->product_terms_url());
+    EXPECT_EQ(GURL("https://www.example_term.com"),
+              outputs[1]->product_terms_url());
+
+    EXPECT_EQ(u"Fake description", outputs[0]->product_description());
+
+    if (is_cvc_storage_flag_enabled) {
+      EXPECT_EQ(inputs[0].cvc(), outputs[0]->cvc());
+      EXPECT_EQ(inputs[1].cvc(), outputs[1]->cvc());
+    }
+  }
 }
 
 TEST_F(PaymentsAutofillTableTest, SetGetRemoveServerCardMetadata) {
