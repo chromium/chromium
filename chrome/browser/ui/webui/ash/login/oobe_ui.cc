@@ -613,9 +613,7 @@ void OobeUI::ConfigureOobeDisplay() {
     AddScreenHandler(std::make_unique<DrivePinningScreenHandler>());
   }
 
-  if (features::IsOobePerksDiscoveryEnabled()) {
-    AddScreenHandler(std::make_unique<PerksDiscoveryScreenHandler>());
-  }
+  AddScreenHandler(std::make_unique<PerksDiscoveryScreenHandler>());
 
   AddScreenHandler(std::make_unique<LocalStateErrorScreenHandler>());
 

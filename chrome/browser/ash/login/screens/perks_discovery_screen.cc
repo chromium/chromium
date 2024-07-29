@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/perks_discovery_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -115,6 +116,11 @@ bool PerksDiscoveryScreen::MaybeSkip(WizardContext& context) {
   bool is_managed_account = profile->GetProfilePolicyConnector()->IsManaged();
   bool is_child_account = user_manager->IsLoggedInAsChildUser();
   if (is_managed_account || is_child_account) {
+    exit_callback_.Run(Result::kNotApplicable);
+    return true;
+  }
+
+  if (!features::IsOobePerksDiscoveryEnabled()) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
