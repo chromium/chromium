@@ -7128,7 +7128,7 @@
   {
     "name": "pdf-use-skia-renderer",
     "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 129
+    "expiry_milestone": 133
   },
   {
     "name": "pdf-win-use-font-proxy",
