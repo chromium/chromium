@@ -20,7 +20,7 @@ import {getHtml} from './tab_organization_results.html.js';
 import type {TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
 
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;
-const NON_SCROLLABLE_VERTICAL_SPACING: number = 120;
+const NON_SCROLLABLE_VERTICAL_SPACING: number = 212;
 
 export interface TabOrganizationResultsElement {
   $: {
