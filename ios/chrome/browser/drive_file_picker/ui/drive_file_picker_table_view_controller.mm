@@ -61,6 +61,8 @@ UILabel* CreateGoogleDriveTitleLabel() {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  [self configureToolbar];
+
   // If this is the root of the navigation controller, add a "Cancel" button and
   // the branded google drive title.
   if (self == self.navigationController.viewControllers.firstObject) {
@@ -96,6 +98,8 @@ UILabel* CreateGoogleDriveTitleLabel() {
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   self.tableView.tableHeaderView =
       [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
+
+  self.navigationController.toolbarHidden = NO;
   // TODO(crbug.com/344812548): Add a data source to the table view.
 }
 
@@ -115,6 +119,50 @@ UILabel* CreateGoogleDriveTitleLabel() {
 
 - (void)confirmSelection {
   // TODO(crbug.com/344812396): Submit the file selection.
+}
+
+#pragma mark - Private
+
+// Configures the toolbar with 3 buttons, filterButton <---->
+// AccountButton(where the title is the user's email) <----> sortButton(which
+// should not be enabled for the root of the navigation controller)
+- (void)configureToolbar {
+  UIImage* filterIcon = DefaultSymbolTemplateWithPointSize(
+      kFilterSymbol, kSymbolAccessoryPointSize);
+
+  // TODO(crbug.com/344812548): Add the action of the filter button.
+  UIBarButtonItem* filterButton =
+      [[UIBarButtonItem alloc] initWithImage:filterIcon
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:nil];
+  filterButton.enabled = YES;
+
+  UIImage* sortIcon = DefaultSymbolTemplateWithPointSize(
+      kSortSymbol, kSymbolAccessoryPointSize);
+
+  // TODO(crbug.com/344812548): Add the action of the sort button.
+  UIBarButtonItem* sortButton =
+      [[UIBarButtonItem alloc] initWithImage:sortIcon
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:nil];
+  sortButton.enabled =
+      self != self.navigationController.viewControllers.firstObject;
+
+  // TODO(crbug.com/344812548): Add the menu and the title of the account button
+  // based of the current identity.
+  UIBarButtonItem* accountButton =
+      [[UIBarButtonItem alloc] initWithTitle:@"dummyEmail@gmail.com" menu:nil];
+
+  UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                           target:nil
+                           action:nil];
+  [self setToolbarItems:@[
+    filterButton, spaceButton, accountButton, spaceButton, sortButton
+  ]
+               animated:NO];
 }
 
 @end

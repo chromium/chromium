@@ -249,6 +249,7 @@ extern NSString* const kTurnUpRightDiamondFillSymbol;
 extern NSString* const kPencilSymbol;
 extern NSString* const kMagicStackSymbol;
 extern NSString* const kDiscoverFeedSymbol;
+extern NSString* const kFilterSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
