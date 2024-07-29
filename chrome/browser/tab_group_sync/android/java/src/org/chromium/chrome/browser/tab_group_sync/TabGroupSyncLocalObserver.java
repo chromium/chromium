@@ -280,7 +280,7 @@ public final class TabGroupSyncLocalObserver {
 
     private SavedTabGroupTab getSavedTab(SavedTabGroup savedGroup, int tabId) {
         for (SavedTabGroupTab savedTab : savedGroup.savedTabs) {
-            if (savedTab.localId == tabId) return savedTab;
+            if (savedTab.localId != null && savedTab.localId == tabId) return savedTab;
         }
         return null;
     }
