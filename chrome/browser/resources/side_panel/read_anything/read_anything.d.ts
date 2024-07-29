@@ -318,6 +318,12 @@ declare namespace chrome {
     // for text associated with these nodes.
     function getCurrentText(): number[];
 
+    // Begins processing the speech segments on the current page to be used by
+    // Read Aloud. This will split the speech into segments and process
+    // words to be used by word highlighting. This allows text to be traversed
+    // more quickly after speech begins.
+    function preprocessTextForSpeech(): void;
+
     // Increments the processed_granularity_index_ in ReadAnythingAppModel,
     // effectively updating ReadAloud's state of the current granularity to
     // refer to the next granularity.

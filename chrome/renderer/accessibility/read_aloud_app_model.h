@@ -78,6 +78,12 @@ class ReadAloudAppModel {
       bool is_docs,
       const std::set<ui::AXNodeID>* current_nodes);
 
+  // Asynchronously preprocess the text on the current page that will be
+  // used for Read Aloud.
+  void PreprocessTextForSpeech(bool is_pdf,
+                               bool is_docs,
+                               const std::set<ui::AXNodeID>* current_nodes);
+
   // Increments the processed_granularity_index_, updating ReadAloud's state of
   // the current granularity to refer to the next granularity. The current
   // behavior allows the client to increment past the end of the page's content.

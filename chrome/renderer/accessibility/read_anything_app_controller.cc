@@ -912,6 +912,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getCurrentTextEndIndex",
                  &ReadAnythingAppController::GetCurrentTextEndIndex)
       .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
+      .SetMethod("preprocessTextForSpeech",
+                 &ReadAnythingAppController::PreprocessTextForSpeech)
       .SetMethod("shouldShowUi", &ReadAnythingAppController::ShouldShowUI)
       .SetMethod("onSpeechPlayingStateChanged",
                  &ReadAnythingAppController::OnSpeechPlayingStateChanged)
@@ -1699,6 +1701,14 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {
                                                : &model_.selection_node_ids();
   return read_aloud_model_.GetCurrentText(model_.is_pdf(), model_.IsDocs(),
                                           node_ids);
+}
+
+void ReadAnythingAppController::PreprocessTextForSpeech() {
+  const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
+                                               ? &model_.display_node_ids()
+                                               : &model_.selection_node_ids();
+  read_aloud_model_.PreprocessTextForSpeech(model_.is_pdf(), model_.IsDocs(),
+                                            node_ids);
 }
 
 void ReadAnythingAppController::MovePositionToNextGranularity() {

@@ -1502,7 +1502,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         isSpeechTreeInitialized: true,
         hasSpeechBeenTriggered: this.speechPlayingState.hasSpeechBeenTriggered,
       };
+
+      this.preprocessTextForSpeech();
     }
+  }
+
+  async preprocessTextForSpeech() {
+    chrome.readingMode.preprocessTextForSpeech();
   }
 
   private getSelectedIds(): {

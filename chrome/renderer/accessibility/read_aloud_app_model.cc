@@ -90,6 +90,19 @@ std::vector<ui::AXNodeID> ReadAloudAppModel::GetCurrentText(
       .node_ids;
 }
 
+void ReadAloudAppModel::PreprocessTextForSpeech(
+    bool is_pdf,
+    bool is_docs,
+    const std::set<ui::AXNodeID>* current_nodes) {
+  a11y::ReadAloudCurrentGranularity current_granularity =
+      GetNextNodes(is_pdf, is_docs, current_nodes);
+
+  while (current_granularity.node_ids.size() > 0) {
+    processed_granularities_on_current_page_.push_back(current_granularity);
+    current_granularity = GetNextNodes(is_pdf, is_docs, current_nodes);
+  }
+}
+
 // TODO(crbug.com/40927698): Update to use AXRange to better handle multiple
 // nodes. This may require updating GetText in ax_range.h to return AXNodeIds.
 // AXRangeType#ExpandToEnclosingTextBoundary may also be useful.

@@ -249,6 +249,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   std::vector<ui::AXNodeID> GetCurrentText() {
     return controller_->GetCurrentText();
   }
+
+  void PreprocessTextForSpeech() { controller_->PreprocessTextForSpeech(); }
   void MovePositionToNextGranularity() {
     return controller_->MovePositionToNextGranularity();
   }
@@ -2767,6 +2769,182 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_ReturnsExpectedNodes) {
   EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
 
   // Move to the last node
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence3.length());
+
+  // Attempt to move to another node.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       PreprocessNodes_DoesNotImpactCurrentNodes) {
+  std::u16string sentence1 = u"Life was a chore. ";
+  std::u16string sentence2 = u"So she set sail. ";
+  std::u16string sentence3 = u"Fifteen twenty-two, came straight to the UK. ";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+  PreprocessTextForSpeech();
+
+  std::vector<ui::AXNodeID> next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  // The returned id should be the next node id, 2
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+  // The returned int should be the beginning of the node's text.
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  // The returned int should be equivalent to the text in the node.
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+
+  // Move to the next node
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  // Move to the last node
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence3.length());
+
+  // Move backwards
+  next_node_ids = MoveToPreviousGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  // Move to the last node again.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence3.length());
+
+  // Attempt to move to another node.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       PreprocessNodes_CalledMultipleTimes_DoesNotImpactCurrentNodes) {
+  std::u16string sentence1 = u"Keep a grip and take a deep breath. ";
+  std::u16string sentence2 = u"And soon we'll know what's what. ";
+  std::u16string sentence3 =
+      u"Put on a show, rewards will flow, and we'll go from there. ";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+  PreprocessTextForSpeech();
+  PreprocessTextForSpeech();
+
+  std::vector<ui::AXNodeID> next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  // The returned id should be the next node id, 2
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+  // The returned int should be the beginning of the node's text.
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  // The returned int should be equivalent to the text in the node.
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+
+  // Preprocess is called again.
+  PreprocessTextForSpeech();
+  PreprocessTextForSpeech();
+
+  // But nothing changes with what's returned by GetCurrentText
+  next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  // The returned id should be the next node id, 2
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+  // The returned int should be the beginning of the node's text.
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  // The returned int should be equivalent to the text in the node.
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence1.length());
+
+  // Move to the next node
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  // Move to the last node
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence3.length());
+
+  // Preprocess is called again.
+  PreprocessTextForSpeech();
+  PreprocessTextForSpeech();
+
+  // And nothing has changed with the current text.
+  next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence3.length());
+
+  // Move backwards
+  next_node_ids = MoveToPreviousGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  // Preprocess is called again.
+  PreprocessTextForSpeech();
+  PreprocessTextForSpeech();
+
+  // And nothing has changed with the current text.
+  next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+  EXPECT_EQ(GetCurrentTextStartIndex(next_node_ids[0]), 0);
+  EXPECT_EQ(GetCurrentTextEndIndex(next_node_ids[0]), (int)sentence2.length());
+
+  // Move to the last node again.
   next_node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ((int)next_node_ids.size(), 1);
   EXPECT_EQ(next_node_ids[0], static_text3.id);

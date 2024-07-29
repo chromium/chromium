@@ -277,6 +277,10 @@ class ReadAnythingAppController
   // indices for specific text that should be referenced within the node.
   std::vector<ui::AXNodeID> GetCurrentText();
 
+  // Preprocess the text on the current page for speech to be used by
+  // Read Aloud.
+  void PreprocessTextForSpeech();
+
   // TODO(crbug.com/40927698): Random access to processed nodes might not always
   // work (e.g. if we're switching granularities or jumping to a specific node),
   // so we should implement a method of retrieving previous text from
