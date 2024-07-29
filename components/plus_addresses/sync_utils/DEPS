@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/sync",
+  "+components/variations/service",
+]
