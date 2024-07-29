@@ -3398,20 +3398,20 @@ void SkiaRenderer::DrawRenderPassQuad(
                  << " in the render pass overlay backings";
 
       SCOPED_CRASH_KEY_STRING32(
-          "missing rp backing", "seen before?",
+          "missing rp backing", "0-seen before?",
           base::NumberToString(
               seen_render_pass_ids_.contains(quad->render_pass_id)));
 
       // This is derived from |DirectRenderer::ShouldSkipQuad|.
       gfx::Rect target_rect = quad->visible_rect;
-      SCOPED_CRASH_KEY_STRING32("missing rp backing", "visible rect",
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "1-visible rect",
                                 target_rect.ToString());
       auto filter_it = render_pass_filters_.find(quad->render_pass_id);
       if (filter_it != render_pass_filters_.end()) {
         target_rect =
             filter_it->second->ExpandRectForPixelMovement(target_rect);
       }
-      SCOPED_CRASH_KEY_STRING32("missing rp backing", "filter expansion",
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "2-filter expansion",
                                 filter_it != render_pass_filters_.end()
                                     ? target_rect.ToString()
                                     : "no filter expansion");
@@ -3419,13 +3419,13 @@ void SkiaRenderer::DrawRenderPassQuad(
       const gfx::QuadF target_quad =
           quad->shared_quad_state->quad_to_target_transform.MapQuad(
               gfx::QuadF(gfx::RectF(target_rect)));
-      SCOPED_CRASH_KEY_STRING256("missing rp backing", "rpdq in draw space",
+      SCOPED_CRASH_KEY_STRING256("missing rp backing", "3-rpdq in draw",
                                  target_quad.IsRectilinear()
                                      ? target_quad.BoundingBox().ToString()
                                      : target_quad.ToString());
 
       gfx::Rect draw_rect_in_draw_space = OutputSurfaceRectInDrawSpace();
-      SCOPED_CRASH_KEY_STRING32("missing rp backing", "output surface",
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "4-output surface",
                                 draw_rect_in_draw_space.ToString());
       if (scissor_rect_) {
         draw_rect_in_draw_space = scissor_rect_.value();
@@ -3434,21 +3434,52 @@ void SkiaRenderer::DrawRenderPassQuad(
                 ->current_render_pass->output_rect.OffsetFromOrigin());
       }
       SCOPED_CRASH_KEY_STRING32(
-          "missing rp backing", "with scissor?",
+          "missing rp backing", "5-with scissor?",
           scissor_rect_ ? draw_rect_in_draw_space.ToString() : "no scissor");
 
       if (quad->shared_quad_state->clip_rect) {
         draw_rect_in_draw_space.Intersect(*quad->shared_quad_state->clip_rect);
       }
-      SCOPED_CRASH_KEY_STRING32("missing rp backing", "with quad clip?",
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "6-with quad clip?",
                                 quad->shared_quad_state->clip_rect
                                     ? draw_rect_in_draw_space.ToString()
                                     : "no quad clip");
 
       const bool intersects =
           target_quad.IntersectsRect(gfx::RectF(draw_rect_in_draw_space));
-      SCOPED_CRASH_KEY_STRING32("missing rp backing", "intersects?",
+      SCOPED_CRASH_KEY_STRING32("missing rp backing", "7-intersects?",
                                 base::NumberToString(intersects));
+
+      SCOPED_CRASH_KEY_STRING32(
+          "missing rp backing", "8-quad-pass-id",
+          base::NumberToString(quad->render_pass_id.value()));
+
+      std::vector<std::string> pass_ids;
+      for (const auto& pass : *current_frame()->render_passes_in_draw_order) {
+        pass_ids.push_back(base::NumberToString(pass->id.value()));
+      }
+      SCOPED_CRASH_KEY_STRING256("missing rp backing", "9-frame-pass-ids",
+                                 base::JoinString(pass_ids, ","));
+
+      pass_ids.clear();
+      for (const auto& [id, pass] : render_pass_backings_) {
+        pass_ids.push_back(base::NumberToString(id.value()));
+      }
+      SCOPED_CRASH_KEY_STRING256("missing rp backing", "10-backing-pass-ids",
+                                 base::JoinString(pass_ids, ","));
+
+      auto it =
+          base::ranges::find(*current_frame()->render_passes_in_draw_order,
+                             quad->render_pass_id, &AggregatedRenderPass::id);
+      SCOPED_CRASH_KEY_STRING256(
+          "missing rp backing", "11-rp transform",
+          it != current_frame()->render_passes_in_draw_order->end()
+              ? it->get()->transform_to_root_target.ToString()
+              : "missing pass in frame");
+
+      SCOPED_CRASH_KEY_STRING256(
+          "missing rp backing", "12-rpdq transform",
+          quad->shared_quad_state->quad_to_target_transform.ToString());
 
       // Collect a dump so we can investigate the root cause, but fallback to a
       // solid color to avoid disrupting the user.
