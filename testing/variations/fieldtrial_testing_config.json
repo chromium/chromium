@@ -5656,13 +5656,23 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240729",
+                    "params": {
+                        "compile-in-parallel": "false",
+                        "compile-strategy": "lazy",
+                        "inline-script-timeout": "0ms",
+                        "precompile-main-frame-only": "true",
+                        "scan-main-frame-only": "true"
+                    },
                     "enable_features": [
                         "AvoidResourceRequestCopies",
                         "CreateSpareRendererOnBrowserContextCreation",
                         "EnsureExistingRendererAlive",
                         "LazyBindJsInjection",
+                        "PrecompileInlineScripts",
                         "SkipUnnecessaryThreadHopsForParseHeaders",
+                        "ThreadedBodyLoader",
+                        "ThreadedPreloadScanner",
                         "WebViewOptimizeXrwNavigationFlow",
                         "WebViewPreloadClasses"
                     ]
@@ -22526,7 +22536,6 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
