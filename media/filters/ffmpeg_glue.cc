@@ -17,6 +17,11 @@
 
 namespace media {
 
+// Kill switch in case things explode. Remove after M132.
+BASE_FEATURE(kAllowOnlyAudioCodecsDuringDemuxing,
+             "AllowOnlyAudioCodecsDuringDemuxing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Internal buffer size used by AVIO for reading.
 // TODO(dalecurtis): Experiment with this buffer size and measure impact on
 // performance.  Currently we want to use 32kb to preserve existing behavior
@@ -123,6 +128,13 @@ FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
     // deprecations and when an external ffmpeg is used this adds extra
     // security.
     static const base::NoDestructor<std::string> kCombinedCodecList([]() {
+      if (base::FeatureList::IsEnabled(kAllowOnlyAudioCodecsDuringDemuxing)) {
+        // We also don't allow ffmpeg to use any video decoders during demuxing
+        // since it's unnecessary for the codecs we use and just increases
+        // memory usage.
+        return std::string(GetAllowedAudioDecoders());
+      }
+
       return base::JoinString(
           {GetAllowedAudioDecoders(), GetAllowedVideoDecoders()}, ",");
     }());
@@ -151,12 +163,8 @@ const char* FFmpegGlue::GetAllowedAudioDecoders() {
 // static
 const char* FFmpegGlue::GetAllowedVideoDecoders() {
   // This should match the configured lists in //third_party/ffmpeg.
-  //
-  // Note: We don't check IsBuiltInVideoCodec(VideoCodec::kH264) here since
-  // unfortunately ffmpeg will refuse to extract metadata for H264 when the H264
-  // decoder is compiled in if we disable it here.
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  return "h264";
+  return IsBuiltInVideoCodec(VideoCodec::kH264) ? "h264" : "";
 #else
   return "";
 #endif
