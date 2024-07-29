@@ -362,6 +362,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FamilyLinkUser.FamilyInfoLogSource.ImmediatelyAvailable"
+    enum="Boolean" expires_after="2024-12-12">
+  <owner>fernandex@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Whether a fetch to the Kids Management API::ListMembers was necessary as a
+    part of populating the FamilyInfoLogSource in feedback reports.
+  </summary>
+</histogram>
+
 <histogram name="FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration"
     units="ms" expires_after="2025-01-05">
   <owner>anthie@google.com</owner>
