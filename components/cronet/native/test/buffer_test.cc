@@ -4,13 +4,13 @@
 
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/cronet/native/test/test_util.h"
 #include "cronet_c.h"
+#include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

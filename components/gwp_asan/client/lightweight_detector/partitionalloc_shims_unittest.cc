@@ -4,8 +4,6 @@
 
 #include "components/gwp_asan/client/lightweight_detector/partitionalloc_shims.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/multiprocess_test.h"
@@ -13,6 +11,8 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 #include "components/gwp_asan/common/lightweight_detector_state.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_alloc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 

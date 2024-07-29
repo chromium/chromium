@@ -13,11 +13,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/compiler_specific.h"
 #include "base/memory/shared_memory_mapper.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
+#include "partition_alloc/partition_alloc.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-forward.h"
 

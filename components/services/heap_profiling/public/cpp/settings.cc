@@ -4,13 +4,13 @@
 
 #include "components/services/heap_profiling/public/cpp/settings.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/services/heap_profiling/public/cpp/switches.h"
+#include "partition_alloc/buildflags.h"
 
 namespace heap_profiling {
 

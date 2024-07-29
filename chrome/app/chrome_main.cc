@@ -7,7 +7,6 @@
 #include <iostream>
 #include <memory>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
@@ -25,6 +24,7 @@
 #include "content/public/common/content_switches.h"
 #include "headless/public/headless_shell.h"
 #include "headless/public/switches.h"
+#include "partition_alloc/buildflags.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/app/chrome_main_mac.h"

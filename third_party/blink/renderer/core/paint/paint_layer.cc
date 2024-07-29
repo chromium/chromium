@@ -46,10 +46,10 @@
 
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/containers/adapters.h"
 #include "build/build_config.h"
 #include "cc/input/scroll_snap_data.h"
+#include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"

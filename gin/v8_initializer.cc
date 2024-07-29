@@ -15,8 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -41,6 +39,8 @@
 #include "build/build_config.h"
 #include "gin/array_buffer.h"
 #include "gin/gin_features.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/partition_address_space.h"
 #include "tools/v8_context_snapshot/buildflags.h"
 #include "v8/include/v8-initialization.h"
 #include "v8/include/v8-snapshot.h"

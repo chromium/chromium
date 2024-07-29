@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
@@ -42,6 +41,7 @@
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
+#include "partition_alloc/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

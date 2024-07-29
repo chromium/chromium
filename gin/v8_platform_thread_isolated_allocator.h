@@ -5,7 +5,7 @@
 #ifndef GIN_V8_PLATFORM_THREAD_ISOLATED_ALLOCATOR_H_
 #define GIN_V8_PLATFORM_THREAD_ISOLATED_ALLOCATOR_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
@@ -13,8 +13,8 @@
 #error Not implemented for non-pkey thread isolation
 #endif  // PA_BUILDFLAG(ENABLE_PKEYS)
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "gin/gin_export.h"
+#include "partition_alloc/partition_alloc.h"
 #include "v8/include/v8-platform.h"
 
 namespace gin {

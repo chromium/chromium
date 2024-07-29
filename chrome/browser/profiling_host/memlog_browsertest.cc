@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiling_host/profiling_process_host.h"
 #include "chrome/common/chrome_switches.h"
@@ -10,6 +9,7 @@
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "components/services/heap_profiling/public/cpp/switches.h"
 #include "content/public/test/browser_test.h"
+#include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)

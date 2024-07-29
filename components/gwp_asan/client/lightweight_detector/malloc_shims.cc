@@ -7,13 +7,13 @@
 #include <limits>
 #include <optional>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "components/gwp_asan/client/lightweight_detector/random_eviction_quarantine.h"
 #include "components/gwp_asan/client/sampling_state.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 namespace gwp_asan::internal::lud {
 

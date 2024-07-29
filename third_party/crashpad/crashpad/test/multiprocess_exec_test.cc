@@ -14,11 +14,11 @@
 
 #include "test/multiprocess_exec.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
+#include "partition_alloc/buildflags.h"
 #include "test/test_paths.h"
 #include "util/file/file_io.h"
 

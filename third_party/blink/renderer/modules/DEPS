@@ -65,7 +65,7 @@ specific_include_rules = {
     ],
 
     "tcp_writable_stream_wrapper.h": [
-        "+base/allocator/partition_allocator/src/partition_alloc/partition_root.h",
+        "+partition_alloc/partition_root.h",
     ],
     ".*_stream_wrapper.cc": [
         "+net/base/ip_endpoint.h",

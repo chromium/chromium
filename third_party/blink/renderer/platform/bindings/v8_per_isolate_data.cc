@@ -33,7 +33,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -42,6 +41,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "gin/public/v8_idle_task_runner.h"
+#include "partition_alloc/oom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"

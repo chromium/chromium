@@ -26,7 +26,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -49,6 +48,7 @@
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "content/public/common/content_descriptors.h"
+#include "partition_alloc/oom.h"
 #include "third_party/breakpad/breakpad/src/client/linux/crash_generation/crash_generation_client.h"
 #include "third_party/breakpad/breakpad/src/client/linux/handler/exception_handler.h"
 #include "third_party/breakpad/breakpad/src/client/linux/minidump_writer/directory_reader.h"

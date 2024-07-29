@@ -13,8 +13,6 @@
 #include <algorithm>
 #include <string_view>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "base/android/build_info.h"
 #include "base/android/java_exception_reporter.h"
 #include "base/android/jni_android.h"
@@ -36,6 +34,8 @@
 #include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "content/public/common/content_descriptors.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/tagging.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
 #include "third_party/crashpad/crashpad/client/annotation.h"
 #include "third_party/crashpad/crashpad/client/client_argv_handling.h"

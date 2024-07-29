@@ -16,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
@@ -64,6 +63,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_states.h"
 #include "net/base/network_handle.h"
+#include "partition_alloc/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"

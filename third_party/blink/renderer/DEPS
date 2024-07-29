@@ -1,6 +1,4 @@
 include_rules = [
-    "+base/allocator/partition_allocator/src/partition_alloc/oom.h",
-    "+base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h",
     "+base/auto_reset.h",
     "+base/big_endian.h",
     "+base/bit_cast.h",
@@ -92,6 +90,8 @@ include_rules = [
     "+net/cookies",
     "+net/http/structured_headers.h",
     "+net/storage_access_api/status.h",
+    "+partition_alloc/oom.h",
+    "+partition_alloc/partition_alloc.h",
     "+services/network/public/mojom",
     "+skia/ext",
     "+testing/gmock/include/gmock",

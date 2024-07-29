@@ -10,8 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/page_size.h"
 #include "base/strings/string_number_conversions.h"
@@ -23,6 +21,8 @@
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/client/gwp_asan.h"
 #include "components/gwp_asan/common/crash_key_name.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 

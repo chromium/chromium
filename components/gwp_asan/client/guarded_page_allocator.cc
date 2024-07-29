@@ -11,8 +11,6 @@
 #include <utility>
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/gwp_asan_support.h"
 #include "base/bits.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
@@ -27,6 +25,8 @@
 #include "components/gwp_asan/common/allocator_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "components/gwp_asan/common/pack_stack_trace.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/gwp_asan_support.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
 #if BUILDFLAG(IS_ANDROID)

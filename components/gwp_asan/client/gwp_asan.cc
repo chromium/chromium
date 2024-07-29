@@ -12,7 +12,6 @@
 #include <string_view>
 
 #include "base/allocator/partition_alloc_support.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -31,6 +30,7 @@
 #include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 #include "components/gwp_asan/client/sampling_helpers.h"
 #include "components/gwp_asan/common/crash_key_name.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "components/gwp_asan/client/lightweight_detector/malloc_shims.h"

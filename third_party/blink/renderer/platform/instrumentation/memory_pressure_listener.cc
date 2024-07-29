@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
 #include "base/feature_list.h"
 #include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "build/build_config.h"
+#include "partition_alloc/memory_reclaimer.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/blink.h"

@@ -6,7 +6,6 @@
 
 #include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/initializer.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
@@ -14,6 +13,7 @@
 #include "components/memory_system/buildflags.h"
 #include "components/memory_system/memory_system_features.h"
 #include "components/memory_system/parameters.h"
+#include "partition_alloc/buildflags.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if BUILDFLAG(ENABLE_GWP_ASAN)
@@ -24,10 +24,10 @@
 #endif
 
 #if BUILDFLAG(IS_IOS) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/ios/ios_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "partition_alloc/shim/allocator_interception_apple.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #endif
 
 // HeapProfilerController's dependencies are not compiled on iOS unless

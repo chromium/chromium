@@ -11,7 +11,6 @@
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -25,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/io_buffer.h"
+#include "partition_alloc/partition_alloc_constants.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"

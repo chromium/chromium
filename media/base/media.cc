@@ -8,7 +8,6 @@
 
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
@@ -17,6 +16,7 @@
 #include "media/base/libvpx_thread_wrapper.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "third_party/libyuv/include/libyuv.h"
 
 #if BUILDFLAG(ENABLE_FFMPEG)

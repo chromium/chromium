@@ -12,14 +12,14 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "gin/per_isolate_data.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_root.h"
 #include "v8/include/v8-initialization.h"
 
 #if BUILDFLAG(IS_POSIX)

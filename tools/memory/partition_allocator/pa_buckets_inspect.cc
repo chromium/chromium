@@ -18,8 +18,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/check_op.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/files/file.h"
@@ -31,6 +29,8 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/thread_cache.h"
 #include "tools/memory/partition_allocator/inspect_utils.h"
 
 namespace partition_alloc::tools {

@@ -1,5 +1,4 @@
 include_rules = [
-    "+base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h",
     "+device/vr/buildflags/buildflags.h",
     "+device/vr/public/mojom/vr_service.mojom-blink.h",
     "+gpu/GLES2/gl2extchromium.h",
@@ -13,6 +12,7 @@ include_rules = [
     "+media/base/wait_and_replace_sync_token_client.h",
     "+media/renderers/paint_canvas_video_renderer.h",
     "+media/video/gpu_memory_buffer_video_frame_pool.h",
+    "+partition_alloc/partition_alloc_constants.h",
     "+skia/ext",
     "+third_party/blink/renderer/modules/webcodecs",
     "+ui/gl/gpu_preference.h",

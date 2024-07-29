@@ -5,14 +5,14 @@
 #ifndef GIN_V8_PLATFORM_PAGE_ALLOCATOR_H_
 #define GIN_V8_PLATFORM_PAGE_ALLOCATOR_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "gin/gin_export.h"
+#include "partition_alloc/page_allocator.h"
 #include "v8/include/v8-platform.h"
 
 namespace gin {
