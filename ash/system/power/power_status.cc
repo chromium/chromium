@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
@@ -291,11 +292,19 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
     info->icon_badge = &kUnifiedMenuBatteryUnreliableIcon;
     info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineMaskIcon;
   } else if (IsLinePowerConnected()) {
-    info->icon_badge = &kUnifiedMenuBatteryBoltIcon;
-    info->badge_outline = &kUnifiedMenuBatteryBoltOutlineMaskIcon;
+    info->icon_badge = chromeos::features::IsBatteryBadgeIconEnabled()
+                           ? &kUnifiedMenuBatteryBoltIcon
+                           : &kUnifiedMenuBatteryBoltLegacyIcon;
+    info->badge_outline = chromeos::features::IsBatteryBadgeIconEnabled()
+                              ? &kUnifiedMenuBatteryBoltOutlineMaskIcon
+                              : &kUnifiedMenuBatteryBoltOutlineMaskLegacyIcon;
   } else if (IsBatterySaverActive()) {
-    info->icon_badge = &kBatterySaverPlusIcon;
-    info->badge_outline = &kBatterySaverPlusOutlineIcon;
+    info->icon_badge = chromeos::features::IsBatteryBadgeIconEnabled()
+                           ? &kBatterySaverPlusIcon
+                           : &kBatterySaverPlusLegacyIcon;
+    info->badge_outline = chromeos::features::IsBatteryBadgeIconEnabled()
+                              ? &kBatterySaverPlusOutlineIcon
+                              : &kBatterySaverPlusOutlineLegacyIcon;
   } else {
     info->icon_badge = nullptr;
     info->badge_outline = nullptr;
@@ -307,8 +316,12 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
   // have a badge assigned.
   if (GetBatteryPercent() < kCriticalBatteryChargePercentage &&
       !info->icon_badge) {
-    info->icon_badge = &kUnifiedMenuBatteryAlertIcon;
-    info->badge_outline = &kUnifiedMenuBatteryAlertOutlineMaskIcon;
+    info->icon_badge = chromeos::features::IsBatteryBadgeIconEnabled()
+                           ? &kUnifiedMenuBatteryAlertIcon
+                           : &kUnifiedMenuBatteryAlertLegacyIcon;
+    info->badge_outline = chromeos::features::IsBatteryBadgeIconEnabled()
+                              ? &kUnifiedMenuBatteryAlertOutlineMaskIcon
+                              : &kUnifiedMenuBatteryAlertOutlineMaskLegacyIcon;
   }
 }
 
