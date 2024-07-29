@@ -163,8 +163,9 @@ void TestChromeBrowserState::Init() {
   DCHECK(!web::WebThread::IsThreadInitialized(web::WebThread::UI) ||
          web::WebThread::CurrentlyOn(web::WebThread::UI));
 
-  if (!base::PathExists(state_path_)) {
-    base::CreateDirectory(state_path_);
+  const base::FilePath state_path = GetStatePath();
+  if (!base::PathExists(state_path)) {
+    base::CreateDirectory(state_path);
   }
 
   // Normally this would happen during browser startup, but for tests we need to
@@ -346,12 +347,6 @@ TestChromeBrowserState::Builder::AddTestingFactories(
   return *this;
 }
 
-TestChromeBrowserState::Builder& TestChromeBrowserState::Builder::SetPath(
-    const base::FilePath& path) {
-  state_path_ = path;
-  return *this;
-}
-
 TestChromeBrowserState::Builder& TestChromeBrowserState::Builder::SetName(
     const std::string& name) {
   browser_state_name_ = name;
@@ -381,25 +376,20 @@ TestChromeBrowserState::Builder::SetUserCloudPolicyManager(
 
 std::unique_ptr<TestChromeBrowserState>
 TestChromeBrowserState::Builder::Build() && {
-  // Ensure that both `state_path_` and `browser_state_name_` are not empty.
-  // If set by the user, then use the provided values, otherwise ensure that
-  // the name is equal to `state_path_` basename.
-  if (state_path_.empty()) {
-    if (browser_state_name_.empty()) {
-      browser_state_name_ = "Test";
-    }
+  return std::move(*this).Build(base::CreateUniqueTempDirectoryScopedToTest());
+}
 
-    state_path_ = base::CreateUniqueTempDirectoryScopedToTest().Append(
-        browser_state_name_);
-  } else if (browser_state_name_.empty()) {
-    browser_state_name_ = state_path_.BaseName().AsUTF8Unsafe();
+std::unique_ptr<TestChromeBrowserState> TestChromeBrowserState::Builder::Build(
+    const base::FilePath& data_dir) && {
+  CHECK(!data_dir.empty());
+
+  // Ensure that the name is not empty.
+  if (browser_state_name_.empty()) {
+    browser_state_name_ = "Test";
   }
 
-  DCHECK(!state_path_.empty());
-  DCHECK(!browser_state_name_.empty());
-
   return base::WrapUnique(new TestChromeBrowserState(
-      state_path_, browser_state_name_, std::move(pref_service_),
-      std::move(testing_factories_), std::move(policy_connector_),
-      std::move(user_cloud_policy_manager_)));
+      data_dir.Append(browser_state_name_), browser_state_name_,
+      std::move(pref_service_), std::move(testing_factories_),
+      std::move(policy_connector_), std::move(user_cloud_policy_manager_)));
 }

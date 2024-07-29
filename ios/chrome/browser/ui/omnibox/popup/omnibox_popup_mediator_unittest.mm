@@ -20,8 +20,6 @@
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
@@ -114,9 +112,6 @@ class OmniboxPopupMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        TestChromeBrowserState::Builder().Build());
 
     // Setup for AutocompleteController.
     auto template_url_service = std::make_unique<TemplateURLService>(
@@ -221,7 +216,6 @@ class OmniboxPopupMediatorTest : public PlatformTest {
   // Message loop for the main test thread.
   base::test::TaskEnvironment environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   OmniboxPopupMediator* mediator_;
   MockOmniboxPopupMediatorDelegate delegate_;
   AutocompleteResult autocomplete_result_;

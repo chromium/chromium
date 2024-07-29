@@ -29,6 +29,9 @@ namespace policy {
 class UserCloudPolicyManager;
 }
 
+class EnterprisePolicyTestHelper;
+class TestChromeBrowserStateManager;
+
 // This class is the implementation of ChromeBrowserState used for testing.
 class TestChromeBrowserState final : public ChromeBrowserState {
  public:
@@ -175,10 +178,6 @@ class TestChromeBrowserState final : public ChromeBrowserState {
     //      }});
     Builder& AddTestingFactories(TestingFactories testing_factories);
 
-    // Sets the path to the directory to be used to hold ChromeBrowserState
-    // data.
-    Builder& SetPath(const base::FilePath& path);
-
     // Sets the name of the ChromeBrowserState. If not set, then will be
     // derived from the path passed to `SetPath()` or use an arbitrary
     // value if `SetPath()` is not called.
@@ -200,8 +199,15 @@ class TestChromeBrowserState final : public ChromeBrowserState {
     std::unique_ptr<TestChromeBrowserState> Build() &&;
 
    private:
+    friend class EnterprisePolicyTestHelper;
+    friend class TestChromeBrowserStateManager;
+
+    // Creates the TestChromeBrowserState using `data_dir` as base directory
+    // for the storage, and other previously-set settings.
+    std::unique_ptr<TestChromeBrowserState> Build(
+        const base::FilePath& data_dir) &&;
+
     // Various staging variables where values are held until Build() is invoked.
-    base::FilePath state_path_;
     std::string browser_state_name_;
     std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service_;
 

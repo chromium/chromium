@@ -214,12 +214,9 @@ class AppStateTest : public BlockCleanupTest {
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        std::move(test_cbs_builder));
 
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(test_cbs_builder).Build());
-
-    browser_state_ =
-        browser_state_manager_->GetLastUsedBrowserStateForTesting();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -347,6 +344,7 @@ class AppStateTest : public BlockCleanupTest {
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
   TestAppState* app_state_;
   FakeSceneState* main_scene_state_;
   SafeModeAppAgent* safe_mode_app_agent_;
@@ -364,7 +362,6 @@ class AppStateTest : public BlockCleanupTest {
   std::unique_ptr<ScopedBlockSwizzler> connected_scenes_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> handle_startup_swizzler_;
   raw_ptr<ChromeBrowserState> browser_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
 };
 
 #pragma mark - Tests.
@@ -380,9 +377,9 @@ TEST_F(AppStateNoFixtureTest, WillResignActive) {
   [startupInformation setIsColdStart:YES];
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager =
-      std::make_unique<TestChromeBrowserStateManager>(
-          TestChromeBrowserState::Builder().Build());
+  TestChromeBrowserStateManager browser_state_manager;
+  browser_state_manager.AddBrowserStateWithBuilder(
+      TestChromeBrowserState::Builder());
 
   AppState* appState =
       [[AppState alloc] initWithStartupInformation:startupInformation];

@@ -64,7 +64,7 @@ std::unique_ptr<KeyedService> BuildTabRestoreService(
 // Test fixture to test the search service.
 class TabsSearchServiceTest : public PlatformTest {
  public:
-  TabsSearchServiceTest() : browser_state_manager_(base::FilePath()) {
+  TabsSearchServiceTest() {
     TestChromeBrowserState::Builder test_browser_state_builder;
     test_browser_state_builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),

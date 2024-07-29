@@ -233,8 +233,8 @@ class MagicStackRankingModelTest : public PlatformTest {
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
 
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(test_cbs_builder).Build());
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        std::move(test_cbs_builder));
 
     browser_ = std::make_unique<TestBrowser>(GetBrowserState());
 
@@ -340,9 +340,7 @@ class MagicStackRankingModelTest : public PlatformTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
-  ChromeBrowserState* GetBrowserState() {
-    return browser_state_manager_->GetLastUsedBrowserStateForTesting();
-  }
+  ChromeBrowserState* GetBrowserState() { return browser_state_.get(); }
 
   PrefService* GetLocalState() {
     return GetApplicationContext()->GetLocalState();
@@ -379,7 +377,8 @@ class MagicStackRankingModelTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
+  TestChromeBrowserStateManager browser_state_manager_;
+  raw_ptr<ChromeBrowserState> browser_state_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   FakeSceneState* scene_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;

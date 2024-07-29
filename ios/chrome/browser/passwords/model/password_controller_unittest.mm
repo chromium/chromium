@@ -236,10 +236,8 @@ struct TestPasswordFormData {
 class PasswordControllerTest : public PlatformTest {
  public:
   PasswordControllerTest() : web_client_(std::make_unique<ChromeWebClient>()) {
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        TestChromeBrowserState::Builder().Build());
-    browser_state_ =
-        browser_state_manager_->GetLastUsedBrowserStateForTesting();
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        TestChromeBrowserState::Builder());
 
     web::WebState::CreateParams params(browser_state_.get());
     web_state_ = web::WebState::Create(params);
@@ -489,7 +487,7 @@ class PasswordControllerTest : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
+  TestChromeBrowserStateManager browser_state_manager_;
   raw_ptr<ChromeBrowserState> browser_state_;
   // `autofill_client_` mocks KeyedServices, which need to outlive the
   // `BrowserAutofillManager` owned by frame (`web_state`).

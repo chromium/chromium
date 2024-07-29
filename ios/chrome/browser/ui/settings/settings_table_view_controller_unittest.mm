@@ -62,11 +62,6 @@ using web::WebTaskEnvironment;
 class SettingsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  public:
-  SettingsTableViewControllerTest() {
-    test_manager_ =
-        std::make_unique<TestChromeBrowserStateManager>(base::FilePath());
-  }
-
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
 
@@ -84,7 +79,8 @@ class SettingsTableViewControllerTest
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
-    chrome_browser_state_ = std::move(builder).Build();
+    chrome_browser_state_ =
+        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
 
     // Prepare mocks for PushNotificationClient dependency
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
@@ -205,14 +201,14 @@ class SettingsTableViewControllerTest
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<ios::ChromeBrowserStateManager> test_manager_;
+  TestChromeBrowserStateManager browser_state_manager_;
 
   FakeSystemIdentity* fake_identity_ = nullptr;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
   raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
   scoped_refptr<password_manager::TestPasswordStore> password_store_mock_;
 
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  raw_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<TestBrowser> browser_;
 
   SettingsTableViewController* controller_ = nullptr;

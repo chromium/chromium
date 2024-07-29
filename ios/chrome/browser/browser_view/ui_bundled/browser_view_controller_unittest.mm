@@ -129,8 +129,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
 
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(test_cbs_builder).Build());
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        std::move(test_cbs_builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetBrowserState(),
@@ -331,17 +331,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     BlockCleanupTest::TearDown();
   }
 
-  ChromeBrowserState* GetBrowserState() {
-    return browser_state_manager_->GetLastUsedBrowserStateForTesting();
-  }
-
-  TestChromeBrowserState* GetTestBrowserState() {
-    TestChromeBrowserState* test_chrome_browser_state =
-        static_cast<TestChromeBrowserState*>(GetBrowserState());
-    EXPECT_NE(test_chrome_browser_state, nullptr);
-
-    return test_chrome_browser_state;
-  }
+  TestChromeBrowserState* GetBrowserState() { return browser_state_.get(); }
 
   web::WebState* ActiveWebState() {
     return browser_->GetWebStateList()->GetActiveWebState();
@@ -363,7 +353,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
   std::unique_ptr<web::WebState> CreateOffTheRecordWebState() {
     web::WebState::CreateParams params(
-        GetTestBrowserState()
+        GetBrowserState()
             ->CreateOffTheRecordBrowserStateWithTestingFactories());
     auto web_state = web::WebState::Create(params);
     AttachTabHelpers(web_state.get());
@@ -411,7 +401,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
+  TestChromeBrowserStateManager browser_state_manager_;
+  raw_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   KeyCommandsProvider* key_commands_provider_;
   BubblePresenter* bubble_presenter_;

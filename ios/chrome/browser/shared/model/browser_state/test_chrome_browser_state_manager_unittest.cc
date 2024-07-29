@@ -15,21 +15,21 @@
 
 using TestChromeBrowserStateManagerTest = PlatformTest;
 
-// Tests that the list of loaded browser states is empty after invoking the
-// constructor that accepts a user data directory path.
-TEST_F(TestChromeBrowserStateManagerTest, ConstructWithUserDataDirPath) {
+// Tests that the list of loaded browser states is empty after construction.
+TEST_F(TestChromeBrowserStateManagerTest, Constructor) {
   web::WebTaskEnvironment task_environment;
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
-  TestChromeBrowserStateManager browser_state_manager((base::FilePath()));
+  TestChromeBrowserStateManager browser_state_manager;
   EXPECT_EQ(0U, browser_state_manager.GetLoadedBrowserStates().size());
 }
 
-// Tests that the list of loaded browser states has one element after invoking
-// the constructor that accepts a browser state.
-TEST_F(TestChromeBrowserStateManagerTest, ConstructWithBrowserState) {
+// Tests that the list of loaded browser states has one element after calling
+// AddBrowserStateWithBuilder(...).
+TEST_F(TestChromeBrowserStateManagerTest, AddBrowserStateWithBuilder) {
   web::WebTaskEnvironment task_environment;
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
-  TestChromeBrowserStateManager browser_state_manager(
-      TestChromeBrowserState::Builder().Build());
+  TestChromeBrowserStateManager browser_state_manager;
+  browser_state_manager.AddBrowserStateWithBuilder(
+      TestChromeBrowserState::Builder());
   EXPECT_EQ(1U, browser_state_manager.GetLoadedBrowserStates().size());
 }

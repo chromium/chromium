@@ -27,28 +27,12 @@ namespace {
 
 const char kEmail[] = "example@email.com";
 
-// A wrapper around a base::ScopedTempDir that creates the temporary directory
-// in its constructor. This allow declaring all objects used as member fields
-// instead of having to allocate separately.
-class ScopedTempDirWrapper {
- public:
-  ScopedTempDirWrapper() {
-    EXPECT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-  }
-
-  const base::FilePath& GetPath() const { return scoped_temp_dir_.GetPath(); }
-
- private:
-  base::ScopedTempDir scoped_temp_dir_;
-};
-
 }  // namespace
 
 class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
  public:
   SigninBrowserStateInfoUpdaterTest()
-      : browser_state_manager_(browser_state_path()),
-        signin_error_controller_(
+      : signin_error_controller_(
             SigninErrorController::AccountMode::PRIMARY_ACCOUNT,
             identity_test_env()->identity_manager()),
         signin_browser_state_info_updater_(
@@ -66,10 +50,6 @@ class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
 
   std::string browser_state_name() const { return "default"; }
 
-  base::FilePath browser_state_path() const {
-    return scoped_state_path_.GetPath();
-  }
-
   BrowserStateInfoCache* browser_state_info() const {
     return GetApplicationContext()
         ->GetChromeBrowserStateManager()
@@ -82,7 +62,6 @@ class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
         browser_state_name());
   }
 
-  ScopedTempDirWrapper scoped_state_path_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestChromeBrowserStateManager browser_state_manager_;

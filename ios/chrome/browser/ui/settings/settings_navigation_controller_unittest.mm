@@ -44,8 +44,7 @@ using testing::ReturnRef;
 
 class SettingsNavigationControllerTest : public PlatformTest {
  protected:
-  SettingsNavigationControllerTest()
-      : browser_state_manager_(base::FilePath()) {
+  SettingsNavigationControllerTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -58,7 +57,8 @@ class SettingsNavigationControllerTest : public PlatformTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    chrome_browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        std::move(test_cbs_builder));
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -104,7 +104,7 @@ class SettingsNavigationControllerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestChromeBrowserStateManager browser_state_manager_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  raw_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   id mockDelegate_;
   NSString* initialValueForSpdyProxyEnabled_;

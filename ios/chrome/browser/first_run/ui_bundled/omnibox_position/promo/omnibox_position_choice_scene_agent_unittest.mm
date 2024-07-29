@@ -48,16 +48,15 @@ class OmniboxPositionChoiceSceneAgentTest : public PlatformTest {
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
 
-    test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        TestChromeBrowserState::Builder().Build());
+    ChromeBrowserState* browser_state =
+        browser_state_manager_.AddBrowserStateWithBuilder(
+            TestChromeBrowserState::Builder());
 
-    browser_ = std::make_unique<TestBrowser>(
-        test_manager_->GetLastUsedBrowserStateForTesting(), scene_state_);
+    browser_ = std::make_unique<TestBrowser>(browser_state, scene_state_);
     promos_manager_ = std::make_unique<MockPromosManager>();
     agent_ = [[OmniboxPositionChoiceSceneAgent alloc]
         initWithPromosManager:promos_manager_.get()
-              forBrowserState:test_manager_
-                                  ->GetLastUsedBrowserStateForTesting()];
+              forBrowserState:browser_state];
     agent_.sceneState = scene_state_;
   }
 
@@ -70,7 +69,7 @@ class OmniboxPositionChoiceSceneAgentTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> test_manager_;
+  TestChromeBrowserStateManager browser_state_manager_;
   OmniboxPositionChoiceSceneAgent* agent_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<Browser> browser_;

@@ -51,8 +51,7 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
         test_form_activity_tab_helper_(test_web_state_.get()) {}
 
   void SetUp() override {
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        TestChromeBrowserState::Builder().Build());
+    PlatformTest::SetUp();
 
     GURL url("http://foo.com");
     test_web_state_->SetCurrentURL(url);
@@ -95,7 +94,6 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   std::unique_ptr<web::FakeWebState> test_web_state_;
   std::unique_ptr<web::FakeWebFrame> main_frame_;
   FakeWebStateListDelegate web_state_list_delegate_;

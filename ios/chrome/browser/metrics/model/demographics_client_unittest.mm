@@ -20,11 +20,10 @@ namespace metrics {
 
 class DemographicsClientTest : public PlatformTest {
  public:
-  DemographicsClientTest()
-      : browser_state_manager_(TestChromeBrowserState::Builder().Build()) {}
-  ~DemographicsClientTest() override {}
-
-  void SetUp() override { PlatformTest::SetUp(); }
+  DemographicsClientTest() {
+    browser_state_manager_.AddBrowserStateWithBuilder(
+        TestChromeBrowserState::Builder());
+  }
 
  private:
   web::WebTaskEnvironment task_environment_;

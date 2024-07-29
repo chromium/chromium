@@ -129,12 +129,12 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
-    std::unique_ptr<TestChromeBrowserState> test_chrome_browser_state =
-        std::move(builder).Build();
+    TestChromeBrowserState* test_chrome_browser_state =
+        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
 
     browser_list_ =
-        BrowserListFactory::GetForBrowserState(test_chrome_browser_state.get());
-    browser_ = std::make_unique<TestBrowser>(test_chrome_browser_state.get());
+        BrowserListFactory::GetForBrowserState(test_chrome_browser_state);
+    browser_ = std::make_unique<TestBrowser>(test_chrome_browser_state);
     browser_list_->AddBrowser(browser_.get());
     web_state_ = std::make_unique<web::FakeWebState>();
     std::unique_ptr<web::FakeNavigationManager> navigation_manager =
@@ -143,23 +143,21 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
     navigation_manager->SetLastCommittedItem(
         navigation_manager->GetItemAtIndex(0));
     web_state_->SetNavigationManager(std::move(navigation_manager));
-    web_state_->SetBrowserState(test_chrome_browser_state.get());
+    web_state_->SetBrowserState(test_chrome_browser_state);
     web_state_->SetNavigationItemCount(1);
     web_state_->SetCurrentURL(GURL(kTestUrl));
     image_fetcher_ = std::make_unique<image_fetcher::ImageDataFetcher>(
         test_chrome_browser_state->GetSharedURLLoaderFactory());
 
     bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-        test_chrome_browser_state.get());
+        test_chrome_browser_state);
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     bookmark_model_->CreateAccountPermanentFolders();
 
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserState(
-            test_chrome_browser_state.get()));
+            test_chrome_browser_state));
     shopping_service_->SetupPermissiveMock();
-    test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(test_chrome_browser_state));
     push_notification_service_ = ios::provider::CreatePushNotificationService();
     mediator_ = [[PriceNotificationsPriceTrackingMediator alloc]
         initWithShoppingService:(commerce::ShoppingService*)shopping_service_
@@ -187,9 +185,9 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
   std::unique_ptr<Browser> browser_;
   PriceNotificationsPriceTrackingMediator* mediator_;
-  std::unique_ptr<ios::ChromeBrowserStateManager> test_manager_;
   std::unique_ptr<web::FakeWebState> web_state_;
   raw_ptr<commerce::MockShoppingService> shopping_service_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;

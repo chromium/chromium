@@ -33,8 +33,10 @@ class UkmService;
 class IOSChromeMetricsServiceClientTest : public PlatformTest {
  public:
   IOSChromeMetricsServiceClientTest()
-      : browser_state_manager_(TestChromeBrowserState::Builder().Build()),
-        enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {}
+      : enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
+    browser_state_manager_.AddBrowserStateWithBuilder(
+        TestChromeBrowserState::Builder());
+  }
 
   IOSChromeMetricsServiceClientTest(const IOSChromeMetricsServiceClientTest&) =
       delete;

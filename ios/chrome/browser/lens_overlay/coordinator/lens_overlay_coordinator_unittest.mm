@@ -43,10 +43,9 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     scoped_window_.Get().rootViewController = root_view_controller_;
 
     // Browser state
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        TestChromeBrowserState::Builder().Build());
     ChromeBrowserState* browser_state =
-        browser_state_manager_->GetLastUsedBrowserStateForTesting();
+        browser_state_manager_.AddBrowserStateWithBuilder(
+            TestChromeBrowserState::Builder());
 
     browser_ = std::make_unique<TestBrowser>(browser_state);
     dispatcher_ = [[CommandDispatcher alloc] init];
@@ -107,8 +106,8 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
   LensOverlayCoordinator* coordinator_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::WebState> web_state_;

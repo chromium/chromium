@@ -5,18 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_TEST_CHROME_BROWSER_STATE_MANAGER_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_TEST_CHROME_BROWSER_STATE_MANAGER_H_
 
+#include <map>
 #include <memory>
 
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 
 // ChromeBrowserStateManager implementation for tests.
+//
+// Register itself with the TestApplicationContext on creation. Requires
+// the ApplicationContext's local State to be created before this object.
 class TestChromeBrowserStateManager : public ios::ChromeBrowserStateManager {
  public:
-  explicit TestChromeBrowserStateManager(const base::FilePath& user_data_dir);
-  explicit TestChromeBrowserStateManager(
-      std::unique_ptr<ChromeBrowserState> browser_state);
+  TestChromeBrowserStateManager();
 
   TestChromeBrowserStateManager(const TestChromeBrowserStateManager&) = delete;
   TestChromeBrowserStateManager& operator=(
@@ -33,24 +36,24 @@ class TestChromeBrowserStateManager : public ios::ChromeBrowserStateManager {
   std::vector<ChromeBrowserState*> GetLoadedBrowserStates() override;
   void LoadBrowserStates() override;
 
-  // For testing.
-  ChromeBrowserState* GetLastUsedBrowserStateForTesting();
-
-  // Adds a browser state to the list of browsers to track.
-  void AddBrowserState(std::unique_ptr<ChromeBrowserState>,
-                       const base::FilePath& path);
+  // Builds and adds a TestChromeBrowserState using `builder`. Asserts that
+  // no BrowserState share the same name. Returns a pointer to the new object.
+  TestChromeBrowserState* AddBrowserStateWithBuilder(
+      TestChromeBrowserState::Builder builder);
 
  private:
-  TestChromeBrowserStateManager(
-      std::unique_ptr<ChromeBrowserState> browser_state,
-      const base::FilePath& user_data_dir);
-
-  // The path of the browser state associated with this manager as defined in
-  // the constructor.
-  base::FilePath last_used_browser_state_path_;
-
-  std::map<base::FilePath, std::unique_ptr<ChromeBrowserState>> browser_states_;
+  // The BrowserStateInfoCache owned by this instance.
   BrowserStateInfoCache browser_state_info_cache_;
+
+  // The path in which the ChromeBrowserStates are stored.
+  const base::FilePath data_dir_;
+
+  // The name of the last used ChromeBrowserState (i.e. the first registered).
+  std::string last_used_browser_state_name_;
+
+  // Mapping of name to TestChromeBrowserState instances.
+  std::map<std::string, std::unique_ptr<TestChromeBrowserState>, std::less<>>
+      browser_states_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_TEST_CHROME_BROWSER_STATE_MANAGER_H_

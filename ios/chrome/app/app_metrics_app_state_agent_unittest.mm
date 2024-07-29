@@ -90,12 +90,8 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         IOSProfileSessionDurationsServiceFactory::GetInstance(),
         base::BindRepeating(&FakeProfileSessionDurationsService::Create));
-
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(test_cbs_builder).Build());
-
-    browser_state_ =
-        browser_state_manager_->GetLastUsedBrowserStateForTesting();
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        std::move(test_cbs_builder));
 
     app_state_ = [[FakeAppState alloc] initWithStartupInformation:nil];
   }
@@ -122,10 +118,10 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
   AppMetricsAppStateAgent* agent_;
   raw_ptr<ChromeBrowserState> browser_state_;
   FakeAppState* app_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
 };
 
 TEST_F(AppMetricsAppStateAgentTest, CountSessionDuration) {

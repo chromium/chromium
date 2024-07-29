@@ -36,16 +36,14 @@
 class ContentNotificationClientTest : public PlatformTest {
  protected:
   ContentNotificationClientTest() {
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        TestChromeBrowserState::Builder().Build());
-    BrowserList* list = BrowserListFactory::GetForBrowserState(
-        browser_state_manager_->GetLastUsedBrowserStateForTesting());
+    ChromeBrowserState* browser_state =
+        browser_state_manager_.AddBrowserStateWithBuilder(
+            TestChromeBrowserState::Builder());
+    BrowserList* list = BrowserListFactory::GetForBrowserState(browser_state);
     mock_scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([mock_scene_state_ activationLevel])
         .andReturn(SceneActivationLevelForegroundActive);
-    browser_ = std::make_unique<TestBrowser>(
-        browser_state_manager_->GetLastUsedBrowserStateForTesting(),
-        mock_scene_state_);
+    browser_ = std::make_unique<TestBrowser>(browser_state, mock_scene_state_);
     list->AddBrowser(browser_.get());
     client_ = std::make_unique<ContentNotificationClient>();
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
@@ -84,7 +82,7 @@ class ContentNotificationClientTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
+  TestChromeBrowserStateManager browser_state_manager_;
   id mock_scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<ContentNotificationClient> client_;

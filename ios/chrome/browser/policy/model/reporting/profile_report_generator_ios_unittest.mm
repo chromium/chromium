@@ -37,36 +37,29 @@ namespace em = enterprise_management;
 
 namespace enterprise_reporting {
 
-namespace {
-
-const base::FilePath kProfilePath = base::FilePath("/fake/profile/default");
-
-}  // namespace
-
 class ProfileReportGeneratorIOSTest : public PlatformTest {
  public:
   ProfileReportGeneratorIOSTest() : generator_(&delegate_factory_) {
     InitPolicyMap();
 
     TestChromeBrowserState::Builder builder;
-    builder.SetPath(kProfilePath);
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.SetPolicyConnector(
         std::make_unique<BrowserStatePolicyConnectorMock>(
             CreateMockPolicyService(), &schema_registry_));
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(builder).Build());
+    browser_state_ =
+        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        GetBrowserState(),
+        browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
     authentication_service_ =
-        AuthenticationServiceFactory::GetForBrowserState(GetBrowserState());
+        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
     account_manager_service_ =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
-            GetBrowserState());
+            browser_state_.get());
   }
 
   ProfileReportGeneratorIOSTest(const ProfileReportGeneratorIOSTest&) = delete;
@@ -106,23 +99,23 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
   }
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport() {
+    const base::FilePath path = GetBrowserStatePath();
     std::unique_ptr<em::ChromeUserProfileInfo> report =
-        generator_.MaybeGenerate(kProfilePath,
-                                 kProfilePath.BaseName().AsUTF8Unsafe(),
+        generator_.MaybeGenerate(path, path.BaseName().AsUTF8Unsafe(),
                                  ReportType::kFull);
 
     if (!report)
       return nullptr;
 
-    EXPECT_EQ(kProfilePath.BaseName().AsUTF8Unsafe(), report->name());
-    EXPECT_EQ(kProfilePath.AsUTF8Unsafe(), report->id());
+    EXPECT_EQ(path.BaseName().AsUTF8Unsafe(), report->name());
+    EXPECT_EQ(path.AsUTF8Unsafe(), report->id());
     EXPECT_TRUE(report->is_detail_available());
 
     return report;
   }
 
-  ChromeBrowserState* GetBrowserState() {
-    return browser_state_manager_->GetLastUsedBrowserStateForTesting();
+  base::FilePath GetBrowserStatePath() const {
+    return browser_state_->GetStatePath();
   }
 
   ReportingDelegateFactoryIOS delegate_factory_;
@@ -131,7 +124,8 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
+  TestChromeBrowserStateManager browser_state_manager_;
+  raw_ptr<ChromeBrowserState> browser_state_;
 
   policy::SchemaRegistry schema_registry_;
   policy::PolicyMap policy_map_;

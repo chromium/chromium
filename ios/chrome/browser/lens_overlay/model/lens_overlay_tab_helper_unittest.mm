@@ -26,8 +26,8 @@ namespace {
 class LensOverlayTabHelperTest : public PlatformTest {
  public:
   LensOverlayTabHelperTest() {
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        TestChromeBrowserState::Builder().Build());
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        TestChromeBrowserState::Builder());
   }
 
   void SetUp() override {
@@ -40,8 +40,7 @@ class LensOverlayTabHelperTest : public PlatformTest {
         static_cast<int>(
             lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
 
-    web::WebState::CreateParams params(
-        browser_state_manager_->GetLastUsedBrowserStateForTesting());
+    web::WebState::CreateParams params(browser_state_.get());
     web_state_ = web::WebState::Create(params);
 
     id dispatcher = [[CommandDispatcher alloc] init];
@@ -62,7 +61,8 @@ class LensOverlayTabHelperTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
+  TestChromeBrowserStateManager browser_state_manager_;
+  raw_ptr<ChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
   raw_ptr<LensOverlayTabHelper> helper_ = nullptr;
   id handler_;

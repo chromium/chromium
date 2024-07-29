@@ -112,9 +112,8 @@ class BrowserCoordinatorTest : public PlatformTest {
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return std::make_unique<commerce::MockShoppingService>();
             }));
-
-    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(test_cbs_builder).Build());
+    browser_state_ = browser_state_manager_.AddBrowserStateWithBuilder(
+        std::move(test_cbs_builder));
 
     browser_ = std::make_unique<TestBrowser>(GetBrowserState(), scene_state_);
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
@@ -163,9 +162,7 @@ class BrowserCoordinatorTest : public PlatformTest {
                            browser:browser_.get()];
   }
 
-  ChromeBrowserState* GetBrowserState() {
-    return browser_state_manager_->GetLastUsedBrowserStateForTesting();
-  }
+  ChromeBrowserState* GetBrowserState() { return browser_state_.get(); }
 
   // Creates and inserts a new WebState.
   int InsertWebState() {
@@ -206,8 +203,9 @@ class BrowserCoordinatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
+  raw_ptr<ChromeBrowserState> browser_state_;
   UIViewController* base_view_controller_;
-  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   std::unique_ptr<TestBrowser> browser_;
   SceneState* scene_state_;
 };
