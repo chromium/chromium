@@ -20,6 +20,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/atspi_in_process_fuzzer.pb.h"
 #include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
@@ -746,6 +747,7 @@ Database* Database::GetInstance() {
 }
 
 Database::Database() {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
       .exclusive_locking = false,  // centipede may run several fuzzers at once
       .page_size = sql::DatabaseOptions::kDefaultPageSize,
@@ -774,6 +776,7 @@ void Database::InsertRole(const std::string& role) {
 void Database::DoInsert(const std::string& table_name,
                         const std::string& value,
                         sql::StatementID statement_id) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   std::string insert_sql = base::StringPrintf(
       "INSERT OR IGNORE INTO %s VALUES (?)", table_name.c_str());
   sql::Statement stmt(db_->GetCachedStatement(statement_id, insert_sql));
@@ -795,6 +798,7 @@ std::optional<std::string> Database::GetRandomValue(
     const std::string& column_name,
     std::minstd_rand& random,
     sql::StatementID statement_id) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   size_t random_selector =
       std::uniform_int_distribution<int64_t>(INT64_MIN, INT64_MAX)(random);
   std::string get_query = base::StringPrintf(
