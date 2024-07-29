@@ -24,6 +24,7 @@ static_library("sensor_info") {
     ":mojo_bindings",
     "//ash",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/common",
     "//content/public/browser",
     "//content/public/common",
@@ -32,7 +33,6 @@ static_library("sensor_info") {
   ]
 
   deps = [
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/sensor_info:resources",

@@ -25,6 +25,7 @@ static_library("extended_updates") {
   public_deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
@@ -36,7 +37,6 @@ static_library("extended_updates") {
     "//ash",
     "//ash/webui/common:trusted_types_util",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/extended_updates",
     "//chrome/browser/ash/login/ui",

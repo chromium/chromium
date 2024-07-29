@@ -17,6 +17,7 @@ static_library("kerberos") {
   public_deps = [
     "//ash/webui/common:chrome_os_webui_config",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash",
     "//chrome/common",
     "//content/public/common",
@@ -27,7 +28,6 @@ static_library("kerberos") {
     "//ash/public/cpp",
     "//build:branding_buildflags",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/kerberos:resources",
     "//chrome/browser/ui/webui",

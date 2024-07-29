@@ -14,6 +14,7 @@ static_library("testapi") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chromeos/crosapi/mojom",
   ]
 
@@ -24,7 +25,6 @@ static_library("testapi") {
     "//ash/public/mojom:input_device_settings",
     "//build:branding_buildflags",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",

@@ -18,6 +18,7 @@ static_library("multidevice_setup") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash",
     "//chrome/common",
     "//chromeos/ash/services/multidevice_setup/public/mojom",
@@ -34,7 +35,6 @@ static_library("multidevice_setup") {
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:resources",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/multidevice_setup",
