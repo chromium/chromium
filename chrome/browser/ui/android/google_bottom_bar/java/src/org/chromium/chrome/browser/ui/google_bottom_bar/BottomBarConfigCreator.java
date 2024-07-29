@@ -44,8 +44,17 @@ public class BottomBarConfigCreator {
     private static final String TAG = "GoogleBottomBar";
     private static final String BUTTON_LIST_PARAM = "google_bottom_bar_button_list";
     private static final String VARIANT_LAYOUT_PARAM = "google_bottom_bar_variant_layout";
+    private static final String NO_VARIANT_HEIGHT_DP_PARAM =
+            "google_bottom_bar_no_variant_height_dp";
+    private static final String SINGLE_DECKER_HEIGHT_DP_PARAM =
+            "google_bottom_bar_single_decker_height_dp";
     private static final String IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED_PARAM =
             "google_bottom_bar_variant_is_google_default_search_engine_check_enabled";
+
+    @VisibleForTesting static final int DEFAULT_NO_VARIANT_HEIGHT_DP = 64;
+    @VisibleForTesting static final int DEFAULT_SINGLE_DECKER_HEIGHT_DP = 62;
+    @VisibleForTesting static final int DOUBLE_DECKER_HEIGHT_DP = 110;
+    @VisibleForTesting static final int SINGLE_DECKER_WITH_RIGHT_BUTTONS_HEIGHT_DP = 64;
 
     @VisibleForTesting
     static final Map<Integer, Integer> CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP =
@@ -99,6 +108,28 @@ public class BottomBarConfigCreator {
                     ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS,
                     VARIANT_LAYOUT_PARAM,
                     DOUBLE_DECKER);
+
+    /**
+     * A cached parameter used for specifying the height of the Google Bottom Bar in DP, when its
+     * variant is NO_VARIANT.
+     */
+    public static final IntCachedFieldTrialParameter
+            GOOGLE_BOTTOM_BAR_NO_VARIANT_HEIGHT_DP_PARAM_VALUE =
+                    ChromeFeatureList.newIntCachedFieldTrialParameter(
+                            ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR,
+                            NO_VARIANT_HEIGHT_DP_PARAM,
+                            DEFAULT_NO_VARIANT_HEIGHT_DP);
+
+    /**
+     * A cached parameter used for specifying the height of the Google Bottom Bar in DP, when its
+     * variant is SINGLE_DECKER.
+     */
+    public static final IntCachedFieldTrialParameter
+            GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE =
+                    ChromeFeatureList.newIntCachedFieldTrialParameter(
+                            ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS,
+                            SINGLE_DECKER_HEIGHT_DP_PARAM,
+                            DEFAULT_SINGLE_DECKER_HEIGHT_DP);
 
     /** Returns true if the id of the custom button param is supported. */
     static boolean shouldAddToGoogleBottomBar(int customButtonParamsId) {
@@ -225,7 +256,7 @@ public class BottomBarConfigCreator {
                                     + " default search engine. Fallback to default version of"
                                     + " GoogleBottomBar with default button order.",
                             layoutType);
-                    return createDefaultConfig(customButtonParamsList, NO_VARIANT);
+                    return createDefaultConfig(intentParams, customButtonParamsList, NO_VARIANT);
                 }
             }
             Log.v(
@@ -234,9 +265,9 @@ public class BottomBarConfigCreator {
                             + " search engine. Fallback to default version of GoogleBottomBar while"
                             + " respecting custom button order.",
                     layoutType);
-            return create(encodedLayoutList, customButtonParamsList, NO_VARIANT);
+            return create(intentParams, encodedLayoutList, customButtonParamsList, NO_VARIANT);
         }
-        return create(encodedLayoutList, customButtonParamsList, layoutType);
+        return create(intentParams, encodedLayoutList, customButtonParamsList, layoutType);
     }
 
     BottomBarConfigCreator(Context context) {
@@ -335,6 +366,7 @@ public class BottomBarConfigCreator {
     }
 
     private BottomBarConfig createDefaultConfig(
+            GoogleBottomBarIntentParams intentParams,
             List<CustomButtonParams> customButtonParams,
             @GoogleBottomBarVariantLayoutType int variantLayoutType) {
         List<Integer> defaultButtonIdList =
@@ -350,7 +382,23 @@ public class BottomBarConfigCreator {
         return new BottomBarConfig(
                 /* spotlightId= */ null,
                 createButtonConfigList(defaultButtonIdList, customButtonParams),
-                variantLayoutType);
+                variantLayoutType,
+                getHeightDp(intentParams, variantLayoutType));
+    }
+
+    private static int getHeightDp(
+            GoogleBottomBarIntentParams intentParams,
+            @GoogleBottomBarVariantLayoutType int variantLayoutType) {
+        return switch (variantLayoutType) {
+            case DOUBLE_DECKER -> DOUBLE_DECKER_HEIGHT_DP;
+            case SINGLE_DECKER -> intentParams.getSingleDeckerHeightDp() > 0
+                    ? intentParams.getSingleDeckerHeightDp()
+                    : GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE.getValue();
+            case SINGLE_DECKER_WITH_RIGHT_BUTTONS -> SINGLE_DECKER_WITH_RIGHT_BUTTONS_HEIGHT_DP;
+            default -> intentParams.getNoVariantHeightDp() > 0
+                    ? intentParams.getNoVariantHeightDp()
+                    : GOOGLE_BOTTOM_BAR_NO_VARIANT_HEIGHT_DP_PARAM_VALUE.getValue();
+        };
     }
 
     private static @GoogleBottomBarVariantLayoutType int getLayoutType(
@@ -403,6 +451,11 @@ public class BottomBarConfigCreator {
      * the Bottom Bar, including the optional "spotlight" button and layout which should be used to
      * display the Bottom Bar.
      *
+     * @param intentParams that optionally contains:
+     *     <p>Integer list with the following representation [5,1,2,3,4,5], where the first item
+     *     represents the spotlight button and the rest of the list the order of the buttons in the
+     *     bottom bar.
+     *     <p>Variant layout type that specifies variation of the layout that should be used
      * @param encodedLayoutList An integer list encoding the layout of the Bottom Bar buttons. The
      *     first item is the ID of the "spotlight" button (0 - no spotlight button), followed by the
      *     IDs of the remaining buttons in their desired order. For example, `[4, 1, 2, 3, 4]`
@@ -418,6 +471,7 @@ public class BottomBarConfigCreator {
      *     Fallbacks to default configuration if provided parameters are not valid.
      */
     private BottomBarConfig create(
+            GoogleBottomBarIntentParams intentParams,
             List<Integer> encodedLayoutList,
             List<CustomButtonParams> customButtonParams,
             @GoogleBottomBarVariantLayoutType int variantLayoutType) {
@@ -427,20 +481,21 @@ public class BottomBarConfigCreator {
                 buildButtonIdListFromParams(encodedLayoutList, variantLayoutType, buttonIdList);
         if (!success) {
             Log.e(TAG, "Fallback to default bottom bar configuration.");
-            return createDefaultConfig(customButtonParams, variantLayoutType);
+            return createDefaultConfig(intentParams, customButtonParams, variantLayoutType);
         }
 
         Integer spotlightButton =
                 getSpotlightButtonFromParams(encodedLayoutList, variantLayoutType);
         if (spotlightButton == null) {
             Log.e(TAG, "Fallback to default bottom bar configuration.");
-            return createDefaultConfig(customButtonParams, variantLayoutType);
+            return createDefaultConfig(intentParams, customButtonParams, variantLayoutType);
         }
 
         return new BottomBarConfig(
                 createSpotlight(spotlightButton),
                 createButtonConfigList(buttonIdList, customButtonParams),
-                variantLayoutType);
+                variantLayoutType,
+                getHeightDp(intentParams, variantLayoutType));
     }
 
     /**
