@@ -534,6 +534,10 @@ std::optional<base::UnguessableToken> MahiManagerImpl::GetMediaAppPDFClientId()
   return std::nullopt;
 }
 
+void MahiManagerImpl::ClearCache() {
+  cache_manager_->ClearCache();
+}
+
 void MahiManagerImpl::NotifyRefreshAvailability(bool available) {
   if (ui_controller_.IsMahiPanelOpen()) {
     ui_controller_.NotifyRefreshAvailabilityChanged(available);

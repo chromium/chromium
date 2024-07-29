@@ -209,6 +209,8 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"  // nogncheck
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"  // nogncheck
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "device/fido/cros/credential_store.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1187,6 +1189,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             &history_task_tracker_);
       }
     }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // If the cache from the browser is cleared. Mahi should clear its cache.
+    if (chromeos::features::IsMahiEnabled() && chromeos::MahiManager::Get()) {
+      chromeos::MahiManager::Get()->ClearCache();
+    }
+#endif
   }
 
   //////////////////////////////////////////////////////////////////////////////

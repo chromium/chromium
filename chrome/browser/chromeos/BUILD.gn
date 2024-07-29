@@ -215,6 +215,7 @@ source_set("chromeos") {
     "//chrome/browser/web_applications",
     "//chrome/common/chromeos/extensions/api",
     "//chrome/common/extensions/api",
+    "//chromeos/components/mahi/public/cpp:cpp",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom",
     "//chromeos/dbus/dlp:dlp_proto",

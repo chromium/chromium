@@ -269,6 +269,20 @@ TEST_F(MahiManagerImplTest, TurnOffSettingsClearCache) {
   EXPECT_EQ(GetCacheManager()->size(), 0);
 }
 
+TEST_F(MahiManagerImplTest, ClearCacheSuccessfully) {
+  // No cache yet.
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+
+  RequestSummary();
+
+  // Summary is saved in the cache.
+  EXPECT_EQ(GetCacheManager()->size(), 1);
+
+  // Cache must be empty after cleared.
+  mahi_manager_impl_->ClearCache();
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+}
+
 TEST_F(MahiManagerImplTest, SetMahiPrefOnLogin) {
   // Checks that it should work for both when the first user's default pref is
   // true or false.

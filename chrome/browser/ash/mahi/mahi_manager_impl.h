@@ -63,6 +63,7 @@ class MahiManagerImpl : public chromeos::MahiManager,
   void MediaAppPDFClosed(
       const base::UnguessableToken media_app_client_id) override;
   std::optional<base::UnguessableToken> GetMediaAppPDFClientId() const override;
+  void ClearCache() override;
 
   // Called when availability for a refresh changes based on the shown content.
   void NotifyRefreshAvailability(bool available);

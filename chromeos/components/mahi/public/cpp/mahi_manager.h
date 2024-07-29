@@ -126,6 +126,9 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
   // client id.
   virtual std::optional<base::UnguessableToken> GetMediaAppPDFClientId() const;
 
+  // Clear the cache.
+  virtual void ClearCache() {}
+
  protected:
   MahiManager();
 };
