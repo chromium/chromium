@@ -110,11 +110,10 @@ class LengthUtilsTestWithNode : public RenderingTest {
       ConstraintSpace constraint_space = ConstructConstraintSpace(200, 300),
       LayoutUnit content_size = LayoutUnit(),
       LayoutUnit inline_size = kIndefiniteSize) {
-    const auto& style = node.Style();
     BoxStrut border_padding = ComputeBorders(constraint_space, node) +
-                              ComputePadding(constraint_space, style);
+                              ComputePadding(constraint_space, node.Style());
     return ::blink::ComputeBlockSizeForFragment(
-        constraint_space, style, border_padding, content_size, inline_size);
+        constraint_space, node, border_padding, content_size, inline_size);
   }
 };
 

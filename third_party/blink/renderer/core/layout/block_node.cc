@@ -1051,7 +1051,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
       const BoxStrut border_padding =
           fragment_geometry.border + fragment_geometry.padding;
       const MinMaxSizes min_max = ComputeMinMaxInlineSizesFromAspectRatio(
-          constraint_space, Style(), border_padding);
+          constraint_space, *this, border_padding);
       result->sizes.min_size =
           min_max.ClampSizeToMinAndMax(result->sizes.min_size);
       result->sizes.max_size =

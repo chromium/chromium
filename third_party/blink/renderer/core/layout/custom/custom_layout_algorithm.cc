@@ -52,7 +52,7 @@ MinMaxSizesResult CustomLayoutAlgorithm::ComputeMinMaxSizes(
   LogicalSize border_box_size{
       container_builder_.InlineSize(),
       ComputeBlockSizeForFragment(
-          GetConstraintSpace(), Style(), BorderPadding(),
+          GetConstraintSpace(), Node(), BorderPadding(),
           CalculateDefaultBlockSize(GetConstraintSpace(), Node(),
                                     GetBreakToken(), BorderScrollbarPadding()),
           container_builder_.InlineSize())};
@@ -106,7 +106,7 @@ const LayoutResult* CustomLayoutAlgorithm::Layout() {
   LogicalSize border_box_size{
       container_builder_.InlineSize(),
       ComputeBlockSizeForFragment(
-          GetConstraintSpace(), Style(), BorderPadding(),
+          GetConstraintSpace(), Node(), BorderPadding(),
           CalculateDefaultBlockSize(GetConstraintSpace(), Node(),
                                     GetBreakToken(), BorderScrollbarPadding()),
           container_builder_.InlineSize())};
@@ -166,7 +166,7 @@ const LayoutResult* CustomLayoutAlgorithm::Layout() {
       BorderScrollbarPadding().BlockSum(),
       LayoutUnit::FromDoubleRound(fragment_result_options->autoBlockSize()));
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      GetConstraintSpace(), Style(), BorderPadding(), auto_block_size,
+      GetConstraintSpace(), Node(), BorderPadding(), auto_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
   // TODO(ikilpatrick): Allow setting both the first/last baseline instead of a

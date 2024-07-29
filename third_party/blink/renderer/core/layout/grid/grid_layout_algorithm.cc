@@ -24,7 +24,6 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
   DCHECK(params.space.IsNewFormattingContext());
 
   const auto& node = Node();
-  const auto& style = Style();
   const auto& constraint_space = GetConstraintSpace();
 
   // At various stages of the algorithm we need to know the grid available-size.
@@ -62,7 +61,7 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
     const LayoutUnit border_scrollbar_padding =
         BorderScrollbarPadding().BlockSum();
     const MinMaxSizes sizes = ComputeMinMaxBlockSizes(
-        constraint_space, style, container_builder_.BorderPadding());
+        constraint_space, node, container_builder_.BorderPadding());
 
     grid_min_available_size_.block_size =
         (sizes.min_size - border_scrollbar_padding).ClampNegativeToZero();
@@ -79,7 +78,7 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
 
       // Resolve the block-size, and set the available sizes.
       const LayoutUnit block_size = ComputeBlockSizeForFragment(
-          constraint_space, style, BorderPadding(),
+          constraint_space, node, BorderPadding(),
           *contain_intrinsic_block_size_, container_builder_.InlineSize());
 
       grid_available_size_.block_size = grid_min_available_size_.block_size =
@@ -280,7 +279,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   const auto& constraint_space = GetConstraintSpace();
 
   const auto block_size = ComputeBlockSizeForFragment(
-      constraint_space, Style(), border_padding, intrinsic_block_size,
+      constraint_space, Node(), border_padding, intrinsic_block_size,
       container_builder_.InlineSize());
 
   // For scrollable overflow purposes grid is unique in that the "inflow-bounds"
@@ -916,8 +915,8 @@ void GridLayoutAlgorithm::ComputeGridGeometry(
   if (grid_available_size_.block_size == kIndefiniteSize ||
       applies_auto_min_size) {
     const auto block_size = ComputeBlockSizeForFragment(
-        constraint_space, container_style, BorderPadding(),
-        *intrinsic_block_size, container_builder_.InlineSize());
+        constraint_space, node, BorderPadding(), *intrinsic_block_size,
+        container_builder_.InlineSize());
 
     DCHECK_NE(block_size, kIndefiniteSize);
 
@@ -944,7 +943,7 @@ void GridLayoutAlgorithm::ComputeGridGeometry(
     if (constraint_space.IsInitialBlockSizeIndefinite()) {
       needs_additional_pass |=
           ComputeBlockSizeForFragment(
-              constraint_space, container_style, BorderPadding(),
+              constraint_space, node, BorderPadding(),
               /* intrinsic_block_size */ kIndefiniteSize,
               container_builder_.InlineSize()) != kIndefiniteSize;
     }
@@ -1081,10 +1080,9 @@ LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
   DCHECK(subgrid_data.IsSubgrid());
 
   const auto& node = To<GridNode>(subgrid_data.node);
-  const auto& style = node.Style();
-
   return ComputeBlockSizeForFragment(
-      space, style, ComputeBorders(space, node) + ComputePadding(space, style),
+      space, node,
+      ComputeBorders(space, node) + ComputePadding(space, node.Style()),
       node.ComputeSubgridIntrinsicBlockSize(sizing_subtree, space),
       space.AvailableSize().inline_size);
 }

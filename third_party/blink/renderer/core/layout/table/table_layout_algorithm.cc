@@ -815,7 +815,7 @@ void TableLayoutAlgorithm::ComputeRows(
     }
 
     css_table_block_size = ComputeBlockSizeForFragment(
-        space, Style(), table_border_padding, intrinsic_block_size,
+        space, Node(), table_border_padding, intrinsic_block_size,
         table_grid_inline_size, override_available_block_size);
   }
   // In quirks mode, empty tables ignore any specified block-size.

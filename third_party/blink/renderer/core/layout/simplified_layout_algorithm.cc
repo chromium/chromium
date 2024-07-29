@@ -175,7 +175,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
 
     auto ComputeNewBlockSize = [&]() -> LayoutUnit {
       return ComputeBlockSizeForFragment(
-          GetConstraintSpace(), Style(), BorderPadding(),
+          GetConstraintSpace(), Node(), BorderPadding(),
           result.IntrinsicBlockSize(),
           container_builder_.InitialBorderBoxSize().inline_size);
     };

@@ -272,7 +272,7 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     }
 
     block_size = ComputeBlockSizeForFragment(
-        new_space, style, fragment_geometry.border + fragment_geometry.padding,
+        new_space, node, fragment_geometry.border + fragment_geometry.padding,
         intrinsic_block_size, fragment_geometry.border_box_size.inline_size);
 
     if (block_size == kIndefiniteSize)

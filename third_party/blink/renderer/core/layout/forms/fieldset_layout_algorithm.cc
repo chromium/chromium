@@ -99,10 +99,10 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
       intrinsic_block_size_ + Borders().block_end);
 
   // Recompute the block-axis size now that we know our content size.
-  border_box_size_.block_size = ComputeBlockSizeForFragment(
-      GetConstraintSpace(), Style(), BorderPadding(),
-      intrinsic_block_size_ + consumed_block_size_,
-      border_box_size_.inline_size);
+  border_box_size_.block_size =
+      ComputeBlockSizeForFragment(GetConstraintSpace(), Node(), BorderPadding(),
+                                  intrinsic_block_size_ + consumed_block_size_,
+                                  border_box_size_.inline_size);
 
   // The above computation utility knows nothing about fieldset weirdness. The
   // legend may eat from the available content box block size. Make room for

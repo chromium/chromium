@@ -199,7 +199,7 @@ inline LayoutUnit ResolveMainBlockLength(
 // Computes the min-block-size and max-block-size values for a node.
 MinMaxSizes ComputeMinMaxBlockSizes(
     const ConstraintSpace&,
-    const ComputedStyle&,
+    const BlockNode&,
     const BoxStrut& border_padding,
     LayoutUnit override_available_size = kIndefiniteSize);
 
@@ -220,7 +220,7 @@ MinMaxSizes ComputeTransferredMinMaxBlockSizes(const LogicalSize& ratio,
 // coming from a replaced element.
 CORE_EXPORT MinMaxSizes
 ComputeMinMaxInlineSizesFromAspectRatio(const ConstraintSpace&,
-                                        const ComputedStyle&,
+                                        const BlockNode&,
                                         const BoxStrut& border_padding);
 
 MinMaxSizes ComputeMinMaxInlineSizes(
@@ -243,7 +243,7 @@ MinMaxSizes ComputeMinMaxInlineSizes(
 // elements from the available block size.
 CORE_EXPORT LayoutUnit ComputeBlockSizeForFragment(
     const ConstraintSpace&,
-    const ComputedStyle&,
+    const BlockNode&,
     const BoxStrut& border_padding,
     LayoutUnit intrinsic_size,
     LayoutUnit inline_size,
@@ -251,7 +251,7 @@ CORE_EXPORT LayoutUnit ComputeBlockSizeForFragment(
 
 CORE_EXPORT LayoutUnit
 ComputeInlineSizeFromAspectRatio(const ConstraintSpace& space,
-                                 const ComputedStyle& style,
+                                 const BlockNode&,
                                  const BoxStrut& border_padding);
 
 LayoutUnit ComputeInlineSizeForFragmentInternal(
@@ -294,13 +294,13 @@ inline LayoutUnit ComputeInlineSizeForFragment(
 // https://drafts.csswg.org/css-tables-3/#used-width-of-table
 CORE_EXPORT LayoutUnit ComputeUsedInlineSizeForTableFragment(
     const ConstraintSpace& space,
-    const BlockNode& node,
+    const BlockNode&,
     const BoxStrut& border_padding,
     const MinMaxSizes& table_grid_min_max_sizes);
 
 LayoutUnit ComputeInitialBlockSizeForFragment(
     const ConstraintSpace&,
-    const ComputedStyle&,
+    const BlockNode&,
     const BoxStrut& border_padding,
     LayoutUnit intrinsic_size,
     LayoutUnit inline_size,

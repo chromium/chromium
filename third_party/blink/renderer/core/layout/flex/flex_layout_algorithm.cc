@@ -156,7 +156,7 @@ LayoutUnit FlexLayoutAlgorithm::MainAxisContentExtent(
     const LayoutUnit border_scrollbar_padding =
         BorderScrollbarPadding().BlockSum();
     return ComputeBlockSizeForFragment(
-               GetConstraintSpace(), Style(), BorderPadding(),
+               GetConstraintSpace(), Node(), BorderPadding(),
                sum_hypothetical_main_size.ClampNegativeToZero() +
                    border_scrollbar_padding,
                container_builder_.InlineSize()) -
@@ -245,7 +245,7 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
       // Recompute the total block size in case |total_intrinsic_block_size_|
       // changed as a result of fragmentation.
       total_block_size_ = ComputeBlockSizeForFragment(
-          GetConstraintSpace(), Style(), BorderPadding(),
+          GetConstraintSpace(), Node(), BorderPadding(),
           total_intrinsic_block_size_, container_builder_.InlineSize());
     } else {
       LayoutUnit center = total_block_size_ / 2;
@@ -747,7 +747,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
           MinMaxSizesFunc, max_property_in_main_axis);
       min_max_sizes_in_cross_axis_direction = ComputeMinMaxBlockSizes(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode);
+          flex_basis_space, child, border_padding_in_child_writing_mode);
     } else {
       min_max_sizes_in_main_axis_direction.max_size = ResolveMaxBlockLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
@@ -1077,7 +1077,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   }
 
   total_block_size_ = ComputeBlockSizeForFragment(
-      GetConstraintSpace(), Style(), BorderPadding(),
+      GetConstraintSpace(), Node(), BorderPadding(),
       total_intrinsic_block_size_, container_builder_.InlineSize());
 
   if (!IsBreakInside(GetBreakToken())) {
@@ -1116,7 +1116,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
         intrinsic_block_size_ + BorderScrollbarPadding().block_end);
 
     block_size = ComputeBlockSizeForFragment(
-        GetConstraintSpace(), Style(), BorderPadding(),
+        GetConstraintSpace(), Node(), BorderPadding(),
         previously_consumed_block_size + intrinsic_block_size_,
         container_builder_.InlineSize());
   } else {
