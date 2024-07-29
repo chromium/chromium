@@ -300848,7 +300848,7 @@
        []
       ],
       "not-embeddable-frame.py": [
-       "9e65b42435908e33ed5b16e97f8bee3700bab340",
+       "be7e635ac2456a26a9783565184bee5f881c2bb7",
        []
       ],
       "preload-csp-report.https.sub.html": [
@@ -442683,6 +442683,15 @@
        }
       ]
      ],
+     "report-frame-ancestors-no-parent-cookies.sub.html": [
+      "b500811c070da02b0a7a5519481c1c5af5a49ddf",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "report-frame-ancestors-with-x-frame-options.sub.html": [
       "0c58a5efd54ceda6ad5f906b02862976c40f65cd",
       [
@@ -489321,7 +489330,7 @@
      ]
     ],
     "non-fully-active.https.html": [
-     "dac4cecb78c03dfd7b09fb14412c11cfbecf533b",
+     "82b87b63d7dea3c7ed9bbd4003f5b58ad07d5831",
      [
       null,
       {
@@ -701923,7 +701932,7 @@
       ]
      ],
      "sigmoid.https.any.js": [
-      "e5401367683ad65e02432a06dc5ffc3eb80dcc28",
+      "e76403eca3e154718a065a57c419537867efe645",
       [
        "webnn/validation_tests/sigmoid.https.any.html",
        {
@@ -702046,7 +702055,7 @@
       ]
      ],
      "softplus.https.any.js": [
-      "fd1836bfdb6ca12f28ceb7790aa8ccc214ed59b8",
+      "2196c895f3980ad57e58054ab68f0aa793b17833",
       [
        "webnn/validation_tests/softplus.https.any.html",
        {
@@ -702087,7 +702096,7 @@
       ]
      ],
      "softsign.https.any.js": [
-      "11b462c3a3efce81827b106b7b7bdac9ce2d2609",
+      "81b4b4fbe75b4a11c9d2b9fa112add96453bbe2c",
       [
        "webnn/validation_tests/softsign.https.any.html",
        {

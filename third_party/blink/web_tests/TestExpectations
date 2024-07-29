@@ -7519,8 +7519,8 @@ crbug.com/40186254 fast/events/touch/gesture/long-press-drag-drop-touch-editing-
 
 # Gardener 2024-07-29
 # Flaky Linux MSAN failures
-crbug.com/356041709 [ Linux ] http/tests/devtools/elements/highlight/highlight-css-grid-huge.js [ Pass Crash ]
-crbug.com/356041709 [ Linux ] http/tests/devtools/elements/highlight/highlight-css-persistent-grid-huge.js [ Pass Crash ]
+crbug.com/356041709 [ Linux ] http/tests/devtools/elements/highlight/highlight-css-grid-huge.js [ Crash Pass ]
+crbug.com/356041709 [ Linux ] http/tests/devtools/elements/highlight/highlight-css-persistent-grid-huge.js [ Crash Pass ]
 
 crbug.com/40899458 fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass Timeout ]
 
