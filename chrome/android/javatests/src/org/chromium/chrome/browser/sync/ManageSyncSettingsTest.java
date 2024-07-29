@@ -78,6 +78,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.AppHooksImpl;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
@@ -194,6 +195,7 @@ public class ManageSyncSettingsTest {
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
     @Mock private SyncService mSyncService;
+    @Mock private ReauthenticatorBridge mReauthenticatorMock;
 
     @Before
     public void setUp() {
@@ -981,6 +983,8 @@ public class ManageSyncSettingsTest {
         ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS
     })
     public void testSigninSettingsBatchUploadEntryDescriptionPassword() throws Exception {
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         doAnswer(
                         args -> {
@@ -1027,6 +1031,8 @@ public class ManageSyncSettingsTest {
         ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS
     })
     public void testSigninSettingsBatchUploadEntryDescriptionOther() throws Exception {
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         doAnswer(
                         args -> {
@@ -1073,6 +1079,8 @@ public class ManageSyncSettingsTest {
         ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS
     })
     public void testSigninSettingsBatchUploadEntryDescriptionPasswordAndOther() throws Exception {
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         doAnswer(
                         args -> {

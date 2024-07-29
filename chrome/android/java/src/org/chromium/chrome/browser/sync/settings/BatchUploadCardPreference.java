@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -15,6 +16,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -33,11 +36,13 @@ import java.util.Set;
 
 public class BatchUploadCardPreference extends Preference
         implements SyncService.SyncStateChangedListener, BatchUploadDialogCoordinator.Listener {
+    private Activity mActivity;
     private Profile mProfile;
     private SyncService mSyncService;
     private HashMap<Integer, LocalDataDescription> mLocalDataDescriptionsMap;
     private ModalDialogManager mDialogManager;
     private SnackbarManager mSnackbarManager;
+    private ReauthenticatorBridge mReauthenticatorBridge;
 
     public BatchUploadCardPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -46,13 +51,25 @@ public class BatchUploadCardPreference extends Preference
     }
 
     /** Initialize the dependencies for the BatchUploadCardPreference and update the error card. */
-    public void initialize(Profile profile, ModalDialogManager dialogManager) {
+    public void initialize(Activity activity, Profile profile, ModalDialogManager dialogManager) {
+        mActivity = activity;
         mProfile = profile;
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
         mDialogManager = dialogManager;
         if (mSyncService != null) {
             mSyncService.addSyncStateChangedListener(this);
         }
+        mReauthenticatorBridge =
+                ReauthenticatorBridge.create(
+                        mActivity, mProfile, DeviceAuthSource.SETTINGS_BATCH_UPLOAD);
+        update();
+    }
+
+    public void hideBatchUploadCardAndUpdate() {
+        // Temporarily hide, it will become visible again once getLocalDataDescriptions() completes,
+        // which is triggered from update().
+        setVisible(false);
+        notifyChanged();
         update();
     }
 
@@ -65,6 +82,9 @@ public class BatchUploadCardPreference extends Preference
         super.onDetached();
         if (mSyncService != null) {
             mSyncService.removeSyncStateChangedListener(this);
+        }
+        if (mReauthenticatorBridge != null) {
+            mReauthenticatorBridge.destroy();
         }
     }
 
@@ -84,12 +104,20 @@ public class BatchUploadCardPreference extends Preference
 
     @Override
     public void onSaveInAccountDialogButtonClicked(Set<Integer> types, int itemsCount) {
-        // Temporarily hide, assuming that in most cases all local data is migrated. If needed, it
-        // will become visible again once getLocalDataDescriptions() completes, which is triggered
-        // from update().
-        setVisible(false);
-        notifyChanged();
+        if (!types.contains(ModelType.PASSWORDS)) {
+            uploadLocalDataAndShowSnackbar(types, itemsCount);
+            return;
+        }
+        // Uploading passwords requires a reauthentication.
+        mReauthenticatorBridge.reauthenticate(
+                success -> {
+                    if (success) {
+                        uploadLocalDataAndShowSnackbar(types, itemsCount);
+                    }
+                });
+    }
 
+    private void uploadLocalDataAndShowSnackbar(Set<Integer> types, int itemsCount) {
         SyncServiceFactory.getForProfile(mProfile).triggerLocalDataMigration(types);
         String snackbarMessage =
                 getContext()
@@ -108,12 +136,14 @@ public class BatchUploadCardPreference extends Preference
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_SETTINGS_BATCH_UPLOAD)
                         .setSingleLine(false));
-        update();
+        hideBatchUploadCardAndUpdate();
     }
 
     private void update() {
         mSyncService.getLocalDataDescriptions(
-                Set.of(ModelType.BOOKMARKS, ModelType.PASSWORDS, ModelType.READING_LIST),
+                mReauthenticatorBridge.canUseAuthenticationWithBiometricOrScreenLock()
+                        ? Set.of(ModelType.BOOKMARKS, ModelType.READING_LIST, ModelType.PASSWORDS)
+                        : Set.of(ModelType.BOOKMARKS, ModelType.READING_LIST),
                 localDataDescriptionsMap -> {
                     mLocalDataDescriptionsMap = localDataDescriptionsMap;
                     int sum =
