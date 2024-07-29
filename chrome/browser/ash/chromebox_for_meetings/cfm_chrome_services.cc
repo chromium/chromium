@@ -29,7 +29,9 @@ void InitializeCfmServices() {
   DiagnosticsService::Initialize();
   XuCameraService::Initialize();
   ExternalDisplayBrightnessService::Initialize();
-  DataAggregatorService::Initialize();
+  if (base::FeatureList::IsEnabled(features::kCloudLogger)) {
+    DataAggregatorService::Initialize();
+  }
 }
 
 void ShutdownCfmServices() {
@@ -38,7 +40,9 @@ void ShutdownCfmServices() {
     return;
   }
 
-  DataAggregatorService::Shutdown();
+  if (base::FeatureList::IsEnabled(features::kCloudLogger)) {
+    DataAggregatorService::Shutdown();
+  }
   ExternalDisplayBrightnessService::Shutdown();
   XuCameraService::Shutdown();
   DiagnosticsService::Shutdown();
