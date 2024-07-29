@@ -9,13 +9,11 @@
 #import <utility>
 
 #import "base/check.h"
-#import "base/check_deref.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_macros.h"
-#import "base/path_service.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
@@ -33,7 +31,6 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
-#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
@@ -104,20 +101,14 @@ void BrowserStateSizeTask(const base::FilePath& path) {
   UMA_HISTOGRAM_COUNTS_10000("Profile.ExtensionSize", size_MB);
 }
 
-// Gets the user data directory.
-base::FilePath GetUserDataDir() {
-  base::FilePath user_data_dir;
-  bool result = base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir);
-  DCHECK(result);
-  return user_data_dir;
-}
-
 }  // namespace
 
 ChromeBrowserStateManagerImpl::ChromeBrowserStateManagerImpl(
-    PrefService* local_state)
-    : local_state_(local_state) {
+    PrefService* local_state,
+    const base::FilePath& data_dir)
+    : local_state_(local_state), data_dir_(data_dir) {
   CHECK(local_state_);
+  CHECK(!data_dir_.empty());
 }
 
 ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {}
@@ -144,7 +135,7 @@ ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByName(
 
 ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByPath(
     const base::FilePath& path) {
-  DCHECK_EQ(path.DirName(), GetUserDataDir());
+  DCHECK_EQ(path.DirName(), data_dir_);
   return GetBrowserStateByName(path.BaseName().AsUTF8Unsafe());
 }
 
@@ -233,7 +224,7 @@ void ChromeBrowserStateManagerImpl::LoadBrowserState(
 
   auto [iter, inserted] = browser_states_.insert(std::make_pair(
       name, ChromeBrowserState::CreateBrowserState(
-                GetUserDataDir().Append(name), name,
+                data_dir_.Append(name), name,
                 ChromeBrowserState::CreationMode::kSynchronous, this)));
   DCHECK(inserted);
   DCHECK(iter != browser_states_.end());
@@ -299,7 +290,6 @@ void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
 void ChromeBrowserStateManagerImpl::AddBrowserStateToCache(
     ChromeBrowserState* browser_state) {
   DCHECK(!browser_state->IsOffTheRecord());
-  DCHECK_EQ(browser_state->GetStatePath().DirName(), GetUserDataDir());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
   const CoreAccountInfo account_info =

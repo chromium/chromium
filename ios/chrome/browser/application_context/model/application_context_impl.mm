@@ -321,7 +321,8 @@ ApplicationContextImpl::GetChromeBrowserStateManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!chrome_browser_state_manager_) {
     chrome_browser_state_manager_ =
-        std::make_unique<ChromeBrowserStateManagerImpl>(GetLocalState());
+        std::make_unique<ChromeBrowserStateManagerImpl>(
+            GetLocalState(), base::PathService::CheckedGet(ios::DIR_USER_DATA));
   }
   return chrome_browser_state_manager_.get();
 }

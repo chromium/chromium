@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/browser_state/model/chrome_browser_state_manager_impl.h"
 
 #import "base/containers/contains.h"
+#import "base/test/test_file_util.h"
 #import "ios/chrome/browser/browser_state/model/constants.h"
 #import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -32,7 +33,8 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
   ChromeBrowserStateManagerImplTest()
       : web_task_environment_(
             web::WebTaskEnvironment::IOThreadType::REAL_THREAD_DELAYED),
-        browser_state_manager_(GetApplicationContext()->GetLocalState()) {
+        browser_state_manager_(GetApplicationContext()->GetLocalState(),
+                               base::CreateUniqueTempDirectoryScopedToTest()) {
     TestingApplicationContext* application_context =
         TestingApplicationContext::GetGlobal();
 

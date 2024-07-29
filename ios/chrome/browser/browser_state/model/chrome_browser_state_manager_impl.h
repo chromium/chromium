@@ -23,7 +23,11 @@ class PrefService;
 class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
                                       public ChromeBrowserState::Delegate {
  public:
-  explicit ChromeBrowserStateManagerImpl(PrefService* local_state);
+  // Constructs the ChromeBrowserStateManagerImpl with a pointer to the local
+  // state's PrefService and with the path to the directory containing the
+  // ChromeBrowserStates' data.
+  ChromeBrowserStateManagerImpl(PrefService* local_state,
+                                const base::FilePath& data_dir);
 
   ChromeBrowserStateManagerImpl(const ChromeBrowserStateManagerImpl&) = delete;
   ChromeBrowserStateManagerImpl& operator=(
@@ -79,6 +83,9 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
 
   // The PrefService storing the local state.
   raw_ptr<PrefService> local_state_;
+
+  // The path to the directory where the ChromeBrowserStates are stored.
+  const base::FilePath data_dir_;
 
   // Holds the ChromeBrowserState instances that this instance has created.
   ChromeBrowserMap browser_states_;
