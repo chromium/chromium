@@ -440,7 +440,7 @@ def _finalize_resultdb(resultdb):
     d = {a: getattr(resultdb, a) for a in dir(resultdb)}
     return {k: v for k, v in d.items() if v != None}
 
-def _spec_init(node, settings, **kwargs):
+def _spec_init(node, settings, *, additional_fields = {}):
     """Init for gtest and isolated script test specs."""
     binary_node = _get_test_binary_node(node)
     binary_test_config = binary_node.props.test_config or _binary_test_config()
@@ -458,7 +458,7 @@ def _spec_init(node, settings, **kwargs):
         merge = binary_test_config.merge,
         resultdb = binary_test_config.resultdb,
         results_handler = binary_test_config.results_handler,
-        **kwargs
+        **additional_fields
     )
 
 def _update_spec_for_android_presentation(spec_value):
