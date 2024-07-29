@@ -62,7 +62,7 @@ function createImageDoodle(width: number = 500, height: number = 200): Doodle {
       onClickUrl: {url: 'https://foo.com'},
       shareUrl: {url: 'https://foo.com'},
     },
-    description: '',
+    description: 'Dummy',
     interactive: null,
   };
 }
@@ -609,14 +609,20 @@ suite('NewTabPageLogoTest', () => {
 
   test('clicking share button adds share dialog', async () => {
     // Arrange.
-    const logo = await createLogo(createImageDoodle());
+    const doodle = createImageDoodle();
+    const logo = await createLogo(doodle);
 
     // Act.
     $$<HTMLElement>(logo, '#shareButton')!.click();
     await microtasksFinished();
 
     // Assert.
-    assertTrue(!!logo.shadowRoot!.querySelector('ntp-doodle-share-dialog'));
+    const dialog = logo.shadowRoot!.querySelector('ntp-doodle-share-dialog');
+    assertTrue(!!dialog);
+    assertEquals(doodle.description, dialog.title);
+    // Check that the title is not set as an HTML attribute, which would result
+    // in showing a tooltip on hover.
+    assertFalse(dialog.hasAttribute('title'));
   });
 
   test('closing share dialog removes share dialog', async () => {
