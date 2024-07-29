@@ -883,6 +883,12 @@
       <message name="IDS_ARCHIVE_DIALOG_CLOSE_ALL_INACTIVE_TABS_CONFIRMATION" desc="The description for the option to never archive tabs.">
         Close all
       </message>
+      <message name="IDS_ACCESSIBILITY_ARCHIVED_TABS_DIALOG_BACK_BUTTON" desc="Accessibility string for the back button in the archived tabs dialog. Tap this button to exit out of the multi-select mode">
+        Hide inactive tabs dialog
+      </message>
+      <message name="IDS_ACCESSIBILITY_ARCHIVED_TABS_DIALOG" desc="Accessibility string for archived tabs dialog. This string is announced when the Tab Selection Editor is shown to screen.">
+        Inactive tabs dialog
+      </message>
     </messages>
   </release>
 </grit>

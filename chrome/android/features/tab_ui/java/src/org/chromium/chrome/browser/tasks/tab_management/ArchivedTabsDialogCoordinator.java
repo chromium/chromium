@@ -299,6 +299,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         controller.setLifecycleObserver(mTabListEditorLifecycleObserver);
         controller.show(TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel), 0, null);
         controller.setNavigationProvider(mNavigationProvider);
+        mTabListEditorCoordinator.overrideContentDescriptions(
+                R.string.accessibility_archived_tabs_dialog,
+                R.string.accessibility_archived_tabs_dialog_back_button);
 
         // Register the dialog to handle back press events.
         mBackPressManager.addHandler(controller, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);

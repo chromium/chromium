@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -339,7 +340,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
 
-        mRobot.actionRobot.clickToolbarNavigationButton();
+        mRobot.actionRobot.clickToolbarNavigationButton(
+                R.string.accessibility_archived_tabs_dialog_back_button);
         mRobot.resultRobot
                 .verifyTabListEditorIsVisible()
                 .verifyAdapterHasItemCount(2)
@@ -550,6 +552,13 @@ public class ArchivedTabsDialogCoordinatorTest {
                             }
                         });
         mRobot.resultRobot.verifyUndoSnackbarWithTextIsShown("Closed about:blank");
+    }
+
+    @Test
+    @MediumTest
+    public void testContentDescription() {
+        onView(withContentDescription(R.string.accessibility_tab_selection_editor_back_button));
+        onView(withContentDescription(R.string.accessibility_tab_selection_editor));
     }
 
     private void showDialog(int numTabs) {

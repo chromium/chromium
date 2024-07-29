@@ -158,12 +158,16 @@ public class TabListEditorTestingRobot {
         }
 
         public TabListEditorTestingRobot.Action clickToolbarNavigationButton() {
+            clickToolbarNavigationButton(R.string.accessibility_tab_selection_editor_back_button);
+            return this;
+        }
+
+        public TabListEditorTestingRobot.Action clickToolbarNavigationButton(
+                @IdRes int navigationButtonIdRes) {
             onView(
                             inTabListEditor(
                                     allOf(
-                                            withContentDescription(
-                                                    R.string
-                                                            .accessibility_tab_selection_editor_back_button),
+                                            withContentDescription(navigationButtonIdRes),
                                             withParent(withId(R.id.action_bar)))))
                     .perform(click());
             return this;

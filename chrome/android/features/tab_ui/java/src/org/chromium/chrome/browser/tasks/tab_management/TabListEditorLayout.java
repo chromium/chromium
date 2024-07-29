@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.tab_ui.R;
@@ -33,6 +34,13 @@ class TabListEditorLayout extends SelectableListLayout<Integer> {
     // TabListEditorCoordinator.
     public TabListEditorLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    /** Destroy any members that needs clean up. */
+    public void destroy() {
+        if (mIsInitialized) {
+            super.onDestroyed();
+        }
     }
 
     /**
@@ -94,11 +102,17 @@ class TabListEditorLayout extends SelectableListLayout<Integer> {
         return mToolbar;
     }
 
-    /** Destroy any members that needs clean up. */
-    public void destroy() {
-        if (mIsInitialized) {
-            super.onDestroyed();
-        }
+    /**
+     * Override the content descriptions of the top-level layout and back button.
+     *
+     * @param containerContentDescription The content description for the top-level layout.
+     * @param backButtonContentDescription The content description for the back button.
+     */
+    public void overrideContentDescriptions(
+            @StringRes int containerContentDescription,
+            @StringRes int backButtonContentDescription) {
+        setContentDescription(getContext().getString(containerContentDescription));
+        mToolbar.setBackButtonContentDescription(backButtonContentDescription);
     }
 
     private void clearBackgroundViewAccessibilityImportance() {

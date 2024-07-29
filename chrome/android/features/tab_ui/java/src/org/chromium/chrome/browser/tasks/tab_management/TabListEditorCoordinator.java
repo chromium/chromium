@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -409,6 +410,19 @@ class TabListEditorCoordinator {
     public void removeSpecialListItem(@UiType int uiType, int itemIdentifier) {
         assert mTabListCoordinator != null;
         mTabListCoordinator.removeSpecialListItem(uiType, itemIdentifier);
+    }
+
+    /**
+     * Override the content descriptions of the top-level layout and back button.
+     *
+     * @param containerContentDescription The content description for the top-level layout.
+     * @param backButtonContentDescription The content description for the back button.
+     */
+    public void overrideContentDescriptions(
+            @StringRes int containerContentDescription,
+            @StringRes int backButtonContentDescription) {
+        mTabListEditorLayout.overrideContentDescriptions(
+                containerContentDescription, backButtonContentDescription);
     }
 
     private void createTabListCoordinator() {
