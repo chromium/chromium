@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens.mojom.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens_handler.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets.mojom.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets_handler.h"
 #endif
@@ -36,12 +38,17 @@ class PrivacySandboxInternalsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<
           related_website_sets::mojom::RelatedWebsiteSetsPageHandler> receiver);
+
+  void BindInterface(
+      mojo::PendingReceiver<
+          private_state_tokens::mojom::PrivateStateTokensPageHandler> receiver);
 #endif
 
  private:
   std::unique_ptr<PrivacySandboxInternalsHandler> handler_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<RelatedWebsiteSetsHandler> related_website_sets_handler_;
+  std::unique_ptr<PrivateStateTokensHandler> private_state_tokens_handler_;
 #endif
 
   WEB_UI_CONTROLLER_TYPE_DECL();

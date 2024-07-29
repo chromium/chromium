@@ -192,6 +192,7 @@
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens.mojom.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets.mojom.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
@@ -1830,6 +1831,12 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsDevUI)) {
     RegisterWebUIControllerInterfaceBinder<
         related_website_sets::mojom::RelatedWebsiteSetsPageHandler,
+        privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
+  }
+
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivateStateTokensDevUI)) {
+    RegisterWebUIControllerInterfaceBinder<
+        private_state_tokens::mojom::PrivateStateTokensPageHandler,
         privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
   }
 #endif
