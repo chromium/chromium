@@ -13,10 +13,11 @@ import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {SEA_PEN_SAMPLES, SeaPenSamplePrompt} from './constants.js';
+import {SeaPenSamplePrompt} from './constants.js';
 import {SeaPenQuery} from './sea_pen.mojom-webui.js';
 import {getTemplate} from './sea_pen_freeform_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
+import {SEA_PEN_SAMPLES} from './sea_pen_untranslated_constants.js';
 import {isArrayEqual, shuffle} from './sea_pen_utils.js';
 
 /** Enumeration of supported tabs. */
