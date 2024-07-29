@@ -17127,9 +17127,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240501_NoEnact",
+                    "name": "Enabled_20240726_NoEnact",
                     "params": {
-                        "enact_candidates": "false"
+                        "enact_candidates": "false",
+                        "one_execution_per_hover": "false"
                     },
                     "enable_features": [
                         "PreloadingHeuristicsMLModel"
