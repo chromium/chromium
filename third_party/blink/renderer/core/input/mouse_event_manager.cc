@@ -979,9 +979,11 @@ bool MouseEventManager::TryStartDrag(
   // updateStyleAndLayoutIgnorePendingStylesheets needs to be audited.  See
   // http://crbug.com/590369 for more details.
   frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kInput);
-  if (IsInPasswordField(
-          frame_->Selection().ComputeVisibleSelectionInDOMTree().Start()))
+  if (GetDragState().drag_type_ == kDragSourceActionSelection &&
+      IsInPasswordField(
+          frame_->Selection().ComputeVisibleSelectionInDOMTree().Start())) {
     return false;
+  }
 
   // Set the clipboard access policy to protected
   // (https://html.spec.whatwg.org/multipage/dnd.html#concept-dnd-p) to
