@@ -313,14 +313,7 @@ class MODULES_EXPORT RTCPeerConnection final
   // state.
   void UpdateIceConnectionState();
 
-  RTCRtpTransport* rtpTransport() {
-    if (rtp_transport_ && !rtp_transport_registered_) {
-      rtp_transport_registered_ = true;
-      rtp_transport_->Register(
-          peer_handler_->NativePeerConnection()->GetNetworkController());
-    }
-    return rtp_transport_;
-  }
+  RTCRtpTransport* rtpTransport(ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
 

@@ -319,7 +319,8 @@ class MockRTCPeerConnectionHandlerPlatform::DummyRTCRtpTransceiverPlatform
 
 MockRTCPeerConnectionHandlerPlatform::MockRTCPeerConnectionHandlerPlatform()
     : RTCPeerConnectionHandler(
-          scheduler::GetSingleThreadTaskRunnerForTesting()) {}
+          scheduler::GetSingleThreadTaskRunnerForTesting()),
+      native_peer_connection_(webrtc::MockPeerConnectionInterface::Create()) {}
 
 MockRTCPeerConnectionHandlerPlatform::~MockRTCPeerConnectionHandlerPlatform() =
     default;
@@ -436,7 +437,7 @@ void MockRTCPeerConnectionHandlerPlatform::CloseAndUnregister() {}
 
 webrtc::PeerConnectionInterface*
 MockRTCPeerConnectionHandlerPlatform::NativePeerConnection() {
-  return nullptr;
+  return native_peer_connection_.get();
 }
 
 void MockRTCPeerConnectionHandlerPlatform::

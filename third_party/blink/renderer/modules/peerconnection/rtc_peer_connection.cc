@@ -2803,6 +2803,24 @@ void RTCPeerConnection::DispatchScheduledEvents() {
   events.clear();
 }
 
+RTCRtpTransport* RTCPeerConnection::rtpTransport(
+    ExceptionState& exception_state) {
+  if (rtp_transport_ && !rtp_transport_registered_) {
+    if (!peer_handler_->NativePeerConnection()->GetNetworkController()) {
+      // TODO(crbug.com/348441506): Return successfully and Register the
+      // RtpTransport once the NetworkController is created.
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kUnknownError,
+          "NetworkController not yet created. Try again later...");
+      return nullptr;
+    }
+    rtp_transport_registered_ = true;
+    rtp_transport_->Register(
+        peer_handler_->NativePeerConnection()->GetNetworkController());
+  }
+  return rtp_transport_;
+}
+
 void RTCPeerConnection::Trace(Visitor* visitor) const {
   visitor->Trace(pending_local_description_);
   visitor->Trace(current_local_description_);
