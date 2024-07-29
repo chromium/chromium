@@ -7279,17 +7279,6 @@ bool ChromeContentBrowserClient::HandleWebUIReverse(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/40258836): Remove this after feature is launched.
-  // No need to actually reverse-rewrite the URL, but return true to update the
-  // displayed URL when rewriting chrome://settings/passwords to
-  // chrome://password-manager.
-  if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->DomainIs(password_manager::kChromeUIPasswordManagerHost)) {
-    return true;
-  }
-#endif
-
   // No need to actually reverse-rewrite the URL, but return true to update the
   // displayed URL when rewriting chrome://help to chrome://settings/help.
   return url->SchemeIs(content::kChromeUIScheme) &&

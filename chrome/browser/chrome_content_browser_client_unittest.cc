@@ -685,11 +685,6 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
   GURL chrome_settings(chrome::kChromeUISettingsURL);
   EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(&chrome_settings,
                                                              &profile_));
-#if !BUILDFLAG(IS_ANDROID)
-  GURL chrome_passwords_in_settings(chrome::kChromeUIPasswordManagerURL);
-  EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(
-      &chrome_passwords_in_settings, &profile_));
-#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
