@@ -6,22 +6,11 @@
 
 #import <map>
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-namespace {
-
-// The dimensions of each toggle cell.
-// TODO(crbug.com/350990359): Update this once we have the finalized specs.
-const CGFloat kToggleCellHeight = 80;
-const CGFloat kToggleCellWidth = 343;
-
-// The vertical spacing between toggle cells.
-const CGFloat kSpacingBetweenToggles = 12;
-
-}  // namespace
 
 @interface HomeCustomizationMainViewController () <UICollectionViewDelegate>
 
@@ -34,6 +23,9 @@ const CGFloat kSpacingBetweenToggles = 12;
 @implementation HomeCustomizationMainViewController {
   // The collection view containing this menu page's content.
   UICollectionView* _collectionView;
+
+  // The configurator for the collection view.
+  HomeCustomizationCollectionConfigurator* _collectionConfigurator;
 
   // The diffable data source for the collection view.
   UICollectionViewDiffableDataSource<CustomizationSection*, NSNumber*>*
@@ -77,70 +69,22 @@ const CGFloat kSpacingBetweenToggles = 12;
 
 // Creates and returns the collection view for the main menu page.
 - (void)createCollectionView {
-  _collectionView =
-      [[UICollectionView alloc] initWithFrame:CGRectZero
-                         collectionViewLayout:[self collectionViewLayout]];
+  _collectionConfigurator = [[HomeCustomizationCollectionConfigurator alloc]
+      initWithPage:CustomizationMenuPage::kMain];
+
+  _collectionView = [[UICollectionView alloc]
+             initWithFrame:CGRectZero
+      collectionViewLayout:[_collectionConfigurator collectionViewLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.delegate = self;
 
   _diffableDataSource = [self createDiffableDataSource];
+  _collectionConfigurator.diffableDataSource = _diffableDataSource;
   _collectionView.dataSource = _diffableDataSource;
 
   // Sets initial data.
   [_diffableDataSource applySnapshot:[self dataSnapshot]
                 animatingDifferences:NO];
-}
-
-// Defines the layout for the collection view.
-- (UICollectionViewLayout*)collectionViewLayout {
-  UICollectionViewCompositionalLayoutConfiguration* configuration =
-      [[UICollectionViewCompositionalLayoutConfiguration alloc] init];
-  __weak __typeof(self) weakSelf = self;
-  return [[UICollectionViewCompositionalLayout alloc]
-      initWithSectionProvider:^(
-          NSInteger sectionIndex,
-          id<NSCollectionLayoutEnvironment> layoutEnvironment) {
-        return [weakSelf sectionForIndex:sectionIndex];
-      }
-                configuration:configuration];
-}
-
-// Returns the section for a given `sectionIndex`.
-- (NSCollectionLayoutSection*)sectionForIndex:(NSInteger)sectionIndex {
-  // Toggles section.
-  if (sectionIndex ==
-      [_diffableDataSource.snapshot
-          indexOfSectionIdentifier:kCustomizationSectionToggles]) {
-    NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
-        sizeWithWidthDimension:[NSCollectionLayoutDimension
-                                   fractionalWidthDimension:1.]
-               heightDimension:[NSCollectionLayoutDimension
-                                   fractionalHeightDimension:1.]];
-    NSCollectionLayoutItem* item =
-        [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
-
-    NSCollectionLayoutSize* groupSize = [NSCollectionLayoutSize
-        sizeWithWidthDimension:[NSCollectionLayoutDimension
-                                   fractionalWidthDimension:1.]
-               heightDimension:[NSCollectionLayoutDimension
-                                   estimatedDimension:kToggleCellHeight]];
-    NSCollectionLayoutGroup* togglesGroup =
-        [NSCollectionLayoutGroup verticalGroupWithLayoutSize:groupSize
-                                                    subitems:@[ item ]];
-
-    NSCollectionLayoutSection* togglesSection =
-        [NSCollectionLayoutSection sectionWithGroup:togglesGroup];
-
-    // Adds spacing between toggles, as well as content insets so that the cells
-    // have the correct width.
-    togglesSection.interGroupSpacing = kSpacingBetweenToggles;
-    togglesSection.contentInsets = NSDirectionalEdgeInsetsMake(
-        0, (self.view.frame.size.width - kToggleCellWidth) / 2, 0,
-        (self.view.frame.size.width - kToggleCellWidth) / 2);
-
-    return togglesSection;
-  }
-  return nil;
 }
 
 // Creates and returns the diffable data source for the collection view.

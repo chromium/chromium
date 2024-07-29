@@ -5,24 +5,10 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_view_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_header_view.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_link_cell.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
-
-namespace {
-
-// The dimensions of each link cell.
-// TODO(crbug.com/350990359): Update this once we have the finalized specs.
-const CGFloat kLinkCellHeight = 80;
-const CGFloat kLinkCellWidth = 343;
-
-// The vertical spacing between link cells.
-const CGFloat kSpacingBetweenCells = 12;
-
-// The vertical spacing below the header.
-const CGFloat kSpacingBelowHeader = 16;
-
-}  // namespace
 
 @interface HomeCustomizationDiscoverViewController () <UICollectionViewDelegate>
 
@@ -34,6 +20,9 @@ const CGFloat kSpacingBelowHeader = 16;
 @implementation HomeCustomizationDiscoverViewController {
   // The collection view containing this menu page's content.
   UICollectionView* _collectionView;
+
+  // The configurator for the collection view.
+  HomeCustomizationCollectionConfigurator* _collectionConfigurator;
 
   // The diffable data source for the collection view.
   UICollectionViewDiffableDataSource<NSString*, NSNumber*>* _diffableDataSource;
@@ -86,83 +75,22 @@ const CGFloat kSpacingBelowHeader = 16;
 
 // Creates and returns the collection view for the main menu page.
 - (void)createCollectionView {
-  _collectionView =
-      [[UICollectionView alloc] initWithFrame:CGRectZero
-                         collectionViewLayout:[self collectionViewLayout]];
+  _collectionConfigurator = [[HomeCustomizationCollectionConfigurator alloc]
+      initWithPage:CustomizationMenuPage::kDiscover];
+
+  _collectionView = [[UICollectionView alloc]
+             initWithFrame:CGRectZero
+      collectionViewLayout:[_collectionConfigurator collectionViewLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.delegate = self;
 
   _diffableDataSource = [self createDiffableDataSource];
+  _collectionConfigurator.diffableDataSource = _diffableDataSource;
   _collectionView.dataSource = _diffableDataSource;
 
   // Sets initial data.
   [_diffableDataSource applySnapshot:[self dataSnapshot]
                 animatingDifferences:NO];
-}
-
-// Defines the layout for the collection view.
-- (UICollectionViewLayout*)collectionViewLayout {
-  UICollectionViewCompositionalLayoutConfiguration* configuration =
-      [[UICollectionViewCompositionalLayoutConfiguration alloc] init];
-  __weak __typeof(self) weakSelf = self;
-  return [[UICollectionViewCompositionalLayout alloc]
-      initWithSectionProvider:^(
-          NSInteger sectionIndex,
-          id<NSCollectionLayoutEnvironment> layoutEnvironment) {
-        return [weakSelf sectionForIndex:sectionIndex];
-      }
-                configuration:configuration];
-}
-
-// Returns the section for a given `sectionIndex`.
-- (NSCollectionLayoutSection*)sectionForIndex:(NSInteger)sectionIndex {
-  if (sectionIndex ==
-      [_diffableDataSource.snapshot
-          indexOfSectionIdentifier:kCustomizationSectionDiscoverLinks]) {
-    NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
-        sizeWithWidthDimension:[NSCollectionLayoutDimension
-                                   fractionalWidthDimension:1.]
-               heightDimension:[NSCollectionLayoutDimension
-                                   fractionalHeightDimension:1.]];
-    NSCollectionLayoutItem* item =
-        [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
-
-    NSCollectionLayoutSize* groupSize = [NSCollectionLayoutSize
-        sizeWithWidthDimension:[NSCollectionLayoutDimension
-                                   fractionalWidthDimension:1.]
-               heightDimension:[NSCollectionLayoutDimension
-                                   estimatedDimension:kLinkCellHeight]];
-    NSCollectionLayoutGroup* linksGroup =
-        [NSCollectionLayoutGroup verticalGroupWithLayoutSize:groupSize
-                                                    subitems:@[ item ]];
-
-    NSCollectionLayoutSize* headerSize = [NSCollectionLayoutSize
-        sizeWithWidthDimension:[NSCollectionLayoutDimension
-                                   fractionalWidthDimension:1.]
-               heightDimension:[NSCollectionLayoutDimension
-                                   estimatedDimension:kLinkCellHeight]];
-    NSCollectionLayoutBoundarySupplementaryItem* headerItem =
-        [NSCollectionLayoutBoundarySupplementaryItem
-            boundarySupplementaryItemWithLayoutSize:headerSize
-                                        elementKind:
-                                            UICollectionElementKindSectionHeader
-                                          alignment:NSRectAlignmentTopLeading];
-
-    NSCollectionLayoutSection* linksSection =
-        [NSCollectionLayoutSection sectionWithGroup:linksGroup];
-
-    // Adds spacing between cells, as well as content insets so that the cells
-    // have the correct width.
-    linksSection.interGroupSpacing = kSpacingBetweenCells;
-    linksSection.contentInsets = NSDirectionalEdgeInsetsMake(
-        kSpacingBelowHeader, (self.view.frame.size.width - kLinkCellWidth) / 2,
-        0, (self.view.frame.size.width - kLinkCellWidth) / 2);
-
-    linksSection.boundarySupplementaryItems = @[ headerItem ];
-
-    return linksSection;
-  }
-  return nil;
 }
 
 // Creates and returns the diffable data source for the collection view.

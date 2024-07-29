@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "home_customization_collection_configurator.h",
+    "home_customization_collection_configurator.mm",
     "home_customization_discover_consumer.h",
     "home_customization_discover_view_controller.h",
     "home_customization_discover_view_controller.mm",
