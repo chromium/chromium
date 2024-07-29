@@ -22,7 +22,7 @@ reviewer.
 <!-- Note: Update the histogram summaries when adding a new variant.-->
 
 <variants name="FacilitatedPaymentsTypes">
-  <variant name=".Pix"
+  <variant name="Pix"
       summary="Facilitate a Pix based payment using Google Pay."/>
 </variants>
 
