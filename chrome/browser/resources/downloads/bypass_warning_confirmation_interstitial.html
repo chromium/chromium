@@ -1,12 +1,18 @@
 <style>
   #dialog {
-    align-items: center;
+    align-items: flex-start;
     background-color: var(--google-red-40);
     border: none;
     box-sizing: border-box;
     color: white;
     display: flex;
-    font-size: 125%;
+    /*Value is contrived from phishing interstitial:
+        font-size = [(125% * 75%) / 81.25%]
+        phishing interstitial html font-size = 125%
+        phishing interstitial body font-size = 75%
+        download interstitial body font-size = 81.25%
+    */
+    font-size: 115.38%;
     height: 100vh;
     justify-content: center;
     max-height: 100vh;
@@ -15,7 +21,8 @@
   }
 
   #interstitial-wrapper {
-    max-width: 736px;
+    max-width: 600px;
+    margin-top: 14vh;
   }
 
   #icon {
@@ -36,6 +43,7 @@
 
   #button-container {
     display: flex;
+    font-size: 0.875em;
     justify-content: space-between;
     padding-bottom: 30px;
   }
@@ -74,6 +82,7 @@
   cr-radio-button {
     --cr-radio-button-checked-color: #fff;
     --cr-radio-button-unchecked-color: #fff;
+    --cr-radio-group-item-padding: 8px;
   }
 
   #survey-wrapper {
@@ -81,7 +90,7 @@
   }
 
   #survey-title {
-    margin: 2px 0;
+    margin: 8px 0;
   }
 </style>
 <dialog id="dialog">
