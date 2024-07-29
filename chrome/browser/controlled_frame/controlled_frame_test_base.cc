@@ -99,6 +99,7 @@ ControlledFrameTestBase::CreateAndInstallEmptyApp(
   return url_info.value();
 }
 
+// Keep this in sync with web_kiosk_base_test.cc.
 [[nodiscard]] bool ControlledFrameTestBase::CreateControlledFrame(
     content::RenderFrameHost* frame,
     const GURL& src) {
