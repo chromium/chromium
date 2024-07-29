@@ -273,11 +273,7 @@ void ShowNotificationForDevice(const std::string& guid,
   rich_notification_data.small_image = gfx::Image(
       gfx::CreateVectorIcon(vector_icons::kUsbIcon, 64, gfx::kGoogleBlue800));
 
-  if (chromeos::features::IsJellyEnabled()) {
-    rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
-  } else {
-    rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
-  }
+  rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
 
   if (crostini::CrostiniFeatures::Get()->IsEnabled(profile())) {
     vm_name = l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX);

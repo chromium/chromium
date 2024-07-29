@@ -110,11 +110,7 @@ CrostiniUpgradeAvailableNotification::CrostiniUpgradeAvailableNotification(
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.small_image = gfx::Image(gfx::CreateVectorIcon(
       vector_icons::kFileDownloadIcon, 64, gfx::kGoogleBlue800));
-  if (chromeos::features::IsJellyEnabled()) {
-    rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
-  } else {
-    rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
-  }
+  rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
 
   rich_notification_data.buttons.emplace_back(
       message_center::ButtonInfo(l10n_util::GetStringUTF16(
