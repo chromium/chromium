@@ -809,11 +809,11 @@
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD" desc="Button which is shown on Password Details Screen when password is compromised. [iOS only]" meaning="Telling user to change password on a website since it is compromised.">
         Change Password on Website
       </message>
-      <message name="IDS_IOS_CHECK_FINISHED_JUST_NOW" desc="Used instead of timestamp when Password Check finished less than 1 minute ago." meaning="[In sentence case] Check finished just now.">
-        just now
+      <message name="IDS_IOS_CHECK_FINISHED_JUST_NOW" desc="Subtitle for the Password Checkup cell to indicate that a password check was just completed" meaning="[In sentence case] Check finished just now.">
+        Checked just now
       </message>
-      <message name="IDS_IOS_CHECK_FINISHED_JUST_NOW_TITLE_CASE" desc="Used instead of timestamp when Password Check finished less than 1 minute ago." meaning="[In Title Case] Check finished just now.">
-        Just Now
+      <message name="IDS_IOS_CHECK_FINISHED_JUST_NOW_TITLE_CASE" desc="Label shown in the Password Checkup Homepage to indicate that a password check was just completed." meaning="[In Title Case] Check finished just now.">
+        Checked Just Now
       </message>
       <message name="IDS_IOS_CHECK_NEVER_RUN" desc="Used instead of timestamp when Password Check never ran" meaning="Check never run.">
         Check never run.

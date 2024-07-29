@@ -1363,15 +1363,14 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
   base::TimeDelta elapsedTime = base::Time::Now() - lastCompletedCheck;
 
-  std::u16string timestamp;
   // If check found issues less than 1 minuete ago.
   if (elapsedTime < base::Minutes(1)) {
-    timestamp = l10n_util::GetStringUTF16(IDS_IOS_CHECK_FINISHED_JUST_NOW);
-  } else {
-    timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
-        ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
-        elapsedTime, true);
+    return l10n_util::GetNSString(IDS_IOS_CHECK_FINISHED_JUST_NOW);
   }
+
+  std::u16string timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
+      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG, elapsedTime,
+      true);
 
   return l10n_util::GetNSStringF(
       IDS_IOS_SETTINGS_SAFETY_CHECK_ISSUES_FOUND_TIME, timestamp);

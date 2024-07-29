@@ -157,18 +157,16 @@ NSString* FormatElapsedTimeSinceLastSafetyCheck(
 
   base::TimeDelta elapsed_time = base::Time::Now() - last_run_time.value();
 
-  std::u16string timestamp;
-
   // If the latest Safety Check run happened less than
-  // `kDisplayTimestampThreshold` ago, show the last run "just now" text instead
-  // of the timestamp.
+  // `kDisplayTimestampThreshold` ago, show "Checked just now" instead of the
+  // timestamp.
   if (elapsed_time < kDisplayTimestampThreshold) {
-    timestamp = l10n_util::GetStringUTF16(IDS_IOS_CHECK_FINISHED_JUST_NOW);
-  } else {
-    timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
-        ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
-        elapsed_time, true);
+    return l10n_util::GetNSString(IDS_IOS_CHECK_FINISHED_JUST_NOW);
   }
+
+  std::u16string timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
+      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
+      elapsed_time, true);
 
   return l10n_util::GetNSStringF(IDS_IOS_SAFETY_CHECK_LAST_COMPLETED_CHECK,
                                  timestamp);
