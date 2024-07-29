@@ -29,7 +29,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
@@ -336,7 +335,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
     private void setTitleStyle(int resId) {
         TextView titleView = this.getContentView().findViewById(R.id.title_preview);
-        ApiCompatibilityUtils.setTextAppearance(titleView, resId);
+        titleView.setTextAppearance(resId);
     }
 
     private void setTextForPreview(String title, String subtitle) {

@@ -15,8 +15,6 @@ import android.view.WindowInsets;
 import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.ApiCompatibilityUtils;
-
 /** Collection of methods computing various height dimensions that differ by OS build version. */
 public abstract class DimensionCompat {
     protected final Activity mActivity;
@@ -195,7 +193,7 @@ public abstract class DimensionCompat {
         // to handle rotation.
         private DisplayMetrics getDisplayMetrics() {
             DisplayMetrics displayMetrics = new DisplayMetrics();
-            if (ApiCompatibilityUtils.isInMultiWindowMode(mActivity)) {
+            if (mActivity.isInMultiWindowMode()) {
                 mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             } else {
                 mActivity.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);

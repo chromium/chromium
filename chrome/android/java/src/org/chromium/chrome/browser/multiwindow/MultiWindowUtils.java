@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
+import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -190,7 +191,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (mIsInMultiWindowModeForTesting) return true;
         if (activity == null) return false;
 
-        return ApiCompatibilityUtils.isInMultiWindowMode(activity);
+        return activity.isInMultiWindowMode();
     }
 
     /**
@@ -386,7 +387,9 @@ public class MultiWindowUtils implements ActivityStateListener {
             throw new IllegalStateException(
                     "Attempting to open window in other display, but one is not found");
         }
-        return ApiCompatibilityUtils.createLaunchDisplayIdActivityOptions(id);
+        ActivityOptions options = ActivityOptions.makeBasic();
+        options.setLaunchDisplayId(id);
+        return options.toBundle();
     }
 
     /**

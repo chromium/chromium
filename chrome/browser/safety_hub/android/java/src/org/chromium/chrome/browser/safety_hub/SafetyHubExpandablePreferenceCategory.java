@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 
 public class SafetyHubExpandablePreferenceCategory extends ExpandablePreferenceGroup {
@@ -23,8 +22,7 @@ public class SafetyHubExpandablePreferenceCategory extends ExpandablePreferenceG
         super.onBindViewHolder(holder);
         TextView titleView = (TextView) holder.findViewById(android.R.id.title);
         assert titleView != null;
-        ApiCompatibilityUtils.setTextAppearance(
-                titleView, R.style.TextAppearance_TextMediumThick_Accent1);
+        titleView.setTextAppearance(R.style.TextAppearance_TextMediumThick_Accent1);
     }
 
     @Override

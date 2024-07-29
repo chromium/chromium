@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 public class TopicsHeaderPreference extends TextMessagePreference {
@@ -22,7 +21,6 @@ public class TopicsHeaderPreference extends TextMessagePreference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         TextView titleView = (TextView) holder.findViewById(android.R.id.title);
-        ApiCompatibilityUtils.setTextAppearance(
-                titleView, R.style.TextAppearance_TextLarge_Primary);
+        titleView.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
     }
 }

@@ -7,7 +7,6 @@ package org.chromium.base;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
-import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,19 +19,13 @@ import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.StrictMode;
 import android.os.UserManager;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.view.Display;
 import android.view.View;
-import android.view.textclassifier.TextClassifier;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -52,98 +45,6 @@ public class ApiCompatibilityUtils {
 
     private ApiCompatibilityUtils() {}
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private static class ApisQ {
-        static boolean isRunningInUserTestHarness() {
-            return ActivityManager.isRunningInUserTestHarness();
-        }
-
-        static List<Integer> getTargetableDisplayIds(@Nullable Activity activity) {
-            List<Integer> displayList = new ArrayList<>();
-            if (activity == null) return displayList;
-            DisplayManager displayManager =
-                    (DisplayManager) activity.getSystemService(Context.DISPLAY_SERVICE);
-            if (displayManager == null) return displayList;
-            Display[] displays = displayManager.getDisplays();
-            ActivityManager am =
-                    (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-            for (Display display : displays) {
-                if (display.getState() == Display.STATE_ON
-                        && am.isActivityStartAllowedOnDisplay(
-                                activity,
-                                display.getDisplayId(),
-                                new Intent(activity, activity.getClass()))) {
-                    displayList.add(display.getDisplayId());
-                }
-            }
-            return displayList;
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.P)
-    private static class ApisP {
-        static String getProcessName() {
-            return Application.getProcessName();
-        }
-
-        static Bitmap getBitmapByUri(ContentResolver cr, Uri uri) throws IOException {
-            return ImageDecoder.decodeBitmap(ImageDecoder.createSource(cr, uri));
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private static class ApisO {
-        static void initNotificationSettingsIntent(Intent intent, String packageName) {
-            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName);
-        }
-
-        static void disableSmartSelectionTextClassifier(TextView textView) {
-            textView.setTextClassifier(TextClassifier.NO_OP);
-        }
-
-        static Bundle createLaunchDisplayIdActivityOptions(int displayId) {
-            ActivityOptions options = ActivityOptions.makeBasic();
-            options.setLaunchDisplayId(displayId);
-            return options.toBundle();
-        }
-    }
-
-    // This class is sufficiently small that it's fine if it doesn't verify for N devices.
-    @RequiresApi(Build.VERSION_CODES.N_MR1)
-    private static class ApisNMR1 {
-        static boolean isDemoUser() {
-            UserManager userManager =
-                    (UserManager)
-                            ContextUtils.getApplicationContext()
-                                    .getSystemService(Context.USER_SERVICE);
-            return userManager.isDemoUser();
-        }
-    }
-
-    /**
-     * Checks that the object reference is not null and throws NullPointerException if it is.
-     * See {@link Objects#requireNonNull} which is available since API level 19.
-     * @param obj The object to check
-     */
-    @NonNull
-    public static <T> T requireNonNull(T obj) {
-        if (obj == null) throw new NullPointerException();
-        return obj;
-    }
-
-    /**
-     * Checks that the object reference is not null and throws NullPointerException if it is.
-     * See {@link Objects#requireNonNull} which is available since API level 19.
-     * @param obj The object to check
-     * @param message The message to put into NullPointerException
-     */
-    @NonNull
-    public static <T> T requireNonNull(T obj, String message) {
-        if (obj == null) throw new NullPointerException(message);
-        return obj;
-    }
-
     /**
      * {@link String#getBytes()} but specifying UTF-8 as the encoding and capturing the resulting
      * UnsupportedEncodingException.
@@ -153,27 +54,9 @@ public class ApiCompatibilityUtils {
     }
 
     /**
-     *  Gets an intent to start the Android system notification settings activity for an app.
-     *
-     */
-    public static Intent getNotificationSettingsIntent() {
-        Intent intent = new Intent();
-        String packageName = ContextUtils.getApplicationContext().getPackageName();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ApisO.initNotificationSettingsIntent(intent, packageName);
-        } else {
-            intent.setAction("android.settings.ACTION_APP_NOTIFICATION_SETTINGS");
-            intent.putExtra("app_package", packageName);
-            intent.putExtra(
-                    "app_uid", ContextUtils.getApplicationContext().getApplicationInfo().uid);
-        }
-        return intent;
-    }
-
-    /**
-     * @see android.content.res.Resources#getDrawable(int id).
-     * TODO(ltian): use {@link AppCompatResources} to parse drawable to prevent fail on
-     * {@link VectorDrawable}. (http://crbug.com/792129)
+     * @see android.content.res.Resources#getDrawable(int id). TODO(ltian): use {@link
+     *     AppCompatResources} to parse drawable to prevent fail on {@link VectorDrawable}.
+     *     (http://crbug.com/792129)
      */
     public static Drawable getDrawable(Resources res, int id) throws NotFoundException {
         return getDrawableForDensity(res, id, 0);
@@ -199,21 +82,13 @@ public class ApiCompatibilityUtils {
     }
 
     /**
-     * @see android.widget.TextView#setTextAppearance(int id).
-     */
-    @SuppressWarnings("deprecation")
-    public static void setTextAppearance(TextView view, int id) {
-        // setTextAppearance(id) is the undeprecated version of this, but it just calls the
-        // deprecated one, so there is no benefit to using the non-deprecated one until we can
-        // drop support for it entirely (new one was added in M).
-        view.setTextAppearance(view.getContext(), id);
-    }
-
-    /**
      * @return Whether the device is running in demo mode.
      */
     public static boolean isDemoUser() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && ApisNMR1.isDemoUser();
+        UserManager userManager =
+                (UserManager)
+                        ContextUtils.getApplicationContext().getSystemService(Context.USER_SERVICE);
+        return userManager.isDemoUser();
     }
 
     /**
@@ -231,55 +106,44 @@ public class ApiCompatibilityUtils {
     }
 
     /**
-     * @param activity The {@link Activity} to check.
-     * @return Whether or not {@code activity} is currently in Android N+ multi-window mode.
-     */
-    public static boolean isInMultiWindowMode(Activity activity) {
-        return activity.isInMultiWindowMode();
-    }
-
-    /**
-     * Get a list of ids of targetable displays, including the default display for the
-     * current activity. A set of targetable displays can only be determined on Q+. An empty list
-     * is returned if called on prior Q.
+     * Get a list of ids of targetable displays, including the default display for the current
+     * activity. A set of targetable displays can only be determined on Q+. An empty list is
+     * returned if called on prior Q.
+     *
      * @param activity The {@link Activity} to check.
      * @return A list of display ids. Empty if there is none or version is less than Q, or
-     *         windowAndroid does not contain an activity.
+     *     windowAndroid does not contain an activity.
      */
     @NonNull
     public static List<Integer> getTargetableDisplayIds(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return ApisQ.getTargetableDisplayIds(activity);
+            List<Integer> displayList = new ArrayList<>();
+            if (activity == null) return displayList;
+            DisplayManager displayManager =
+                    (DisplayManager) activity.getSystemService(Context.DISPLAY_SERVICE);
+            if (displayManager == null) return displayList;
+            Display[] displays = displayManager.getDisplays();
+            ActivityManager am =
+                    (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+            for (Display display : displays) {
+                if (display.getState() == Display.STATE_ON
+                        && am.isActivityStartAllowedOnDisplay(
+                                activity,
+                                display.getDisplayId(),
+                                new Intent(activity, activity.getClass()))) {
+                    displayList.add(display.getDisplayId());
+                }
+            }
+            return displayList;
         }
         return new ArrayList<>();
     }
 
     /**
-     * Disables the Smart Select {@link TextClassifier} for the given {@link TextView} instance.
-     * @param textView The {@link TextView} that should have its classifier disabled.
-     */
-    public static void disableSmartSelectionTextClassifier(TextView textView) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ApisO.disableSmartSelectionTextClassifier(textView);
-        }
-    }
-
-    /**
-     * Creates an ActivityOptions Bundle with basic options and the LaunchDisplayId set.
-     * @param displayId The id of the display to launch into.
-     * @return The created bundle, or null if unsupported.
-     */
-    public static Bundle createLaunchDisplayIdActivityOptions(int displayId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return ApisO.createLaunchDisplayIdActivityOptions(displayId);
-        }
-        return null;
-    }
-
-    /**
-     * Sets the mode {@link ActivityOptions#MODE_BACKGROUND_ACTIVITY_START_ALLOWED} to the
-     * given {@link ActivityOptions}. The options can be used to send {@link PendingIntent}
-     * passed to Chrome from a backgrounded app.
+     * Sets the mode {@link ActivityOptions#MODE_BACKGROUND_ACTIVITY_START_ALLOWED} to the given
+     * {@link ActivityOptions}. The options can be used to send {@link PendingIntent} passed to
+     * Chrome from a backgrounded app.
+     *
      * @param options {@ActivityOptions} to set the required mode to.
      */
     public static void setActivityOptionsBackgroundActivityStartMode(
@@ -341,25 +205,9 @@ public class ApiCompatibilityUtils {
         }
     }
 
-    // Access this via ContextUtils.getProcessName().
-    @SuppressWarnings("PrivateApi")
-    static String getProcessName() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            return ApisP.getProcessName();
-        }
-        try {
-            Class<?> activityThreadClazz = Class.forName("android.app.ActivityThread");
-            return (String) activityThreadClazz.getMethod("currentProcessName").invoke(null);
-        } catch (Exception e) {
-            // If fallback logic is ever needed, refer to:
-            // https://chromium-review.googlesource.com/c/chromium/src/+/905563/1
-            throw JavaUtils.throwUnchecked(e);
-        }
-    }
-
     public static boolean isRunningInUserTestHarness() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return ApisQ.isRunningInUserTestHarness();
+            return ActivityManager.isRunningInUserTestHarness();
         }
         return false;
     }
@@ -367,7 +215,7 @@ public class ApiCompatibilityUtils {
     /** Retrieves an image for the given uri as a Bitmap. */
     public static Bitmap getBitmapByUri(ContentResolver cr, Uri uri) throws IOException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            return ApisP.getBitmapByUri(cr, uri);
+            return ImageDecoder.decodeBitmap(ImageDecoder.createSource(cr, uri));
         }
         return MediaStore.Images.Media.getBitmap(cr, uri);
     }

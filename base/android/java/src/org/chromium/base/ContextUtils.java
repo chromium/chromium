@@ -155,9 +155,21 @@ public class ContextUtils {
         }
     }
 
-    /** @return The name of the current process. E.g. "org.chromium.chrome:privileged_process0". */
+    /**
+     * @return The name of the current process. E.g. "org.chromium.chrome:privileged_process0".
+     */
     public static String getProcessName() {
-        return ApiCompatibilityUtils.getProcessName();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return Application.getProcessName();
+        }
+        try {
+            Class<?> activityThreadClazz = Class.forName("android.app.ActivityThread");
+            return (String) activityThreadClazz.getMethod("currentProcessName").invoke(null);
+        } catch (Exception e) {
+            // If fallback logic is ever needed, refer to:
+            // https://chromium-review.googlesource.com/c/chromium/src/+/905563/1
+            throw JavaUtils.throwUnchecked(e);
+        }
     }
 
     /**

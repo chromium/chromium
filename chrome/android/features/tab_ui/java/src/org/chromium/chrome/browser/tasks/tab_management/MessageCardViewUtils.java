@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -31,7 +30,7 @@ public class MessageCardViewUtils {
                 (isLargeMessageCard)
                         ? TabUiThemeProvider.getLargeMessageCardTitleTextAppearance(isIncognito)
                         : TabUiThemeProvider.getMessageCardTitleTextAppearance(isIncognito);
-        ApiCompatibilityUtils.setTextAppearance(title, titleTextAppearance);
+        title.setTextAppearance(titleTextAppearance);
     }
 
     /**
@@ -48,7 +47,7 @@ public class MessageCardViewUtils {
                         ? TabUiThemeProvider.getLargeMessageCardDescriptionTextAppearance(
                                 isIncognito)
                         : TabUiThemeProvider.getMessageCardDescriptionTextAppearance(isIncognito);
-        ApiCompatibilityUtils.setTextAppearance(description, descriptionTextAppearance);
+        description.setTextAppearance(descriptionTextAppearance);
     }
 
     /**
@@ -66,7 +65,7 @@ public class MessageCardViewUtils {
                                 isIncognito)
                         : TabUiThemeProvider.getMessageCardActionButtonTextAppearance(isIncognito);
 
-        ApiCompatibilityUtils.setTextAppearance(actionButton, actionButtonTextAppearance);
+        actionButton.setTextAppearance(actionButtonTextAppearance);
     }
 
     /**

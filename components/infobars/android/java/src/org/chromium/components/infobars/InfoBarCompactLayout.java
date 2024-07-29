@@ -21,7 +21,6 @@ import android.widget.TextView;
 import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 
@@ -201,8 +200,7 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
             if (mLink != null) builder.append(" ").append(mLink);
 
             TextView prompt = new InfoBarMessageView(mLayout.getContext());
-            ApiCompatibilityUtils.setTextAppearance(
-                    prompt, R.style.TextAppearance_TextMedium_Primary);
+            prompt.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
             prompt.setText(builder);
             prompt.setGravity(Gravity.CENTER_VERTICAL);
             prompt.setPadding(0, messagePadding, 0, messagePadding);

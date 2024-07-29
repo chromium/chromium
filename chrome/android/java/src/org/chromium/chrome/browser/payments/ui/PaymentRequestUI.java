@@ -32,7 +32,6 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
@@ -1170,7 +1169,7 @@ public class PaymentRequestUI
         TextView view = new TextViewWithClickableSpans(mContext);
         view.setText(spannableMessage);
         view.setMovementMethod(LinkMovementMethod.getInstance());
-        ApiCompatibilityUtils.setTextAppearance(view, R.style.TextAppearance_TextMedium_Secondary);
+        view.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary);
 
         // Add padding instead of margin to let getMeasuredHeight return correct value for section
         // resize animation.

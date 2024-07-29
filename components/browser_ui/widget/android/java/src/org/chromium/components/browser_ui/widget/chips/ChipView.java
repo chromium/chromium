@@ -20,13 +20,11 @@ import android.widget.TextView;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.LoadingView;
@@ -59,7 +57,7 @@ public class ChipView extends LinearLayout {
     private final ChromeImageView mStartIcon;
     private final boolean mUseRoundedStartIcon;
     private final LoadingView mLoadingView;
-    private final @IdRes int mSecondaryTextAppearanceId;
+    private final @StyleRes int mSecondaryTextAppearanceId;
     private final int mEndIconWidth;
     private final int mEndIconHeight;
     private final int mEndIconStartPadding;
@@ -223,7 +221,7 @@ public class ChipView extends LinearLayout {
 
         mPrimaryText =
                 new AppCompatTextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
-        ApiCompatibilityUtils.setTextAppearance(mPrimaryText, primaryTextAppearance);
+        mPrimaryText.setTextAppearance(primaryTextAppearance);
 
         // If false fall back to single line defined in XML styles.
         if (allowMultipleLines) {
@@ -432,7 +430,7 @@ public class ChipView extends LinearLayout {
             mSecondaryText =
                     new AppCompatTextView(
                             new ContextThemeWrapper(getContext(), R.style.ChipTextView));
-            ApiCompatibilityUtils.setTextAppearance(mSecondaryText, mSecondaryTextAppearanceId);
+            mSecondaryText.setTextAppearance(mSecondaryTextAppearanceId);
             // Ensure that basic state changes are aligned with the ChipView. They update
             // automatically once the view is part of the hierarchy.
             mSecondaryText.setSelected(isSelected());
