@@ -311,7 +311,9 @@ void BrowsingHistoryHandler::OnJavascriptDisallowed() {
   initial_results_ = std::nullopt;
   deferred_callbacks_.clear();
   query_history_callback_id_.clear();
-  remove_visits_callback_.clear();
+  while (!remove_visits_callbacks_.empty()) {
+    remove_visits_callbacks_.pop();
+  }
 }
 
 void BrowsingHistoryHandler::RegisterMessages() {
@@ -442,8 +444,7 @@ void BrowsingHistoryHandler::HandleQueryHistoryContinuation(
 void BrowsingHistoryHandler::HandleRemoveVisits(const base::Value::List& args) {
   CHECK_EQ(args.size(), 2U);
   const base::Value& callback_id = args[0];
-  CHECK(remove_visits_callback_.empty());
-  remove_visits_callback_ = callback_id.GetString();
+  remove_visits_callbacks_.push(callback_id.GetString());
 
   std::vector<BrowsingHistoryService::HistoryEntry> items_to_remove;
   const base::Value& items = args[1];
@@ -556,16 +557,17 @@ void BrowsingHistoryHandler::OnQueryComplete(
 }
 
 void BrowsingHistoryHandler::OnRemoveVisitsComplete() {
-  CHECK(!remove_visits_callback_.empty());
-  ResolveJavascriptCallback(base::Value(remove_visits_callback_),
+  CHECK(!remove_visits_callbacks_.empty());
+  ResolveJavascriptCallback(base::Value(remove_visits_callbacks_.front()),
                             base::Value());
-  remove_visits_callback_.clear();
+  remove_visits_callbacks_.pop();
 }
 
 void BrowsingHistoryHandler::OnRemoveVisitsFailed() {
-  CHECK(!remove_visits_callback_.empty());
-  RejectJavascriptCallback(base::Value(remove_visits_callback_), base::Value());
-  remove_visits_callback_.clear();
+  CHECK(!remove_visits_callbacks_.empty());
+  RejectJavascriptCallback(base::Value(remove_visits_callbacks_.front()),
+                           base::Value());
+  remove_visits_callbacks_.pop();
 }
 
 void BrowsingHistoryHandler::HistoryDeleted() {
