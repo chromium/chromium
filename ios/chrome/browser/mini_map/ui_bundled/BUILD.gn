@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("mini_map") {
+source_set("coordinator") {
   sources = [
     "mini_map_coordinator.h",
     "mini_map_coordinator.mm",
@@ -12,7 +12,7 @@ source_set("mini_map") {
   ]
   deps = [
     ":mini_map_handler",
-    ":mini_map_ui",
+    ":ui",
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -21,7 +21,7 @@ source_set("mini_map") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/ui/mini_map/resources",
+    "//ios/chrome/browser/mini_map/ui_bundled/resources",
     "//ios/chrome/browser/web/model/annotations",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
@@ -38,7 +38,7 @@ source_set("mini_map_handler") {
   deps = []
 }
 
-source_set("mini_map_ui") {
+source_set("ui") {
   sources = [
     "mini_map_interstitial_view_controller.h",
     "mini_map_interstitial_view_controller.mm",
@@ -65,8 +65,8 @@ source_set("unit_tests") {
     "mini_map_mediator_unittest.mm",
   ]
   deps = [
-    ":mini_map",
-    ":mini_map_ui",
+    ":coordinator",
+    ":ui",
     "//base/test:test_support",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

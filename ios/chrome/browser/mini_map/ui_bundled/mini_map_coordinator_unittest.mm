@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/mini_map/mini_map_coordinator.h"
+#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h"
 
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
@@ -19,8 +19,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/ui/mini_map/mini_map_mediator.h"
-#import "ios/chrome/browser/ui/mini_map/mini_map_mediator_delegate.h"
+#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator.h"
+#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator_delegate.h"
 #import "ios/chrome/test/providers/mini_map/test_mini_map.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/features.h"

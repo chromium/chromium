@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/mini_map/mini_map_coordinator.h"
+#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h"
 
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -12,10 +12,10 @@
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/ui/mini_map/mini_map_action_handler.h"
-#import "ios/chrome/browser/ui/mini_map/mini_map_interstitial_view_controller.h"
-#import "ios/chrome/browser/ui/mini_map/mini_map_mediator.h"
-#import "ios/chrome/browser/ui/mini_map/mini_map_mediator_delegate.h"
+#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_action_handler.h"
+#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_interstitial_view_controller.h"
+#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator.h"
+#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator_delegate.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/mini_map/mini_map_interstitial_view_controller.h"
+#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_interstitial_view_controller.h"
 
 #import "base/notreached.h"
 #import "base/values.h"

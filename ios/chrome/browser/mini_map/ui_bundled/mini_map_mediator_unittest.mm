@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/mini_map/mini_map_mediator.h"
+#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator.h"
 
 #import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/ui/mini_map/mini_map_mediator_delegate.h"
+#import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator_delegate.h"
 #import "ios/web/common/features.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
