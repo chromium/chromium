@@ -43,13 +43,6 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
     virtual void OnMigrationSucceeded() = 0;
   };
 
-  // Returns an instance of LocalFilesMigrationManager with injected
-  // dependencies. Should only be used in tests.
-  static LocalFilesMigrationManager CreateLocalFilesMigrationManagerForTesting(
-      content::BrowserContext* context,
-      std::unique_ptr<MigrationNotificationManager> notification_manager,
-      std::unique_ptr<MigrationCoordinator> coordinator);
-
   explicit LocalFilesMigrationManager(content::BrowserContext* context);
   LocalFilesMigrationManager(const LocalFilesMigrationManager&) = delete;
   LocalFilesMigrationManager& operator=(const LocalFilesMigrationManager&) =
@@ -65,13 +58,15 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Removes an observer.
   void RemoveObserver(Observer* observer);
 
- private:
-  // Test constructor.
-  LocalFilesMigrationManager(
-      content::BrowserContext* context,
-      std::unique_ptr<MigrationNotificationManager> notification_manager,
+  // Injects a mock MigrationNotificationManager for tests.
+  void SetNotificationManagerForTesting(
+      MigrationNotificationManager* notification_manager);
+
+  // Injects a mock MigrationCoordinator for tests.
+  void SetCoordinatorForTesting(
       std::unique_ptr<MigrationCoordinator> coordinator);
 
+ private:
   // policy::local_user_files::Observer overrides:
   void OnLocalUserFilesPolicyChanged() override;
 
@@ -122,7 +117,7 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   raw_ptr<content::BrowserContext> context_;
 
   // Shows and manages migration notifications and dialogs.
-  std::unique_ptr<MigrationNotificationManager> notification_manager_;
+  raw_ptr<MigrationNotificationManager> notification_manager_;
 
   // Manages the upload of local files to the cloud.
   std::unique_ptr<MigrationCoordinator> coordinator_;

@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "chrome/common/chrome_features.h"

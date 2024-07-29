@@ -29,7 +29,6 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -96,24 +95,25 @@ std::vector<base::FilePath> GetMyFilesContents(Profile* profile) {
 
 }  // namespace
 
-// static
-LocalFilesMigrationManager
-LocalFilesMigrationManager::CreateLocalFilesMigrationManagerForTesting(
-    content::BrowserContext* context,
-    std::unique_ptr<MigrationNotificationManager> notification_manager,
-    std::unique_ptr<MigrationCoordinator> coordinator) {
-  CHECK_IS_TEST();
-  return LocalFilesMigrationManager(context, std::move(notification_manager),
-                                    std::move(coordinator));
-}
-
 LocalFilesMigrationManager::LocalFilesMigrationManager(
     content::BrowserContext* context)
-    : LocalFilesMigrationManager(context,
-                                 std::make_unique<MigrationNotificationManager>(
-                                     Profile::FromBrowserContext(context)),
-                                 std::make_unique<MigrationCoordinator>(
-                                     Profile::FromBrowserContext(context))) {}
+    : context_(context),
+      coordinator_(std::make_unique<MigrationCoordinator>(
+          Profile::FromBrowserContext(context))),
+      scheduling_timer_(std::make_unique<base::WallClockTimer>()) {
+  CHECK(base::FeatureList::IsEnabled(features::kSkyVaultV2));
+
+  notification_manager_ =
+      MigrationNotificationManagerFactory::GetForBrowserContext(context);
+  CHECK(notification_manager_);
+
+  pref_change_registrar_.Init(g_browser_process->local_state());
+  pref_change_registrar_.Add(
+      prefs::kLocalUserFilesMigrationDestination,
+      base::BindRepeating(
+          &LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged,
+          base::Unretained(this)));
+}
 
 LocalFilesMigrationManager::~LocalFilesMigrationManager() {
   pref_change_registrar_.RemoveAll();
@@ -121,8 +121,6 @@ LocalFilesMigrationManager::~LocalFilesMigrationManager() {
 
 void LocalFilesMigrationManager::Shutdown() {
   weak_factory_.InvalidateWeakPtrs();
-
-  notification_manager_.reset();
 }
 
 void LocalFilesMigrationManager::AddObserver(Observer* observer) {
@@ -135,22 +133,16 @@ void LocalFilesMigrationManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-LocalFilesMigrationManager::LocalFilesMigrationManager(
-    content::BrowserContext* context,
-    std::unique_ptr<MigrationNotificationManager> notification_manager,
-    std::unique_ptr<MigrationCoordinator> coordinator)
-    : context_(context),
-      notification_manager_(std::move(notification_manager)),
-      coordinator_(std::move(coordinator)),
-      scheduling_timer_(std::make_unique<base::WallClockTimer>()) {
-  CHECK(base::FeatureList::IsEnabled(features::kSkyVaultV2));
+void LocalFilesMigrationManager::SetNotificationManagerForTesting(
+    MigrationNotificationManager* notification_manager) {
+  CHECK_IS_TEST();
+  notification_manager_ = notification_manager;
+}
 
-  pref_change_registrar_.Init(g_browser_process->local_state());
-  pref_change_registrar_.Add(
-      prefs::kLocalUserFilesMigrationDestination,
-      base::BindRepeating(
-          &LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged,
-          base::Unretained(this)));
+void LocalFilesMigrationManager::SetCoordinatorForTesting(
+    std::unique_ptr<MigrationCoordinator> coordinator) {
+  CHECK_IS_TEST();
+  coordinator_ = std::move(coordinator);
 }
 
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
@@ -318,7 +310,10 @@ LocalFilesMigrationManagerFactory::LocalFilesMigrationManagerFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(policy::local_user_files::MigrationNotificationManagerFactory::
+                GetInstance());
+}
 
 LocalFilesMigrationManagerFactory::~LocalFilesMigrationManagerFactory() =
     default;

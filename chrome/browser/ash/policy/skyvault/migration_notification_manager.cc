@@ -10,11 +10,14 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/browser_context.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace policy::local_user_files {
@@ -48,8 +51,9 @@ void CloseNotification(Profile* profile) {
 
 }  // namespace
 
-MigrationNotificationManager::MigrationNotificationManager(Profile* profile)
-    : profile_(profile) {}
+MigrationNotificationManager::MigrationNotificationManager(
+    content::BrowserContext* context)
+    : context_(context) {}
 
 MigrationNotificationManager::~MigrationNotificationManager() = default;
 
@@ -93,7 +97,7 @@ void MigrationNotificationManager::ShowMigrationProgressNotification(
   auto notification = CreateNotificationPtr(title, message,
                                             /*callback=*/base::DoNothing());
 
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayService::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }
@@ -125,7 +129,7 @@ void MigrationNotificationManager::ShowMigrationCompletedNotification(
 
   auto notification = CreateNotificationPtr(title, message, base::DoNothing());
 
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayService::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }
@@ -137,7 +141,7 @@ void MigrationNotificationManager::ShowMigrationErrorNotification(
 }
 
 void MigrationNotificationManager::CloseAll() {
-  CloseNotification(profile_);
+  CloseNotification(profile());
   CloseDialog();
 }
 
@@ -146,6 +150,47 @@ void MigrationNotificationManager::CloseDialog() {
   if (dialog) {
     dialog->Close();
   }
+}
+
+Profile* MigrationNotificationManager::profile() {
+  return Profile::FromBrowserContext(context_);
+}
+
+// static
+MigrationNotificationManagerFactory*
+MigrationNotificationManagerFactory::GetInstance() {
+  static base::NoDestructor<MigrationNotificationManagerFactory> factory;
+  return factory.get();
+}
+
+MigrationNotificationManager*
+MigrationNotificationManagerFactory::GetForBrowserContext(
+    content::BrowserContext* context) {
+  return static_cast<MigrationNotificationManager*>(
+      GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
+}
+
+MigrationNotificationManagerFactory::MigrationNotificationManagerFactory()
+    : ProfileKeyedServiceFactory(
+          "MigrationNotificationManager",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .Build()) {}
+
+MigrationNotificationManagerFactory::~MigrationNotificationManagerFactory() =
+    default;
+
+bool MigrationNotificationManagerFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
+
+std::unique_ptr<KeyedService>
+MigrationNotificationManagerFactory::BuildServiceInstanceForBrowserContext(
+    content::BrowserContext* context) const {
+  return std::make_unique<MigrationNotificationManager>(context);
 }
 
 }  // namespace policy::local_user_files
