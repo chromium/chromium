@@ -183,6 +183,7 @@ TEST_F(SearchConceptRegistryTest, SearchConceptToDataStandardAccelerator) {
           /*type=*/ash::mojom::AcceleratorType::kDefault,
           /*state=*/ash::mojom::AcceleratorState::kEnabled,
           /*locked=*/true,
+          /*accelerator_locked=*/false,
           /*layout_properties=*/
           ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
               ash::mojom::StandardAcceleratorProperties::New(
@@ -195,6 +196,7 @@ TEST_F(SearchConceptRegistryTest, SearchConceptToDataStandardAccelerator) {
           /*type=*/ash::mojom::AcceleratorType::kDefault,
           /*state=*/ash::mojom::AcceleratorState::kEnabled,
           /*locked=*/true,
+          /*accelerator_locked=*/false,
           /*layout_properties=*/
           ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
               ash::mojom::StandardAcceleratorProperties::New(
@@ -243,6 +245,7 @@ TEST_F(SearchConceptRegistryTest, SearchConceptToDataTextAccelerator) {
           /*type=*/ash::mojom::AcceleratorType::kDefault,
           /*state=*/ash::mojom::AcceleratorState::kEnabled,
           /*locked=*/true,
+          /*accelerator_locked=*/false,
           /*layout_properties=*/
           ash::mojom::LayoutStyleProperties::NewTextAccelerator(
               ash::mojom::TextAcceleratorProperties::New(

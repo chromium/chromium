@@ -306,11 +306,13 @@ mojom::AcceleratorType GetAcceleratorType(ui::Accelerator accelerator) {
 // Create accelerator info using accelerator and extra properties.
 mojom::AcceleratorInfoPtr CreateStandardAcceleratorInfo(
     const ui::Accelerator& accelerator,
+    bool accelerator_locked,
     bool locked,
     mojom::AcceleratorType type,
     mojom::AcceleratorState state,
     std::optional<ui::Accelerator> original_accelerator = std::nullopt) {
   mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
+  info_mojom->accelerator_locked = accelerator_locked;
   info_mojom->locked = locked;
   info_mojom->type = type;
   info_mojom->state = state;
@@ -1243,7 +1245,8 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
     bool locked,
     mojom::AcceleratorType type,
     mojom::AcceleratorState state,
-    std::vector<mojom::AcceleratorInfoPtr>& output) {
+    std::vector<mojom::AcceleratorInfoPtr>& output,
+    bool is_accelerator_locked) {
   // Get the alias accelerators by doing F-Keys remapping and
   // (reversed) six-pack-keys remapping if applicable.
   std::vector<ui::Accelerator> accelerator_aliases =
@@ -1255,7 +1258,8 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
   // `kDisabledByUnavailableKeys`.
   if (accelerator_aliases.empty()) {
     output.push_back(CreateStandardAcceleratorInfo(
-        accelerator, locked, GetAcceleratorType(accelerator),
+        accelerator, is_accelerator_locked, locked,
+        GetAcceleratorType(accelerator),
         mojom::AcceleratorState::kDisabledByUnavailableKeys));
     return;
   }
@@ -1266,11 +1270,12 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
     // what is the real accelerator to configure.
     if (accelerator_alias != accelerator) {
       output.push_back(CreateStandardAcceleratorInfo(
-          accelerator_alias, locked, GetAcceleratorType(accelerator), state,
-          accelerator));
+          accelerator_alias, is_accelerator_locked, locked,
+          GetAcceleratorType(accelerator), state, accelerator));
     } else {
       output.push_back(CreateStandardAcceleratorInfo(
-          accelerator_alias, locked, GetAcceleratorType(accelerator), state));
+          accelerator_alias, is_accelerator_locked, locked,
+          GetAcceleratorType(accelerator), state));
     }
   }
 }
@@ -1590,22 +1595,29 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
       if (base::Contains(accelerators, default_accelerator)) {
         continue;
       }
+      const bool is_accelerator_locked =
+          ash_accelerator_configuration_->IsAcceleratorLocked(
+              default_accelerator);
 
       // Append the missing default accelerators but marked as disabled by user.
       CreateAndAppendAliasedAccelerators(
           default_accelerator, layout->locked, mojom::AcceleratorType::kDefault,
           mojom::AcceleratorState::kDisabledByUser,
-          output_action_id_to_accelerators[layout->action_id]);
+          output_action_id_to_accelerators[layout->action_id],
+          is_accelerator_locked);
     }
 
     for (const auto& accelerator : accelerators) {
       if (IsAcceleratorHidden(layout->action_id, accelerator)) {
         continue;
       }
+      const bool is_accelerator_locked =
+          ash_accelerator_configuration_->IsAcceleratorLocked(accelerator);
       CreateAndAppendAliasedAccelerators(
           accelerator, layout->locked, mojom::AcceleratorType::kDefault,
           mojom::AcceleratorState::kEnabled,
-          output_action_id_to_accelerators[layout->action_id]);
+          output_action_id_to_accelerators[layout->action_id],
+          is_accelerator_locked);
     }
   }
 }

@@ -12,7 +12,7 @@ import {getAcceleratorId, getSourceAndActionFromAcceleratorId, isStandardAcceler
 function createSanitizedAccelInfo(info: MojoAcceleratorInfo):
     StandardAcceleratorInfo {
   assert(isStandardAcceleratorInfo(info));
-  const {locked, state, type, layoutProperties} = info;
+  const {acceleratorLocked, locked, state, type, layoutProperties} = info;
   const sanitizedAccelerator: Accelerator = {
     keyCode: layoutProperties.standardAccelerator.accelerator.keyCode,
     modifiers: layoutProperties.standardAccelerator.accelerator.modifiers,
@@ -30,6 +30,7 @@ function createSanitizedAccelInfo(info: MojoAcceleratorInfo):
   }
 
   return {
+    acceleratorLocked,
     locked,
     state,
     type,

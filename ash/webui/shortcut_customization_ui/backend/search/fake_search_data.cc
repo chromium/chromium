@@ -18,6 +18,7 @@ ash::mojom::AcceleratorInfoPtr CreateFakeStandardAcceleratorInfo(
       /*type=*/ash::mojom::AcceleratorType::kDefault,
       /*state=*/state,
       /*locked=*/true,
+      /*accelerator_locked=*/false,
       /*layout_properties=*/
       ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
           ash::mojom::StandardAcceleratorProperties::New(
