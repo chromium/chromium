@@ -90,7 +90,7 @@
     color: var(--previous-highlight-color);
   }
 
-  #appFlexParent img {
+  #appFlexParent canvas {
     max-width: 100%;
   }
 
@@ -113,7 +113,6 @@
   }
 
   /* Not using :host because ReadAnythingElement does not use ShadowDOM. */
-  read-anynthing-app:not([images-enabled]) img,
   read-anything-app:not([images-enabled]) figure {
     display: none;
   }

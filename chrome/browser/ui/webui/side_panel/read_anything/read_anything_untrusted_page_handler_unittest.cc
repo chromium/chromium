@@ -18,7 +18,10 @@
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/mojom/base/values.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/mojom/ax_event.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_id.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_update.mojom.h"
@@ -54,6 +57,9 @@ class MockPage : public read_anything::mojom::UntrustedPage {
                base::Value::Dict voices,
                base::Value::List languages_enabled_in_pref,
                read_anything::mojom::HighlightGranularity granularity));
+  MOCK_METHOD(void,
+              OnImageDataDownloaded,
+              (const ui::AXTreeID&, int, const SkBitmap&));
   MOCK_METHOD3(OnActiveAXTreeIDChanged,
                void(const ui::AXTreeID& tree_id,
                     ukm::SourceId ukm_source_id,

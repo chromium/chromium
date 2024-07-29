@@ -147,6 +147,13 @@ class ReadAnythingUntrustedPageHandler :
                      ui::AXNodeID target_node_id) override;
   void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
                             ui::AXNodeID target_node_id) override;
+  void OnImageDataDownloaded(const ui::AXTreeID& target_tree_id,
+                             ui::AXNodeID,
+                             int id,
+                             int http_status_code,
+                             const GURL& image_url,
+                             const std::vector<SkBitmap>& bitmaps,
+                             const std::vector<gfx::Size>& sizes);
   void OnSelectionChange(const ui::AXTreeID& target_tree_id,
                          ui::AXNodeID anchor_node_id,
                          int anchor_offset,

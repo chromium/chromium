@@ -767,10 +767,6 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kHitTestResult:
       case ax::mojom::Event::kHover:
       case ax::mojom::Event::kImageFrameUpdated:
-        if (event.event_from_action == ax::mojom::Action::kGetImageData) {
-          image_to_update_node_id_ = event.id;
-        }
-        break;
       case ax::mojom::Event::kLayoutComplete:
       case ax::mojom::Event::kLiveRegionCreated:
       case ax::mojom::Event::kLiveRegionChanged:
