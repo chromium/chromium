@@ -49,6 +49,8 @@ import {getTemplate} from './per_device_keyboard_subsection.html.js';
 const SettingsPerDeviceKeyboardSubsectionElementBase =
     DeepLinkingMixin(I18nMixin(RouteObserverMixin(PolymerElement)));
 
+const MIN_VISIBLE_PERCENT = 5;
+
 export class SettingsPerDeviceKeyboardSubsectionElement extends
     SettingsPerDeviceKeyboardSubsectionElementBase {
   static get is() {
@@ -334,6 +336,16 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   }
 
   onKeyboardBrightnessChanged(keyboardBrightnessPercent: number): void {
+    if (keyboardBrightnessPercent > 0 &&
+        keyboardBrightnessPercent < MIN_VISIBLE_PERCENT) {
+      // When auto-brightness is enabled, it's likely that the automated
+      // brightness percentage will fall between 0% and 5%. To avoid confusion
+      // where the user cannot distinguish between the keyboard being off (0%)
+      // and low brightness levels, set the slider to a minimum visible
+      // percentage (5%).
+      this.set('keyboardBrightnessPercentPref.value', MIN_VISIBLE_PERCENT);
+      return;
+    }
     this.set('keyboardBrightnessPercentPref.value', keyboardBrightnessPercent);
   }
 
