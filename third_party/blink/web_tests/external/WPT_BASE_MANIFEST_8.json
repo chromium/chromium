@@ -208738,7 +208738,7 @@
       ]
      ],
      "text-underline-position-vertical-ja.html": [
-      "ef6513c6223d0674c09b86d39f56b53ccfe5c7c4",
+      "27c978bc7d19ebe4d1e7309f0d52e50cc57afe0d",
       [
        null,
        [
@@ -302069,10 +302069,6 @@
     ],
     "idlharness.https.window-expected.txt": [
      "8c50be6805bf5dee2c774ddca530488ee6375acb",
-     []
-    ],
-    "non-fully-active.https-expected.txt": [
-     "c1a87d9f2eb2fdf545c11bab26fc872f4b12ad18",
      []
     ],
     "passwordcredential-framed-get.sub.https-expected.txt": [
@@ -405435,7 +405431,7 @@
       []
      ],
      "utils_validation.js": [
-      "7e4369ac7da07d32bb99c09d6269add457d3f0fc",
+      "69fe14fa45ba9393dc1a073131b7c3f40acf6ba1",
       []
      ]
     }
@@ -446856,6 +446852,13 @@
       {}
      ]
     ],
+    "credentialscontainer-get-basics.https.html": [
+     "c1030b48f954655833636971bcfb5d919f10133e",
+     [
+      null,
+      {}
+     ]
+    ],
     "credentialscontainer-prevent-silent-access.https.html": [
      "5a83e556a738594d47b12b54521806648ed26262",
      [
@@ -446894,7 +446897,7 @@
      ]
     ],
     "non-fully-active.https.html": [
-     "8101599cedb70ba4a258ef3b4bae3543f42602f8",
+     "508b4325d78b6565f4e0b9b79420b9523a327d83",
      [
       null,
       {
@@ -700202,7 +700205,7 @@
      ]
     },
     "idlharness.https.any.js": [
-     "a5f0dcc2f91522823fc12aa7419ec995493020a5",
+     "6c95e534a4cd6b597beedddbf46969bf19a134f6",
      [
       "webnn/idlharness.https.any.html",
       {
@@ -700426,7 +700429,7 @@
       ]
      ],
      "clamp.https.any.js": [
-      "5a55dbec29fa1d3287f44656b5d5a68fc75f8c9d",
+      "a9ad62c18613252efe4552e0d6e1f5397e73c552",
       [
        "webnn/validation_tests/clamp.https.any.html",
        {
@@ -700877,7 +700880,7 @@
       ]
      ],
      "elu.https.any.js": [
-      "f0f72de9ba3b0a2d04c03a5d6112da76ffb95304",
+      "a84848c2c39b6ef7e6beb8435a96d7109f9c0b84",
       [
        "webnn/validation_tests/elu.https.any.html",
        {
@@ -701000,7 +701003,7 @@
       ]
      ],
      "gelu.https.any.js": [
-      "9d89fe36e384ef3ecb578e465d0b03200a167156",
+      "498dc509cee8f05dea94cedbf2f7634e936c27c2",
       [
        "webnn/validation_tests/gelu.https.any.html",
        {
@@ -701082,7 +701085,7 @@
       ]
      ],
      "gru.https.any.js": [
-      "b105e97a7e7fb92c8f989fab70e6b8efaf431847",
+      "ac69fcf83024c930c23cede97201491f786cd597",
       [
        "webnn/validation_tests/gru.https.any.html",
        {
@@ -701123,7 +701126,7 @@
       ]
      ],
      "gruCell.https.any.js": [
-      "493efc827361bfc3fb1a8e7c8135ea1d6755118a",
+      "98ba3eec62c43c3b5a9687d19b96602715472ee0",
       [
        "webnn/validation_tests/gruCell.https.any.html",
        {
@@ -701164,7 +701167,7 @@
       ]
      ],
      "hardSigmoid.https.any.js": [
-      "65e8eddcf48440e2bbaf1dfb48a46e4d4744f1c6",
+      "154e82936f797caa0793fe84582afe24900ade72",
       [
        "webnn/validation_tests/hardSigmoid.https.any.html",
        {
@@ -701205,7 +701208,7 @@
       ]
      ],
      "hardSwish.https.any.js": [
-      "97ecfb4142de4aa53d5999ca96b768abdec6af4f",
+      "7bdf6eb1db341c95098af4660e43e28629fb2b8c",
       [
        "webnn/validation_tests/hardSwish.https.any.html",
        {
@@ -701369,7 +701372,7 @@
       ]
      ],
      "leakyRelu.https.any.js": [
-      "8237837f8a7f2527ea314bf6663c1b6c5f760cf8",
+      "3a8ac892b98d72e53d53b966d30f063cf48075bc",
       [
        "webnn/validation_tests/leakyRelu.https.any.html",
        {
@@ -701410,7 +701413,7 @@
       ]
      ],
      "linear.https.any.js": [
-      "6ebca3323f914d2de52a56f36e6215dc0aed4079",
+      "05f88a34dc7cc4461809db9c7576b484e9071a65",
       [
        "webnn/validation_tests/linear.https.any.html",
        {
@@ -701451,7 +701454,7 @@
       ]
      ],
      "lstm.https.any.js": [
-      "1cb6943c70c5a29f0f459ebafb17f1c93b5264da",
+      "00f6b129dfa99827605a048d1cff84c52efd0d34",
       [
        "webnn/validation_tests/lstm.https.any.html",
        {
@@ -701492,7 +701495,7 @@
       ]
      ],
      "lstmCell.https.any.js": [
-      "934ab176bdbf32060adfb94036d2cb00693884a0",
+      "28a9cb8dd3f7f1b8f57cfba35b900feb5b760a76",
       [
        "webnn/validation_tests/lstmCell.https.any.html",
        {
@@ -701797,7 +701800,7 @@
       ]
      ],
      "relu.https.any.js": [
-      "f62e800922564dd0ec9bae8a91482f66cd29c270",
+      "caebba9b316a20be4036c1536b8daba032ae65cf",
       [
        "webnn/validation_tests/relu.https.any.html",
        {
@@ -701920,7 +701923,7 @@
       ]
      ],
      "sigmoid.https.any.js": [
-      "b40ddc3fd4a7bc014c5a4050f4c42a3e525627ce",
+      "e5401367683ad65e02432a06dc5ffc3eb80dcc28",
       [
        "webnn/validation_tests/sigmoid.https.any.html",
        {
@@ -702043,7 +702046,7 @@
       ]
      ],
      "softplus.https.any.js": [
-      "3cf91d26ecb9316d8847feb84aebf9da6742e138",
+      "fd1836bfdb6ca12f28ceb7790aa8ccc214ed59b8",
       [
        "webnn/validation_tests/softplus.https.any.html",
        {
@@ -702084,7 +702087,7 @@
       ]
      ],
      "softsign.https.any.js": [
-      "58ec4871599686e51568ef045ac447b6dfdfa6a4",
+      "11b462c3a3efce81827b106b7b7bdac9ce2d2609",
       [
        "webnn/validation_tests/softsign.https.any.html",
        {
@@ -702166,7 +702169,7 @@
       ]
      ],
      "tanh.https.any.js": [
-      "4f9de919f61e2f119cae9ceba81ef3a4dcb5a6a8",
+      "deb9f3614eb97faed2a5f86782207839a874822b",
       [
        "webnn/validation_tests/tanh.https.any.html",
        {
