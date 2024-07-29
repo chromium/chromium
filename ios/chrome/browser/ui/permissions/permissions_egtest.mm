@@ -33,10 +33,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
-// TODO(crbug.com/40222316): Re-enable tests on devices once
-// https://openradar.appspot.com/FB9858932 is fixed.
-#if TARGET_OS_SIMULATOR
-
 namespace {
 
 using ::base::test::ios::kWaitForUIElementTimeout;
@@ -683,5 +679,3 @@ void TapDoneButtonOnInfobarModal() {
 }
 
 @end
-
-#endif  // TARGET_OS_SIMULATOR
