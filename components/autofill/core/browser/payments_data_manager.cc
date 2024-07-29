@@ -247,6 +247,9 @@ PaymentsDataManager::PaymentsDataManager(
         autofill_metrics::LogIsCreditCardBenefitsEnabledAtStartup(
             prefs::IsPaymentCardBenefitsEnabled(pref_service_));
       }
+    } else {
+      autofill_metrics::LogAutofillPaymentMethodsDisabledReasonAtStartup(
+          *pref_service_);
     }
   }
   if (sync_service_) {

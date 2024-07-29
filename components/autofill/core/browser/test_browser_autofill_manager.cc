@@ -256,6 +256,10 @@ void TestBrowserAutofillManager::SetAutofillPaymentMethodsEnabled(
     TestAutofillClient& client,
     bool autofill_payment_methods_enabled) {
   autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
+  if (PrefService* prefs = client.GetPrefs()) {
+    prefs->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                      autofill_payment_methods_enabled);
+  }
   if (!autofill_payment_methods_enabled) {
     // Credit card data is refreshed when this pref is changed.
     client.GetPersonalDataManager()

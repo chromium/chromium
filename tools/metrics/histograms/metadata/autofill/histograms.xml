@@ -1367,6 +1367,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.CreditCard.DisabledReason.PageLoad"
+    enum="AutofillPreferenceSetter" expires_after="2025-07-01">
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    If the pref autofill.credit_card_enabled is disabled, this metric records
+    the source. Emitted on page load for a page containing forms. The
+    corresponding metric tracking the activation rate of
+    autofill.credit_card_enabled is Autofill.CreditCard.IsEnabled.PageLoad.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CreditCard.DisabledReason.Startup"
+    enum="AutofillPreferenceSetter" expires_after="2025-07-01">
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    If the pref autofill.credit_card_enabled is disabled, this metric records
+    the source. Emitted on browser startup when a new Chrome profile is loaded.
+    The corresponding metric tracking the activation rate of
+    autofill.credit_card_enabled is Autofill.CreditCard.IsEnabled.Startup.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CreditCard.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>

@@ -49,6 +49,18 @@ void LogAutofillProfileDisabledReason(const PrefService& pref_service,
   }
 }
 
+// Emits UMA metric `Autofill.CreditCard.DisabledReason.{PageLoad, Startup}`.
+void LogAutofillPaymentMethodsDisabledReason(const PrefService& pref_service,
+                                             std::string_view suffix) {
+  CHECK(!prefs::IsAutofillPaymentMethodsEnabled(&pref_service));
+  if (const PrefService::Preference* pref =
+          pref_service.FindPreference(prefs::kAutofillCreditCardEnabled)) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Autofill.CreditCard.DisabledReason.", suffix}),
+        GetAutofillPreferenceSetter(pref));
+  }
+}
+
 }  // namespace
 
 void LogIsAutofillEnabledAtStartup(bool enabled) {
@@ -104,6 +116,16 @@ void LogAutofillProfileDisabledReasonAtStartup(
 void LogAutofillProfileDisabledReasonAtPageLoad(
     const PrefService& pref_service) {
   LogAutofillProfileDisabledReason(pref_service, "PageLoad");
+}
+
+void LogAutofillPaymentMethodsDisabledReasonAtStartup(
+    const PrefService& pref_service) {
+  LogAutofillPaymentMethodsDisabledReason(pref_service, "Startup");
+}
+
+void LogAutofillPaymentMethodsDisabledReasonAtPageLoad(
+    const PrefService& pref_service) {
+  LogAutofillPaymentMethodsDisabledReason(pref_service, "PageLoad");
 }
 
 void MaybeLogAutofillProfileDisabled(const PrefService& pref_service) {

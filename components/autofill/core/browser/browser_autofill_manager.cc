@@ -810,10 +810,14 @@ bool BrowserAutofillManager::ShouldParseForms() {
         autofill_enabled, metrics_->signin_state_for_metrics);
     autofill_metrics::LogIsAutofillProfileEnabledAtPageLoad(
         IsAutofillProfileEnabled(), metrics_->signin_state_for_metrics);
-    autofill_metrics::LogIsAutofillCreditCardEnabledAtPageLoad(
-        IsAutofillPaymentMethodsEnabled(), metrics_->signin_state_for_metrics);
     if (!IsAutofillProfileEnabled()) {
       autofill_metrics::LogAutofillProfileDisabledReasonAtPageLoad(
+          CHECK_DEREF(client().GetPrefs()));
+    }
+    autofill_metrics::LogIsAutofillCreditCardEnabledAtPageLoad(
+        IsAutofillPaymentMethodsEnabled(), metrics_->signin_state_for_metrics);
+    if (!IsAutofillPaymentMethodsEnabled()) {
+      autofill_metrics::LogAutofillPaymentMethodsDisabledReasonAtPageLoad(
           CHECK_DEREF(client().GetPrefs()));
     }
     metrics_->has_logged_autofill_enabled = true;

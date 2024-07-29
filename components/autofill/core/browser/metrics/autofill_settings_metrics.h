@@ -61,6 +61,16 @@ void LogAutofillProfileDisabledReasonAtStartup(const PrefService& pref_service);
 void LogAutofillProfileDisabledReasonAtPageLoad(
     const PrefService& pref_service);
 
+// Logs the source that disabled payment method Autofill, on startup. This
+// should be called each time a new chrome profile is launched.
+void LogAutofillPaymentMethodsDisabledReasonAtStartup(
+    const PrefService& pref_service);
+
+// Logs the source that disabled payment method Autofill, on page load for a
+// page containing forms.
+void LogAutofillPaymentMethodsDisabledReasonAtPageLoad(
+    const PrefService& pref_service);
+
 // Logs user action "Autofill_ProfileDisabled" if
 // `prefs::kAutofillProfileEnabled` is disabled and controlled by the user or an
 // extension.
