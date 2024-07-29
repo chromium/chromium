@@ -405,6 +405,10 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   self.currentMode = mode;
 }
 
+- (void)setPageAsActive {
+  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+}
+
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {

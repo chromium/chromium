@@ -90,6 +90,10 @@
   }
 }
 
+- (void)setPageAsActive {
+  [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs];
+}
+
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {

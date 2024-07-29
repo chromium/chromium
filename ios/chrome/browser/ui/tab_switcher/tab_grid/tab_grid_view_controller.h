@@ -103,7 +103,6 @@ enum class TabGridPageConfiguration {
                         KeyCommandActions,
                         TabGridConsumer,
                         TabGridIdleStatusHandler,
-                        TabGridPaging,
                         TabGridToolbarsMainTabGridDelegate,
                         TabGridTransitionLayoutProviding,
                         UISearchBarDelegate>
@@ -179,6 +178,9 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak)
     GridContainerViewController* remoteGridContainerViewController;
 
+// Active page of the tab grid. The active page is the page that
+// contains the most recent active tab.
+@property(nonatomic, assign, readonly) TabGridPage activePage;
 // The currently visible page.
 @property(nonatomic, assign, readonly) TabGridPage currentPage;
 

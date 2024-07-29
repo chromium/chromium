@@ -130,6 +130,10 @@ NSString* CreationText(base::Time creation_date) {
       << "Tab Groups panel should only support Normal mode.";
 }
 
+- (void)setPageAsActive {
+  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+}
+
 #pragma mark TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {

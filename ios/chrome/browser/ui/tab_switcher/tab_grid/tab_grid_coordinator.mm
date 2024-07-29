@@ -372,8 +372,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)setActivePage:(TabGridPage)page {
   DCHECK(page != TabGridPageRemoteTabs);
-  [_mediator setPage:page];
-  self.baseViewController.activePage = page;
+  [_mediator setActivePage:page];
 }
 
 - (void)setActiveMode:(TabGridMode)mode {
@@ -557,12 +556,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // Finally, the launch mask view should be removed.
   ProceduralBlock extendedCompletion = ^{
     [self.delegate tabGridDismissTransitionDidEnd:self];
-    if (self.baseViewController.tabGridMode == TabGridModeSearch) {
-      // In search mode, the tabgrid mode is not reset before the animation so
-      // the animation can start from the correct cell. Once the animation is
-      // complete, reset the tab grid mode.
-      [self setActiveMode:TabGridModeNormal];
-    }
+    // In search mode, the tabgrid mode is not reset before the animation so
+    // the animation can start from the correct cell. Once the animation is
+    // complete, reset the tab grid mode.
+    [self setActiveMode:TabGridModeNormal];
     Browser* browser = self.bvcContainer.incognito ? self.incognitoBrowser
                                                    : self.regularBrowser;
     if (!GetFirstResponderInWindowScene(

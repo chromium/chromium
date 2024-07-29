@@ -109,6 +109,10 @@
   }
 }
 
+- (void)setPageAsActive {
+  [self.gridConsumer setActivePageFromPage:TabGridPageIncognitoTabs];
+}
+
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {

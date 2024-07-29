@@ -129,15 +129,21 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, strong)
     DisabledGridViewController* remoteDisabledViewController;
 
+// Redefined as readwrite
+@property(nonatomic, assign, readwrite) TabGridPage activePage;
+// Setting the current page doesn't scroll the scroll view; use
+// -scrollToPage:animated: for that. Redefined as readwrite.
+@property(nonatomic, assign, readwrite) TabGridPage currentPage;
+
+// Current mode of the tab grid.
+@property(nonatomic, assign) TabGridMode tabGridMode;
+
 // Other UI components.
 @property(nonatomic, weak) UIScrollView* scrollView;
 @property(nonatomic, weak) UIView* scrollContentView;
 // Scrim view to be presented when the search box in focused with no text.
 @property(nonatomic, strong) UIControl* scrimView;
 @property(nonatomic, assign) TabGridConfiguration configuration;
-// Setting the current page doesn't scroll the scroll view; use
-// -scrollToPage:animated: for that. Redefined as readwrite.
-@property(nonatomic, assign, readwrite) TabGridPage currentPage;
 // The UIViewController corresponding with `currentPage`.
 @property(nonatomic, readonly) UIViewController* currentPageViewController;
 // Whether the scroll view is animating its content offset to the current page.
@@ -183,10 +189,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Whether the user has put the app to background since entering tab grid.
   BOOL _backgroundedSinceEntering;
 }
-
-// TabGridPaging property.
-@synthesize activePage = _activePage;
-@synthesize tabGridMode = _tabGridMode;
 
 - (instancetype)initWithPageConfiguration:
     (TabGridPageConfiguration)tabGridPageConfiguration {
@@ -571,19 +573,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return self.remoteTabsViewController;
 }
 
-#pragma mark - TabGridPaging
-
-- (void)setActivePage:(TabGridPage)activePage {
-  [self scrollToPage:activePage animated:YES];
-  [self.activityObserver updateLastActiveTabPage:activePage];
-  if (activePage != _activePage) {
-    // Usually, an active page change is a result of an in-page action happening
-    // on a previously non-active page.
-    [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
-  }
-  _activePage = activePage;
-}
-
 #pragma mark - TabGridMode
 
 - (void)setTabGridMode:(TabGridMode)mode {
@@ -732,6 +721,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     case TabGridPageTabGroups:
       return nil;
   }
+}
+
+- (void)setActivePage:(TabGridPage)activePage {
+  [self scrollToPage:activePage animated:YES];
+  [self.activityObserver updateLastActiveTabPage:activePage];
+  if (activePage != _activePage) {
+    // Usually, an active page change is a result of an in-page action happening
+    // on a previously non-active page.
+    [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
+  }
+  _activePage = activePage;
 }
 
 - (void)setCurrentPage:(TabGridPage)currentPage {

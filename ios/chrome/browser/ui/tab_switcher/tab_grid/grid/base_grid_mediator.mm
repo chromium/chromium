@@ -1654,6 +1654,10 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   self.currentMode = mode;
 }
 
+- (void)setPageAsActive {
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+}
+
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
