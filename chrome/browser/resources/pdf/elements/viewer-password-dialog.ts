@@ -13,7 +13,7 @@ import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './viewer_password_dialog.html.js';
+import {getTemplate} from './viewer-password-dialog.html.js';
 
 export interface ViewerPasswordDialogElement {
   $: {

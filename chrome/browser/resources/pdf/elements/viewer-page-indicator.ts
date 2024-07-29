@@ -8,7 +8,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {Viewport} from '../viewport.js';
 
-import {getTemplate} from './viewer_page_indicator.html.js';
+import {getTemplate} from './viewer-page-indicator.html.js';
 
 export class ViewerPageIndicatorElement extends PolymerElement {
   static get is() {

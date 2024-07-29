@@ -6,8 +6,8 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
 import './pdf-shared.css.js';
-import './viewer_pen_options.js';
-import './viewer_toolbar_dropdown.js';
+import './viewer-pen-options.js';
+import './viewer-toolbar-dropdown.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -17,9 +17,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {AnnotationTool} from '../annotation_tool.js';
 import {InkController, InkControllerEventType} from '../ink_controller.js';
 
-import {getTemplate} from './viewer_annotations_bar.html.js';
-import type {ViewerPenOptionsElement} from './viewer_pen_options.js';
-import type {ViewerToolbarDropdownElement} from './viewer_toolbar_dropdown.js';
+import {getTemplate} from './viewer-annotations-bar.html.js';
+import type {ViewerPenOptionsElement} from './viewer-pen-options.js';
+import type {ViewerToolbarDropdownElement} from './viewer-toolbar-dropdown.js';
 
 export interface ViewerAnnotationsBarElement {
   $: {

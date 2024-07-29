@@ -10,7 +10,7 @@ import {record, UserAction} from '../metrics.js';
 import type {Viewport} from '../viewport.js';
 import {PAGE_SHADOW} from '../viewport.js';
 
-import {getTemplate} from './viewer_ink_host.html.js';
+import {getTemplate} from './viewer-ink-host.html.js';
 
 enum State {
   LOADING = 'loading',

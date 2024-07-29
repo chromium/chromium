@@ -10,8 +10,8 @@ import {AnnotationBrushType} from '../constants.js';
 import type {AnnotationBrush, Color} from '../constants.js';
 import {PluginController} from '../controller.js';
 
-import {getCss} from './viewer_side_panel.css.js';
-import {getHtml} from './viewer_side_panel.html.js';
+import {getCss} from './viewer-side-panel.css.js';
+import {getHtml} from './viewer-side-panel.html.js';
 
 interface ColorOption {
   name: string;

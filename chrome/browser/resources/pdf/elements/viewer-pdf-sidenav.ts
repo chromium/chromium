@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared_vars.css.js';
+import './shared-vars.css.js';
 import '../pdf_viewer_shared_style.css.js';
 import './icons.html.js';
-import './viewer_attachment_bar.js';
-import './viewer_document_outline.js';
-import './viewer_thumbnail_bar.js';
+import './viewer-attachment-bar.js';
+import './viewer-document-outline.js';
+import './viewer-thumbnail-bar.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
@@ -19,7 +19,7 @@ import type {Bookmark} from '../bookmark_type.js';
 import type {Attachment} from '../constants.js';
 import {record, UserAction} from '../metrics.js';
 
-import {getTemplate} from './viewer_pdf_sidenav.html.js';
+import {getTemplate} from './viewer-pdf-sidenav.html.js';
 
 enum TabId {
   THUMBNAIL = 0,

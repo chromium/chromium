@@ -11,7 +11,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {DocumentMetadata} from '../constants.js';
 
-import {getTemplate} from './viewer_properties_dialog.html.js';
+import {getTemplate} from './viewer-properties-dialog.html.js';
 
 export interface ViewerPropertiesDialogElement {
   $: {

@@ -20,35 +20,35 @@ build_webui("build") {
   }
 
   web_component_files = [
-    "elements/viewer_attachment.ts",
-    "elements/viewer_attachment_bar.ts",
-    "elements/viewer_bookmark.ts",
-    "elements/viewer_document_outline.ts",
-    "elements/viewer_download_controls.ts",
-    "elements/viewer_error_dialog.ts",
-    "elements/viewer_page_selector.ts",
-    "elements/viewer_password_dialog.ts",
-    "elements/viewer_pdf_sidenav.ts",
-    "elements/viewer_properties_dialog.ts",
-    "elements/viewer_thumbnail_bar.ts",
-    "elements/viewer_thumbnail.ts",
-    "elements/viewer_toolbar.ts",
+    "elements/viewer-attachment.ts",
+    "elements/viewer-attachment-bar.ts",
+    "elements/viewer-bookmark.ts",
+    "elements/viewer-document-outline.ts",
+    "elements/viewer-download-controls.ts",
+    "elements/viewer-error-dialog.ts",
+    "elements/viewer-page-selector.ts",
+    "elements/viewer-password-dialog.ts",
+    "elements/viewer-pdf-sidenav.ts",
+    "elements/viewer-properties-dialog.ts",
+    "elements/viewer-thumbnail-bar.ts",
+    "elements/viewer-thumbnail.ts",
+    "elements/viewer-toolbar.ts",
     "pdf_viewer.ts",
 
     # Files only used in Print Preview's PDF Viewer UI.
-    "elements/viewer_page_indicator.ts",
-    "elements/viewer_zoom_button.ts",
-    "elements/viewer_zoom_toolbar.ts",
+    "elements/viewer-page-indicator.ts",
+    "elements/viewer-zoom-button.ts",
+    "elements/viewer-zoom-toolbar.ts",
     "pdf_viewer_print.ts",
   ]
 
   if (enable_ink) {
     web_component_files += [
-      "elements/viewer_annotations_bar.ts",
-      "elements/viewer_annotations_mode_dialog.ts",
-      "elements/viewer_ink_host.ts",
-      "elements/viewer_pen_options.ts",
-      "elements/viewer_toolbar_dropdown.ts",
+      "elements/viewer-annotations-bar.ts",
+      "elements/viewer-annotations-mode-dialog.ts",
+      "elements/viewer-ink-host.ts",
+      "elements/viewer-pen-options.ts",
+      "elements/viewer-toolbar-dropdown.ts",
     ]
   }
 
@@ -90,19 +90,19 @@ build_webui("build") {
 
   if (enable_pdf_ink2) {
     non_web_component_files += [
-      "elements/viewer_side_panel.html.ts",
-      "elements/viewer_side_panel.ts",
+      "elements/viewer-side-panel.html.ts",
+      "elements/viewer-side-panel.ts",
     ]
   }
 
   css_files = [
-    "elements/pdf_shared.css",
-    "elements/shared_vars.css",
+    "elements/pdf-shared.css",
+    "elements/shared-vars.css",
     "pdf_viewer_shared_style.css",
   ]
 
   if (enable_pdf_ink2) {
-    css_files += [ "elements/viewer_side_panel.css" ]
+    css_files += [ "elements/viewer-side-panel.css" ]
   }
 
   icons_html_files = [ "elements/icons.html" ]

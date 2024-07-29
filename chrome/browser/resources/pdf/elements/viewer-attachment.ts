@@ -11,7 +11,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {Attachment} from '../constants.js';
 
-import {getTemplate} from './viewer_attachment.html.js';
+import {getTemplate} from './viewer-attachment.html.js';
 
 export interface SaveAttachment {
   index: number;

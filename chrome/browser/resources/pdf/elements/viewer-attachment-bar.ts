@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './pdf_shared.css.js';
-import './viewer_attachment.js';
+import './pdf-shared.css.js';
+import './viewer-attachment.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Attachment} from '../constants.js';
 
-import {getTemplate} from './viewer_attachment_bar.html.js';
+import {getTemplate} from './viewer-attachment-bar.html.js';
 
 export class ViewerAttachmentBarElement extends PolymerElement {
   static get is() {

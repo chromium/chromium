@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './viewer_zoom_button.html.js';
+import {getTemplate} from './viewer-zoom-button.html.js';
 
 export class ViewerZoomButtonElement extends PolymerElement {
   static get is() {

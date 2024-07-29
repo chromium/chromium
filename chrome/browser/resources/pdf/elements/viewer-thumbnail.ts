@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './pdf_shared.css.js';
+import './pdf-shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ChangePageOrigin} from './viewer_bookmark.js';
-import {getTemplate} from './viewer_thumbnail.html.js';
+import {ChangePageOrigin} from './viewer-bookmark.js';
+import {getTemplate} from './viewer-thumbnail.html.js';
 
 // The maximum widths of thumbnails for each layout (px).
 // These constants should be kept in sync with `kMaxWidthPortraitPx` and

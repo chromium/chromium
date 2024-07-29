@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './viewer_error_dialog.html.js';
+import {getTemplate} from './viewer-error-dialog.html.js';
 
 export class ViewerErrorDialogElement extends PolymerElement {
   static get is() {

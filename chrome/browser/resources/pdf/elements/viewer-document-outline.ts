@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './pdf_shared.css.js';
-import './viewer_bookmark.js';
+import './pdf-shared.css.js';
+import './viewer-bookmark.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Bookmark} from '../bookmark_type.js';
 
-import {getTemplate} from './viewer_document_outline.html.js';
+import {getTemplate} from './viewer-document-outline.html.js';
 
 export class ViewerDocumentOutlineElement extends PolymerElement {
   static get is() {
