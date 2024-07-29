@@ -1596,6 +1596,11 @@
       name: "EventTimingInteractionCount",
       status: "experimental",
     },
+    // Killswitch. Remove after 1-2 stable releases.
+    {
+      name: "ExcludePopupMainThreadScrollingReason",
+      status: "stable",
+    },
     {
       name: "ExcludeTransparentTextsFromBeingLcpEligible",
       status: "experimental",

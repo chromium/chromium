@@ -2590,6 +2590,13 @@ bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
     return true;
   }
 
+  if (RuntimeEnabledFeatures::ExcludePopupMainThreadScrollingReasonEnabled() &&
+      !GetLayoutBox()->GetFrame()->Client()->GetWebFrame()) {
+    // If there's no WebFrame, then there's no WebFrameWidget, and we can't do
+    // threaded scrolling. This currently only happens in a WebPagePopup.
+    return true;
+  }
+
   if (const auto* paint_artifact_compositor =
           GetLayoutBox()->GetFrameView()->GetPaintArtifactCompositor()) {
     if (const auto* properties =

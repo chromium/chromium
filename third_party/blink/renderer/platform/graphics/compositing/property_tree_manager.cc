@@ -634,6 +634,10 @@ int PropertyTreeManager::EnsureCompositorScrollNodeInternal(
   compositor_node.is_composited = false;
   compositor_node.main_thread_scrolling_reasons =
       scroll_node.GetMainThreadScrollingReasons();
+  if (RuntimeEnabledFeatures::ExcludePopupMainThreadScrollingReasonEnabled()) {
+    CHECK_EQ(compositor_node.main_thread_scrolling_reasons,
+             scroll_tree_.GetMainThreadRepaintReasons(compositor_node));
+  }
 
   scroll_node.SetCcNodeId(new_sequence_number_, id);
   return id;
