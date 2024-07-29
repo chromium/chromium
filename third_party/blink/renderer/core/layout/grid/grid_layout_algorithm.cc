@@ -60,7 +60,7 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
   if (grid_available_size_.block_size == kIndefiniteSize) {
     const LayoutUnit border_scrollbar_padding =
         BorderScrollbarPadding().BlockSum();
-    const MinMaxSizes sizes = ComputeMinMaxBlockSizes(
+    const MinMaxSizes sizes = ComputeInitialMinMaxBlockSizes(
         constraint_space, node, container_builder_.BorderPadding());
 
     grid_min_available_size_.block_size =
@@ -1300,8 +1300,8 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
                   ResolveMinInlineLength(space, item_style, border_padding,
                                          MinMaxSizesFunc, min_length);
             } else {
-              contribution = ResolveMinBlockLength(space, item_style,
-                                                   border_padding, min_length);
+              contribution = ResolveInitialMinBlockLength(
+                  space, item_style, border_padding, min_length);
             }
             break;
           }

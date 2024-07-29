@@ -791,8 +791,8 @@ const LayoutResult* ComputeOofBlockDimensions(
         space, style, border_padding, main_block_length, &auto_length,
         IntrinsicBlockSizeFunc, imcb.BlockSize());
 
-    MinMaxSizes min_max_block_sizes =
-        ComputeMinMaxBlockSizes(space, node, border_padding, imcb.BlockSize());
+    MinMaxSizes min_max_block_sizes = ComputeMinMaxBlockSizesDeprecated(
+        space, node, border_padding, imcb.BlockSize());
 
     // Manually resolve any intrinsic/content min/max block-sizes.
     // TODO(crbug.com/1135207): |ComputeMinMaxBlockSizes()| should handle this.

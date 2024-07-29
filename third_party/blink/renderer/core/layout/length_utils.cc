@@ -334,7 +334,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
       is_parallel_with_parent
           ? ComputeMinMaxInlineSizes(space, child, border_padding,
                                      min_max_sizes_func)
-          : ComputeMinMaxBlockSizes(space, child, border_padding);
+          : ComputeMinMaxBlockSizesDeprecated(space, child, border_padding);
 
   result.sizes.Constrain(min_max_sizes.max_size);
   result.sizes.Encompass(min_max_sizes.min_size);
@@ -517,18 +517,31 @@ LayoutUnit ComputeUsedInlineSizeForTableFragment(
                                               MinMaxSizesFunc);
 }
 
-MinMaxSizes ComputeMinMaxBlockSizes(const ConstraintSpace& space,
-                                    const BlockNode& node,
-                                    const BoxStrut& border_padding,
-                                    LayoutUnit override_available_size) {
+MinMaxSizes ComputeInitialMinMaxBlockSizes(const ConstraintSpace& space,
+                                           const BlockNode& node,
+                                           const BoxStrut& border_padding) {
   const ComputedStyle& style = node.Style();
   MinMaxSizes sizes = {
-      ResolveMinBlockLength(space, style, border_padding,
-                            style.LogicalMinHeight(), override_available_size,
-                            /* override_percentage_resolution_size */ nullptr),
-      ResolveMaxBlockLength(space, style, border_padding,
-                            style.LogicalMaxHeight(), override_available_size,
-                            /* override_percentage_resolution_size */ nullptr)};
+      ResolveInitialMinBlockLength(space, style, border_padding,
+                                   style.LogicalMinHeight()),
+      ResolveInitialMaxBlockLength(space, style, border_padding,
+                                   style.LogicalMaxHeight())};
+  sizes.max_size = std::max(sizes.max_size, sizes.min_size);
+  return sizes;
+}
+
+MinMaxSizes ComputeMinMaxBlockSizesDeprecated(
+    const ConstraintSpace& space,
+    const BlockNode& node,
+    const BoxStrut& border_padding,
+    LayoutUnit override_available_size) {
+  const ComputedStyle& style = node.Style();
+  MinMaxSizes sizes = {ResolveMinBlockLengthDeprecated(
+                           space, style, border_padding,
+                           style.LogicalMinHeight(), override_available_size),
+                       ResolveMaxBlockLengthDeprecated(
+                           space, style, border_padding,
+                           style.LogicalMaxHeight(), override_available_size)};
   sizes.max_size = std::max(sizes.max_size, sizes.min_size);
   return sizes;
 }
@@ -588,7 +601,7 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
   DCHECK(!style.AspectRatio().IsAuto());
 
   const MinMaxSizes block_min_max =
-      ComputeMinMaxBlockSizes(constraint_space, node, border_padding);
+      ComputeInitialMinMaxBlockSizes(constraint_space, node, border_padding);
   return ComputeTransferredMinMaxInlineSizes(style.LogicalAspectRatio(),
                                              block_min_max, border_padding,
                                              style.BoxSizingForAspectRatio());
@@ -640,21 +653,25 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
     LayoutUnit intrinsic_size,
     LayoutUnit inline_size,
     LayoutUnit override_available_size = kIndefiniteSize) {
-  MinMaxSizes min_max = ComputeMinMaxBlockSizes(space, node, border_padding,
-                                                override_available_size);
+  const ComputedStyle& style = node.Style();
 
+  // Scrollable percentage-sized children of table cells (sometimes) are sized
+  // to their initial min-size.
+  // See: https://drafts.csswg.org/css-tables-3/#row-layout
+  if (space.IsRestrictedBlockSizeTableCellChild()) {
+    return ResolveInitialMinBlockLength(space, style, border_padding,
+                                        style.LogicalMinHeight(),
+                                        override_available_size);
+  }
+
+  MinMaxSizes min_max = ComputeMinMaxBlockSizesDeprecated(
+      space, node, border_padding, override_available_size);
+
+  // Encompass intrinsic block-size, but not beyond computed max-block-size.
   if (space.MinBlockSizeShouldEncompassIntrinsicSize()) {
-    // Encompass intrinsic block-size, but not beyond computed max-block-size.
     min_max.Encompass(std::min(intrinsic_size, min_max.max_size));
   }
 
-  // Scrollable percentage-sized children of table cells (sometimes) are sized
-  // to their min-size.
-  // See: https://drafts.csswg.org/css-tables-3/#row-layout
-  if (space.IsRestrictedBlockSizeTableCellChild())
-    return min_max.min_size;
-
-  const ComputedStyle& style = node.Style();
   const bool has_aspect_ratio = !style.AspectRatio().IsAuto();
   const Length& logical_height = style.LogicalHeight();
   const bool has_implicit_stretch =
@@ -853,14 +870,14 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
             : space.ReplacedPercentageResolutionBlockSize();
 
     block_min_max_sizes = {
-        ResolveMinBlockLength(space, style, border_padding,
-                              style.LogicalMinHeight(),
-                              /* override_available_size */ kIndefiniteSize,
-                              &min_max_percentage_resolution_size),
-        ResolveMaxBlockLength(space, style, border_padding,
-                              style.LogicalMaxHeight(),
-                              /* override_available_size */ kIndefiniteSize,
-                              &min_max_percentage_resolution_size)};
+        ResolveMinBlockLengthDeprecated(
+            space, style, border_padding, style.LogicalMinHeight(),
+            /* override_available_size */ kIndefiniteSize,
+            &min_max_percentage_resolution_size),
+        ResolveMaxBlockLengthDeprecated(
+            space, style, border_padding, style.LogicalMaxHeight(),
+            /* override_available_size */ kIndefiniteSize,
+            &min_max_percentage_resolution_size)};
 
     if (space.IsFixedBlockSize()) {
       replaced_block = space.AvailableSize().block_size;

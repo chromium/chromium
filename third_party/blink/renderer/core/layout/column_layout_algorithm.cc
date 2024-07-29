@@ -1453,8 +1453,8 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   LayoutUnit extra = BorderScrollbarPadding().BlockSum();
   size += extra;
 
-  LayoutUnit max = ResolveMaxBlockLength(space, style, BorderPadding(),
-                                         style.LogicalMaxHeight());
+  LayoutUnit max = ResolveInitialMaxBlockLength(space, style, BorderPadding(),
+                                                style.LogicalMaxHeight());
   LayoutUnit extent = kIndefiniteSize;
 
   const Length& block_length = style.LogicalHeight();
@@ -1470,8 +1470,8 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   }
 
   // A specified min-block-size may increase the maximum length.
-  LayoutUnit min = ResolveMinBlockLength(space, style, BorderPadding(),
-                                         style.LogicalMinHeight());
+  LayoutUnit min = ResolveInitialMinBlockLength(space, style, BorderPadding(),
+                                                style.LogicalMinHeight());
   max = std::max(max, min);
 
   if (max != LayoutUnit::Max()) {

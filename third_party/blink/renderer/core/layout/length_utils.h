@@ -134,7 +134,19 @@ inline LayoutUnit ResolveMainInlineLength(
 }
 
 // Used for resolving min block lengths, (|ComputedStyle::MinLogicalHeight|).
-inline LayoutUnit ResolveMinBlockLength(
+inline LayoutUnit ResolveInitialMinBlockLength(
+    const ConstraintSpace& constraint_space,
+    const ComputedStyle& style,
+    const BoxStrut& border_padding,
+    const Length& length,
+    LayoutUnit override_available_size = kIndefiniteSize) {
+  return ResolveBlockLengthInternal(
+      constraint_space, style, border_padding, length,
+      /* auto_length */ &Length::Auto(), override_available_size,
+      /* override_percentage_resolution_size */ nullptr,
+      []() { return kIndefiniteSize; }, border_padding.BlockSum());
+}
+inline LayoutUnit ResolveMinBlockLengthDeprecated(
     const ConstraintSpace& constraint_space,
     const ComputedStyle& style,
     const BoxStrut& border_padding,
@@ -149,7 +161,21 @@ inline LayoutUnit ResolveMinBlockLength(
 }
 
 // Used for resolving max block lengths, (|ComputedStyle::MaxLogicalHeight|).
-inline LayoutUnit ResolveMaxBlockLength(
+inline LayoutUnit ResolveInitialMaxBlockLength(
+    const ConstraintSpace& constraint_space,
+    const ComputedStyle& style,
+    const BoxStrut& border_padding,
+    const Length& length) {
+  // TODO(https://crbug.com/313072): Ensure that we don't do math on
+  // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
+  return ResolveBlockLengthInternal(
+      constraint_space, style, border_padding, length,
+      /* auto_length */ &Length::Auto(),
+      /* override_available_size */ kIndefiniteSize,
+      /* override_percentage_resolution_size */ nullptr,
+      []() { return kIndefiniteSize; }, LayoutUnit::Max());
+}
+inline LayoutUnit ResolveMaxBlockLengthDeprecated(
     const ConstraintSpace& constraint_space,
     const ComputedStyle& style,
     const BoxStrut& border_padding,
@@ -197,7 +223,13 @@ inline LayoutUnit ResolveMainBlockLength(
 }
 
 // Computes the min-block-size and max-block-size values for a node.
-MinMaxSizes ComputeMinMaxBlockSizes(
+//
+// The initial variant of this function won't try and resolve
+// "min-block-size: min-content" and similar.
+MinMaxSizes ComputeInitialMinMaxBlockSizes(const ConstraintSpace&,
+                                           const BlockNode&,
+                                           const BoxStrut& border_padding);
+MinMaxSizes ComputeMinMaxBlockSizesDeprecated(
     const ConstraintSpace&,
     const BlockNode&,
     const BoxStrut& border_padding,

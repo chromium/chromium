@@ -343,9 +343,9 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
 
   LayoutUnit max_content_block_size = LayoutUnit::Max();
   if (adjusted_padding_box_size.block_size == kIndefiniteSize) {
-    max_content_block_size =
-        ResolveMaxBlockLength(GetConstraintSpace(), Style(), BorderPadding(),
-                              Style().LogicalMaxHeight());
+    max_content_block_size = ResolveInitialMaxBlockLength(
+        GetConstraintSpace(), Style(), BorderPadding(),
+        Style().LogicalMaxHeight());
   }
 
   // If we are past the block-end and had previously laid out the content with a

@@ -746,12 +746,13 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       min_max_sizes_in_main_axis_direction.max_size = ResolveMaxInlineLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
           MinMaxSizesFunc, max_property_in_main_axis);
-      min_max_sizes_in_cross_axis_direction = ComputeMinMaxBlockSizes(
+      min_max_sizes_in_cross_axis_direction = ComputeMinMaxBlockSizesDeprecated(
           flex_basis_space, child, border_padding_in_child_writing_mode);
     } else {
-      min_max_sizes_in_main_axis_direction.max_size = ResolveMaxBlockLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          max_property_in_main_axis);
+      min_max_sizes_in_main_axis_direction.max_size =
+          ResolveMaxBlockLengthDeprecated(flex_basis_space, child_style,
+                                          border_padding_in_child_writing_mode,
+                                          max_property_in_main_axis);
       min_max_sizes_in_cross_axis_direction = ComputeMinMaxInlineSizes(
           flex_basis_space, child, border_padding_in_child_writing_mode,
           MinMaxSizesFunc);
@@ -908,8 +909,9 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           MinMaxSizesFunc, min);
     } else {
       min_max_sizes_in_main_axis_direction.min_size =
-          ResolveMinBlockLength(flex_basis_space, child_style,
-                                border_padding_in_child_writing_mode, min);
+          ResolveMinBlockLengthDeprecated(flex_basis_space, child_style,
+                                          border_padding_in_child_writing_mode,
+                                          min);
     }
     // Flex needs to never give a table a flexed main size that is less than its
     // min-content size, so floor the min main-axis size by min-content size.

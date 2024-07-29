@@ -682,8 +682,8 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
   if (Style().HasAutoStandardLineClamp()) {
     LayoutUnit clamp_bfc_offset = ChildAvailableSize().block_size;
     if (clamp_bfc_offset == kIndefiniteSize) {
-      MinMaxSizes sizes =
-          ComputeMinMaxBlockSizes(constraint_space, Node(), BorderPadding());
+      const MinMaxSizes sizes = ComputeInitialMinMaxBlockSizes(
+          constraint_space, Node(), BorderPadding());
       if (sizes.max_size != LayoutUnit::Max()) {
         clamp_bfc_offset = (sizes.max_size - BorderScrollbarPadding().block_end)
                                .ClampNegativeToZero();
