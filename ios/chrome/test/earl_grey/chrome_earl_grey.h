@@ -792,6 +792,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)simulatePhysicalKeyboardEvent:(NSString*)input
                                 flags:(UIKeyModifierFlags)flags;
 
+// Waits for the keyboard to appear;
+- (void)waitForKeyboardToAppear;
+
+// Waits for the keyboard to disappear;
+- (void)waitForKeyboardToDisappear;
+
 #pragma mark - Default Utilities (EG2)
 
 // Stores a value for the provided key in NSUserDefaults.

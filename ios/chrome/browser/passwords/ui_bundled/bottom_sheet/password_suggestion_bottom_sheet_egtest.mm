@@ -41,17 +41,7 @@ static constexpr char kFormPassword[] = "pw";
 
 namespace {
 
-using base::test::ios::kWaitForActionTimeout;
 using password_manager_test_utils::DeleteCredential;
-
-BOOL WaitForKeyboardToAppear() {
-  GREYCondition* waitForKeyboard = [GREYCondition
-      conditionWithName:@"Wait for keyboard"
-                  block:^BOOL {
-                    return [EarlGrey isKeyboardShownWithError:nil];
-                  }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
-}
 
 // Get the top presented view controller, in this case the bottom sheet view
 // controller.
@@ -296,7 +286,7 @@ id<GREYMatcher> OpenKeyboardButton() {
 
   [self loadLoginAutofocusPage];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // This test verifies that the password bottom sheet does not open when the
@@ -320,7 +310,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // This test will allow us to know if we're using a coherent browser state to
@@ -375,7 +365,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordManager {
@@ -862,7 +852,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Dismiss #2.
   [self loadLoginPage];
@@ -876,7 +866,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Dismiss #3.
   [self loadLoginPage];
@@ -890,13 +880,13 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Verify that keyboard is shown.
   [self loadLoginPage];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // TODO(crbug.com/40279461): Fix flaky test & re-enable.
@@ -933,7 +923,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // Tests that the Password Bottom Sheet appears when tapping on a password

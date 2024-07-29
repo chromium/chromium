@@ -3485,8 +3485,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
           GURL("chromewidgetkit://search-passwords-widget/search-passwords")];
 
   // The Password Manager should be visible behind the keyboard.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
   [[EarlGrey selectElementWithMatcher:PasswordsTableViewMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.5)];
 

@@ -436,8 +436,7 @@ id<GREYMatcher> AutofillFormButton() {
                       KeyboardAccessoryPasswordSuggestionChip()];
   [[EarlGrey selectElementWithMatcher:KeyboardAccessoryManualFillButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
 // Tests that saved passwords for the current site are visible even when the

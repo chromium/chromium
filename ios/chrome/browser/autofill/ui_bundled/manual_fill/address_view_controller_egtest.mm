@@ -22,7 +22,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
-using base::test::ios::kWaitForActionTimeout;
 using chrome_test_util::ManualFallbackFormSuggestionViewMatcher;
 using chrome_test_util::ManualFallbackKeyboardIconMatcher;
 using chrome_test_util::ManualFallbackManageProfilesMatcher;
@@ -43,16 +42,6 @@ constexpr char kFormElementState[] = "state";
 constexpr char kFormElementZip[] = "zip";
 
 constexpr char kFormHTMLFile[] = "/profile_form.html";
-
-// Waits for the keyboard to appear. Returns NO on timeout.
-BOOL WaitForKeyboardToAppear() {
-  GREYCondition* waitForKeyboard = [GREYCondition
-      conditionWithName:@"Wait for keyboard"
-                  block:^BOOL {
-                    return [EarlGrey isKeyboardShownWithError:nil];
-                  }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
-}
 
 // Opens the address manual fill view and verifies that the address view
 // controller is visible afterwards.
@@ -339,8 +328,7 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
     }
 
     // Verify the keyboard is not covered by the profiles view.
-    GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                   @"Keyboard should be shown");
+    [ChromeEarlGrey waitForKeyboardToAppear];
   }
 
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
@@ -419,7 +407,7 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
       performAction:TapWebElementWithId(kFormElementName)];
 
   // Wait for the keyboard to appear.
-  WaitForKeyboardToAppear();
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Assert the address icon is not visible.
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
@@ -479,8 +467,7 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   // Bring up the keyboard
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the address manual fill view.
   OpenAddressManualFillView();
@@ -502,8 +489,7 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   // Bring up the keyboard
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the address manual fill view.
   OpenAddressManualFillView();
@@ -528,8 +514,7 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   // Bring up the keyboard
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the address manual fill view.
   OpenAddressManualFillView();

@@ -1462,6 +1462,28 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface simulatePhysicalKeyboardEvent:input flags:flags];
 }
 
+- (void)waitForKeyboardToAppear {
+  GREYCondition* waitForKeyboard = [GREYCondition
+      conditionWithName:@"Wait for keyboard to appear"
+                  block:^BOOL {
+                    return [EarlGrey isKeyboardShownWithError:nil];
+                  }];
+  bool success =
+      [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_TRUE(success, @"Keyboard didn't appear");
+}
+
+- (void)waitForKeyboardToDisappear {
+  GREYCondition* waitForKeyboard = [GREYCondition
+      conditionWithName:@"Wait for keyboard to disappear"
+                  block:^BOOL {
+                    return ![EarlGrey isKeyboardShownWithError:nil];
+                  }];
+  bool success =
+      [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_TRUE(success, @"Keyboard didn't dismiss");
+}
+
 #pragma mark - Default Utilities (EG2)
 
 - (void)setUserDefaultsObject:(id)value forKey:(NSString*)defaultName {

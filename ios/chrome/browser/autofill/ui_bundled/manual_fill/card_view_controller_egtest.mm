@@ -25,7 +25,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-using base::test::ios::kWaitForActionTimeout;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CancelButton;
 using chrome_test_util::ManualFallbackAddPaymentMethodMatcher;
@@ -82,16 +81,6 @@ const char kFormHTMLFile[] = "/credit_card.html";
 id<GREYMatcher> NotSecureWebsiteAlert() {
   return StaticTextWithAccessibilityLabelId(
       IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_TITLE);
-}
-
-// Waits for the keyboard to appear. Returns NO on timeout.
-BOOL WaitForKeyboardToAppear() {
-  GREYCondition* waitForKeyboard = [GREYCondition
-      conditionWithName:@"Wait for keyboard"
-                  block:^BOOL {
-                    return [EarlGrey isKeyboardShownWithError:nil];
-                  }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
 // Opens the payment method manual fill view and verifies that the card view
@@ -965,7 +954,7 @@ void DismissPaymentBottomSheet() {
       performAction:TapWebElementWithId(kFormElementName)];
 
   // Wait for the accessory icon to appear.
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -991,8 +980,7 @@ void DismissPaymentBottomSheet() {
   // Bring up the keyboard
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -1014,8 +1002,7 @@ void DismissPaymentBottomSheet() {
   // Bring up the keyboard
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -1048,8 +1035,7 @@ void DismissPaymentBottomSheet() {
   // Bring up the keyboard
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -1096,8 +1082,7 @@ void DismissPaymentBottomSheet() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
   DismissPaymentBottomSheet();
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -1137,8 +1122,7 @@ void DismissPaymentBottomSheet() {
   // Bring up the keyboard
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -1182,8 +1166,7 @@ void DismissPaymentBottomSheet() {
   // Bring up the keyboard
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -1213,8 +1196,7 @@ void DismissPaymentBottomSheet() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
   DismissPaymentBottomSheet();
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -1253,7 +1235,7 @@ void DismissPaymentBottomSheet() {
       performAction:TapWebElementWithId(kFormElementName)];
 
   // Wait for the accessory icon to appear.
-  GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();

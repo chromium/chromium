@@ -26,7 +26,6 @@
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
 
-using base::test::ios::kWaitForActionTimeout;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::OmniboxText;
 using chrome_test_util::TapWebElement;
@@ -139,16 +138,6 @@ void TestFormResponseProvider::GetResponseHeadersAndBody(
     return;
   }
   NOTREACHED_IN_MIGRATION();
-}
-
-// Waits for the keyboard to appear. Returns NO on timeout.
-BOOL WaitForKeyboardToAppear() {
-  GREYCondition* waitForKeyboard = [GREYCondition
-      conditionWithName:@"Wait for keyboard"
-                  block:^BOOL {
-                    return [EarlGrey isKeyboardShownWithError:nil];
-                  }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
 }  // namespace
@@ -569,7 +558,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
                           [ElementSelector selectorWithElementID:ID])];
 
     // Wait for the accessory icon to appear.
-    GREYAssert(WaitForKeyboardToAppear(), @"Keyboard didn't appear.");
+    [ChromeEarlGrey waitForKeyboardToAppear];
 
     if (@available(iOS 16, *)) {
       // TODO(crbug.com/40227513): Move this logic into EG.

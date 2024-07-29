@@ -539,8 +539,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Omnibox can reorder itself in multiple animations, so add an extra wait
   // here.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:row];
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Scroll the popup. This swipes from the point located at 50% of the width of
   // the frame horizontally and most importantly 10% of the height of the frame
@@ -554,8 +553,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // The keyboard should be dismissed.
-  GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
-                  @"Keyboard Should not be Shown");
+  [ChromeEarlGrey waitForKeyboardToDisappear];
 }
 
 @end
