@@ -22,6 +22,7 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",
+  "+ui/base/l10n",
 ]
 specific_include_rules = {
   "sync_service_impl_unittest\.cc": [

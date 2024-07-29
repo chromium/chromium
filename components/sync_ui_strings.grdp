@@ -53,4 +53,12 @@
       Your data is encrypted with your sync passphrase. Enter it to start sync.
     </message>
   </if>
+  <!-- TODO(crbug.com/355237153): Make this string more i18n friendly. -->
+    <message name="IDS_BULK_UPLOAD_SUBTITLE" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This line give the number of sites associated with the local data and two examples of such sites.">
+    {count, plural,
+      =1 {{website_1}}
+      =2 {{website_1}, {website_2}}
+      =3 {{website_1}, {website_2}, and 1 more}
+      other {{website_1}, {website_2}, and {more_count} more}}
+    </message>
 </grit-part>
