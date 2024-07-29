@@ -215,7 +215,7 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
   bool ok =
       client_->GetWrapper()
           ->AppendBitstreamAndSliceDataWithStartCode<DXVA_Slice_VPx_Short>(
-              pic.frame_hdr->data);
+              {pic.frame_hdr->data, pic.frame_hdr->frame_size});
 
   return ok && client_->GetWrapper()->SubmitSlice();
 }
