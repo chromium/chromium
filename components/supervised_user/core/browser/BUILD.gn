@@ -158,6 +158,7 @@ source_set("unit_tests") {
     "list_family_members_service_unittest.cc",
     "proto_fetcher_unittest.cc",
     "remote_web_approvals_manager_unittest.cc",
+    "supervised_user_capabilities_unittest.cc",
     "supervised_user_content_settings_provider_unittest.cc",
     "supervised_user_error_page_unittest.cc",
     "supervised_user_metrics_service_unittest.cc",
