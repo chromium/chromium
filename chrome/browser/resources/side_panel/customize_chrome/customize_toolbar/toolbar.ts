@@ -66,6 +66,8 @@ export class ToolbarElement extends ToolbarElementBase {
         CustomizeToolbarApiProxy.getInstance().callbackRouter;
     this.listenerIds_.push(callbackRouter.setActionPinned.addListener(
         this.setActionPinned_.bind(this)));
+    this.listenerIds_.push(callbackRouter.notifyActionsUpdated.addListener(
+        this.populateUi_.bind(this)));
 
     this.addWebUiListener('theme-changed', this.populateUi_.bind(this));
   }

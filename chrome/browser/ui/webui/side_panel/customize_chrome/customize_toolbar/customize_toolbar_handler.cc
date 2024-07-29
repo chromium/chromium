@@ -161,9 +161,6 @@ CustomizeToolbarHandler::~CustomizeToolbarHandler() = default;
 void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   std::vector<side_panel::customize_chrome::mojom::ActionPtr> actions;
 
-  actions::ActionItem* const scope_action =
-      browser_->browser_actions()->root_action_item();
-  const PinnedToolbarActionsModel* const model = model_;
   const ui::ColorProvider* const provider =
       browser_->window()->GetColorProvider();
   const float scale_factor =
@@ -194,18 +191,27 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
           scale_factor)));
 
   const auto add_action =
-      [&actions, model, provider, scale_factor, scope_action](
+      [&actions, this, provider, scale_factor](
           actions::ActionId id,
           side_panel::customize_chrome::mojom::CategoryId category) {
-        const actions::ActionItem* const action_item =
+        actions::ActionItem* const scope_action =
+            browser_->browser_actions()->root_action_item();
+        actions::ActionItem* const action_item =
             actions::ActionManager::Get().FindAction(id, scope_action);
         if (!action_item || !action_item->GetVisible()) {
           return;
         }
 
+        if (!action_observations_.contains(id)) {
+          action_observations_.emplace(
+              id, action_item->AddActionChangedCallback(base::BindRepeating(
+                      &CustomizeToolbarHandler::OnActionItemChanged,
+                      base::Unretained(this))));
+        }
+
         auto mojo_action = side_panel::customize_chrome::mojom::Action::New(
             MojoActionForChromeAction(id).value(),
-            base::UTF16ToUTF8(action_item->GetText()), model->Contains(id),
+            base::UTF16ToUTF8(action_item->GetText()), model_->Contains(id),
             category,
             GURL(webui::EncodePNGAndMakeDataURI(
                 action_item->GetImage().Rasterize(provider), scale_factor)));
@@ -351,6 +357,10 @@ void CustomizeToolbarHandler::OnShowHomeButtonChanged() {
 void CustomizeToolbarHandler::OnShowForwardButtonChanged() {
   OnActionPinnedChanged(kActionForward,
                         prefs()->GetBoolean(prefs::kShowForwardButton));
+}
+
+void CustomizeToolbarHandler::OnActionItemChanged() {
+  client_->NotifyActionsUpdated();
 }
 
 PrefService* CustomizeToolbarHandler::prefs() const {

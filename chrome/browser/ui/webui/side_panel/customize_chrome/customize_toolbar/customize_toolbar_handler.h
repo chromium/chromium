@@ -49,6 +49,7 @@ class CustomizeToolbarHandler
   void OnActionPinnedChanged(actions::ActionId id, bool pinned);
   void OnShowHomeButtonChanged();
   void OnShowForwardButtonChanged();
+  void OnActionItemChanged();
 
   PrefService* prefs() const;
 
@@ -63,6 +64,8 @@ class CustomizeToolbarHandler
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>
       model_observation_{this};
+  std::unordered_map<actions::ActionId, base::CallbackListSubscription>
+      action_observations_;
 
   PrefChangeRegistrar pref_change_registrar_;
 };
