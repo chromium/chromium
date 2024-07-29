@@ -1,121 +1,83 @@
 <style include="cr-shared-style sanitize-shared">
-  :host {
-    padding: 12px;
-    position: absolute;
-    background-color: var(--cros-sys-base_elevated);
-    height: 640px;
-    width: 680px;
-  }
-
   .completed-icon {
     height: 32px;
     width: 32px;
   }
 
-  .expand-container-icon {
-    height: 24px;
-    width: 24px;
-    margin-right: 12px;
-  }
-
-  div[slot="body"] {
-    border-radius: 20px;
-    padding: 32px;
-  }
-
-  .title {
-    margin-top: 16px;
-    margin-bottom: 16px;
-    font-family: var(--cros-display-5-font-family);
-    font-size: var(--cros-display-5-font-size);
-    font: var(--cros-display-5-font);
-    font-weight: var(--cros-display-5-font-weight);
-    line-height: var(--cros-display-5-line-height);
-    color: var(--cros-sys-on_surface);
-  }
-
-  .sanitize-done-description {
-    margin-bottom: 24px;
-    font-family: var(--cros-body-2-font-family);
-    font-size: var(--cros-body-2-font-size);
-    font: var(--cros-body-2-font);
-    font-weight: var(--cros-body-2-font-weight);
-    line-height: var(--cros-body-2-line-height);
-    color: var(--cros-sys-on_surface_variant);
-  }
-
-  .sanitize-done-info {
-    border-radius: 16px;
-    background-color: var(--cros-sys-secondary_container);
-  }
-
-  .sanitize-done-rollback {
-    font-family: var(--cros-button-2-font-family);
-    font-size: var(--cros-button-2-font-size);
-    font: var(--cros-button-2-font);
-    font-weight: var(--cros-button-2-font-weight);
-    line-height: var(--cros-button-2-line-height);
-    color: var(--cros-sys-on_secondary_container);
-    padding: 12px 12px 16px 12px;
+  cr-expand-button {
+    background-color: var(--cros-sys-app_base);
+    border-radius: var(--cr-card-border-radius);
+    margin-bottom: 8px;
+    padding: 14px 16px 16px 14px;
   }
 
   .expand-buttons {
     background-color: var(--cros-sys-app_base_shaded);
-    padding: 12px;
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
     height: 290px;
-    overflow-y:scroll;
+    padding: 12px;
+    overflow-y: scroll;
+  }
+
+  .expand-container-icon {
+    height: 24px;
+    margin-right: 12px;
+    width: 24px;
+  }
+
+  .expand-div {
+    align-items: center;
+    display: inline-flex;
+  }
+
+  .expand-title {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-button-1-font);
+    font-family: var(--cros-button-1-font-family);
+    font-size: var(--cros-button-1-font-size);
+    font-weight: var(--cros-button-1-font-weight);
+    line-height: var(--cros-button-1-line-height);
+  }
+
+  .sanitize-done-info {
+    background-color: var(--cros-sys-secondary_container);
+    border-radius: 16px;
+  }
+
+  .sanitize-done-rollback {
+    color: var(--cros-sys-on_secondary_container);
+    font: var(--cros-button-2-font);
+    font-family: var(--cros-button-2-font-family);
+    font-size: var(--cros-button-2-font-size);
+    font-weight: var(--cros-button-2-font-weight);
+    line-height: var(--cros-button-2-line-height);
+    padding: 12px 12px 16px 12px;
   }
 
   .secondary-button-container {
     margin-left: auto;
   }
 
-  .done-button-container {
-    text-align: right;
-    margin-top: 24px;
-  }
-
-  cr-expand-button {
-    background-color: var(--cros-sys-app_base);
-    margin-bottom:8px;
-    border-radius: var(--cr-card-border-radius);
-    padding: 14px 16px 16px 14px;
-  }
-
-  .expand-title {
-    font-family: var(--cros-button-1-font-family);
-    font-size: var(--cros-button-1-font-size);
-    font: var(--cros-button-1-font);
-    font-weight: var(--cros-button-1-font-weight);
-    line-height: var(--cros-button-1-line-height);
-    color: var(--cros-sys-on_surface);
-  }
-
-  .expand-div {
-    display: inline-flex;
-    align-items: center;
-  }
-
   .list-container {
+    align-items: center;
+    border-top: var(--cr-separator-line);
+    color: var(--cros-sys-on_surface);
+    display: flex;
+    font: var(--cros-button-1-font);
     font-family: var(--cros-button-1-font-family);
     font-size: var(--cros-button-1-font-size);
-    font: var(--cros-button-1-font);
     font-weight: var(--cros-button-1-font-weight);
     line-height: var(--cros-button-1-line-height);
-    color: var(--cros-sys-on_surface);
-    padding-top: 4px;
-    border-top: var(--cr-separator-line);
     min-height: var(--settings-row-min-height);
-    display: flex;
-    align-items: center;
+    padding-top: 4px;
   }
 
   .list-container:not(:last-child) {
     padding-bottom: 4px;
   }
 </style>
+
 <div slot="body">
   <div class="completed-icon-div">
     <svg class="completed-icon"
@@ -124,7 +86,7 @@
     </svg>
   </div>
   <div id="title" class="title">$i18n{sanitizeDoneTitle}</div>
-  <div class="sanitize-done-description">
+  <div class="sanitize-description">
     $i18n{sanitizeDoneExplanation}
   </div>
   <div class="sanitize-done-info">
@@ -150,8 +112,10 @@
             <div class="list-container">
               $i18n{sanitizeDoneAccordionExtensionsReenable}
               <span class="secondary-button-container">
-                <cros-button button-style="secondary" id="extensionsButton"
-                    on-click="onExtensionsButtonClick_" label="Extensions">
+                <cros-button role="button" button-style="secondary"
+                    id="extensionsButton" on-click="onExtensionsButtonClick_"
+                    aria-label="$i18n{sanitizeDoneButtonExtensions}"
+                    label="$i18n{sanitizeDoneButtonExtensions}">
                 </cros-button>
               </span>
             </div>
@@ -177,16 +141,21 @@
             <div class="list-container">
               $i18n{sanitizeDoneAccordionChromeOsInput}
               <span class="secondary-button-container">
-                <cros-button button-style="secondary" id="chromeOsInputButton"
-                    on-click="onChromeOsInputClick_" label="ChromeOS Input">
+                <cros-button role="button" button-style="secondary"
+                    id="chromeOsInputButton" on-click="onChromeOsInputClick_"
+                    aria-label="$i18n{sanitizeDoneButtonChromeOSInput}"
+                    label="$i18n{sanitizeDoneButtonChromeOSInput}">
                 </cros-button>
               </span>
             </div>
             <div class="list-container">
               $i18n{sanitizeDoneAccordionChromeOsNetwork}
               <span class="secondary-button-container">
-                <cros-button button-style="secondary" id="chromeOsNetworkButton"
-                    on-click="onChromeOsNetworkClick_" label="ChromeOS Network">
+                <cros-button role="button" button-style="secondary"
+                    id="chromeOsNetworkButton"
+                    on-click="onChromeOsNetworkClick_"
+                    aria-label="$i18n{sanitizeDoneButtonChromeOSNetwork}"
+                    label="$i18n{sanitizeDoneButtonChromeOSNetwork}">
                 </cros-button>
               </span>
             </div>
@@ -212,7 +181,7 @@
             <div class="list-container">
               $i18n{sanitizeDoneAccordionChromeSiteContent}
               <span class="secondary-button-container">
-                <cros-button button-style="secondary"
+                <cros-button role="button" button-style="secondary"
                     id="chromeSiteContentButton"
                     on-click="onChromeSiteContentClick_"
                     label="Chrome Site Content">
@@ -222,24 +191,30 @@
             <div class="list-container">
               $i18n{sanitizeDoneAccordionChromeStartup}
               <span class="secondary-button-container">
-                <cros-button button-style="secondary" id="chromeStartupButton"
-                    on-click="onChromeStartupClick_" label="Chrome Startup">
+                <cros-button role="button" button-style="secondary"
+                    id="chromeStartupButton" on-click="onChromeStartupClick_"
+                    aria-label="$i18n{sanitizeDoneButtonChromeStartup}"
+                    label="$i18n{sanitizeDoneButtonChromeStartup}">
                 </cros-button>
               </span>
             </div>
             <div class="list-container">
               $i18n{sanitizeDoneAccordionChromeHomepage}
               <span class="secondary-button-container">
-                <cros-button button-style="secondary" id="chromeHomepageButton"
-                    on-click="onChromeHomepageClick_" label="Chrome Homepage">
+                <cros-button role="button" button-style="secondary"
+                    id="chromeHomepageButton" on-click="onChromeHomepageClick_"
+                    aria-label="$i18n{sanitizeDoneButtonChromeHomepage}"
+                    label="$i18n{sanitizeDoneButtonChromeHomepage}">
                 </cros-button>
               </span>
             </div>
             <div class="list-container">
               $i18n{sanitizeDoneAccordionChromeLanguages}
               <span class="secondary-button-container">
-                <cros-button button-style="secondary" id="chromeLanguagesButton"
-                    on-click="onChromeLanguagesClick_" label="Chrome Languages">
+                <cros-button role="button" button-style="secondary"
+                    id="chromeLanguagesButton" on-click="onChromeLanguagesClick_"
+                    aria-label="$i18n{sanitizeDoneButtonChromeLanguages}"
+                    label="$i18n{sanitizeDoneButtonChromeLanguages}">
                 </cros-button>
               </span>
             </div>
@@ -249,7 +224,7 @@
     </div>
   </div>
   <div class="button-container done-button-container">
-    <cros-button button-style="primary" id="doneButton"
+    <cros-button role="button" button-style="primary" id="doneButton"
         label="$i18n{sanitizeDoneButton}" on-click="onDoneClick_">
     </cros-button>
   </div>

@@ -1,0 +1,44 @@
+<style include="cr-shared-style sanitize-shared">
+.extensions-icon {
+  height: 32px;
+  width: 32px;
+}
+.footer {
+  background-color: var(--cros-sys-secondary_container);
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  color: var(--cros-sys-on_secondary_container);
+  font: var(--cros-button-2-font);
+  font-family: var(--cros-button-2-font-family);
+  font-size: var(--cros-button-2-font-size);
+  font-weight: var(--cros-button-2-font-weight);
+  line-height: var(--cros-button-2-line-height);
+  margin-top: 16px;
+  padding: 22px 32px 22px 32px;
+}
+.illo-icon {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 268px;
+  width: 268px;
+}
+</style>
+
+<div slot="body">
+  <svg class="extensions-icon"
+       preserveAspectRatio="xMidYMid meet"
+       role="img" viewBox="0 0 32 32">
+    <use href="svg/extension_off_32.svg#extension_off_32"></use>
+  </svg>
+  <div class="title">$i18n{sanitizeDialogTitle}</div>
+  <div class="sanitize-description">
+    $i18n{sanitizeDescription}
+    $i18n{sanitizeDialogExplanation}
+  </div>
+  <svg class="illo-icon"
+       preserveAspectRatio="xMidYMid meet"
+       role="img" viewBox="0 0 268 268">
+    <use href="svg/illo.svg#illo"></use>
+  </svg>
+</div>
