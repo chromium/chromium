@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-forward.h"
 
 // The implementation of `blink::mojom::ModelGenericSession`, which exposes the
 // single stream-based `Execute()` API for model execution.

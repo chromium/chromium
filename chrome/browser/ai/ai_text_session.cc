@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 namespace {
 

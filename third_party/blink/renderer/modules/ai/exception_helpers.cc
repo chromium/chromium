@@ -7,7 +7,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_EXCEPTION_HELPERS_H_
 
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 

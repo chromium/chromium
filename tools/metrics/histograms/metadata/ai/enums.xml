@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="ErrorSessionDestroyed">The session was destroyed.</int>
 </enum>
 
-<!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/ai_text_session.mojom:ModelStreamingResponseStatus) -->
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/model_streaming_responder.mojom:ModelStreamingResponseStatus) -->
 
 </enums>
 
