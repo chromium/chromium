@@ -82,6 +82,15 @@ class ProfileOAuth2TokenServiceDelegate {
                                const GoogleServiceAuthError& error,
                                bool fire_auth_error_changed = true);
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  // Returns the wrapped binding key of a refresh token associated with
+  // `account_id`, if any.
+  // Returns a non-empty vector iff (a) a refresh token exists for `account_id`,
+  // and (b) the refresh token is bound to a device.
+  virtual std::vector<uint8_t> GetWrappedBindingKey(
+      const CoreAccountId& account_id) const = 0;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   // Returns a list of accounts for which a refresh token is maintained by
   // |this| instance, in the order the refresh tokens were added.
   // Note: If tokens have not been fully loaded yet, an empty list is returned.

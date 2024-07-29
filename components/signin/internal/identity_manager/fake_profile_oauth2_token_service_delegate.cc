@@ -41,6 +41,16 @@ bool FakeProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable(
   return !GetRefreshToken(account_id).empty();
 }
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+std::vector<uint8_t>
+FakeProfileOAuth2TokenServiceDelegate::GetWrappedBindingKey(
+    const CoreAccountId& account_id) const {
+  auto it = wrapped_binding_keys_.find(account_id);
+  return it != wrapped_binding_keys_.end() ? it->second
+                                           : std::vector<uint8_t>();
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
 std::string FakeProfileOAuth2TokenServiceDelegate::GetRefreshToken(
     const CoreAccountId& account_id) const {
   auto it = refresh_tokens_.find(account_id);
@@ -86,15 +96,28 @@ void FakeProfileOAuth2TokenServiceDelegate::UpdateCredentialsInternal(
     const std::vector<uint8_t>& wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 ) {
-  IssueRefreshTokenForUser(account_id, refresh_token);
+  IssueRefreshTokenForUser(account_id, refresh_token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                           ,
+                           wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
 }
 
 void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
     const CoreAccountId& account_id,
-    const std::string& token) {
+    const std::string& token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    ,
+    const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+) {
   if (token.empty()) {
     std::erase(account_ids_, account_id);
     refresh_tokens_.erase(account_id);
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    wrapped_binding_keys_.erase(account_id);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     ClearAuthError(account_id);
     FireRefreshTokenRevoked(account_id);
   } else {
@@ -103,6 +126,9 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
       account_ids_.push_back(account_id);
     }
     refresh_tokens_[account_id] = token;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    wrapped_binding_keys_[account_id] = wrapped_binding_key;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     // If the token is a special "invalid" value, then that means the token was
     // rejected by the client and is thus not valid. So set the appropriate
     // error in that case. This logic is essentially duplicated from
@@ -125,7 +151,12 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
 
 void FakeProfileOAuth2TokenServiceDelegate::RevokeCredentialsInternal(
     const CoreAccountId& account_id) {
-  IssueRefreshTokenForUser(account_id, std::string());
+  IssueRefreshTokenForUser(account_id, std::string()
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                                           ,
+                           std::vector<uint8_t>()
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
 }
 
 void FakeProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(

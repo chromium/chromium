@@ -306,6 +306,13 @@ void ProfileOAuth2TokenService::UpdateAuthErrorForTesting(
   GetDelegate()->UpdateAuthError(account_id, error);
 }
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+std::vector<uint8_t> ProfileOAuth2TokenService::GetWrappedBindingKey(
+    const CoreAccountId& account_id) const {
+  return delegate_->GetWrappedBindingKey(account_id);
+}
+#endif
+
 void ProfileOAuth2TokenService::
     set_max_authorization_token_fetch_retries_for_testing(int max_retries) {
   token_manager_->set_max_authorization_token_fetch_retries_for_testing(

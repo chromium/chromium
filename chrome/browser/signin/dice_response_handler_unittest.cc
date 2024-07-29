@@ -453,9 +453,10 @@ TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
   // Token fetch should be blocked on the binding registration token generation.
   ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
   // Simulate successful token generation.
-  SimulateRegistrationTokenHelperResult(RegistrationTokenHelper::Result(
-      unexportable_keys::UnexportableKeyId(), std::vector<uint8_t>{1, 2, 3},
-      "test_registration_token"));
+  const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
+  SimulateRegistrationTokenHelperResult(
+      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
+                                      kWrappedKey, "test_registration_token"));
 
   // Check that a GaiaAuthFetcher has been created.
   GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
@@ -466,9 +467,11 @@ TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
+  EXPECT_EQ(identity_manager()->GetWrappedBindingKeyOfRefreshTokenForAccount(
+                account_id),
+            kWrappedKey);
   EXPECT_TRUE(auth_error_email_.empty());
   EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
-  // TODO(b/274463812): check that the inserted token is bound.
 }
 
 TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
@@ -495,9 +498,11 @@ TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
   // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
+  EXPECT_TRUE(identity_manager()
+                  ->GetWrappedBindingKeyOfRefreshTokenForAccount(account_id)
+                  .empty());
   EXPECT_TRUE(auth_error_email_.empty());
   EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
-  // TODO(b/274463812): check that the inserted token is not bound.
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
