@@ -156,12 +156,29 @@ TEST_F(PingLoaderTest, ViolationPriority) {
   url_test_helpers::RegisterMockedURLLoad(
       ping_url, test::CoreTestDataPath("bar.html"), "text/html");
   PingLoader::SendViolationReport(GetFrame().DomWindow(), ping_url,
-                                  EncodedFormData::Create());
+                                  EncodedFormData::Create(), false);
   url_test_helpers::ServeAsynchronousRequests();
   const PartialResourceRequest& request = client_->PingRequest();
   ASSERT_FALSE(request.IsNull());
   ASSERT_EQ(request.Url(), ping_url);
   EXPECT_EQ(ResourceLoadPriority::kVeryLow, request.Priority());
+}
+
+TEST_F(PingLoaderTest, FrameAncestorsViolationHasOpaqueOrigin) {
+  SetDocumentURL(KURL("http://localhost/foo.html"));
+
+  KURL ping_url("https://localhost/bar.html");
+  // TODO(crbug.com/41337257): We should use the mock functionality
+  // via |PageTestBase::dummy_page_holder_|.
+  url_test_helpers::RegisterMockedURLLoad(
+      ping_url, test::CoreTestDataPath("bar.html"), "text/html");
+  PingLoader::SendViolationReport(GetFrame().DomWindow(), ping_url,
+                                  EncodedFormData::Create(), true);
+  url_test_helpers::ServeAsynchronousRequests();
+  const PartialResourceRequest& request = client_->PingRequest();
+  ASSERT_FALSE(request.IsNull());
+  ASSERT_EQ(request.Url(), ping_url);
+  EXPECT_EQ(request.HttpHeaderField(AtomicString("Origin")), String());
 }
 
 TEST_F(PingLoaderTest, BeaconPriority) {

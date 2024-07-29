@@ -199,7 +199,8 @@ void ExecutionContextCSPDelegate::PostViolationReport(
 
   for (const auto& report_endpoint : report_endpoints) {
     PingLoader::SendViolationReport(execution_context_.Get(),
-                                    KURL(report_endpoint), report);
+                                    KURL(report_endpoint), report,
+                                    is_frame_ancestors_violation);
   }
 }
 
