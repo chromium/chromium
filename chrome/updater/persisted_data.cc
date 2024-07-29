@@ -30,6 +30,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/win/registry.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #endif
@@ -156,18 +157,55 @@ void PersistedData::SetExistenceCheckerPath(const std::string& id,
   SetString(id, kECP, ecp.AsUTF8Unsafe());
 }
 
-std::string PersistedData::GetBrandCode(const std::string& id) const {
+std::string PersistedData::GetBrandCode(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetString(id, kBC);
+
+  const std::string bc = GetString(id, kBC);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, if there is a brand code in the registry
+  // ClientState, that brand code is considered authoritative, and overrides any
+  // brand code that is already in `prefs`.
+  std::wstring registry_bc;
+  if (base::win::RegKey(UpdaterScopeToHKeyRoot(scope_),
+                        GetAppClientStateKey(base::UTF8ToWide(id)).c_str(),
+                        Wow6432(KEY_QUERY_VALUE))
+          .ReadValue(kRegValueBrandCode, &registry_bc) == ERROR_SUCCESS) {
+    const std::string registry_brand_code = base::WideToUTF8(registry_bc);
+    if (!registry_brand_code.empty() && registry_brand_code != bc) {
+      SetString(id, kBC, registry_brand_code);
+      return registry_brand_code;
+    }
+  }
+#endif
+
+  if (bc.empty()) {
+    return {};
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, record the brand code in ClientState, since
+  // some applications read it from there.
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
+                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueBrandCode,
+                 base::UTF8ToWide(bc));
+#endif
+  return bc;
 }
 
 void PersistedData::SetBrandCode(const std::string& id, const std::string& bc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If there is already an existing brand code, do not overwrite it.
+  if (!GetBrandCode(id).empty()) {
+    return;
+  }
+
   SetString(id, kBC, bc);
 
 #if BUILDFLAG(IS_WIN)
-  // For backwards compatibility, we record the brand code in ClientState as
-  // well, since some applications read it from there.
+  // For backwards compatibility, record the brand code in ClientState, since
+  // some applications read it from there.
   SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
                  GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueBrandCode,
                  base::UTF8ToWide(bc));
