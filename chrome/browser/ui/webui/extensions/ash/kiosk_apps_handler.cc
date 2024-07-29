@@ -48,9 +48,8 @@ const SkBitmap& BitmapOrDefault(gfx::ImageSkia icon) {
 }
 
 bool IsAutoLaunch(const KioskChromeAppManager::App& app) {
-  return KioskChromeAppManager::Get()->GetAutoLaunchApp() == app.app_id &&
-         (KioskChromeAppManager::Get()->IsAutoLaunchEnabled() ||
-          KioskChromeAppManager::Get()->IsAutoLaunchRequested());
+  // TODO(crbug.com/256596599): Remove this function.
+  return false;
 }
 
 base::Value::Dict PopulateAppDict(const KioskChromeAppManager::App& app) {
@@ -193,35 +192,6 @@ void KioskAppsHandler::OnKioskExtensionDownloadFailed(
   ShowError(app_id);
 }
 
-void KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus(
-    const std::string& callback_id,
-    ash::KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status) {
-  initialized_ = true;
-  if (KioskChromeAppManager::IsConsumerKioskEnabled()) {
-    if (!base::SysInfo::IsRunningOnChromeOS()) {
-      // Enable everything when running on a dev box.
-      is_kiosk_enabled_ = true;
-      is_auto_launch_enabled_ = true;
-    } else {
-      // Enable consumer kiosk for owner and enable auto launch if configured.
-      is_kiosk_enabled_ =
-          ProfileHelper::IsOwnerProfile(Profile::FromWebUI(web_ui()));
-      is_auto_launch_enabled_ =
-          status ==
-          KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kEnabled;
-    }
-  } else {
-    // Otherwise, consumer kiosk is disabled.
-    is_kiosk_enabled_ = false;
-    is_auto_launch_enabled_ = false;
-  }
-
-  auto kiosk_params = base::Value::Dict()
-                          .Set("kioskEnabled", is_kiosk_enabled_)
-                          .Set("autoLaunchEnabled", is_auto_launch_enabled_);
-  ResolveJavascriptCallback(base::Value(callback_id), kiosk_params);
-}
-
 void KioskAppsHandler::OnKioskAppsSettingsChanged() {
   FireWebUIListener("kiosk-app-settings-changed", GetSettingsDictionary());
 }
@@ -239,13 +209,7 @@ base::Value::Dict KioskAppsHandler::GetSettingsDictionary() {
 
 void KioskAppsHandler::HandleInitializeKioskAppSettings(
     const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
-  const std::string& callback_id = args.front().GetString();
-
-  AllowJavascript();
-  KioskChromeAppManager::Get()->GetConsumerKioskAutoLaunchStatus(
-      base::BindOnce(&KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus,
-                     weak_ptr_factory_.GetWeakPtr(), callback_id));
+  // TODO(b/256596599): Remove.
 }
 
 void KioskAppsHandler::HandleGetKioskAppSettings(

@@ -6,14 +6,18 @@
 
 #include <stddef.h>
 
+#include <iterator>
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "ash/constants/ash_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -25,6 +29,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -39,14 +44,17 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RepeatingTestFuture;
 using base::test::TestFuture;
@@ -420,7 +428,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, Basic) {
   // Clear the auto launch app.
   manager()->SetAutoLaunchApp("", owner_settings_service_.get());
   EXPECT_EQ("", manager()->GetAutoLaunchApp());
-  EXPECT_FALSE(manager()->IsAutoLaunchEnabled());
 
   // App should still report it was auto launched with zero delay, even though
   // it is no longer set to auto launch in the future.
@@ -430,11 +437,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, Basic) {
   // Set another auto launch app.
   manager()->SetAutoLaunchApp("fake_app_2", owner_settings_service_.get());
   EXPECT_EQ("fake_app_2", manager()->GetAutoLaunchApp());
-
-  // Check auto launch permissions.
-  EXPECT_FALSE(manager()->IsAutoLaunchEnabled());
-  manager()->SetEnableAutoLaunch(true);
-  EXPECT_TRUE(manager()->IsAutoLaunchEnabled());
 
   // Remove the auto launch app.
   manager()->RemoveApp("fake_app_2", owner_settings_service_.get());
@@ -451,7 +453,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, Basic) {
   // Set a none exist app as auto launch.
   manager()->SetAutoLaunchApp("none_exist_app", owner_settings_service_.get());
   EXPECT_EQ("", manager()->GetAutoLaunchApp());
-  EXPECT_FALSE(manager()->IsAutoLaunchEnabled());
 
   // Add an existing app again.
   manager()->AddApp("fake_app_1", owner_settings_service_.get());
@@ -810,14 +811,11 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
   EXPECT_EQ(waiter.data_change_count(), 1);
   EXPECT_EQ(waiter.data_load_failure_count(), 0);
 
-  EXPECT_FALSE(manager()->IsAutoLaunchEnabled());
+  EXPECT_EQ("", manager()->GetAutoLaunchApp());
   EXPECT_EQ("", manager()->GetAutoLaunchAppRequiredPlatformVersion());
 
   manager()->SetAutoLaunchApp(kAppId, owner_settings_service_.get());
-  EXPECT_EQ("", manager()->GetAutoLaunchAppRequiredPlatformVersion());
-
-  manager()->SetEnableAutoLaunch(true);
-  EXPECT_TRUE(manager()->IsAutoLaunchEnabled());
+  EXPECT_EQ(kAppId, manager()->GetAutoLaunchApp());
   EXPECT_EQ(kRequiredPlatformVersion,
             manager()->GetAutoLaunchAppRequiredPlatformVersion());
 
@@ -860,7 +858,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
   SetExistingApp(kAppId, "App Name", "red16x16.png", "");
 
   manager()->SetAutoLaunchApp(kAppId, owner_settings_service_.get());
-  manager()->SetEnableAutoLaunch(true);
   manager()->SetAppWasAutoLaunchedWithZeroDelay(kAppId);
 
   struct {

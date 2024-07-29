@@ -406,6 +406,7 @@ bool InstallAttributes::IsCloudManaged() const {
          registration_mode_ == policy::DEVICE_MODE_DEMO;
 }
 
+// TODO(crbug.com/256596599): Remove this method.
 bool InstallAttributes::IsConsumerKioskDeviceWithAutoLaunch() {
   return device_locked_ &&
          registration_mode_ == policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH;

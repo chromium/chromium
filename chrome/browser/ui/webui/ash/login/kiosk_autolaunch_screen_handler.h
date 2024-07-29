@@ -11,6 +11,7 @@
 
 namespace ash {
 
+// TODO(crbug.com/256596599): Remove this class.
 // Interface between reset screen and its representation.
 class KioskAutolaunchScreenView {
  public:

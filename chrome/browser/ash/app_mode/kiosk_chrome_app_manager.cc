@@ -20,8 +20,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -34,6 +32,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
@@ -59,8 +58,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/account_id/account_id.h"
-#include "components/ownership/owner_key_util.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -71,7 +69,6 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
-#include "kiosk_app_data_base.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
@@ -94,13 +91,6 @@ KioskChromeAppManager::Overrides* g_test_overrides = nullptr;
 
 std::string GenerateKioskAppAccountId(const std::string& app_id) {
   return app_id + '@' + kKioskAppAccountDomain;
-}
-
-// Check for presence of machine owner public key file.
-void CheckOwnerFilePresence(bool* present) {
-  scoped_refptr<ownership::OwnerKeyUtil> util =
-      OwnerSettingsServiceAshFactory::GetInstance()->GetOwnerKeyUtil();
-  *present = util.get() && util->IsPublicKeyPresent();
 }
 
 base::FilePath GetCrxCacheDir() {
@@ -185,7 +175,6 @@ PrimaryAppDownloadResultFromError(
 
 // static
 const char KioskChromeAppManager::kKioskDictionaryName[] = "kiosk";
-const char KioskChromeAppManager::kKeyAutoLoginState[] = "auto_login_state";
 
 const char kKioskPrimaryAppInstallErrorHistogram[] =
     "Kiosk.ChromeApp.PrimaryAppInstallError";
@@ -229,21 +218,13 @@ void KioskChromeAppManager::RegisterProfilePrefs(
   chromeos::KioskBrowserSession::RegisterProfilePrefs(registry);
 }
 
-// static
-bool KioskChromeAppManager::IsConsumerKioskEnabled() {
-  // TODO(b/256596599): Remove
-  return false;
-}
-
 std::string KioskChromeAppManager::GetAutoLaunchApp() const {
   return auto_launch_app_id_;
 }
 
 void KioskChromeAppManager::SetAutoLaunchApp(const std::string& app_id,
                                              OwnerSettingsServiceAsh* service) {
-  SetAutoLoginState(AutoLoginState::kRequested);
-  // Clean first, so the proper change callbacks are triggered even
-  // if we are only changing AutoLoginState here.
+  // Clean first so the proper change callbacks are triggered.
   if (!auto_launch_app_id_.empty()) {
     service->SetString(kAccountsPrefDeviceLocalAccountAutoLoginId,
                        std::string());
@@ -343,160 +324,14 @@ void KioskChromeAppManager::AddAppForTest(
       this, app_id, account_id, update_url, required_platform_version));
 }
 
-void KioskChromeAppManager::EnableConsumerKioskAutoLaunch(
-    KioskChromeAppManager::EnableKioskAutoLaunchCallback callback) {
-  if (!IsConsumerKioskEnabled()) {
-    if (callback) {
-      std::move(callback).Run(false);
-    }
-    return;
-  }
-
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  connector->GetInstallAttributes()->LockDevice(
-      policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,
-      std::string(),  // domain
-      std::string(),  // realm
-      std::string(),  // device_id
-      base::BindOnce(&KioskChromeAppManager::OnLockDevice,
-                     base::Unretained(this), std::move(callback)));
-}
-
-void KioskChromeAppManager::GetConsumerKioskAutoLaunchStatus(
-    KioskChromeAppManager::GetConsumerKioskAutoLaunchStatusCallback callback) {
-  if (!IsConsumerKioskEnabled()) {
-    if (callback) {
-      std::move(callback).Run(ConsumerKioskAutoLaunchStatus::kDisabled);
-    }
-    return;
-  }
-
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  connector->GetInstallAttributes()->ReadImmutableAttributes(
-      base::BindOnce(&KioskChromeAppManager::OnReadImmutableAttributes,
-                     base::Unretained(this), std::move(callback)));
-}
-
-bool KioskChromeAppManager::IsConsumerKioskDeviceWithAutoLaunch() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->GetInstallAttributes() &&
-         connector->GetInstallAttributes()
-             ->IsConsumerKioskDeviceWithAutoLaunch();
-}
-
-void KioskChromeAppManager::OnLockDevice(
-    KioskChromeAppManager::EnableKioskAutoLaunchCallback callback,
-    InstallAttributes::LockResult result) {
-  if (!callback) {
-    return;
-  }
-
-  std::move(callback).Run(result == InstallAttributes::LOCK_SUCCESS);
-}
-
-void KioskChromeAppManager::OnOwnerFileChecked(
-    KioskChromeAppManager::GetConsumerKioskAutoLaunchStatusCallback callback,
-    bool* owner_present) {
-  ownership_established_ = *owner_present;
-
-  if (!callback) {
-    return;
-  }
-
-  // If we have owner already established on the machine, don't let
-  // consumer kiosk to be enabled.
-  if (ownership_established_) {
-    std::move(callback).Run(ConsumerKioskAutoLaunchStatus::kDisabled);
-  } else {
-    std::move(callback).Run(ConsumerKioskAutoLaunchStatus::kConfigurable);
-  }
-}
-
-void KioskChromeAppManager::OnReadImmutableAttributes(
-    KioskChromeAppManager::GetConsumerKioskAutoLaunchStatusCallback callback) {
-  if (!callback) {
-    return;
-  }
-
-  ConsumerKioskAutoLaunchStatus status =
-      ConsumerKioskAutoLaunchStatus::kDisabled;
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  InstallAttributes* attributes = connector->GetInstallAttributes();
-  switch (attributes->GetMode()) {
-    case policy::DEVICE_MODE_NOT_SET: {
-      if (!base::SysInfo::IsRunningOnChromeOS()) {
-        status = ConsumerKioskAutoLaunchStatus::kConfigurable;
-      } else if (!ownership_established_) {
-        bool* owner_present = new bool(false);
-        base::ThreadPool::PostTaskAndReply(
-            FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-            base::BindOnce(&CheckOwnerFilePresence, owner_present),
-            base::BindOnce(&KioskChromeAppManager::OnOwnerFileChecked,
-                           base::Unretained(this), std::move(callback),
-                           base::Owned(owner_present)));
-        return;
-      }
-      break;
-    }
-    case policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH:
-      status = ConsumerKioskAutoLaunchStatus::kEnabled;
-      break;
-    default:
-      break;
-  }
-
-  std::move(callback).Run(status);
-}
-
-void KioskChromeAppManager::SetEnableAutoLaunch(bool value) {
-  SetAutoLoginState(value ? AutoLoginState::kApproved
-                          : AutoLoginState::kRejected);
-}
-
-bool KioskChromeAppManager::IsAutoLaunchRequested() const {
-  if (GetAutoLaunchApp().empty()) {
-    return false;
-  }
-
-  // Apps that were installed by the policy don't require machine owner
-  // consent through UI.
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (connector->IsDeviceEnterpriseManaged()) {
-    return false;
-  }
-
-  return GetAutoLoginState() == AutoLoginState::kRequested;
-}
-
-bool KioskChromeAppManager::IsAutoLaunchEnabled() const {
-  if (GetAutoLaunchApp().empty()) {
-    return false;
-  }
-
-  // Apps that were installed by the policy don't require machine owner
-  // consent through UI.
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (connector->IsDeviceEnterpriseManaged()) {
-    return true;
-  }
-
-  return GetAutoLoginState() == AutoLoginState::kApproved;
-}
-
 std::string KioskChromeAppManager::GetAutoLaunchAppRequiredPlatformVersion()
     const {
   // Bail out if there is no auto launched app with zero delay.
-  if (!IsAutoLaunchEnabled() || !GetAutoLaunchDelay().is_zero()) {
+  if (auto_launch_app_id_.empty() || !GetAutoLaunchDelay().is_zero()) {
     return std::string();
   }
 
-  const KioskAppData* data = GetAppData(GetAutoLaunchApp());
+  const KioskAppData* data = GetAppData(auto_launch_app_id_);
   return data == nullptr ? std::string() : data->required_platform_version();
 }
 
@@ -518,7 +353,7 @@ void KioskChromeAppManager::AddApp(const std::string& app_id,
   device_local_accounts.emplace_back(
       policy::DeviceLocalAccountType::kKioskApp,
       policy::DeviceLocalAccount::EphemeralMode::kUnset,
-      GenerateKioskAppAccountId(app_id), app_id, std::string());
+      GenerateKioskAppAccountId(app_id), app_id, /*update_url=*/std::string());
 
   policy::SetDeviceLocalAccounts(service, device_local_accounts);
 }
@@ -906,27 +741,6 @@ void KioskChromeAppManager::OnExtensionDownloadFailed(
   }
   base::UmaHistogramEnumeration(kKioskPrimaryAppUpdateResultHistogram,
                                 PrimaryAppDownloadResultFromError(error));
-}
-
-KioskChromeAppManager::AutoLoginState KioskChromeAppManager::GetAutoLoginState()
-    const {
-  PrefService* prefs = g_browser_process->local_state();
-  const base::Value::Dict& dict =
-      prefs->GetDict(KioskChromeAppManager::kKioskDictionaryName);
-  std::optional<int> value = dict.FindInt(kKeyAutoLoginState);
-  if (!value.has_value()) {
-    return AutoLoginState::kNone;
-  }
-
-  return static_cast<AutoLoginState>(value.value());
-}
-
-void KioskChromeAppManager::SetAutoLoginState(AutoLoginState state) {
-  PrefService* prefs = g_browser_process->local_state();
-  ScopedDictPrefUpdate dict_update(prefs,
-                                   KioskChromeAppManager::kKioskDictionaryName);
-  dict_update->Set(kKeyAutoLoginState, static_cast<int>(state));
-  prefs->CommitPendingWrite();
 }
 
 base::TimeDelta KioskChromeAppManager::GetAutoLaunchDelay() const {

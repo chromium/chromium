@@ -42,6 +42,7 @@ KioskAutolaunchScreenHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+// TODO(crbug.com/256596599): Remove this whole class.
 void KioskAutolaunchScreenHandler::UpdateKioskApp() {
   if (!is_visible_) {
     return;
@@ -50,9 +51,7 @@ void KioskAutolaunchScreenHandler::UpdateKioskApp() {
   KioskChromeAppManager* manager = KioskChromeAppManager::Get();
   KioskChromeAppManager::App app;
   std::string app_id = manager->GetAutoLaunchApp();
-  if (app_id.empty() ||
-      manager->IsAutoLaunchEnabled() ||
-      !manager->GetApp(app_id, &app)) {
+  if (app_id.empty()) {
     return;
   }
 
@@ -77,12 +76,10 @@ void KioskAutolaunchScreenHandler::DeclareLocalizedValues(
 
 void KioskAutolaunchScreenHandler::HandleOnCancel() {
   KioskChromeAppManager::Get()->RemoveObserver(this);
-  KioskChromeAppManager::Get()->SetEnableAutoLaunch(false);
 }
 
 void KioskAutolaunchScreenHandler::HandleOnConfirm() {
   KioskChromeAppManager::Get()->RemoveObserver(this);
-  KioskChromeAppManager::Get()->SetEnableAutoLaunch(true);
 }
 
 void KioskAutolaunchScreenHandler::DeclareJSCallbacks() {

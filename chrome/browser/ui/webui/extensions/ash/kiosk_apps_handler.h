@@ -18,6 +18,7 @@ namespace ash {
 
 class OwnerSettingsServiceAsh;
 
+// TODO(crbug.com/256596599): Remove this class.
 class KioskAppsHandler : public content::WebUIMessageHandler,
                          public KioskAppManagerObserver {
  public:
@@ -56,11 +57,6 @@ class KioskAppsHandler : public content::WebUIMessageHandler,
 
   void UpdateApp(const std::string& app_id);
   void ShowError(const std::string& app_id);
-
-  // Callback for KioskChromeAppManager::GetConsumerKioskModeStatus().
-  void OnGetConsumerKioskAutoLaunchStatus(
-      const std::string& callback_id,
-      KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status);
 
   raw_ptr<KioskChromeAppManager> chrome_app_manager_;  // not owned.
   bool initialized_;

@@ -57,6 +57,7 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/integrity/misconfigured_user_cleaner.h"
 #include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "components/account_id/account_id.h"
