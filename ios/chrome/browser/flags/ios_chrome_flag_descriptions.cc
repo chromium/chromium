@@ -545,6 +545,11 @@ const char kIdentityDiscAccountMenuDescription[] =
     "When enabled, tapping the identity disc on the New Tab page shows the "
     "account menu UI.";
 
+const char kIdentityConfirmationSnackbarName[] =
+    "Identity Confirmation Snackbar";
+const char kIdentityConfirmationSnackbarDescription[] =
+    "When enabled, the identity confirmation snackbar will show on startup.";
+
 const char kInactiveTabButtonRefactoringName[] =
     "Inactive tab button refactoring";
 const char kInactiveTabButtonRefactoringDescription[] =
