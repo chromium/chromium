@@ -239,7 +239,6 @@ public class ToolbarPhone extends ToolbarLayout
 
     private @ColorInt int mToolbarBackgroundColorForNtp;
     private @ColorInt int mLocationBarBackgroundColorForNtp;
-    private boolean mHasFocus;
 
     /** Used to specify the visual state of the toolbar. */
     @IntDef({
@@ -894,7 +893,7 @@ public class ToolbarPhone extends ToolbarLayout
     private void onNtpScrollChanged(float scrollFraction) {
         mNtpSearchBoxScrollFraction = scrollFraction;
         if (mNtpSearchBoxScrollFraction > 0) {
-            updateLocationBarForNtp(mVisualState, mHasFocus);
+            updateLocationBarForNtp(mVisualState, urlHasFocus());
         }
         updateUrlExpansionFraction();
         updateUrlExpansionAnimation();
@@ -2140,11 +2139,9 @@ public class ToolbarPhone extends ToolbarLayout
     public void onUrlFocusChange(final boolean hasFocus) {
         super.onUrlFocusChange(hasFocus);
 
-        mHasFocus = hasFocus;
-
         updateBackground(hasFocus);
 
-        updateLocationBarForNtp(mVisualState, mHasFocus);
+        updateLocationBarForNtp(mVisualState, urlHasFocus());
 
         if (mToggleTabStackButton != null) mToggleTabStackButton.setClickable(!hasFocus);
         triggerUrlFocusAnimation(hasFocus);
@@ -2565,7 +2562,7 @@ public class ToolbarPhone extends ToolbarLayout
                 mTabSwitcherState == STATIC_TAB || mTabSwitcherState == EXITING_TAB_SWITCHER;
 
         @VisualState int newVisualState = computeVisualState();
-        updateLocationBarForNtp(newVisualState, mHasFocus);
+        updateLocationBarForNtp(newVisualState, urlHasFocus());
 
         if (newVisualState == VisualState.NEW_TAB_NORMAL && mHomeButton != null) {
             mHomeButton.setAccessibilityTraversalBefore(R.id.toolbar_buttons);
