@@ -189,10 +189,10 @@ jobs:
         if: success() || failure()
         run: >
           node tools/wpt-report-builder/builder.mjs
-          out/wptreport.json
-          out/wptreport-interop.json
-          out/wptreport.html
-          out/wptreport-2023.html
+          --bidi out/wptreport.json
+          --interop out/wptreport-interop.json
+          --out out/wptreport.html
+          --out-label-2023 out/wptreport-2023.html
       - name: Upload expectations
         if: success() || failure()
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3

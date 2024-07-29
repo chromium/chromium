@@ -31,9 +31,9 @@ import {
 // Changing the current work directory to the package directory.
 process.chdir(packageDirectorySync());
 
-function log(message) {
+function log(message, ...messages) {
   // eslint-disable-next-line no-console
-  console.log(`(${process.argv[1]}) ${message}`);
+  console.log(`(${process.argv[1]}) ${message}`, ...messages);
 }
 
 function usage() {
@@ -79,7 +79,7 @@ if (RUN_TESTS === 'true' && !BROWSER_BIN) {
 }
 
 // Whether to use Chromedriver with mapper.
-const CHROMEDRIVER = process.env.CHROMEDRIVER || 'false';
+const CHROMEDRIVER = process.env.CHROMEDRIVER || 'true';
 
 let CHROMEDRIVER_BIN = process.env.CHROMEDRIVER_BIN;
 if (RUN_TESTS === 'true' && !CHROMEDRIVER_BIN) {
@@ -88,6 +88,9 @@ if (RUN_TESTS === 'true' && !CHROMEDRIVER_BIN) {
       ? installAndGetChromeDriverPath()
       : join('tools', 'run-bidi-server.mjs');
 }
+
+// Whether to fail when 0 test are run or not
+const FAIL_NO_TEST = process.env.FAIL_NO_TEST || 'false';
 
 // Whether to start the server in headless or headful mode.
 const HEADLESS = process.env.HEADLESS || 'true';
@@ -135,8 +138,8 @@ if (HEADLESS === 'true') {
 
 const wptBinary = resolve(join('wpt', 'wpt'));
 
-let run_status = undefined;
-let update_status = undefined;
+let runResult = undefined;
+let updateResult = undefined;
 
 if (RUN_TESTS === 'true') {
   const wptRunArgs = [
@@ -241,14 +244,14 @@ if (RUN_TESTS === 'true') {
 
   // TODO: escaping here is not quite correct.
   log(`${wptBinary} run ${wptRunArgs.map((arg) => `'${arg}'`).join(' ')}`);
-  run_status = spawnSync(wptBinary, ['run', ...wptRunArgs], {
-    stdio: 'inherit',
-  }).status;
+  runResult = spawnSync(wptBinary, ['run', ...wptRunArgs], {
+    stdio: 'pipe',
+  });
 }
 
 if (
   (UPDATE_EXPECTATIONS === 'true' && RUN_TESTS !== 'true') ||
-  (UPDATE_EXPECTATIONS === 'true' && RUN_TESTS === 'true' && run_status)
+  (UPDATE_EXPECTATIONS === 'true' && RUN_TESTS === 'true' && runResult)
 ) {
   log('Updating WPT expectations...');
 
@@ -266,18 +269,25 @@ if (
   ];
   log(`${wptBinary} ${wptRunArgs.map((arg) => `'${arg}'`).join(' ')}`);
 
-  update_status = spawnSync(wptBinary, wptRunArgs, {stdio: 'inherit'}).status;
+  updateResult = spawnSync(wptBinary, wptRunArgs, {stdio: 'pipe'});
 }
 
 // If WPT tests themselves or the expectations update failed, return failure.
-let result_status = 0;
-if ((run_status ?? 0) !== 0) {
-  log('WPT test run failed');
-  result_status = run_status;
+let exitCode = 0;
+if ((runResult?.status ?? 0) !== 0) {
+  if (
+    FAIL_NO_TEST === 'true' ||
+    !runResult.stdout
+      .toString()
+      .includes('Unable to find any tests at the path')
+  ) {
+    log('WPT test run failed');
+    exitCode = runResult.status;
+  }
 }
-if ((update_status ?? 0) !== 0) {
+if ((updateResult?.status ?? 0) !== 0) {
   log('Update expectations failed');
-  result_status = update_status;
+  exitCode = updateResult.status;
 }
 
-process.exit(result_status);
+process.exit(exitCode);

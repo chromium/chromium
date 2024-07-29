@@ -113,7 +113,7 @@ jobs:
         if: ${{matrix.kind == 'chromedriver'}}
         run: >
           xvfb-run --auto-servernum
-          npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
+          npm run wpt -- "webdriver/tests/interop/${{ github.event.inputs.tests }}"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}

@@ -19,10 +19,39 @@ import fs from 'fs';
 import path from 'path';
 import url from 'url';
 
+import yargs from 'yargs';
+import {hideBin} from 'yargs/helpers';
+
 import {apply2023Filter} from './filter-2023.mjs';
 import {generateReport} from './formatter.mjs';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
+export function parseCommandLineArgs() {
+  return yargs(hideBin(process.argv))
+    .option('bidi', {
+      describe: 'A list of BiDi WPT test reports to parse',
+      type: 'array',
+      demandOption: true,
+    })
+    .option('interop', {
+      describe: 'A list of interop WPT test reports to parse',
+      type: 'array',
+      demandOption: true,
+    })
+    .option('out', {
+      describe: 'Output file for the generated HTML',
+      type: 'string',
+      demandOption: true,
+    })
+    .option('out-label-2023', {
+      describe: 'Output file for the generated HTML filtered by label',
+      type: 'string',
+      demandOption: true,
+    })
+    .exitProcess(true)
+    .parseSync();
+}
 
 function getCurrentCommit() {
   if (process.env.GITHUB_SHA) {
@@ -55,20 +84,41 @@ function getChromeVersion() {
   return version.split('@')[1];
 }
 
-function readReport(filePath) {
-  if (!fs.existsSync(filePath)) {
+/**
+ *
+ * @param {string[]} filePaths
+ */
+function readReport(filePaths) {
+  const results = [];
+  for (const filePath of filePaths) {
+    if (!fs.existsSync(filePath)) {
+      continue;
+    }
+    const json = fs.readFileSync(filePath, 'utf8');
+    // File may be empty if the interop test shard failed
+    if (!json) {
+      continue;
+    }
+    const parsedReport = JSON.parse(json);
+    results.push(...parsedReport.results);
+  }
+
+  if (!results.length) {
     return undefined;
   }
-  const json = fs.readFileSync(filePath, 'utf8');
-  return JSON.parse(json);
-}
 
-const jsonPath = process.argv[2];
-const jsonInteropPath = process.argv[3];
-const outputPath = process.argv[4];
-const filteredOutputPath = process.argv[5];
-const reportData = readReport(jsonPath);
-const reportInteropData = readReport(jsonInteropPath);
+  return {
+    results,
+  };
+}
+const args = parseCommandLineArgs();
+const bidiReports = args.bidi;
+const interopReports = args.interop;
+const outputPath = args.out;
+const filteredOutputPath = args.outLabel2023;
+
+const reportData = readReport(bidiReports);
+const reportInteropData = readReport(interopReports);
 const filteredReportData = apply2023Filter(reportData);
 const filteredInteropReportData = apply2023Filter(reportInteropData);
 
