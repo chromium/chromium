@@ -274,7 +274,7 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsFeatureTourForFirstTime) {
 }
 
 TEST_F(PickerControllerTest,
-       ToggleWidgetShowsWidgetAfterCompletingFeatureTour) {
+       ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithoutFocus) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
   RegisterUserProfilePrefs(client.registry(), /*country=*/"",
@@ -286,6 +286,30 @@ TEST_F(PickerControllerTest,
   ASSERT_NE(button, nullptr);
   LeftClickOn(button);
   views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+
+  views::test::WidgetVisibleWaiter(controller.widget_for_testing()).Wait();
+}
+
+TEST_F(PickerControllerTest,
+       ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithFocus) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(ui::TEXT_INPUT_TYPE_TEXT);
+  input_method->SetFocusedTextInputClient(&input_field);
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  RegisterUserProfilePrefs(client.registry(), /*country=*/"",
+                           /*for_test=*/true);
+  controller.ToggleWidget();
+  auto& feature_tour = controller.feature_tour_for_testing();
+  views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
+  // Simulate losing focus from the input field while the feature tour is shown.
+  input_method->DetachTextInputClient(&input_field);
+  // Complete the feature tour.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+  // Regain focus after the feature tour is complete.
+  input_method->SetFocusedTextInputClient(&input_field);
 
   views::test::WidgetVisibleWaiter(controller.widget_for_testing()).Wait();
 }

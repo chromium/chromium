@@ -27,6 +27,7 @@
 
 namespace ash {
 
+class PickerActionOnNextFocusRequest;
 class PickerAssetFetcher;
 class PickerCapsLockStateView;
 class PickerClient;
@@ -51,6 +52,12 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
   // Whether the provided feature key for Picker can enable the feature.
   static bool IsFeatureKeyMatched();
+
+  // Maximum time to wait for focus to be regained after completing the feature
+  // tour. If this timeout is reached, we stop waiting for focus and show the
+  // Picker widget regardless of the focus state.
+  static constexpr base::TimeDelta kShowWidgetPostFeatureTourTimeout =
+      base::Seconds(2);
 
   // Time from when the insert is issued and when we give up inserting.
   static constexpr base::TimeDelta kInsertMediaTimeout = base::Seconds(2);
@@ -123,7 +130,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
  private:
   void ShowWidget(base::TimeTicks trigger_event_timestamp);
   void CloseWidget();
-  void OnFeatureTourCompleted();
+  void OnFeatureTourCompleted(bool had_focus_before_feature_tour);
+  void ShowWidgetPostFeatureTour();
   void CloseCapsLockStateView();
 
   PickerFeatureTour feature_tour_;
@@ -132,6 +140,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::unique_ptr<PickerEmojiSuggester> emoji_suggester_;
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
+  std::unique_ptr<PickerActionOnNextFocusRequest> action_on_next_focus_request_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
   std::unique_ptr<PickerPasteRequest> paste_request_;
   std::unique_ptr<PickerSuggestionsController> suggestions_controller_;

@@ -10,6 +10,8 @@
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -51,6 +53,20 @@ TEST_F(PickerFeatureTourTest,
   const views::Button* button = feature_tour.complete_button_for_testing();
   ASSERT_NE(button, nullptr);
   LeftClickOn(button);
+
+  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+  EXPECT_TRUE(completed_future.Wait());
+  EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
+}
+
+TEST_F(PickerFeatureTourTest, PressingEnterClosesWidgetAndTriggersCallback) {
+  PickerFeatureTour feature_tour;
+  base::test::TestFuture<void> completed_future;
+  feature_tour.MaybeShowForFirstUse(pref_service(),
+                                    completed_future.GetRepeatingCallback());
+  views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
 
   views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
   EXPECT_TRUE(completed_future.Wait());

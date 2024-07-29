@@ -21,6 +21,7 @@
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_action_on_next_focus_request.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/picker_asset_fetcher_impl.h"
 #include "ash/picker/picker_copy_media.h"
@@ -61,8 +62,10 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -342,11 +345,15 @@ void PickerController::ToggleWidget(
   }
 
   // Show the feature tour if it's the first time this feature is used.
+  const ui::TextInputClient* focused_client = GetFocusedTextInputClient();
+  const bool has_focus =
+      focused_client != nullptr && focused_client->GetTextInputType() !=
+                                       ui::TextInputType::TEXT_INPUT_TYPE_NONE;
   if (PrefService* prefs = client_->GetPrefs();
-      prefs &&
-      feature_tour_.MaybeShowForFirstUse(
-          prefs, base::BindRepeating(&PickerController::OnFeatureTourCompleted,
-                                     weak_ptr_factory_.GetWeakPtr()))) {
+      prefs && feature_tour_.MaybeShowForFirstUse(
+                   prefs, base::BindRepeating(
+                              &PickerController::OnFeatureTourCompleted,
+                              weak_ptr_factory_.GetWeakPtr(), has_focus))) {
     return;
   }
 
@@ -671,7 +678,27 @@ void PickerController::CloseCapsLockStateView() {
   }
 }
 
-void PickerController::OnFeatureTourCompleted() {
+void PickerController::OnFeatureTourCompleted(
+    bool had_focus_before_feature_tour) {
+  if (had_focus_before_feature_tour) {
+    ui::InputMethod* input_method =
+        IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+    if (input_method == nullptr) {
+      return;
+    }
+    action_on_next_focus_request_ =
+        std::make_unique<PickerActionOnNextFocusRequest>(
+            input_method, kShowWidgetPostFeatureTourTimeout,
+            base::BindOnce(&PickerController::ShowWidgetPostFeatureTour,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindOnce(&PickerController::ShowWidgetPostFeatureTour,
+                           weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    ShowWidgetPostFeatureTour();
+  }
+}
+
+void PickerController::ShowWidgetPostFeatureTour() {
   ShowWidget(base::TimeTicks::Now());
 }
 

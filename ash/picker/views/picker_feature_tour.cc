@@ -82,6 +82,7 @@ std::unique_ptr<views::Widget> CreateWidget(
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.delegate = feature_tour_dialog.release();
   params.name = "PickerFeatureTourWidget";
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->GetLayer()->SetFillsBoundsOpaquely(false);
