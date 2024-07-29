@@ -832,6 +832,7 @@ void SearchBoxView::OnLauncherSearchChipPressed(const std::u16string& query) {
 }
 
 void SearchBoxView::ShowFilterMenu() {
+  filter_menu_adapter_ = nullptr;
   ui::SimpleMenuModel* model = BuildFilterMenuModel();
   filter_menu_adapter_ = std::make_unique<FilterMenuAdapter>(
       model,
