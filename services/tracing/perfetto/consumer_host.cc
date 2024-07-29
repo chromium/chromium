@@ -544,7 +544,8 @@ void ConsumerHost::TracingSession::OnTraceData(
     // producing an empty JSON result.
     DCHECK(status.ok()) << status.message();
     if (!has_more) {
-      trace_processor_->NotifyEndOfFile();
+      status = trace_processor_->NotifyEndOfFile();
+      DCHECK(status.ok()) << status.message();
       ExportJson();
       trace_processor_.reset();
     }

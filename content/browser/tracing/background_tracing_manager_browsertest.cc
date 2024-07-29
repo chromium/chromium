@@ -164,7 +164,8 @@ class TestBackgroundTracingHelper
         perfetto::trace_processor::TraceBlobView(std::move(blob)));
     ASSERT_TRUE(parse_status.ok()) << parse_status.message();
 
-    trace_processor->NotifyEndOfFile();
+    auto end_status = trace_processor->NotifyEndOfFile();
+    ASSERT_TRUE(end_status.ok()) << end_status.message();
 
     auto export_status = perfetto::trace_processor::json::ExportJson(
         trace_processor.get(), this,
