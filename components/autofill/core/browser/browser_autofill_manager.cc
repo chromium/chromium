@@ -416,8 +416,9 @@ bool ShouldFetchCreditCard(const FormData& form,
                            const FormStructure& form_structure,
                            const AutofillField& autofill_field,
                            const CreditCard& credit_card) {
-  if (WillFillCreditCardNumber(form.fields(), form_structure.fields(),
-                               autofill_field)) {
+  if (WillFillCreditCardNumberOrCvc(
+          form.fields(), form_structure.fields(), autofill_field,
+          /*card_has_cvc=*/!credit_card.cvc().empty())) {
     return true;
   }
   // This happens for web sites which cache all credit card details except for
