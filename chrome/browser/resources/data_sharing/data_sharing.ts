@@ -22,12 +22,12 @@ function onDOMContentLoaded() {
   );
 }
 
-function getResourceId() {
-  const resourceIdElement = document.getElementById(
-                                'resource-id',
-                                ) as HTMLInputElement |
+function getGroupId() {
+  const groupIdElement = document.getElementById(
+                             'group-id',
+                             ) as HTMLInputElement |
       null;
-  return resourceIdElement?.value;
+  return groupIdElement?.value;
 }
 
 function getTokenSecret() {
@@ -38,12 +38,12 @@ function getTokenSecret() {
   return tokenSecretElement?.value;
 }
 
-function maybeRunIfResourceId(
-    runFunction: (options: {resourceId: string}) => void,
+function maybeRunIfGroupId(
+    runFunction: (options: {groupId: string}) => void,
 ) {
-  const resourceId = getResourceId();
-  if (resourceId) {
-    runFunction({resourceId});
+  const id = getGroupId();
+  if (id) {
+    runFunction({groupId: id});
   }
 }
 
@@ -56,9 +56,9 @@ async function initialize() {
       'create-join-flow-button',
   );
   joinFlowButton?.addEventListener('click', () => {
-    maybeRunIfResourceId(
-        (options: {resourceId: string}) => window.data_sharing_sdk.runJoinFlow({
-          resourceId: options.resourceId,
+    maybeRunIfGroupId(
+        (options: {groupId: string}) => window.data_sharing_sdk.runJoinFlow({
+          groupId: options.groupId,
           tokenSecret: getTokenSecret() || '',
         }),
     );
@@ -66,17 +66,55 @@ async function initialize() {
 
   const inviteFlowButton = document.getElementById('create-invite-flow-button');
   inviteFlowButton?.addEventListener('click', () => {
-    maybeRunIfResourceId(window.data_sharing_sdk.runInviteFlow);
+    maybeRunIfGroupId(window.data_sharing_sdk.runInviteFlow);
   });
 
   const manageFlowButton = document.getElementById('create-manage-flow-button');
   manageFlowButton?.addEventListener('click', () => {
-    maybeRunIfResourceId(window.data_sharing_sdk.runManageFlow);
+    maybeRunIfGroupId(window.data_sharing_sdk.runManageFlow);
   });
+
+  const groupIdElement = document.getElementById(
+                             'group-id',
+                             ) as HTMLInputElement |
+      null;
+  // Ease of testing
+  const existingGroupId = localStorage.getItem('group-id');
+  if (existingGroupId && groupIdElement) {
+    groupIdElement.value = existingGroupId;
+  }
 
   const createGroupButton = document.getElementById('create-group-button');
   createGroupButton?.addEventListener('click', () => {
-    maybeRunIfResourceId(window.data_sharing_sdk.createGroup);
+    window.data_sharing_sdk.createGroup(/* options= */ {})
+        .then(
+            (group) => {
+              console.info(group);
+              if (groupIdElement) {
+                // Ease of testing
+                groupIdElement.value = group.id;
+                localStorage.setItem('group-id', group.id);
+              }
+            },
+            (err) => {
+              console.error(err);
+              throw err;
+            });
+  });
+
+  const readGroupButton = document.getElementById('read-group-button');
+  readGroupButton?.addEventListener('click', () => {
+    maybeRunIfGroupId((params) => {
+      window.data_sharing_sdk.readGroups({groupIds: [params.groupId]})
+          .then(
+              (group) => {
+                console.info(group);
+              },
+              (err) => {
+                console.error(err);
+                throw err;
+              });
+    });
   });
 }
 

@@ -55,6 +55,7 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
       "img-src "
+      "https://lh3.google.com "
       "https://lh3.googleusercontent.com "
       "https://www.gstatic.com "
       "'self';");
