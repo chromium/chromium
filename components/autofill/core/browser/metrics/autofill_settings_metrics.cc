@@ -40,7 +40,7 @@ AutofillPreferenceSetter GetAutofillPreferenceSetter(
 // Emits UMA metric `Autofill.Address.DisabledReason.{PageLoad, Startup}`.
 void LogAutofillProfileDisabledReason(const PrefService& pref_service,
                                       std::string_view suffix) {
-  DCHECK(!prefs::IsAutofillProfileEnabled(&pref_service));
+  CHECK(!prefs::IsAutofillProfileEnabled(&pref_service));
   if (const PrefService::Preference* pref =
           pref_service.FindPreference(prefs::kAutofillProfileEnabled)) {
     base::UmaHistogramEnumeration(
