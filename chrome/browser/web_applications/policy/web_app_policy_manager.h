@@ -164,7 +164,9 @@ class WebAppPolicyManager {
   // Parses install options from a `base::Value::Dict`, which represents one
   // entry of the kWepAppInstallForceList. If the value contains a custom_name
   // or custom_icon, it is inserted into the custom_manifest_values_by_url_ map.
-  ExternalInstallOptions ParseInstallPolicyEntry(
+  // If the install_url in the entry is invalid, returns a `std::nullopt`, so
+  // that installation can be skipped.
+  std::optional<ExternalInstallOptions> ParseInstallPolicyEntry(
       const base::Value::Dict& entry);
 
   void ObserveDisabledSystemFeaturesPolicy();

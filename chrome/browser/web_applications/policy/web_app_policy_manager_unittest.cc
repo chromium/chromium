@@ -1290,6 +1290,26 @@ TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
   }
 }
 
+TEST_P(WebAppPolicyManagerTest, InvalidUrlParsingSkipped) {
+  if (ShouldSkipPWASpecificTest()) {
+    return;
+  }
+  base::Value::Dict invalid_url_policy =
+      base::Value::Dict()
+          .Set(kUrlKey, "abcdef")
+          .Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerWindowValue);
+  base::Value::List policy_list;
+  policy_list.Append(std::move(invalid_url_policy));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(policy_list));
+
+  WaitForAppsToSynchronize();
+
+  const auto& install_requests =
+      externally_managed_app_manager().install_requests();
+  EXPECT_EQ(0u, install_requests.size());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(WebAppPolicyManagerTest, DisableSystemWebApps) {
   auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
