@@ -285,7 +285,8 @@ public class CredManHelper {
                                         ? CredManPrepareRequestEnum.SUCCESS_HAS_RESULTS
                                         : CredManPrepareRequestEnum.SUCCESS_NO_RESULTS);
                         mMetricsHelper.recordCredmanPrepareRequestDuration(
-                                SystemClock.elapsedRealtime() - startTimeMs);
+                                SystemClock.elapsedRealtime() - startTimeMs,
+                                hasPublicKeyCredentials);
                     }
                 };
 

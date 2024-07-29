@@ -516,7 +516,8 @@ void GetAssertionRequestHandler::GetPlatformCredentialStatus(
       request_, options_,
       base::BindOnce(
           &GetAssertionRequestHandler::OnHavePlatformCredentialStatus,
-          weak_factory_.GetWeakPtr(), platform_authenticator->GetType()));
+          weak_factory_.GetWeakPtr(), platform_authenticator->GetType(),
+          base::ElapsedTimer()));
 }
 
 bool GetAssertionRequestHandler::AuthenticatorSelectedForPINUVAuthToken(

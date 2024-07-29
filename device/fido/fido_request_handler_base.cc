@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -42,6 +43,7 @@
 namespace device {
 
 namespace {
+
 bool IsGpmPasskeyAuthenticator(const FidoAuthenticator& authenticator) {
   switch (authenticator.GetType()) {
     case AuthenticatorType::kWinNative:
@@ -57,6 +59,31 @@ bool IsGpmPasskeyAuthenticator(const FidoAuthenticator& authenticator) {
   }
   NOTREACHED_NORETURN();
 }
+
+void MaybeRecordPlatformCredentialStatus(AuthenticatorType type,
+                                         base::TimeDelta elapsed_time) {
+  std::string metric_name;
+
+  switch (type) {
+    case AuthenticatorType::kWinNative:
+      metric_name = "WebAuthentication.CredentialFetchDuration.WinHello";
+      break;
+    case AuthenticatorType::kTouchID:
+      metric_name = "WebAuthentication.CredentialFetchDuration.TouchId";
+      break;
+    case AuthenticatorType::kChromeOS:
+      metric_name = "WebAuthentication.CredentialFetchDuration.ChromeOS";
+      break;
+    case AuthenticatorType::kICloudKeychain:
+      metric_name = "WebAuthentication.CredentialFetchDuration.ICloudKeychain";
+      break;
+    default:
+      return;
+  }
+
+  base::UmaHistogramTimes(metric_name, elapsed_time);
+}
+
 }  // namespace
 
 // TransportAvailabilityCallbackReadiness stores state that tracks whether
@@ -532,8 +559,13 @@ void FidoRequestHandlerBase::GetPlatformCredentialStatus(
 
 void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
     AuthenticatorType authenticator_type,
+    std::optional<base::ElapsedTimer> timer,
     std::vector<DiscoverableCredentialMetadata> creds,
     RecognizedCredential has_credentials) {
+  if (creds.size() > 0 && timer.has_value()) {
+    MaybeRecordPlatformCredentialStatus(authenticator_type, timer->Elapsed());
+  }
+
   if (authenticator_type == AuthenticatorType::kICloudKeychain) {
     // iCloud Keychain is the second platform authenticator on the system and
     // its status is reported via a different field.
