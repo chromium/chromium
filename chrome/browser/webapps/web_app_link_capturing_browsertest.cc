@@ -71,6 +71,24 @@ enum class StartingPoint {
   kTab,
 };
 
+std::string ToJsonString(StartingPoint start) {
+  switch (start) {
+    case StartingPoint::kAppWindow:
+      return kValueApp;
+    case StartingPoint::kTab:
+      return kValueTab;
+  }
+}
+
+std::string_view ToParamString(StartingPoint start) {
+  switch (start) {
+    case StartingPoint::kAppWindow:
+      return "AppWnd";
+    case StartingPoint::kTab:
+      return "Tab";
+  }
+}
+
 // Whether to navigate within the same scope or outside it:
 enum class Destination {
   kScopeA2A,
@@ -79,11 +97,55 @@ enum class Destination {
   kScopeA2BRedirectA,
 };
 
+std::string ToJsonString(Destination scope) {
+  switch (scope) {
+    case Destination::kScopeA2A:
+      return kValueScopeA2A;
+    case Destination::kScopeA2B:
+      return kValueScopeA2B;
+    case Destination::kScopeA2ARedirectB:
+      return kValueScopeA2ARedirectB;
+    case Destination::kScopeA2BRedirectA:
+      return kValueScopeA2BRedirectA;
+  }
+}
+
+std::string_view ToParamString(Destination scope) {
+  switch (scope) {
+    case Destination::kScopeA2A:
+      return "ScopeA2A";
+    case Destination::kScopeA2B:
+      return "ScopeA2B";
+    case Destination::kScopeA2ARedirectB:
+      return "ScopeA2ARedirectB";
+    case Destination::kScopeA2BRedirectA:
+      return "ScopeA2BRedirectA";
+  }
+}
+
 // The element to use for navigation:
 enum class NavigationElement {
   kElementLink,
   kElementButton,
 };
+
+std::string ToJsonString(NavigationElement element) {
+  switch (element) {
+    case NavigationElement::kElementLink:
+      return kValueLink;
+    case NavigationElement::kElementButton:
+      return kValueButton;
+  }
+}
+
+std::string_view ToParamString(NavigationElement element) {
+  switch (element) {
+    case NavigationElement::kElementLink:
+      return "ViaLink";
+    case NavigationElement::kElementButton:
+      return "ViaButton";
+  }
+}
 
 // The method of interacting with the element:
 enum class ClickMethod {
@@ -91,11 +153,47 @@ enum class ClickMethod {
   kMiddleClick,
 };
 
+std::string ToJsonString(ClickMethod click) {
+  switch (click) {
+    case ClickMethod::kLeftClick:
+      return kValueLeftClick;
+    case ClickMethod::kMiddleClick:
+      return kValueMiddleClick;
+  }
+}
+
+std::string_view ToParamString(ClickMethod click) {
+  switch (click) {
+    case ClickMethod::kLeftClick:
+      return "LeftClick";
+    case ClickMethod::kMiddleClick:
+      return "MiddleClick";
+  }
+}
+
 // Whether to supply an Opener/NoOpener:
 enum class OpenerMode {
   kOpener,
   kNoOpener,
 };
+
+std::string ToJsonString(OpenerMode opener) {
+  switch (opener) {
+    case OpenerMode::kOpener:
+      return kValueOpener;
+    case OpenerMode::kNoOpener:
+      return kValueNoOpener;
+  }
+}
+
+std::string_view ToParamString(OpenerMode opener) {
+  switch (opener) {
+    case OpenerMode::kOpener:
+      return "WithOpener";
+    case OpenerMode::kNoOpener:
+      return "WithoutOpener";
+  }
+}
 
 // The target to supply for the navigation:
 enum class NavigationTarget {
@@ -106,6 +204,32 @@ enum class NavigationTarget {
   kNoFrame,
 };
 
+std::string ToJsonString(NavigationTarget target) {
+  switch (target) {
+    case NavigationTarget::kSelf:
+      return kValueTargetSelf;
+    case NavigationTarget::kFrame:
+      return kValueTargetFrame;
+    case NavigationTarget::kBlank:
+      return kValueTargetBlank;
+    case NavigationTarget::kNoFrame:
+      return kValueTargetNoFrame;
+  }
+}
+
+std::string_view ToParamString(NavigationTarget target) {
+  switch (target) {
+    case NavigationTarget::kSelf:
+      return "TargetSelf";
+    case NavigationTarget::kFrame:
+      return "TargetFrame";
+    case NavigationTarget::kBlank:
+      return "TargetBlank";
+    case NavigationTarget::kNoFrame:
+      return "TargetNoFrame";
+  }
+}
+
 // Use a std::tuple for the overall test configuration so testing::Combine can
 // be used to construct the values.
 using LinkCaptureTestParam = std::tuple<StartingPoint,
@@ -114,6 +238,15 @@ using LinkCaptureTestParam = std::tuple<StartingPoint,
                                         ClickMethod,
                                         OpenerMode,
                                         NavigationTarget>;
+
+std::string LinkCaptureTestParamToString(
+    testing::TestParamInfo<LinkCaptureTestParam> param_info) {
+  // Concatenates the result of calling `ToParamString()` on each member of the
+  // tuple with '_' in between fields.
+  return std::apply(
+      [](auto&... p) { return base::JoinString({ToParamString(p)...}, "_"); },
+      param_info.param);
+}
 
 // This helper class monitors WebContents creation in all tabs (of all browsers)
 // and can be queried for the last one seen.
@@ -203,75 +336,6 @@ class WebAppLinkCapturingBrowserTestParameterized
     return response;
   }
 
-  // This function converts the test param to a string, which is used to provide
-  // a unique for the given test run.
-  static std::string ParamToString(
-      testing::TestParamInfo<LinkCaptureTestParam> param_info) {
-    std::string result = "";
-
-    StartingPoint container = std::get<0>(param_info.param);
-    if (container == StartingPoint::kAppWindow) {
-      result += "AppWnd_";
-    }
-    if (container == StartingPoint::kTab) {
-      result += "Tab_";
-    }
-
-    Destination destination = std::get<1>(param_info.param);
-    if (destination == Destination::kScopeA2A) {
-      result += "ScopeA2A_";
-    }
-    if (destination == Destination::kScopeA2B) {
-      result += "ScopeA2B_";
-    }
-    if (destination == Destination::kScopeA2ARedirectB) {
-      result += "ScopeA2ARedirectB_";
-    }
-    if (destination == Destination::kScopeA2BRedirectA) {
-      result += "ScopeA2BRedirectA_";
-    }
-
-    NavigationElement element = std::get<2>(param_info.param);
-    if (element == NavigationElement::kElementLink) {
-      result += "ViaLink_";
-    }
-    if (element == NavigationElement::kElementButton) {
-      result += "ViaButton_";
-    }
-
-    ClickMethod method = std::get<3>(param_info.param);
-    if (method == ClickMethod::kLeftClick) {
-      result += "LeftClick_";
-    }
-    if (method == ClickMethod::kMiddleClick) {
-      result += "MiddleClick_";
-    }
-
-    OpenerMode opener = std::get<4>(param_info.param);
-    if (opener == OpenerMode::kOpener) {
-      result += "WithOpener_";
-    }
-    if (opener == OpenerMode::kNoOpener) {
-      result += "WithoutOpener_";
-    }
-
-    NavigationTarget target = std::get<5>(param_info.param);
-    if (target == NavigationTarget::kSelf) {
-      result += "TargetSelf";
-    }
-    if (target == NavigationTarget::kFrame) {
-      result += "TargetFrame";
-    }
-    if (target == NavigationTarget::kBlank) {
-      result += "TargetBlank";
-    }
-    if (target == NavigationTarget::kNoFrame) {
-      result += "TargetNoFrame";
-    }
-
-    return result;
-  }
-
  protected:
   struct TestExpectation {
     Browser::Type browser_type;
@@ -298,37 +362,27 @@ class WebAppLinkCapturingBrowserTestParameterized
       const std::string* opener = log_entry.FindString("opener");
       const std::string* target = log_entry.FindString("target");
 
-      if (start->compare(StartInAppWindow() ? kValueApp : kValueTab) != 0) {
+      if (!start || *start != ToJsonString(GetStartingPoint())) {
         continue;
       }
 
-      if ((WillNavigateA2A() && scope->compare(kValueScopeA2A) != 0) ||
-          (WillNavigateA2B() && scope->compare(kValueScopeA2B) != 0) ||
-          (WillNavigateA2AWithRedir() &&
-           scope->compare(kValueScopeA2ARedirectB) != 0) ||
-          (WillNavigateA2BWithRedir() &&
-           scope->compare(kValueScopeA2BRedirectA) != 0)) {
+      if (!scope || *scope != ToJsonString(GetDestination())) {
         continue;
       }
 
-      if (element->compare(WillNavigateViaLink() ? kValueLink : kValueButton) !=
-          0) {
+      if (!element || *element != ToJsonString(GetNavigationElement())) {
         continue;
       }
 
-      if (click->compare(IsMiddleClick() ? kValueMiddleClick
-                                         : kValueLeftClick) != 0) {
+      if (!click || *click != ToJsonString(GetClickMethod())) {
         continue;
       }
 
-      if (opener->compare(WithOpener() ? kValueOpener : kValueNoOpener) != 0) {
+      if (!opener || *opener != ToJsonString(GetOpenerMode())) {
         continue;
       }
 
-      if ((IsTargetSelf() && target->compare(kValueTargetSelf) != 0) ||
-          (IsTargetFrame() && target->compare(kValueTargetFrame) != 0) ||
-          (IsTargetBlank() && target->compare(kValueTargetBlank) != 0) ||
-          (IsTargetNoFrame() && target->compare(kValueTargetNoFrame) != 0)) {
+      if (!target || *target != ToJsonString(GetNavigationTarget())) {
         continue;
       }
 
@@ -359,8 +413,9 @@ class WebAppLinkCapturingBrowserTestParameterized
   // log).
   bool SimulateClickOnElement(content::WebContents* contents,
                               std::string element_id,
-                              bool middle_click) {
-    std::string properties = middle_click ? "{ctrlKey: true}" : "{}";
+                              ClickMethod click) {
+    std::string properties =
+        click == ClickMethod::kMiddleClick ? "{ctrlKey: true}" : "{}";
     std::string js =
         "simulateClick(\"" + element_id + "\", " + properties + ")";
     return ExecJs(contents, js);
@@ -373,39 +428,19 @@ class WebAppLinkCapturingBrowserTestParameterized
   bool RecordActualResults(Browser::Type type,
                            bool same_browser_instance,
                            bool in_iframe) {
-    std::string input_template =
+    std::string_view input_template =
         "{\"start\": \"$1\", \"scope\": \"$2\", \"element\": \"$3\", "
         "\"click\": \"$4\", \"opener\": \"$5\", \"target\": \"$6\", "
         "\"expect\": \"$7\"}";
 
-    std::vector<std::string> substitutions;
-    substitutions.push_back(StartInAppWindow() ? kValueApp : kValueTab);
-    std::string scope = "invalid-scope";
-    if (WillNavigateA2A()) {
-      scope = kValueScopeA2A;
-    } else if (WillNavigateA2B()) {
-      scope = kValueScopeA2B;
-    } else if (WillNavigateA2AWithRedir()) {
-      scope = kValueScopeA2ARedirectB;
-    } else if (WillNavigateA2BWithRedir()) {
-      scope = kValueScopeA2BRedirectA;
-    }
-    substitutions.push_back(scope);
-    substitutions.push_back(WillNavigateViaLink() ? kValueLink : kValueButton);
-    substitutions.push_back(IsMiddleClick() ? kValueMiddleClick
-                                            : kValueLeftClick);
-    substitutions.push_back(WithOpener() ? kValueOpener : kValueNoOpener);
-    std::string target = "invalid-target";
-    if (IsTargetSelf()) {
-      target = kValueTargetSelf;
-    } else if (IsTargetFrame()) {
-      target = kValueTargetFrame;
-    } else if (IsTargetBlank()) {
-      target = kValueTargetBlank;
-    } else if (IsTargetNoFrame()) {
-      target = kValueTargetNoFrame;
-    }
-    substitutions.push_back(target);
+    std::vector<std::string> substitutions = {
+        ToJsonString(GetStartingPoint()),
+        ToJsonString(GetDestination()),
+        ToJsonString(GetNavigationElement()),
+        ToJsonString(GetClickMethod()),
+        ToJsonString(GetOpenerMode()),
+        ToJsonString(GetNavigationTarget())};
+
     std::string expect =
         BrowserTypeToString(type) + " " +
         (same_browser_instance ? kValueSameBrowser : kValueOtherBrowser) + " " +
@@ -448,81 +483,57 @@ class WebAppLinkCapturingBrowserTestParameterized
     }
   }
 
+  StartingPoint GetStartingPoint() const {
+    return std::get<StartingPoint>(GetParam());
+  }
+
   // Returns `true` if the test should start inside an app window (and `false`
   // if the test should start in a tab).
   bool StartInAppWindow() const {
-    StartingPoint container = std::get<0>(GetParam());
-    return container == StartingPoint::kAppWindow;
+    return GetStartingPoint() == StartingPoint::kAppWindow;
+  }
+
+  Destination GetDestination() const {
+    return std::get<Destination>(GetParam());
   }
 
   // Returns `true` if the test should navigate to a page within the same scope.
   bool WillNavigateA2A() const {
-    Destination scope = std::get<1>(GetParam());
-    return scope == Destination::kScopeA2A;
+    return GetDestination() == Destination::kScopeA2A;
   }
 
   // Returns `true` if the test should navigate to a page in a different scope.
   bool WillNavigateA2B() const {
-    Destination scope = std::get<1>(GetParam());
-    return scope == Destination::kScopeA2B;
+    return GetDestination() == Destination::kScopeA2B;
   }
 
   // Returns `true` if the test should navigate to a page in a different scope,
   // but end up on the same scope due to an HTTP redirect.
   bool WillNavigateA2AWithRedir() const {
-    Destination scope = std::get<1>(GetParam());
-    return scope == Destination::kScopeA2ARedirectB;
+    return GetDestination() == Destination::kScopeA2ARedirectB;
   }
 
   // Returns `true` if the test should navigate to a page in the same scope, but
   // end up on back scope A due to an HTTP redirect.
   bool WillNavigateA2BWithRedir() const {
-    Destination scope = std::get<1>(GetParam());
-    return scope == Destination::kScopeA2BRedirectA;
+    return GetDestination() == Destination::kScopeA2BRedirectA;
   }
 
-  // Returns `true` if the test should use a link to navigate (and `false` if
-  // the test should use a button).
-  bool WillNavigateViaLink() const {
-    NavigationElement element = std::get<2>(GetParam());
-    return element == NavigationElement::kElementLink;
+  NavigationElement GetNavigationElement() const {
+    return std::get<NavigationElement>(GetParam());
   }
 
-  // Returns `true` if the test should use a middle-click for the navigation
-  // click (and `false` if the test should use left-click).
-  bool IsMiddleClick() const {
-    ClickMethod method = std::get<3>(GetParam());
-    return method == ClickMethod::kMiddleClick;
+  ClickMethod GetClickMethod() const {
+    return std::get<ClickMethod>(GetParam());
   }
+
+  OpenerMode GetOpenerMode() const { return std::get<OpenerMode>(GetParam()); }
 
   // Returns `true` if the test should supply an opener value.
-  bool WithOpener() const {
-    OpenerMode opener = std::get<4>(GetParam());
-    return opener == OpenerMode::kOpener;
-  }
+  bool WithOpener() const { return GetOpenerMode() == OpenerMode::kOpener; }
 
-  // Returns `true` if the test should target _self for the navigation.
-  bool IsTargetSelf() const {
-    NavigationTarget target = std::get<5>(GetParam());
-    return target == NavigationTarget::kSelf;
-  }
-
-  // Returns `true` if the test should target a named frame for the navigation.
-  bool IsTargetFrame() const {
-    NavigationTarget target = std::get<5>(GetParam());
-    return target == NavigationTarget::kFrame;
-  }
-
-  // Returns `true` if the test should target _blank for the navigation.
-  bool IsTargetBlank() const {
-    NavigationTarget target = std::get<5>(GetParam());
-    return target == NavigationTarget::kBlank;
-  }
-
-  // Returns `true` if the test should target _ for the navigation.
-  bool IsTargetNoFrame() const {
-    NavigationTarget target = std::get<5>(GetParam());
-    return target == NavigationTarget::kNoFrame;
+  NavigationTarget GetNavigationTarget() const {
+    return std::get<NavigationTarget>(GetParam());
   }
 
   // The test page contains elements (links and buttons) that are configured
@@ -531,11 +542,7 @@ class WebAppLinkCapturingBrowserTestParameterized
   std::string GetElementId() {
     std::string id = "id-";
 
-    if (WillNavigateViaLink()) {
-      id += kValueLink;
-    } else {
-      id += kValueButton;
-    }
+    id += ToJsonString(GetNavigationElement());
     id += "-";
     if (WillNavigateA2A() || WillNavigateA2AWithRedir()) {
       id += kValueScopeA2A;
@@ -544,25 +551,10 @@ class WebAppLinkCapturingBrowserTestParameterized
     }
 
     id += "-";
-    if (IsTargetSelf()) {
-      id += kValueTargetSelf;
-    }
-    if (IsTargetFrame()) {
-      id += kValueTargetFrame;
-    }
-    if (IsTargetBlank()) {
-      id += kValueTargetBlank;
-    }
-    if (IsTargetNoFrame()) {
-      id += kValueTargetNoFrame;
-    }
+    id += ToJsonString(GetNavigationTarget());
 
     id += "-";
-    if (WithOpener()) {
-      id += kValueOpener;
-    } else {
-      id += kValueNoOpener;
-    }
+    id += ToJsonString(GetOpenerMode());
 
     return id;
   }
@@ -714,7 +706,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTestParameterized,
 
   std::string trace =
       std::string("\n---------------------------\nParameterized test: ") +
-      "Test name: " + ParamToString(param) +
+      "Test name: " + LinkCaptureTestParamToString(param) +
       "\n"
       "clicking : " +
       element_id + " " +
@@ -778,7 +770,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTestParameterized,
     // Perform action (launch destination page).
     WebContentsCreationMonitor monitor;
     ASSERT_TRUE(
-        SimulateClickOnElement(contents_a, GetElementId(), IsMiddleClick()));
+        SimulateClickOnElement(contents_a, GetElementId(), GetClickMethod()));
 
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
@@ -793,11 +785,11 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTestParameterized,
     contents_b = monitor.GetLastSeenWebContentsAndStopMonitoring();
 
     ASSERT_NE(nullptr, contents_b);
-    ASSERT_EQ(true, contents_b->GetURL().is_valid());
+    ASSERT_TRUE(contents_b->GetURL().is_valid());
   }
 
   Browser* browser_b = ToBrowser(contents_b);
-  ASSERT_TRUE(browser_b != nullptr);
+  ASSERT_NE(browser_b, nullptr);
   Browser::Type browser_type_b = browser_b->type();
 
   if (ShouldRebaseline()) {
@@ -846,4 +838,4 @@ INSTANTIATE_TEST_SUITE_P(
             NavigationTarget::kBlank,   // User Target is _blank.
             NavigationTarget::kNoFrame  // Target is non-existing frame.
             )),
-    WebAppLinkCapturingBrowserTestParameterized::ParamToString);
+    LinkCaptureTestParamToString);
