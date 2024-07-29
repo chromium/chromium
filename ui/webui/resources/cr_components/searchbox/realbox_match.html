@@ -174,7 +174,20 @@
   }
 
   .match {
-    font-weight: 600;
+    font-weight: var(--cr-realbox-match-font-weight, 600);
+  }
+
+  /* In the lens side panel searchbox, the typed prefix of the match should
+   * have a different color than the rest of the autocomplete suggestion. */
+  #contents span:not(.match),
+  #ellipsis {
+    color: var(--color-realbox-results-typed-prefix, --color-realbox-results-foreground);
+  }
+
+  /* Used to override contents color in zero prefix matches */
+  :host-context([has-empty-input]) #contents span,
+  :host-context([has-empty-input]) #ellipsis {
+    color: var(--color-realbox-results-foreground);
   }
 
   /* Use dimmed color for descriptions. */
