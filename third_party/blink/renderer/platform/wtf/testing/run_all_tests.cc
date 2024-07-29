@@ -29,11 +29,18 @@
  */
 
 #include <string.h>
+
+#include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_suite.h"
+#include "base/test/test_suite_helper.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 int main(int argc, char** argv) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::CommandLine::Init(argc, argv);
+  base::test::InitScopedFeatureListForTesting(scoped_feature_list);
   WTF::Partitions::Initialize();
   WTF::Initialize();
   return base::RunUnitTestsUsingBaseTestSuite(argc, argv);

@@ -164,6 +164,8 @@ static_library("test_support") {
     "test_simple_task_runner.h",
     "test_suite.cc",
     "test_suite.h",
+    "test_suite_helper.cc",
+    "test_suite_helper.h",
     "test_waitable_event.cc",
     "test_waitable_event.h",
     "thread_test_helper.cc",

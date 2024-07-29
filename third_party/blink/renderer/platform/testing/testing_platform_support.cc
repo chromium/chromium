@@ -39,6 +39,7 @@
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "base/test/test_suite_helper.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "gin/public/v8_platform.h"
@@ -203,57 +204,6 @@ base::TimeTicks TestingPlatformSupport::NowTicks() const {
   return base::TimeTicks::Now();
 }
 
-namespace {
-
-// The code is almost the same as base::<anonymous>::
-// FeatureListScopedToEachTest::OnTestStart(). This is used to initialize
-// ScopedFeatureList by using InitFromCommandLine(). Since the switches to
-// enable or disable features, i.e. --enable-features=X or
-// --disable-features=Y, should be applied to all run_tests, we can move
-// the initialization here. The OnTestStart(), InitFromCommandLine() will
-// be also invoked but the ScopedFeatureList creates another FeatureList
-// scope and the scope will inherit disabled and enabled features from
-// ScopedFeatureListSetup's scope. So blink unit tests will run with
-// the same enabled or disabled features.
-void ScopedFeatureListSetup(
-    base::test::ScopedFeatureList& scoped_feature_list) {
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-
-  // We set up a FeatureList via ScopedFeatureList::InitFromCommandLine().
-  // This ensures that code using that API will not hit an error that it's
-  // not set. It will be cleared by ~ScopedFeatureList().
-
-  // TestFeatureForBrowserTest1 and TestFeatureForBrowserTest2 used in
-  // ContentBrowserTestScopedFeatureListTest to ensure ScopedFeatureList keeps
-  // features from command line.
-  // TestBlinkFeatureDefault is used in RuntimeEnabledFeaturesTest to test a
-  // behavior with OverrideState::OVERIDE_USE_DEFAULT.
-  std::string enabled =
-      command_line->GetSwitchValueASCII(switches::kEnableFeatures);
-  std::string disabled =
-      command_line->GetSwitchValueASCII(switches::kDisableFeatures);
-  scoped_feature_list.InitFromCommandLine(enabled, disabled);
-
-  // The enable-features and disable-features flags were just slurped into a
-  // FeatureList, so remove them from the command line. Tests should enable
-  // and disable features via the ScopedFeatureList API rather than
-  // command-line flags.
-  base::CommandLine new_command_line(command_line->GetProgram());
-  base::CommandLine::SwitchMap switches = command_line->GetSwitches();
-
-  switches.erase(switches::kEnableFeatures);
-  switches.erase(switches::kDisableFeatures);
-
-  for (const auto& iter : switches) {
-    new_command_line.AppendSwitchNative(iter.first, iter.second);
-  }
-
-  *base::CommandLine::ForCurrentProcess() = new_command_line;
-}
-
-}  // namespace
-
 ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
                                                                  char** argv) {
   base::CommandLine::Init(argc, argv);
@@ -268,7 +218,7 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
   // FeatureList must be initialized before WTF::Partitions::Initialize(),
   // because WTF::Partitions::Initialize() uses base::FeatureList to obtain
   // PartitionOptions.
-  ScopedFeatureListSetup(scoped_feature_list_);
+  base::test::InitScopedFeatureListForTesting(scoped_feature_list_);
 
   // TODO(yutak): The initialization steps below are essentially a subset of
   // Platform::Initialize() steps with a few modifications for tests.

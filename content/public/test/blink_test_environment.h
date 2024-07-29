@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,6 +38,7 @@ class BlinkTestEnvironment : public ::testing::Environment {
  protected:
   virtual void InitializeBlinkTestSupport();
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
   std::optional<content::TestContentClientInitializer> content_initializer_;
   std::unique_ptr<content::TestBlinkWebUnitTestSupport> blink_test_support_;
