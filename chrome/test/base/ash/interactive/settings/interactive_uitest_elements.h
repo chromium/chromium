@@ -222,6 +222,9 @@ WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceDetailSubpage();
 // The change name button in Bluetooth device details page.
 WebContentsInteractionTestUtil::DeepQuery BluetoothChangeDeviceNameButton();
 
+// The forget device button in Bluetooth device details page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDeviceButton();
+
 // The Bluetooth name label in Bluetooth device details page.
 WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceName();
 
@@ -233,6 +236,12 @@ WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialogInputField();
 
 // The Bluetooth rename dialog done button.
 WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialogDoneButton();
+
+// The Bluetooth forget device dialog.
+WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDialog();
+
+// The Bluetooth forget device dialog done button.
+WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDialogDoneButton();
 }  // namespace bluetooth
 
 }  // namespace ash::settings

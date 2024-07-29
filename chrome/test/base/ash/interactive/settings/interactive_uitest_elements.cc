@@ -310,6 +310,10 @@ WebContentsInteractionTestUtil::DeepQuery BluetoothChangeDeviceNameButton() {
   return BluetoothDeviceDetailSubpage() + "cr-button#changeNameBtn";
 }
 
+WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDeviceButton() {
+  return BluetoothDeviceDetailSubpage() + "cr-button#forgetBtn";
+}
+
 WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceName() {
   return BluetoothDeviceDetailSubpage() + "div#bluetoothDeviceNameLabel";
 }
@@ -325,6 +329,15 @@ WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialogInputField() {
 
 WebContentsInteractionTestUtil::DeepQuery BluetoothRenameDialogDoneButton() {
   return BluetoothRenameDialog() + "cr-button#done";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDialog() {
+  return BluetoothDeviceDetailSubpage() +
+         "os-settings-bluetooth-forget-device-dialog";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDialogDoneButton() {
+  return BluetoothForgetDialog() + "cr-button#forget";
 }
 
 }  // namespace bluetooth
