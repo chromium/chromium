@@ -2219,6 +2219,9 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_STYLUS_TOOLS_MAGNIFIER_MODE" desc="Title of the magnification mode in the stylus tools. Clicking this button opens up a magnifier. The magnifier remains active until the user turns it off by tapping the same button again.">
         Magnifying glass
       </message>
+      <message name="IDS_ASH_STYLUS_TOOLS_MARKER_MODE" desc="Title of the marker mode in the stylus tools. Clicking this button turns the mouse into a marker. The marker remains active until the user turns it off by tapping the same button again.">
+        Marker tool
+      </message>
       <message name="IDS_ASH_STYLUS_TOOLS_TITLE" desc="The title of the stylus tools dialog in the ash shelf.">
         Stylus tools
       </message>

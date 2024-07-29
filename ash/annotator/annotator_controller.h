@@ -42,6 +42,9 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   ~AnnotatorController() override;
 
   bool is_annotator_enabled() const { return annotator_enabled_; }
+  AnnotationSourceWatcher* annotation_source_watcher() {
+    return annotation_source_watcher_.get();
+  }
 
   // Sets the annotator tool.
   virtual void SetAnnotatorTool(const AnnotatorTool& tool);
