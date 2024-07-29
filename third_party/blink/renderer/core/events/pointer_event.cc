@@ -161,8 +161,7 @@ HeapVector<Member<PointerEvent>> PointerEvent::getCoalescedEvents() {
     }
   }
 
-  if (coalesced_events_targets_dirty_ &&
-      !RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled()) {
+  if (coalesced_events_targets_dirty_) {
     for (auto coalesced_event : coalesced_events_)
       coalesced_event->SetTarget(target());
     coalesced_events_targets_dirty_ = false;
@@ -171,8 +170,7 @@ HeapVector<Member<PointerEvent>> PointerEvent::getCoalescedEvents() {
 }
 
 HeapVector<Member<PointerEvent>> PointerEvent::getPredictedEvents() {
-  if (predicted_events_targets_dirty_ &&
-      !RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled()) {
+  if (predicted_events_targets_dirty_) {
     for (auto predicted_event : predicted_events_)
       predicted_event->SetTarget(target());
     predicted_events_targets_dirty_ = false;
@@ -197,19 +195,6 @@ void PointerEvent::Trace(Visitor* visitor) const {
 DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
   if (type().empty())
     return DispatchEventResult::kNotCanceled;  // Shouldn't happen.
-
-  if (isTrusted() &&
-      RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled()) {
-    // TODO(mustaq@chromium.org): When the RTE flag is removed, get rid of
-    // `coalesced_events_targets_dirty_` and `predicted_events_targets_dirty_`.
-
-    for (auto coalesced_event : coalesced_events_) {
-      coalesced_event->SetTarget(target());
-    }
-    for (auto predicted_event : predicted_events_) {
-      predicted_event->SetTarget(target());
-    }
-  }
 
   if (type() == event_type_names::kClick) {
     return MouseEvent::DispatchEvent(dispatcher);
