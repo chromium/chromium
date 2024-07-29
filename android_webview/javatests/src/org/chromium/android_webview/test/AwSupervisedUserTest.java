@@ -37,6 +37,7 @@ import org.chromium.content_public.browser.MessagePort;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.url.GURL;
 
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 
@@ -259,25 +260,17 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
             // works.
             private final Executor mExecutor =
                     new BackgroundThreadExecutor("TEST_BACKGROUND_THREAD");
+            private static final Set RESTRICTED_CONTENT_BLOCKLIST =
+                    Set.of(MATURE_SITE_PATH, MATURE_SITE_IFRAME_PATH);
 
             @Override
             public void shouldBlockUrl(GURL requestUrl, @NonNull final Callback<Boolean> callback) {
                 String path = requestUrl.getPath();
-
-                if (path.equals(SAFE_SITE_PATH) || path.equals(SAFE_SITE_IFRAME_PATH)) {
-                    mExecutor.execute(
-                            () -> {
-                                callback.onResult(false);
-                            });
-                    return;
-                } else if (path.equals(MATURE_SITE_PATH) || path.equals(MATURE_SITE_IFRAME_PATH)) {
-                    mExecutor.execute(
-                            () -> {
-                                callback.onResult(true);
-                            });
-                    return;
-                }
-                assert false;
+                boolean isRestrictedContent = RESTRICTED_CONTENT_BLOCKLIST.contains(path);
+                mExecutor.execute(
+                        () -> {
+                            callback.onResult(isRestrictedContent);
+                        });
             }
         }
 
