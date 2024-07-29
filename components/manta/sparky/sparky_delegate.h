@@ -91,6 +91,7 @@ class COMPONENT_EXPORT(MANTA) SparkyDelegate {
   virtual std::vector<AppsData> GetAppsList() = 0;
   virtual void LaunchApp(const std::string& app_id) = 0;
   virtual void ObtainStorageInfo(StorageDataCallback storage_callback) = 0;
+  virtual void Click(int x, int y) = 0;
 };
 
 }  // namespace manta

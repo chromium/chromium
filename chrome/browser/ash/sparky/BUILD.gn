@@ -36,8 +36,13 @@ static_library("sparky") {
     "//components/manta",
     "//components/prefs",
     "//components/services/app_service/public/cpp:app_types",
+    "//ui/aura",
+    "//ui/display",
     "//ui/display/types",
     "//ui/events:event_constants",
+    "//ui/events:events_base",
+    "//ui/gfx/geometry",
+    "//ui/wm",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]

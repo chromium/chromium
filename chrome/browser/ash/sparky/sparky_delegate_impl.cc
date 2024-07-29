@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -21,12 +22,26 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "ui/aura/client/cursor_client.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/wm/core/coordinate_conversion.h"
+
 namespace ash {
 namespace {
+
 using SetPrefResult = extensions::settings_private::SetPrefResult;
 using SettingsPrivatePrefType = extensions::api::settings_private::PrefType;
+
 }  // namespace
 
 SparkyDelegateImpl::SparkyDelegateImpl(Profile* profile)
@@ -199,11 +214,45 @@ void SparkyDelegateImpl::LaunchApp(const std::string& app_id) {
   proxy->Launch(app_id, ui::EF_IS_SYNTHESIZED, apps::LaunchSource::kFromSparky,
                 std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
 }
+
 void SparkyDelegateImpl::ObtainStorageInfo(
     manta::StorageDataCallback storage_callback) {
   storage_callback_ = std::move(storage_callback);
   total_disk_space_calculator_.StartCalculation();
   free_disk_space_calculator_.StartCalculation();
+}
+
+void SparkyDelegateImpl::Click(int x, int y) {
+  // Get the Window of the primary display.
+  const display::Display& display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+  aura::Window* window = host->window();
+
+  // Create a point in window coordinates, which can be different from screen
+  // coordinates if multiple screens are present.
+  gfx::Point point(x, y);
+  ::wm::ConvertPointFromScreen(window, &point);
+
+  // Create a pair of pressed/released mouse events. These need to be scaled to
+  // the screen to account for non-1x scale factors.
+  ui::MouseEvent mouse_pressed(ui::EventType::kMousePressed, point, point,
+                               ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent mouse_released(ui::EventType::kMouseReleased, point, point,
+                                ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED,
+                                ui::EF_LEFT_MOUSE_BUTTON);
+
+  mouse_pressed.UpdateForRootTransform(
+      host->GetRootTransform(),
+      host->GetRootTransformForLocalEventCoordinates());
+  mouse_released.UpdateForRootTransform(
+      host->GetRootTransform(),
+      host->GetRootTransformForLocalEventCoordinates());
+
+  // No delay is needed between these events for a basic mouse click.
+  host->DeliverEventToSink(&mouse_pressed);
+  host->DeliverEventToSink(&mouse_released);
 }
 
 void SparkyDelegateImpl::StartObservingCalculators() {

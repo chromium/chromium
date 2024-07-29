@@ -40,6 +40,7 @@ class SparkyDelegateImpl : public manta::SparkyDelegate,
   std::vector<manta::AppsData> GetAppsList() override;
   void LaunchApp(const std::string& app_id) override;
   void ObtainStorageInfo(manta::StorageDataCallback storage_callback) override;
+  void Click(int x, int y) override;
 
   // SizeCalculator::Observer:
   void OnSizeCalculated(

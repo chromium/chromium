@@ -88,6 +88,7 @@ class FakeSparkyDelegate : public SparkyDelegate {
   }
   std::vector<AppsData> GetAppsList() override { return {}; }
   void LaunchApp(const std::string& app_id) override {}
+  void Click(int x, int y) override {}
 
   void ObtainStorageInfo(StorageDataCallback storage_callback) override {
     std::move(storage_callback)
