@@ -717,11 +717,9 @@ class TabListMediator {
                                     mModel.indexOfNthTabCard(filterIndex),
                                     currentSelectedTabId == movedTab.getId());
                         }
-                        boolean isSelected = currentSelectedTabId == previousGroupTab.getId();
                         updateTab(
                                 mModel.indexOfNthTabCard(prevFilterIndex),
                                 previousGroupTab,
-                                isSelected,
                                 true,
                                 false);
                     } else {
@@ -767,14 +765,10 @@ class TabListMediator {
                         // didMoveTabOutOfGroup.
                         if (desIndex != TabModel.INVALID_TAB_INDEX
                                 && srcIndex == TabModel.INVALID_TAB_INDEX) {
-                            boolean isSelected = false;
-                            for (Tab tab : relatedTabs) {
-                                isSelected |= tab == TabModelUtils.getCurrentTab(tabModel);
-                            }
                             Tab tab =
                                     tabModel.getTabById(
                                             mModel.get(desIndex).model.get(TabProperties.TAB_ID));
-                            updateTab(desIndex, tab, isSelected, false, false);
+                            updateTab(desIndex, tab, false, false);
                             return;
                         }
 
@@ -794,11 +788,7 @@ class TabListMediator {
                                 srcIndex > desIndex ? desIndex : mModel.getTabIndexBefore(desIndex);
                         newSelectedTabInMergedGroup =
                                 filter.getTabAt(mModel.getTabCardCountsBefore(desIndex));
-
-                        boolean isSelected =
-                                TabModelUtils.getCurrentTab(tabModel)
-                                        == newSelectedTabInMergedGroup;
-                        updateTab(desIndex, newSelectedTabInMergedGroup, isSelected, true, false);
+                        updateTab(desIndex, newSelectedTabInMergedGroup, true, false);
                     } else {
                         // If the model is empty we can't check if the added tab is part of the
                         // current group. Assume it isn't since a group state with 0 tab should be
@@ -1035,14 +1025,7 @@ class TabListMediator {
                             assert mModel.indexFromId(currentGroupSelectedTab.getId())
                                     == tabListModelIndex;
 
-                            updateTab(
-                                    tabListModelIndex,
-                                    currentGroupSelectedTab,
-                                    mModel.get(tabListModelIndex)
-                                            .model
-                                            .get(TabProperties.IS_SELECTED),
-                                    false,
-                                    false);
+                            updateTab(tabListModelIndex, currentGroupSelectedTab, false, false);
                         }
                     }
 
@@ -1088,14 +1071,7 @@ class TabListMediator {
                                     != tabListModelIndex) {
                                 return;
                             }
-                            updateTab(
-                                    tabListModelIndex,
-                                    currentGroupSelectedTab,
-                                    mModel.get(tabListModelIndex)
-                                            .model
-                                            .get(TabProperties.IS_SELECTED),
-                                    false,
-                                    false);
+                            updateTab(tabListModelIndex, currentGroupSelectedTab, false, false);
                         }
                     }
 
@@ -1115,13 +1091,9 @@ class TabListMediator {
                             int groupIndex = groupFilter.indexOf(tab);
                             Tab groupTab = groupFilter.getTabAt(groupIndex);
                             if (!groupTab.isClosing()) {
-                                final int currentSelectedTabId =
-                                        TabModelUtils.getCurrentTabId(groupFilter.getTabModel());
-                                boolean isSelected = currentSelectedTabId == groupTab.getId();
                                 updateTab(
                                         mModel.indexOfNthTabCard(groupIndex),
                                         groupTab,
-                                        isSelected,
                                         true,
                                         false);
 
@@ -1537,11 +1509,9 @@ class TabListMediator {
         if (areTabsUnchanged(tabs)) {
             if (tabs == null) return true;
 
-            int currentTabId = TabModelUtils.getCurrentTabId(filter.getTabModel());
             for (int i = 0; i < tabs.size(); i++) {
                 Tab tab = tabs.get(i);
-                boolean isSelected = isSelectedTab(tab, currentTabId);
-                updateTab(mModel.indexOfNthTabCard(i), tab, isSelected, false, quickMode);
+                updateTab(mModel.indexOfNthTabCard(i), tab, false, quickMode);
             }
             mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
             return true;
@@ -1643,8 +1613,7 @@ class TabListMediator {
         }
     }
 
-    private void updateTab(
-            int index, Tab tab, boolean isSelected, boolean isUpdatingId, boolean quickMode) {
+    private void updateTab(int index, Tab tab, boolean isUpdatingId, boolean quickMode) {
         if (index < 0 || index >= mModel.size()) return;
         if (isUpdatingId) {
             mModel.get(index).model.set(TabProperties.TAB_ID, tab.getId());
@@ -1652,6 +1621,7 @@ class TabListMediator {
             assert mModel.get(index).model.get(TabProperties.TAB_ID) == tab.getId();
         }
 
+        boolean isTabSelected = isTabSelected(mTabActionState, tab);
         boolean isInTabGroup = isTabInTabGroup(tab);
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             // If the tab to update is in ListMode, update it with the most recent stored color.
@@ -1675,7 +1645,7 @@ class TabListMediator {
         mModel.get(index)
                 .model
                 .set(TabProperties.TAB_CLICK_LISTENER, getTabActionListener(tab, isInTabGroup));
-        mModel.get(index).model.set(TabProperties.IS_SELECTED, isSelected);
+        mModel.get(index).model.set(TabProperties.IS_SELECTED, isTabSelected);
         mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         mModel.get(index)
                 .model
@@ -1719,7 +1689,7 @@ class TabListMediator {
         setupPersistedTabDataFetcherForTab(tab, index);
 
         updateFaviconForTab(tab, null, null);
-        boolean forceUpdate = isSelected && !quickMode;
+        boolean forceUpdate = isTabSelected && !quickMode;
         boolean forceUpdateLastSelected =
                 mActionsOnAllRelatedTabs && index == mLastSelectedTabListModelIndex && !quickMode;
         // TODO(crbug.com/40273706): Fetching thumbnail for group is expansive, we should consider
@@ -2118,8 +2088,20 @@ class TabListMediator {
             assert selectionDelegate != null : "Null selection delegate while in SELECTABLE state.";
             return selectionDelegate.isItemSelected(tab.getId());
         } else {
-            return TabModelUtils.getCurrentTabId(mCurrentTabModelFilterSupplier.get().getTabModel())
-                    == tab.getId();
+            TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
+            // If the tab is part of a group and also being displayed with single tabs, then there
+            // is extra work needed to determine if it's selected. That is - go through all related
+            // tabs, and if any is the selected tabs then the tab group is selected.
+            if (mActionsOnAllRelatedTabs && tab.getTabGroupId() != null) {
+                List<Tab> relatedTabs = getRelatedTabsForId(tab.getId());
+                boolean isSelected = false;
+                for (Tab relatedTab : relatedTabs) {
+                    isSelected |= relatedTab == TabModelUtils.getCurrentTab(tabModel);
+                }
+                return isSelected;
+            } else {
+                return TabModelUtils.getCurrentTabId(tabModel) == tab.getId();
+            }
         }
     }
 
