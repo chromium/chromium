@@ -134,10 +134,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FileSuggestionModule) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FeedModule) {
-  RunTest("new_tab_page/modules/feed/module_test.js", "mocha.run()");
-}
-
 using NewTabPageAppTest = NewTabPageBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Misc) {

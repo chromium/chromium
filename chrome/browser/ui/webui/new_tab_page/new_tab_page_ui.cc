@@ -64,7 +64,6 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/favicon_base/favicon_url_parser.h"
-#include "components/feed/feed_feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history_clusters/core/features.h"
@@ -100,10 +99,6 @@
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo_handler.h"
 #endif
-
-#if BUILDFLAG(ENABLE_FEED_V2)
-#include "chrome/browser/new_tab_page/modules/feed/feed_handler.h"
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
 
 using content::BrowserContext;
 using content::WebContents;
@@ -335,7 +330,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesDriveTitleV2", IDS_NTP_MODULES_DRIVE_TITLE_V2},
       {"modulesDriveInfo", IDS_NTP_MODULES_DRIVE_INFO},
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
-      {"modulesFeedTitle", IDS_NTP_MODULES_FEED_TITLE},
       {"modulesGoogleCalendarDismissButtonText",
        IDS_NTP_MODULES_GOOGLE_CALENDAR_DISMISS_BUTTON_TEXT},
       {"modulesGoogleCalendarDismissToastMessage",
@@ -652,14 +646,6 @@ void NewTabPageUI::BindInterface(
         pending_receiver) {
   file_handler_ = std::make_unique<FileSuggestionHandler>(
       std::move(pending_receiver), profile_);
-}
-
-void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<ntp::feed::mojom::FeedHandler> pending_receiver) {
-#if BUILDFLAG(ENABLE_FEED_V2)
-  feed_handler_ =
-      ntp::FeedHandler::Create(std::move(pending_receiver), profile_);
-#endif  // BUILDFLAG(ENABLE_FEED_V2)
 }
 
 #if !defined(OFFICIAL_BUILD)

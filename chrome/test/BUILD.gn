@@ -8240,11 +8240,6 @@ test("unit_tests") {
       "../browser/search/ntp_features_unittest.cc",
     ]
 
-    if (enable_feed_v2) {
-      sources +=
-          [ "../browser/new_tab_page/modules/feed/feed_handler_unittest.cc" ]
-    }
-
     if (build_with_tflite_lib) {
       sources += [ "../browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_model_handler_unittest.cc" ]
       data += [ "//components/test/data/omnibox/adder.tflite" ]
@@ -8302,7 +8297,6 @@ test("unit_tests") {
       "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/new_tab_page/chrome_colors",
-      "//chrome/browser/new_tab_page/modules/feed:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/history_clusters:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/history_clusters/cart:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/history_clusters/discount:mojo_bindings",
