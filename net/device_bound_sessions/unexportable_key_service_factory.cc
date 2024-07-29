@@ -51,6 +51,8 @@ unexportable_keys::UnexportableKeyTaskManager* GetSharedTaskManagerInstance() {
   return instance->get();
 }
 
+unexportable_keys::UnexportableKeyService* (*g_mock_factory)() = nullptr;
+
 }  // namespace
 
 namespace net::device_bound_sessions {
@@ -66,8 +68,22 @@ UnexportableKeyServiceFactory* UnexportableKeyServiceFactory::GetInstance() {
   return instance.get();
 }
 
+void UnexportableKeyServiceFactory::SetUnexportableKeyFactoryForTesting(
+    unexportable_keys::UnexportableKeyService* (*func)()) {
+  if (g_mock_factory) {
+    CHECK(!func);
+    g_mock_factory = nullptr;
+  } else {
+    g_mock_factory = func;
+  }
+}
+
 unexportable_keys::UnexportableKeyService*
 UnexportableKeyServiceFactory::GetShared() {
+  if (g_mock_factory) {
+    return g_mock_factory();
+  }
+
   if (!has_created_service_) {
     has_created_service_ = true;
     unexportable_keys::UnexportableKeyTaskManager* task_manager =
@@ -78,7 +94,13 @@ UnexportableKeyServiceFactory::GetShared() {
               *task_manager);
     }
   }
+
   return unexportable_key_service_.get();
+}
+
+UnexportableKeyServiceFactory*
+UnexportableKeyServiceFactory::GetInstanceForTesting() {
+  return new UnexportableKeyServiceFactory();
 }
 
 UnexportableKeyServiceFactory::UnexportableKeyServiceFactory() = default;

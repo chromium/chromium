@@ -9,6 +9,7 @@
 
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/session.h"
 
 namespace net {
 class IsolationInfo;
@@ -52,7 +53,7 @@ class NET_EXPORT SessionService {
   // any of them can be returned.
   // Returns the session id if the request should be deferred, returns
   // std::nullopt if the request does not need to be deferred.
-  virtual std::optional<std::string> GetAnySessionRequiringDeferral(
+  virtual std::optional<Session::Id> GetAnySessionRequiringDeferral(
       URLRequest* request) = 0;
 
   // Defer a request while refreshing the session.
@@ -62,7 +63,8 @@ class NET_EXPORT SessionService {
   // - The first will query for cookies for the requests again.
   // - The second to send the request without query for cookies again.
   virtual void DeferRequestForRefresh(
-      std::string session_id,
+      URLRequest* request,
+      Session::Id session_id,
       RefreshCompleteCallback restart_callback,
       RefreshCompleteCallback continue_callback) = 0;
 

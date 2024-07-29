@@ -258,8 +258,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
           ParseSessionInstructionJson(data_received_);
       if (params) {
         RunCallbackAndDeleteSelf(
-            RegistrationFetcher::RegistrationCompleteParams(std::move(*params),
-                                                            *key_id_));
+            RegistrationFetcher::RegistrationCompleteParams(
+                std::move(*params), *key_id_, request_->url()));
       } else {
         RunCallbackAndDeleteSelf(std::nullopt);
       }
@@ -295,6 +295,9 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   std::string data_received_;
 };
 
+std::optional<RegistrationFetcher::RegistrationCompleteParams> (
+    *g_mock_fetcher)() = nullptr;
+
 }  // namespace
 
 void RegistrationFetcher::StartCreateTokenAndFetch(
@@ -305,6 +308,12 @@ void RegistrationFetcher::StartCreateTokenAndFetch(
     const URLRequestContext* context,
     const IsolationInfo& isolation_info,
     RegistrationCompleteCallback callback) {
+  // Using mock fetcher for testing
+  if (g_mock_fetcher) {
+    std::move(callback).Run(g_mock_fetcher());
+    return;
+  }
+
   GURL registration_endpoint = registration_params.registration_endpoint();
   std::string challenge = registration_params.challenge();
 
@@ -318,6 +327,15 @@ void RegistrationFetcher::StartCreateTokenAndFetch(
       key_service, std::move(challenge), registration_endpoint,
       base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
                      base::Unretained(fetcher)));
+}
+
+void RegistrationFetcher::SetFetcherForTesting(FetcherType func) {
+  if (g_mock_fetcher) {
+    CHECK(!func);
+    g_mock_fetcher = nullptr;
+  } else {
+    g_mock_fetcher = func;
+  }
 }
 
 void RegistrationFetcher::CreateTokenAsyncForTesting(
