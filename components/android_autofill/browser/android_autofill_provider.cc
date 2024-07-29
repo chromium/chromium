@@ -811,27 +811,7 @@ AndroidAutofillProvider::PasswordParserOverrides::FromLoginForm(
       result.password_field_id = field->global_id();
     }
   }
-  // A login form must always have a username field and a password field.
   if (!result.username_field_id || !result.password_field_id) {
-    // TODO(crbug.com/41496211): This should never be reachable. Remove once
-    // it is clear how it can happen.
-    SCOPED_CRASH_KEY_NUMBER("crbug1523259", "pw_form.username_id",
-                            pw_form.username_element_renderer_id.value());
-    SCOPED_CRASH_KEY_NUMBER("crbug1523259", "pw_form.password_id",
-                            pw_form.password_element_renderer_id.value());
-    SCOPED_CRASH_KEY_NUMBER("crbug1523259", "fs.fields.size",
-                            form_structure.fields().size());
-    SCOPED_CRASH_KEY_NUMBER("crbug1523259", "fs.form_signature",
-                            form_structure.form_signature().value());
-    SCOPED_CRASH_KEY_STRING1024("crbug1523259", "fs.fields.global_ids", [&] {
-      std::ostringstream ss;
-      for (size_t i = 0;
-           i < std::min<size_t>(10u, form_structure.fields().size()); ++i) {
-        ss << form_structure.fields()[i]->global_id() << " ";
-      }
-      return ss.str();
-    }());
-    base::debug::DumpWithoutCrashing();
     return std::nullopt;
   }
   return result;
