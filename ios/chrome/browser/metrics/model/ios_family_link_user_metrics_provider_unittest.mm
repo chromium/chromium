@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -35,8 +34,6 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
   IOSFamilyLinkUserMetricsProviderTest() {
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         BuildTestBrowserState());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
   }
 
   IOSFamilyLinkUserMetricsProvider* metrics_provider() {

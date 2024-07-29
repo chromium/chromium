@@ -52,7 +52,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -237,11 +236,8 @@ struct TestPasswordFormData {
 class PasswordControllerTest : public PlatformTest {
  public:
   PasswordControllerTest() : web_client_(std::make_unique<ChromeWebClient>()) {
-    TestChromeBrowserState::Builder test_cbs_builder;
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(test_cbs_builder).Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
+        TestChromeBrowserState::Builder().Build());
     browser_state_ =
         browser_state_manager_->GetLastUsedBrowserStateForTesting();
 

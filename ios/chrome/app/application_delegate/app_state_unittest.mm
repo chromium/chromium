@@ -50,7 +50,6 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/app_distribution/test_app_distribution.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -218,8 +217,6 @@ class AppStateTest : public BlockCleanupTest {
 
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         std::move(test_cbs_builder).Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
 
     browser_state_ =
         browser_state_manager_->GetLastUsedBrowserStateForTesting();
@@ -383,12 +380,9 @@ TEST_F(AppStateNoFixtureTest, WillResignActive) {
   [startupInformation setIsColdStart:YES];
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
-  TestChromeBrowserState::Builder test_cbs_builder;
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager =
       std::make_unique<TestChromeBrowserStateManager>(
-          std::move(test_cbs_builder).Build());
-  TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-      browser_state_manager.get());
+          TestChromeBrowserState::Builder().Build());
 
   AppState* appState =
       [[AppState alloc] initWithStartupInformation:startupInformation];

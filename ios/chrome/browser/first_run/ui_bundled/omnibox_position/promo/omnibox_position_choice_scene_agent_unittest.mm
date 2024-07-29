@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/shared/model/utils/first_run_test_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -51,8 +50,6 @@ class OmniboxPositionChoiceSceneAgentTest : public PlatformTest {
 
     test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         TestChromeBrowserState::Builder().Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        test_manager_.get());
 
     browser_ = std::make_unique<TestBrowser>(
         test_manager_->GetLastUsedBrowserStateForTesting(), scene_state_);

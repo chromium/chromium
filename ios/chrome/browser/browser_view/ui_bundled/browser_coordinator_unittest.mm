@@ -59,7 +59,6 @@
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_observer.h"
@@ -116,9 +115,6 @@ class BrowserCoordinatorTest : public PlatformTest {
 
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         std::move(test_cbs_builder).Build());
-
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
 
     browser_ = std::make_unique<TestBrowser>(GetBrowserState(), scene_state_);
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());

@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -36,8 +35,6 @@ class LensOverlayTabHelperTest : public PlatformTest {
 
     feature_list_.InitAndEnableFeature(kEnableLensOverlay);
 
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
     GetApplicationContext()->GetLocalState()->SetInteger(
         lens::prefs::kLensOverlaySettings,
         static_cast<int>(

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -26,7 +27,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -38,8 +38,6 @@ class ContentNotificationClientTest : public PlatformTest {
   ContentNotificationClientTest() {
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         TestChromeBrowserState::Builder().Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
     BrowserList* list = BrowserListFactory::GetForBrowserState(
         browser_state_manager_->GetLastUsedBrowserStateForTesting());
     mock_scene_state_ = OCMClassMock([SceneState class]);

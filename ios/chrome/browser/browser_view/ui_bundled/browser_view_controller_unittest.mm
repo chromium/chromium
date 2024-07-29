@@ -77,7 +77,6 @@
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -132,9 +131,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         std::move(test_cbs_builder).Build());
-
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetBrowserState(),

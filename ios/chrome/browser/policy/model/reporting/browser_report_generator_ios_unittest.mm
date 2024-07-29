@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
 
@@ -32,10 +31,8 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
   BrowserReportGeneratorIOSTest() : generator_(&delegate_factory_) {
     TestChromeBrowserState::Builder builder;
     builder.SetPath(kProfilePath);
-    scoped_browser_state_manager_ =
-        std::make_unique<IOSChromeScopedTestingChromeBrowserStateManager>(
-            std::make_unique<TestChromeBrowserStateManager>(
-                std::move(builder).Build()));
+    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        std::move(builder).Build());
   }
   BrowserReportGeneratorIOSTest(const BrowserReportGeneratorIOSTest&) = delete;
   BrowserReportGeneratorIOSTest& operator=(
@@ -74,8 +71,7 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
 
   ReportingDelegateFactoryIOS delegate_factory_;
   BrowserReportGenerator generator_;
-  std::unique_ptr<IOSChromeScopedTestingChromeBrowserStateManager>
-      scoped_browser_state_manager_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
 };
 
 TEST_F(BrowserReportGeneratorIOSTest, GenerateBasicReportWithProfile) {

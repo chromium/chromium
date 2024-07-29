@@ -46,8 +46,6 @@ group("all_fuzzer_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "ios_chrome_scoped_testing_chrome_browser_state_manager.h",
-    "ios_chrome_scoped_testing_chrome_browser_state_manager.mm",
     "ios_chrome_scoped_testing_local_state.h",
     "ios_chrome_scoped_testing_local_state.mm",
     "ios_chrome_scoped_testing_variations_service.h",

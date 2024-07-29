@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -54,8 +53,6 @@ class SetUpListTest : public PlatformTest {
         std::move(builder).Build();
     test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         std::move(browser_state));
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        test_manager_.get());
     prefs_ = GetBrowserState()->GetPrefs();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetBrowserState(),

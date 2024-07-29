@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -48,9 +47,7 @@ class ScopedTempDirWrapper {
 class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
  public:
   SigninBrowserStateInfoUpdaterTest()
-      : scoped_browser_state_manager_(
-            std::make_unique<TestChromeBrowserStateManager>(
-                browser_state_path())),
+      : browser_state_manager_(browser_state_path()),
         signin_error_controller_(
             SigninErrorController::AccountMode::PRIMARY_ACCOUNT,
             identity_test_env()->identity_manager()),
@@ -88,8 +85,8 @@ class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
   ScopedTempDirWrapper scoped_state_path_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestChromeBrowserStateManager browser_state_manager_;
 
-  IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   signin::IdentityTestEnvironment identity_test_env_;
   SigninErrorController signin_error_controller_;
   SigninBrowserStateInfoUpdater signin_browser_state_info_updater_;

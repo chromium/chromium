@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_table_view_controller.h"
 #import "ios/chrome/browser/ui/price_notifications/test_price_notifications_consumer.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -161,8 +160,6 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
     shopping_service_->SetupPermissiveMock();
     test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         std::move(test_chrome_browser_state));
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        test_manager_.get());
     push_notification_service_ = ios::provider::CreatePushNotificationService();
     mediator_ = [[PriceNotificationsPriceTrackingMediator alloc]
         initWithShoppingService:(commerce::ShoppingService*)shopping_service_

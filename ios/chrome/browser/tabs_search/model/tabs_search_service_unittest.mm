@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -65,9 +64,7 @@ std::unique_ptr<KeyedService> BuildTabRestoreService(
 // Test fixture to test the search service.
 class TabsSearchServiceTest : public PlatformTest {
  public:
-  TabsSearchServiceTest()
-      : scoped_browser_state_manager_(
-            std::make_unique<TestChromeBrowserStateManager>(base::FilePath())) {
+  TabsSearchServiceTest() : browser_state_manager_(base::FilePath()) {
     TestChromeBrowserState::Builder test_browser_state_builder;
     test_browser_state_builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
@@ -135,7 +132,7 @@ class TabsSearchServiceTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
+  TestChromeBrowserStateManager browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<Browser> other_browser_;

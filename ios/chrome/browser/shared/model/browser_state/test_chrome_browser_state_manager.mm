@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+
 #import <vector>
 
+#import "base/check.h"
 #import "base/files/file_path.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/test/testing_application_context.h"
 
 TestChromeBrowserStateManager::TestChromeBrowserStateManager(
     const base::FilePath& user_data_dir)
@@ -22,6 +25,8 @@ TestChromeBrowserStateManager::TestChromeBrowserStateManager(
     std::unique_ptr<ChromeBrowserState> browser_state,
     const base::FilePath& user_data_dir)
     : browser_state_info_cache_(GetApplicationContext()->GetLocalState()) {
+  CHECK_EQ(GetApplicationContext()->GetChromeBrowserStateManager(), nullptr);
+  TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(this);
   if (browser_state) {
     browser_state_info_cache_.AddBrowserState(
         browser_state->GetBrowserStateName(),
@@ -32,7 +37,10 @@ TestChromeBrowserStateManager::TestChromeBrowserStateManager(
   }
 }
 
-TestChromeBrowserStateManager::~TestChromeBrowserStateManager() {}
+TestChromeBrowserStateManager::~TestChromeBrowserStateManager() {
+  CHECK_EQ(GetApplicationContext()->GetChromeBrowserStateManager(), this);
+  TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(nullptr);
+}
 
 ChromeBrowserState*
 TestChromeBrowserStateManager::GetLastUsedBrowserStateDeprecatedDoNotUse() {

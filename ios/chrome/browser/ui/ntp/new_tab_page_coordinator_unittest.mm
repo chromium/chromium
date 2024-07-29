@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -176,9 +175,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
 
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         std::move(test_cbs_builder).Build());
-
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetBrowserState(),

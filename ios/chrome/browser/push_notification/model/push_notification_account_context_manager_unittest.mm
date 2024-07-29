@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -75,8 +74,6 @@ class PushNotificationAccountContextManagerTest : public PlatformTest {
   PushNotificationAccountContextManagerTest() {
     test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         TestChromeBrowserState::Builder().Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        test_manager_.get());
 
     browser_state_info()->RemoveBrowserState(browser_state_name());
     manager_ = [[PushNotificationAccountContextManager alloc]

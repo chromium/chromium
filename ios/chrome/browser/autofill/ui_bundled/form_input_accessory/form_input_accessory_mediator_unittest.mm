@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -52,11 +51,8 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
         test_form_activity_tab_helper_(test_web_state_.get()) {}
 
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(test_cbs_builder).Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
+        TestChromeBrowserState::Builder().Build());
 
     GURL url("http://foo.com");
     test_web_state_->SetCurrentURL(url);

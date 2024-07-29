@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_consumer.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_item_identifier.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -42,8 +41,6 @@ class NotificationsOptInMediatorTest : public PlatformTest {
     ChromeBrowserState* browser_state =
         test_manager_->GetLastUsedBrowserStateForTesting();
 
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        test_manager_.get());
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state, std::make_unique<FakeAuthenticationServiceDelegate>());
     auth_service_ =

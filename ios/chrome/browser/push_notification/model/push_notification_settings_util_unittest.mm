@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -42,8 +41,6 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
     pref_service_ = test_chrome_browser_state.get()->GetPrefs();
     test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         std::move(test_chrome_browser_state));
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        test_manager_.get());
     browser_state_info()->RemoveBrowserState(browser_state_name);
     manager_ = [[PushNotificationAccountContextManager alloc]
         initWithChromeBrowserStateManager:test_manager_.get()];

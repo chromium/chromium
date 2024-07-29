@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -29,7 +30,6 @@
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -55,8 +55,6 @@ class TipsNotificationClientTest : public PlatformTest {
     SetupMockNotificationCenter();
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         TestChromeBrowserState::Builder().Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
     BrowserList* list = BrowserListFactory::GetForBrowserState(
         browser_state_manager_->GetLastUsedBrowserStateForTesting());
     mock_scene_state_ = OCMClassMock([SceneState class]);

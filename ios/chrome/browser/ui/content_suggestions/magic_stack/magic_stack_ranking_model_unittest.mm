@@ -66,7 +66,6 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -236,9 +235,6 @@ class MagicStackRankingModelTest : public PlatformTest {
 
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         std::move(test_cbs_builder).Build());
-
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
 
     browser_ = std::make_unique<TestBrowser>(GetBrowserState());
 

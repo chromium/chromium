@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/testing/protocol_fake.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -46,8 +45,7 @@ using testing::ReturnRef;
 class SettingsNavigationControllerTest : public PlatformTest {
  protected:
   SettingsNavigationControllerTest()
-      : scoped_browser_state_manager_(
-            std::make_unique<TestChromeBrowserStateManager>(base::FilePath())) {
+      : browser_state_manager_(base::FilePath()) {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -105,7 +103,7 @@ class SettingsNavigationControllerTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
+  TestChromeBrowserStateManager browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   id mockDelegate_;

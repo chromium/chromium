@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -37,9 +36,7 @@ const char kTestURL[] = "http://foo.bar";
 // Test fixture for testing NewTabPageTabHelper class.
 class NewTabPageTabHelperTest : public PlatformTest {
  protected:
-  NewTabPageTabHelperTest()
-      : scoped_browser_state_manager_(
-            std::make_unique<TestChromeBrowserStateManager>(base::FilePath())) {
+  NewTabPageTabHelperTest() : browser_state_manager_(base::FilePath()) {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
@@ -74,7 +71,7 @@ class NewTabPageTabHelperTest : public PlatformTest {
   id delegate_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
+  TestChromeBrowserStateManager browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<WebStateList> web_state_list_;
   FakeWebStateListDelegate web_state_list_delegate_;

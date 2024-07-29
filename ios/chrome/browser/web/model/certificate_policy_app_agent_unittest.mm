@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -53,12 +52,8 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     startup_information_mock_ =
         [OCMockObject mockForProtocol:@protocol(StartupInformation)];
 
-    TestChromeBrowserState::Builder test_cbs_builder;
-
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(test_cbs_builder).Build());
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
+        TestChromeBrowserState::Builder().Build());
 
     chrome_browser_state_ =
         browser_state_manager_->GetLastUsedBrowserStateForTesting();

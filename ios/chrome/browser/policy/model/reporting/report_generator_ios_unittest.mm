@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -39,25 +38,21 @@ const base::FilePath kProfilePath = base::FilePath("/fake/profile/default");
 class ReportGeneratorIOSTest : public PlatformTest {
  public:
   ReportGeneratorIOSTest() : generator_(&delegate_factory_) {
+    InitPolicyMap();
+
     TestChromeBrowserState::Builder builder;
     builder.SetPath(kProfilePath);
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    InitMockPolicyService();
     builder.SetPolicyConnector(
         std::make_unique<BrowserStatePolicyConnectorMock>(
-            std::move(policy_service_), &schema_registry_));
-    std::unique_ptr<TestChromeBrowserState> browser_state =
-        std::move(builder).Build();
+            CreateMockPolicyService(), &schema_registry_));
+    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        std::move(builder).Build());
 
-    InitPolicyMap();
-    scoped_browser_state_manager_ =
-        std::make_unique<IOSChromeScopedTestingChromeBrowserStateManager>(
-            std::make_unique<TestChromeBrowserStateManager>(
-                std::move(browser_state)));
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        GetTestChromeBrowserStateManager()->GetLastUsedBrowserStateForTesting(),
+        browser_state_manager_->GetLastUsedBrowserStateForTesting(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
   }
 
@@ -65,13 +60,15 @@ class ReportGeneratorIOSTest : public PlatformTest {
   ReportGeneratorIOSTest& operator=(const ReportGeneratorIOSTest&) = delete;
   ~ReportGeneratorIOSTest() override = default;
 
-  void InitMockPolicyService() {
-    policy_service_ = std::make_unique<policy::MockPolicyService>();
+  std::unique_ptr<policy::MockPolicyService> CreateMockPolicyService() {
+    auto policy_service = std::make_unique<policy::MockPolicyService>();
 
-    ON_CALL(*policy_service_.get(),
+    ON_CALL(*policy_service.get(),
             GetPolicies(::testing::Eq(policy::PolicyNamespace(
                 policy::POLICY_DOMAIN_CHROME, std::string()))))
         .WillByDefault(::testing::ReturnRef(policy_map_));
+
+    return policy_service;
   }
 
   void InitPolicyMap() {
@@ -109,29 +106,19 @@ class ReportGeneratorIOSTest : public PlatformTest {
         /*basic request size floor to KB*/ 0, 1);
   }
 
-  TestChromeBrowserStateManager* GetTestChromeBrowserStateManager() {
-    // A TestChromeBrowserStateManager is installed in the constructor
-    // via `scoped_browser_state_manager_`, so it is safe to downcast
-    // the ChromeBrowserStateManager.
-    return static_cast<TestChromeBrowserStateManager*>(
-        GetApplicationContext()->GetChromeBrowserStateManager());
-  }
-
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
 
   ReportingDelegateFactoryIOS delegate_factory_;
   ReportGenerator generator_;
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
-  std::unique_ptr<policy::MockPolicyService> policy_service_;
   policy::SchemaRegistry schema_registry_;
   policy::PolicyMap policy_map_;
 
-  std::unique_ptr<IOSChromeScopedTestingChromeBrowserStateManager>
-      scoped_browser_state_manager_;
 };
 
 TEST_F(ReportGeneratorIOSTest, GenerateBasicReport) {

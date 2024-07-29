@@ -51,9 +51,6 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         std::move(builder).Build());
 
-    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
-        browser_state_manager_.get());
-
     ChromeBrowserState* browser_state =
         browser_state_manager_->GetLastUsedBrowserStateForTesting();
 

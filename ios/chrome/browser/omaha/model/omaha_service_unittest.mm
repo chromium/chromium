@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/common/channel_info.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/omaha/omaha_api.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -49,9 +48,7 @@ class OmahaServiceTest : public PlatformTest {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
         need_update_(false),
-        scoped_browser_state_manager_(
-            std::make_unique<TestChromeBrowserStateManager>(
-                base::FilePath(kUserDataDir))) {
+        browser_state_manager_(base::FilePath(kUserDataDir)) {
     GetApplicationContext()->GetLocalState()->SetInt64(
         metrics::prefs::kInstallDate, kUnknownInstallDate);
     OmahaService::ClearPersistentStateForTests();
@@ -125,7 +122,7 @@ class OmahaServiceTest : public PlatformTest {
   bool scheduled_callback_used_ = false;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
+  TestChromeBrowserStateManager browser_state_manager_;
 };
 
 TEST_F(OmahaServiceTest, PingMessageTest) {
