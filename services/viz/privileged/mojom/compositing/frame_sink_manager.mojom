@@ -38,6 +38,9 @@ struct RootCompositorFrameSinkParams {
   [EnableIf=is_android]
   float refresh_rate;
 
+  [EnableIf=is_win]
+  bool set_present_duration_allowed = false;
+
   pending_associated_receiver<CompositorFrameSink> compositor_frame_sink;
   pending_remote<CompositorFrameSinkClient> compositor_frame_sink_client;
 
