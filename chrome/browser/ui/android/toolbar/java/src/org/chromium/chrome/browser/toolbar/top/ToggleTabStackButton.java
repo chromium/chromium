@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -127,5 +128,24 @@ public class ToggleTabStackButton extends ListMenuButton
         try (TraceEvent e = TraceEvent.scoped("ToggleTabStackButton.onLayout")) {
             super.onLayout(changed, left, top, right, bottom);
         }
+    }
+
+    /** Draws the button drawable for texture capture. */
+    void drawDrawable(Canvas canvas) {
+        int backgroundWidth = mTabSwitcherButtonDrawable.getIntrinsicWidth();
+        int backgroundHeight = mTabSwitcherButtonDrawable.getIntrinsicHeight();
+        int backgroundLeft =
+                (getWidth() - getPaddingLeft() - getPaddingRight() - backgroundWidth) / 2;
+        backgroundLeft += getPaddingLeft();
+        int backgroundTop =
+                (getHeight() - getPaddingTop() - getPaddingBottom() - backgroundHeight) / 2;
+        backgroundTop += getPaddingTop();
+        canvas.translate(backgroundLeft, backgroundTop);
+
+        int previousAlpha = mTabSwitcherButtonDrawable.getAlpha();
+        mTabSwitcherButtonDrawable.setAlpha(255);
+        mTabSwitcherButtonDrawable.draw(canvas);
+        // restore alpha.
+        getDrawable().setAlpha(previousAlpha);
     }
 }

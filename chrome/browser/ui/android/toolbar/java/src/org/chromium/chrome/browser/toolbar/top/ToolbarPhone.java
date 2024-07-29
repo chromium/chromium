@@ -150,8 +150,6 @@ public class ToolbarPhone extends ToolbarLayout
 
     private boolean mForceTextureCapture;
 
-    private TabSwitcherDrawable mTabSwitcherAnimationTabStackDrawable;
-
     @ViewDebug.ExportedProperty(category = "chrome")
     protected boolean mUrlFocusChangeInProgress;
 
@@ -1446,36 +1444,12 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         // Draw the tab stack button and associated text if necessary.
-        if (mTabSwitcherAnimationTabStackDrawable != null
-                && mToggleTabStackButton != null
-                && mUrlExpansionFraction != 1f) {
+        if (mToggleTabStackButton != null && mUrlExpansionFraction != 1f) {
             // Draw the tab stack button image.
             canvas.save();
             ViewUtils.translateCanvasToView(
                     mToolbarButtonsContainer, mToggleTabStackButton, canvas);
-
-            int backgroundWidth = mToggleTabStackButton.getDrawable().getIntrinsicWidth();
-            int backgroundHeight = mToggleTabStackButton.getDrawable().getIntrinsicHeight();
-            int backgroundLeft =
-                    (mToggleTabStackButton.getWidth()
-                                    - mToggleTabStackButton.getPaddingLeft()
-                                    - mToggleTabStackButton.getPaddingRight()
-                                    - backgroundWidth)
-                            / 2;
-            backgroundLeft += mToggleTabStackButton.getPaddingLeft();
-            int backgroundTop =
-                    (mToggleTabStackButton.getHeight()
-                                    - mToggleTabStackButton.getPaddingTop()
-                                    - mToggleTabStackButton.getPaddingBottom()
-                                    - backgroundHeight)
-                            / 2;
-            backgroundTop += mToggleTabStackButton.getPaddingTop();
-            canvas.translate(backgroundLeft, backgroundTop);
-
-            mTabSwitcherAnimationTabStackDrawable.setBounds(
-                    mToggleTabStackButton.getDrawable().getBounds());
-            mTabSwitcherAnimationTabStackDrawable.setAlpha(rgbAlpha);
-            mTabSwitcherAnimationTabStackDrawable.draw(canvas);
+            mToggleTabStackButton.drawDrawable(canvas);
             canvas.restore();
         }
 
@@ -1739,11 +1713,13 @@ public class ToolbarPhone extends ToolbarLayout
 
             mForceTextureCapture = mPhoneCaptureStateToken.getTint() != getTint().getDefaultColor();
 
-            if (mTabSwitcherAnimationTabStackDrawable != null && mToggleTabStackButton != null) {
+            if (mToggleTabStackButton != null) {
                 mForceTextureCapture =
                         mForceTextureCapture
                                 || mPhoneCaptureStateToken.getTabCount()
-                                        != mTabSwitcherAnimationTabStackDrawable.getTabCount();
+                                        != ((TabSwitcherDrawable)
+                                                        mToggleTabStackButton.getDrawable())
+                                                .getTabCount();
             }
 
             return mForceTextureCapture;
@@ -1836,9 +1812,6 @@ public class ToolbarPhone extends ToolbarLayout
 
         if (mToggleTabStackButton != null) {
             mToggleTabStackButton.setBrandedColorScheme(brandedColorScheme);
-            if (mTabSwitcherAnimationTabStackDrawable != null) {
-                mTabSwitcherAnimationTabStackDrawable.setTint(tint);
-            }
         }
 
         if (mOptionalButtonCoordinator != null) {
@@ -2261,24 +2234,12 @@ public class ToolbarPhone extends ToolbarLayout
 
     private void onTabCountChanged(int numberOfTabs) {
         mHomeButton.setEnabled(true);
-        if (mToggleTabStackButton == null) return;
-
-        @BrandedColorScheme
-        int overlayTabStackDrawableScheme =
-                OmniboxResourceProvider.getBrandedColorScheme(
-                        getContext(), isIncognito(), getTabThemeColor());
-        if (mTabSwitcherAnimationTabStackDrawable == null
-                || mOverlayTabStackDrawableScheme != overlayTabStackDrawableScheme) {
-            mTabSwitcherAnimationTabStackDrawable =
-                    TabSwitcherDrawable.createTabSwitcherDrawable(
-                            getContext(), overlayTabStackDrawableScheme);
-            int[] stateSet = {android.R.attr.state_enabled};
-            mTabSwitcherAnimationTabStackDrawable.setState(stateSet);
-            mOverlayTabStackDrawableScheme = overlayTabStackDrawableScheme;
-        }
-
-        if (mTabSwitcherAnimationTabStackDrawable != null) {
-            mTabSwitcherAnimationTabStackDrawable.updateForTabCount(numberOfTabs, isIncognito());
+        if (mToggleTabStackButton != null) {
+            @BrandedColorScheme
+            int overlayTabStackDrawableScheme =
+                    OmniboxResourceProvider.getBrandedColorScheme(
+                            getContext(), isIncognito(), getTabThemeColor());
+            mToggleTabStackButton.setBrandedColorScheme(overlayTabStackDrawableScheme);
         }
     }
 
