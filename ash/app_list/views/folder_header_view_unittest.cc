@@ -21,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -30,14 +29,9 @@
 namespace ash {
 
 // Parameterized by whether kJelly feature is enabled.
-class FolderHeaderViewTest : public AshTestBase,
-                             public testing::WithParamInterface<bool> {
+class FolderHeaderViewTest : public AshTestBase {
  public:
-  FolderHeaderViewTest() {
-    scoped_feature_list_.InitWithFeatureState(chromeos::features::kJelly,
-                                              IsJellyEnabled());
-  }
-
+  FolderHeaderViewTest() = default;
   FolderHeaderViewTest(const FolderHeaderViewTest&) = delete;
   FolderHeaderViewTest& operator=(const FolderHeaderViewTest&) = delete;
 
@@ -50,8 +44,6 @@ class FolderHeaderViewTest : public AshTestBase,
     // `folder_header_view_` is set when the folder is opened. This allows test
     // cases to configure the model before opening the folder.
   }
-
-  bool IsJellyEnabled() const { return GetParam(); }
 
   // Assumes the folder is the first item in the grid.
   void ShowAppListAndOpenFolder() {
@@ -97,9 +89,7 @@ class FolderHeaderViewTest : public AshTestBase,
   raw_ptr<FolderHeaderView, DanglingUntriaged> folder_header_view_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(Jelly, FolderHeaderViewTest, testing::Bool());
-
-TEST_P(FolderHeaderViewTest, WhitespaceCollapsedWhenFolderNameViewLosesFocus) {
+TEST_F(FolderHeaderViewTest, WhitespaceCollapsedWhenFolderNameViewLosesFocus) {
   AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
   ShowAppListAndOpenFolder();
   views::View* name_view = folder_header_view_->GetFolderNameViewForTest();
@@ -113,7 +103,7 @@ TEST_P(FolderHeaderViewTest, WhitespaceCollapsedWhenFolderNameViewLosesFocus) {
   EXPECT_EQ("N A", folder_item->name());
 }
 
-TEST_P(FolderHeaderViewTest, MaxFolderNameLength) {
+TEST_F(FolderHeaderViewTest, MaxFolderNameLength) {
   // Creating a folder with empty folder name.
   AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
   ShowAppListAndOpenFolder();
@@ -145,7 +135,7 @@ TEST_P(FolderHeaderViewTest, MaxFolderNameLength) {
   EXPECT_EQ(max_len_name, folder_item->name());
 }
 
-TEST_P(FolderHeaderViewTest, OemFolderNameNotEditable) {
+TEST_F(FolderHeaderViewTest, OemFolderNameNotEditable) {
   model_->CreateAndAddOemFolder();
   ShowAppListAndOpenFolder();
   EXPECT_EQ("", GetFolderNameFromUI());
@@ -184,7 +174,7 @@ void SendPress(EventHandler* handler, const gfx::Point& location) {
 
 // Tests that when folder name is small, the folder name textfield is triggered
 // by only tap when on the textfieldd or near it to the left/right.
-TEST_P(FolderHeaderViewTest, TriggerFolderRenameAfterTappingNearFolderName) {
+TEST_F(FolderHeaderViewTest, TriggerFolderRenameAfterTappingNearFolderName) {
   // Create a folder with a small name.
   model_->CreateAndPopulateFolderWithApps(2);
   ShowAppListAndOpenFolder();
@@ -221,7 +211,7 @@ TEST_P(FolderHeaderViewTest, TriggerFolderRenameAfterTappingNearFolderName) {
 }
 
 // Test that hitting the return key sets the folder name.
-TEST_P(FolderHeaderViewTest, SetFolderNameOnReturn) {
+TEST_F(FolderHeaderViewTest, SetFolderNameOnReturn) {
   // Create a folder with empty folder name.
   AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
   ShowAppListAndOpenFolder();
@@ -246,7 +236,7 @@ TEST_P(FolderHeaderViewTest, SetFolderNameOnReturn) {
 }
 
 // Test that hitting the escape key reverts the folder name.
-TEST_P(FolderHeaderViewTest, RevertFolderNameOnEscape) {
+TEST_F(FolderHeaderViewTest, RevertFolderNameOnEscape) {
   // Create a folder with empty folder name.
   AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
   ShowAppListAndOpenFolder();

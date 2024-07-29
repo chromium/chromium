@@ -138,16 +138,11 @@ class BackgroundAnimation : public AppListFolderView::Animation,
                               : folder_view_->folder_item_icon_bounds();
     to_rect -= animating_view_->bounds().OffsetFromOrigin();
     const views::Widget* app_list_widget = folder_view_->GetWidget();
-    const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
     const SkColor background_color =
         app_list_widget->GetColorProvider()->GetColor(
-            is_jelly_enabled ? static_cast<ui::ColorId>(
-                                   cros_tokens::kCrosSysSystemBaseElevated)
-                             : kColorAshShieldAndBase80);
+            cros_tokens::kCrosSysSystemBaseElevated);
     const SkColor bubble_color = app_list_widget->GetColorProvider()->GetColor(
-        is_jelly_enabled
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
-            : kColorAshControlBackgroundColorInactive);
+        cros_tokens::kCrosSysSystemOnBase);
     const SkColor from_color = show_ ? bubble_color : background_color;
     const SkColor to_color = show_ ? background_color : bubble_color;
 
@@ -662,8 +657,6 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   DCHECK(view_delegate_);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  const bool is_jelly_enabled = chromeos::features::IsJellyrollEnabled();
-
   // The background's corner radius cannot be changed in the same layer of the
   // contents container using layer animation, so use another layer to perform
   // such changes.
@@ -679,12 +672,9 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   background_view_->layer()->SetIsFastRoundedCorner(true);
   background_view_->SetBorder(std::make_unique<views::HighlightBorder>(
       kFolderBackgroundRadius,
-      is_jelly_enabled ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-                       : views::HighlightBorder::Type::kHighlightBorder1));
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
   background_view_->SetBackground(views::CreateThemedSolidBackground(
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
-          : kColorAshShieldAndBase80));
+      cros_tokens::kCrosSysSystemBaseElevated));
   background_view_->SetVisible(false);
 
   animating_background_ = AddChildView(std::make_unique<views::View>());

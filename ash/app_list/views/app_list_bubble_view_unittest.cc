@@ -421,8 +421,7 @@ TEST_F(AppListBubbleViewTest, ShowAnimationDestroysAndRestoresShadow) {
 
   // Shadow is restored - when kJelly is enabled, no shadow is expected, for
   // consistency with bubbles in system tray area.
-  EXPECT_EQ(!chromeos::features::IsJellyEnabled(),
-            !!app_list_bubble_view->view_shadow_for_test());
+  EXPECT_FALSE(app_list_bubble_view->view_shadow_for_test());
 }
 
 TEST_F(AppListBubbleViewTest, ShowAnimationRecordsSmoothnessHistogram) {

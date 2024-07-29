@@ -230,10 +230,7 @@ class DotView : public views::View {
   METADATA_HEADER(DotView, views::View)
 
  public:
-  DotView()
-      : color_id_(chromeos::features::IsJellyEnabled()
-                      ? static_cast<ui::ColorId>(cros_tokens::kCrosSysTertiary)
-                      : kColorAshIconColorProminent) {
+  DotView() : color_id_(cros_tokens::kCrosSysTertiary) {
     // The dot is not clickable.
     SetCanProcessEventsWithinSubtree(false);
   }
@@ -314,7 +311,6 @@ class AppListItemView::FolderIconView : public views::View,
                  const AppListConfig* config,
                  float icon_scale)
       : folder_item_(folder_item),
-        jelly_style_(chromeos::features::IsJellyEnabled()),
         config_(config),
         icon_scale_(icon_scale) {
     SetPaintToLayer();
@@ -376,10 +372,7 @@ class AppListItemView::FolderIconView : public views::View,
     // Draw the background circle of the icon.
     SkCanvas canvas(bitmap);
     SkPaint background_circle;
-    const ui::ColorId color_id =
-        jelly_style_
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
-            : kColorAshControlBackgroundColorInactive;
+    const ui::ColorId color_id = cros_tokens::kCrosSysSystemOnBase;
     background_circle.setColor(GetColorProvider()->GetColor(color_id));
     background_circle.setStyle(SkPaint::kFill_Style);
     background_circle.setAntiAlias(true);
@@ -441,9 +434,7 @@ class AppListItemView::FolderIconView : public views::View,
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
-    flags.setColor(GetColorProvider()->GetColor(
-        jelly_style_ ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)
-                     : kColorAshFolderItemCountBackgroundColor));
+    flags.setColor(GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimary));
     canvas->DrawCircle(draw_center, counter_radius, flags);
 
     // Paint the number of apps that are not showing in the folder icon.
@@ -451,11 +442,8 @@ class AppListItemView::FolderIconView : public views::View,
     gfx::FontList font_list = config_->item_counter_in_folder_icon_font();
     canvas->DrawStringRectWithFlags(
         text, font_list,
-        GetColorProvider()->GetColor(
-            jelly_style_
-                ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnPrimary)
-                : kColorAshInvertedTextColorPrimary),
-        bounds, gfx::Canvas::TEXT_ALIGN_CENTER);
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPrimary), bounds,
+        gfx::Canvas::TEXT_ALIGN_CENTER);
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
@@ -527,9 +515,6 @@ class AppListItemView::FolderIconView : public views::View,
 
   // The folder item this icon view paints.
   raw_ptr<AppListFolderItem> folder_item_;
-
-  // Whether Jelly style feature is enabled.
-  const bool jelly_style_;
 
   raw_ptr<const AppListConfig, DanglingUntriaged> config_;
 
@@ -624,14 +609,10 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
     UpdateProgressIndicatorState();
   }
 
-  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
-  StyleUtil::SetUpInkDropForButton(
-      this, gfx::Insets(),
-      /*highlight_on_hover=*/false,
-      /*highlight_on_focus=*/false,
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysRippleNeutralOnSubtle)
-          : gfx::kPlaceholderColor);
+  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                   /*highlight_on_hover=*/false,
+                                   /*highlight_on_focus=*/false,
+                                   cros_tokens::kCrosSysRippleNeutralOnSubtle);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
 
   SetHideInkDropWhenShowingContextMenu(false);
@@ -641,9 +622,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   views::FocusRing::Install(this);
   views::FocusRing* const focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
-  focus_ring->SetColorId(is_jelly_enabled ? static_cast<ui::ColorId>(
-                                                cros_tokens::kCrosSysFocusRing)
-                                          : ui::kColorAshFocusRing);
+  focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
   focus_ring->SetHasFocusPredicate(base::BindRepeating([](const View* view) {
     const auto* v = views::AsViewClass<AppListItemView>(view);
     CHECK(v);
@@ -672,17 +651,12 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   title->SetBackgroundColor(SK_ColorTRANSPARENT);
   title->SetHandlesTooltips(false);
   title->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  if (is_jelly_enabled) {
-    TypographyProvider::Get()->StyleLabel(
-        app_list_config_->type() == AppListConfigType::kDense
-            ? TypographyToken::kCrosAnnotation1
-            : TypographyToken::kCrosButton2,
-        *title);
-    title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  } else {
-    title->SetFontList(app_list_config_->app_title_font());
-    title->SetEnabledColorId(kColorAshTextColorPrimary);
-  }
+  TypographyProvider::Get()->StyleLabel(
+      app_list_config_->type() == AppListConfigType::kDense
+          ? TypographyToken::kCrosAnnotation1
+          : TypographyToken::kCrosButton2,
+      *title);
+  title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 
   icon_background_ = AddChildView(std::make_unique<views::View>());
   icon_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
@@ -2381,7 +2355,7 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
       .SetRoundedCorners(background_layer,
                          gfx::RoundedCornersF(corner_radius * icon_scale_),
                          animation_tween_type);
-  if (chromeos::features::IsJellyEnabled() && GetWidget()) {
+  if (GetWidget()) {
     builder.GetCurrentSequence().SetColor(
         background_layer,
         GetColorProvider()->GetColor(GetBackgroundLayerColorId()),
@@ -2390,10 +2364,6 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
 }
 
 ui::ColorId AppListItemView::GetBackgroundLayerColorId() const {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return kColorAshControlBackgroundColorInactive;
-  }
-
   if (is_icon_extended_) {
     return cros_tokens::kCrosSysRippleNeutralOnSubtle;
   }

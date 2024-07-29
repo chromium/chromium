@@ -156,39 +156,30 @@ ui::ColorId GetLabelColorId(SearchResultView::LabelType label_type,
     }
   }
 
-  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
   switch (color_tag) {
     case SearchResult::Tag::NONE:
       ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::DIM:
       ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::MATCH:
-      if (is_jelly_enabled) {
-        switch (label_type) {
-          case SearchResultView::LabelType::kBigTitle:
-          case SearchResultView::LabelType::kBigTitleSuperscript:
-          case SearchResultView::LabelType::kTitle:
-            return cros_tokens::kCrosSysOnSurface;
-          case SearchResultView::LabelType::kDetails:
-            return cros_tokens::kCrosSysOnSurfaceVariant;
-          case SearchResultView::LabelType::kKeyboardShortcut:
-            return cros_tokens::kCrosSysPrimary;
-        }
+      switch (label_type) {
+        case SearchResultView::LabelType::kBigTitle:
+        case SearchResultView::LabelType::kBigTitleSuperscript:
+        case SearchResultView::LabelType::kTitle:
+          return cros_tokens::kCrosSysOnSurface;
+        case SearchResultView::LabelType::kDetails:
+          return cros_tokens::kCrosSysOnSurfaceVariant;
+        case SearchResultView::LabelType::kKeyboardShortcut:
+          return cros_tokens::kCrosSysPrimary;
       }
       return IsTitleLabel(label_type) ? kColorAshTextColorPrimary
                                       : kColorAshTextColorSecondary;
     case SearchResult::Tag::URL:
-      return is_jelly_enabled
-                 ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)
-                 : kColorAshTextColorURL;
+      return cros_tokens::kCrosSysPrimary;
     case SearchResult::Tag::GREEN:
-      return is_jelly_enabled
-                 ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPositive)
-                 : kColorAshTextColorPositive;
+      return cros_tokens::kCrosSysPositive;
     case SearchResult::Tag::RED:
-      return is_jelly_enabled
-                 ? static_cast<ui::ColorId>(cros_tokens::kCrosSysError)
-                 : kColorAshTextColorAlert;
+      return cros_tokens::kCrosSysError;
   }
 }
 
@@ -196,10 +187,6 @@ std::optional<TypographyToken> GetTypographyToken(
     SearchResultView::LabelType label_type,
     bool is_match,
     bool is_inline_detail) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return std::nullopt;
-  }
-
   if (is_match) {
     return IsTitleLabel(label_type) ? TypographyToken::kCrosButton1
                                     : TypographyToken::kCrosBody1;
@@ -1203,11 +1190,6 @@ void SearchResultView::UpdateRating() {
 
 void SearchResultView::StyleLabel(views::Label* label,
                                   const SearchResult::Tags& tags) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    // Reset font weight styling for label.
-    label->ApplyBaselineTextStyle();
-  }
-
   for (const auto& tag : tags) {
     bool has_match_tag = (tag.styles & SearchResult::Tag::MATCH);
     if (has_match_tag) {
@@ -1441,16 +1423,10 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
 
   gfx::Rect content_rect(rect);
 
-  bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
-
-  const SkColor focus_bar_color = GetColorProvider()->GetColor(
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)
-          : ui::kColorAshFocusRing);
-  const SkColor highlight_color = GetColorProvider()->GetColor(
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysHoverOnSubtle)
-          : kColorAshHighlightColorHover);
+  const SkColor focus_bar_color =
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysFocusRing);
+  const SkColor highlight_color =
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysHoverOnSubtle);
   switch (view_type_) {
     case SearchResultViewType::kDefault:
       if (selected() && !actions_view()->HasSelectedAction()) {

@@ -130,7 +130,6 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::LayerOwner,
  public:
   explicit BackgroundCardLayer(PagedAppsGridView* paged_apps_grid_view)
       : LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)),
-        is_jelly_enabled_(chromeos::features::IsJellyEnabled()),
         paged_apps_grid_view_(paged_apps_grid_view) {
     layer()->SetFillsBoundsOpaquely(false);
     layer()->set_delegate(this);
@@ -162,37 +161,17 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::LayerOwner,
     // Draw a solid rounded rect as the background.
     cc::PaintFlags flags;
     if (is_active_page_) {
-      if (is_jelly_enabled_) {
-        flags.setColor(color_provider->GetColor(
-            cros_tokens::kCrosSysRippleNeutralOnSubtle));
-      } else {
-        const auto base_color_and_opacity =
-            ColorProvider::Get()->GetInkDropBaseColorAndOpacity();
-        flags.setColor(SkColorSetA(base_color_and_opacity.first,
-                                   base_color_and_opacity.second * 255));
-      }
+      flags.setColor(
+          color_provider->GetColor(cros_tokens::kCrosSysRippleNeutralOnSubtle));
     } else {
-      if (is_jelly_enabled_) {
-        flags.setColor(
-            color_provider->GetColor(cros_tokens::kCrosSysHoverOnSubtle));
-      } else {
-        flags.setColor(
-            color_provider->GetColor(kColorAshControlBackgroundColorInactive));
-      }
+      flags.setColor(
+          color_provider->GetColor(cros_tokens::kCrosSysHoverOnSubtle));
     }
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawRoundRect(card_size, kBackgroundCardCornerRadius, flags);
 
     if (is_active_page_) {
-      if (is_jelly_enabled_) {
-        flags.setColor(color_provider->GetColor(cros_tokens::kCrosSysOutline));
-      } else {
-        // Draw a border around the active page.
-        const bool dark_mode =
-            DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
-        flags.setColor(dark_mode ? SK_ColorWHITE : SK_ColorBLACK);
-        flags.setAlphaf(dark_mode ? 0.16f : 0.12f);
-      }
+      flags.setColor(color_provider->GetColor(cros_tokens::kCrosSysOutline));
       flags.setStyle(cc::PaintFlags::kStroke_Style);
       flags.setStrokeWidth(kBackgroundCardBorderStrokeWidth);
       flags.setAntiAlias(true);
@@ -206,7 +185,6 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::LayerOwner,
 
   bool is_active_page_ = false;
 
-  const bool is_jelly_enabled_;
   const raw_ptr<PagedAppsGridView> paged_apps_grid_view_;
 };
 
