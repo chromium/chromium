@@ -22,7 +22,7 @@ class BrowserFrameViewLayoutLinux : public OpaqueBrowserFrameViewLayout {
 
   ~BrowserFrameViewLayoutLinux() override;
 
-  gfx::Insets MirroredFrameBorderInsets() const;
+  gfx::Insets RestoredMirroredFrameBorderInsets() const;
 
   gfx::Insets GetInputInsets() const;
 

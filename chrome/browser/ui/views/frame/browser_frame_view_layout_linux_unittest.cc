@@ -67,7 +67,7 @@ TEST_F(BrowserFrameViewLayoutLinuxTest, FrameInsets) {
 
   for (const bool tiled : {false, true}) {
     delegate.tiled_ = tiled;
-    const auto normal_insets = layout.MirroredFrameBorderInsets();
+    const auto normal_insets = layout.RestoredMirroredFrameBorderInsets();
     if (tiled) {
       EXPECT_EQ(normal_insets.left(), input_insets.left());
       EXPECT_EQ(normal_insets.right(), input_insets.right());
