@@ -27,7 +27,7 @@ import type {HeaderElement} from './header.js';
 import type {NewColumnSelectorElement} from './new_column_selector.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
-import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
+import type {ProductInfo, ProductSpecifications, ProductSpecificationsDescriptionText, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
 import {UserFeedback} from './shopping_service.mojom-webui.js';
 import type {TableElement} from './table.js';
 import type {UrlListEntry} from './utils.js';
@@ -45,7 +45,7 @@ interface LoadingState {
 interface ProductDetail {
   title: string;
   description: string;
-  summary: string;
+  summary: ProductSpecificationsDescriptionText[];
 }
 
 export interface TableColumn {
@@ -75,14 +75,14 @@ function getProductDetails(
   productDetails.push({
     title: loadTimeData.getString('priceRowTitle'),
     description: (productInfo?.currentPrice || ''),
-    summary: '',
+    summary: [],
   });
 
   productSpecs.productDimensionMap.forEach((title: string, key: bigint) => {
     if (!product) {
       // Fill missing product details with strings to ensure uniform table row
       // count.
-      productDetails.push({title, description: '', summary: ''});
+      productDetails.push({title, description: '', summary: []});
     } else {
       const value = product.productDimensionValues.get(key);
       const description = (value?.specificationDescriptions || [])
@@ -91,10 +91,7 @@ function getProductDetails(
                               .map(descText => descText.text)
                               .join(', ') ||
           '';
-      const summary = (value?.summary || [])
-                          .map(summary => summary?.text || '')
-                          .join(' ') ||
-          '';
+      const summary = value?.summary || [];
       productDetails.push({title, description, summary});
     }
   });

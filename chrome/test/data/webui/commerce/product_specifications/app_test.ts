@@ -266,7 +266,7 @@ suite('AppTest', () => {
       summary: [{
         text: 'summary',
         urls: [{
-          url: {url: ''},
+          url: {url: 'http://example.com/citation'},
           title: '',
           faviconUrl: {url: ''},
           thumbnailUrl: {url: ''},
@@ -347,8 +347,20 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', description: '$100', summary: ''},
-              {title: detailTitle, description: 'bar, baz', summary: 'summary'},
+              {title: 'price', description: '$100', summary: []},
+              {
+                title: detailTitle,
+                description: 'bar, baz',
+                summary: [{
+                  text: 'summary',
+                  urls: [{
+                    url: {url: 'http://example.com/citation'},
+                    title: '',
+                    faviconUrl: {url: ''},
+                    thumbnailUrl: {url: ''},
+                  }],
+                }],
+              },
             ],
           },
           {
@@ -363,8 +375,8 @@ suite('AppTest', () => {
             // `productDetails` should have empty strings for `description` and
             // summary`.
             productDetails: [
-              {title: 'price', description: '', summary: ''},
-              {title: detailTitle, description: '', summary: ''},
+              {title: 'price', description: '', summary: []},
+              {title: detailTitle, description: '', summary: []},
             ],
           },
         ],
@@ -433,8 +445,8 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', description: '', summary: ''},
-              {title: detailTitle, description: 'bar', summary: ''},
+              {title: 'price', description: '', summary: []},
+              {title: detailTitle, description: 'bar', summary: []},
             ],
           },
         ],
@@ -548,8 +560,8 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', description: '', summary: ''},
-              {title: detailTitle, description: 'desc 1', summary: ''},
+              {title: 'price', description: '', summary: []},
+              {title: detailTitle, description: 'desc 1', summary: []},
             ],
           },
           {
@@ -559,8 +571,8 @@ suite('AppTest', () => {
               imageUrl: info2.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', description: '', summary: ''},
-              {title: detailTitle, description: 'desc 2', summary: ''},
+              {title: 'price', description: '', summary: []},
+              {title: detailTitle, description: 'desc 2', summary: []},
             ],
           },
         ],
@@ -702,8 +714,8 @@ suite('AppTest', () => {
               imageUrl: info2.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', description: '', summary: ''},
-              {title: rowTitle, description: 'desc 2', summary: ''},
+              {title: 'price', description: '', summary: []},
+              {title: rowTitle, description: 'desc 2', summary: []},
             ],
           },
           {
@@ -713,8 +725,8 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', description: '', summary: ''},
-              {title: rowTitle, description: 'desc 1', summary: ''},
+              {title: 'price', description: '', summary: []},
+              {title: rowTitle, description: 'desc 1', summary: []},
             ],
           },
         ],

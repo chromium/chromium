@@ -13,7 +13,15 @@ export function getAbbreviatedUrl(urlString: string) {
   const url = new URL(urlString);
   // Chrome URLs should all have been filtered out.
   assert(url.protocol !== 'chrome:');
-  return url.hostname;
+
+  let abbreviatedUrl = url.host;
+
+  // We intentionally only check the start of the host for "www." as that string
+  // can appear in other parts of the name.
+  if (abbreviatedUrl.startsWith('www.')) {
+    abbreviatedUrl = abbreviatedUrl.substring(4);
+  }
+  return abbreviatedUrl;
 }
 
 /**
