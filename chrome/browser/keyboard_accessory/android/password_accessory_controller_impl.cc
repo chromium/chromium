@@ -287,6 +287,7 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
       data.set_option_toggle(option_toggle);
     }
   }
+  // TODO: crbug.com/327838324 - Populate the plus address section.
   return data;
 }
 

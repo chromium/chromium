@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabViewBinder.ElementViewHolder;
+import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetViewBinder.PlusAddressInfoViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.utils.InsecureFillingDialogUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.ListModel;
@@ -40,6 +41,8 @@ class PasswordAccessorySheetViewBinder {
             @AccessorySheetDataPiece.Type int viewType,
             UiConfiguration uiConfiguration) {
         switch (viewType) {
+            case AccessorySheetDataPiece.Type.PLUS_ADDRESS_SECTION:
+                return new PlusAddressInfoViewHolder(parent, uiConfiguration.faviconHelper);
             case AccessorySheetDataPiece.Type.PASSKEY_SECTION:
                 return new PasskeyChipViewHolder(parent);
             case AccessorySheetDataPiece.Type.PASSWORD_INFO:
