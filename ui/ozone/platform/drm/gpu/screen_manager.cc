@@ -163,7 +163,7 @@ std::string GenerateConfigurationLogForController(
     if (param.mode) {
       const std::string size = ModeSize(*(param.mode.get())).ToString();
       const std::string refresh_rate =
-          base::NumberToString(param.mode->vrefresh);
+          base::NumberToString(ModeRefreshRate(*param.mode));
       mode = base::StrCat({size, "@", refresh_rate});
     } else {
       mode = "Disabled";
@@ -310,7 +310,8 @@ bool ScreenManager::ConfigureDisplayControllers(
   for (const auto& configs_on_drm : displays_for_drm_devices) {
     const std::vector<ControllerConfigParams>& drm_controllers_params =
         configs_on_drm.second;
-    VLOG(1) << "DRM " << (commit_modeset ? "configuring: " : "testing: ")
+    VLOG(1) << "DRM " << (is_seamless_modeset ? "seamlessly " : "")
+            << (commit_modeset ? "configuring: " : "testing: ")
             << GenerateConfigurationLogForController(drm_controllers_params);
 
     if (modeset_flags.Has(display::ModesetFlag::kTestModeset)) {
