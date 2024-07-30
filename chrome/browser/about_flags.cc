@@ -11737,19 +11737,6 @@ const FeatureEntry kFeatureEntries[] = {
          syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"discard-ring-improvements",
-     flag_descriptions::kDiscardRingImprovementsName,
-     flag_descriptions::kDiscardRingImprovementsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         performance_manager::features::kDiscardRingImprovements)},
-    {"memory-saver-aggressiveness",
-     flag_descriptions::kMemorySaverAggressivenessName,
-     flag_descriptions::kMemorySaverAggressivenessDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         performance_manager::features::kMemorySaverModeAggressiveness)},
-#endif
-
     {"optimization-guide-enable-dogfood-logging",
      flag_descriptions::kOptimizationGuideEnableDogfoodLoggingName,
      flag_descriptions::kOptimizationGuideEnableDogfoodLoggingDescription,
