@@ -160,9 +160,9 @@ TEST_F(PlusAddressHttpClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
   EXPECT_EQ(last_request().url, kFullReserveEndpoint);
   EXPECT_EQ(last_request().method, net::HttpRequestHeaders::kPutMethod);
   // Validate the Authorization header includes "myToken".
-  std::string authorization_value;
-  last_request().headers.GetHeader("Authorization", &authorization_value);
-  EXPECT_EQ(authorization_value, "Bearer " + kToken);
+  EXPECT_EQ(
+      last_request().headers.GetHeader("Authorization").value_or(std::string()),
+      "Bearer " + kToken);
 
   // Validate the request payload.
   ASSERT_NE(last_request().request_body, nullptr);
@@ -193,9 +193,9 @@ TEST_F(PlusAddressHttpClientRequests,
   EXPECT_EQ(last_request().url, kFullReserveEndpoint);
   EXPECT_EQ(last_request().method, net::HttpRequestHeaders::kPutMethod);
   // Validate the Authorization header includes "myToken".
-  std::string authorization_value;
-  last_request().headers.GetHeader("Authorization", &authorization_value);
-  EXPECT_EQ(authorization_value, "Bearer " + kToken);
+  EXPECT_EQ(
+      last_request().headers.GetHeader("Authorization").value_or(std::string()),
+      "Bearer " + kToken);
 
   // Validate the request payload.
   ASSERT_NE(last_request().request_body, nullptr);
@@ -227,9 +227,9 @@ TEST_F(PlusAddressHttpClientRequests, ConfirmPlusAddress_IssuesCorrectRequest) {
   EXPECT_EQ(last_request().url, kFullCreateEndpoint);
   EXPECT_EQ(last_request().method, net::HttpRequestHeaders::kPutMethod);
   // Validate the Authorization header includes "myToken".
-  std::string authorization_value;
-  last_request().headers.GetHeader("Authorization", &authorization_value);
-  EXPECT_EQ(authorization_value, "Bearer " + kToken);
+  EXPECT_EQ(
+      last_request().headers.GetHeader("Authorization").value_or(std::string()),
+      "Bearer " + kToken);
 
   // Validate the request payload.
   ASSERT_NE(last_request().request_body, nullptr);
@@ -457,9 +457,9 @@ TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddressesV1_IssuesCorrectRequest
   EXPECT_EQ(last_request().url, kFullProfileEndpoint);
   EXPECT_EQ(last_request().method, net::HttpRequestHeaders::kGetMethod);
   // Validate the Authorization header includes "myToken".
-  std::string authorization_value;
-  last_request().headers.GetHeader("Authorization", &authorization_value);
-  EXPECT_EQ(authorization_value, "Bearer " + kToken);
+  EXPECT_EQ(
+      last_request().headers.GetHeader("Authorization").value_or(std::string()),
+      "Bearer " + kToken);
 }
 
 TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddresses_RequestsOauthToken) {
