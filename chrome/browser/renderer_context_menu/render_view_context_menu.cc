@@ -2062,7 +2062,7 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
-        vector_icons::kSearchIcon;
+        vector_icons::kSearchChromeRefreshIcon;
 #endif
     menu_model_.AddItemWithStringIdAndIcon(
         search_for_image_idc, IDS_CONTENT_CONTEXT_LENS_OVERLAY,
@@ -2159,7 +2159,7 @@ void RenderViewContextMenu::AppendVideoItems() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
-          vector_icons::kSearchIcon;
+          vector_icons::kSearchChromeRefreshIcon;
 #endif
       menu_model_.AddItemWithStringIdAndIcon(
           search_for_video_frame_idc, IDS_CONTENT_CONTEXT_LENS_OVERLAY,
@@ -2755,7 +2755,7 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
-        vector_icons::kSearchIcon;
+        vector_icons::kSearchChromeRefreshIcon;
 #endif
     menu_model_.AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,

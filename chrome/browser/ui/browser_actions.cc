@@ -199,7 +199,7 @@ void BrowserActions::InitializeBrowserActions() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
-        vector_icons::kSearchIcon;
+        vector_icons::kSearchChromeRefreshIcon;
 #endif
     root_action_item_->AddChild(
         actions::ActionItem::Builder(callback)
@@ -224,7 +224,7 @@ void BrowserActions::InitializeBrowserActions() {
               vector_icons::
                   kGoogleSearchCompanionMonochromeLogoChromeRefreshIcon,
 #else
-              vector_icons::kSearchIcon,
+              vector_icons::kSearchChromeRefreshIcon,
 #endif
               kActionSidePanelShowSearchCompanion, browser, true)
               .Build());

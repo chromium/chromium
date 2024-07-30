@@ -207,7 +207,7 @@ const gfx::VectorIcon& LensOverlayPageActionIconView::GetVectorIcon() const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
-  return vector_icons::kSearchIcon;
+  return vector_icons::kSearchChromeRefreshIcon;
 #endif
 }
 
