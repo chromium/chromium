@@ -45,9 +45,6 @@ static_library("signin_profile_handler") {
     "//components/user_manager",
     "//content/public/browser",
     "//extensions/browser",
-
-    # TODO(crbug.com/353407730): Use //chrome/browser/ui instead after fixing cyclic dependency.
-    "//components/paint_preview/buildflags",
   ]
 
   # Entry points to call SigninProfileHandler.
