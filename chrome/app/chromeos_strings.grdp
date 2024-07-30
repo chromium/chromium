@@ -1431,7 +1431,7 @@
     Please wait...
   </message>
   <!-- Strings for perks discovery screen-->
-  <message name="IDS_LOGIN_PERKS_SCREEN_LOADING" translateable="false" desc="Message shown while the perks are being fetched for the server.">
+  <message name="IDS_LOGIN_PERKS_SCREEN_LOADING" desc="Message shown while the perks are being fetched for the server.">
     Please wait...
   </message>
   <!-- Strings for app downloading screen -->
