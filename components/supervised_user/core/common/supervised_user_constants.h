@@ -151,6 +151,10 @@ extern const char kDefaultEmptyFamilyMemberRole[];
 // Feedback source name for family member role in Family Link.
 extern const char kFamilyMemberRoleFeedbackTag[];
 
+// Histogram name for the ::ClassifyUrlLoaderThrottle
+extern const char kClassifiedEarlierThanContentResponseHistogramName[];
+extern const char kClassifiedLaterThanContentResponseHistogramName[];
+
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_

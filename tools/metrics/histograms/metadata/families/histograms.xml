@@ -726,7 +726,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SupervisedUsers.ClassifyUrlThrottle.ClassifyResponseToContentResponseDelta"
+    name="SupervisedUsers.ClassifyUrlThrottle.EarlierThanContentResponse"
     units="ms" expires_after="2024-12-31">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -739,15 +739,13 @@ chromium-metrics-reviews@google.com.
     Recorded only in the mainline case when the navigation was not blocked.
 
     Together with the complementary
-    SupervisedUsers.ClassifyUrlThrottle.ContentResponseToClassifyResponseDelta
-    metric it forms a continuum of time, with 0 recorded in either (but only
-    one) metric meaning that the classification was ready exactly when it was
-    needed.
+    SupervisedUsers.ClassifyUrlThrottle.LaterThanContentResponse metric it forms
+    a continuum of time, with 0 recorded in either (but only one) metric meaning
+    that the classification was ready exactly when it was needed.
   </summary>
 </histogram>
 
-<histogram
-    name="SupervisedUsers.ClassifyUrlThrottle.ContentResponseToClassifyResponseDelta"
+<histogram name="SupervisedUsers.ClassifyUrlThrottle.LaterThanContentResponse"
     units="ms" expires_after="2024-12-31">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -760,10 +758,9 @@ chromium-metrics-reviews@google.com.
     Recorded only in the mainline case when the navigation was not blocked.
 
     Together with the complementary
-    SupervisedUsers.ClassifyUrlThrottle.ClassifyResponseToContentResponseDelta
-    metric it forms a continuum of time, with 0 recorded in either (but only
-    one) metric meaning that the classification was ready exactly when it was
-    needed.
+    SupervisedUsers.ClassifyUrlThrottle.EarlierThanContentResponse metric it
+    forms a continuum of time, with 0 recorded in either (but only one) metric
+    meaning that the classification was ready exactly when it was needed.
   </summary>
 </histogram>
 

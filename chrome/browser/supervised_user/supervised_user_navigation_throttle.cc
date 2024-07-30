@@ -23,15 +23,10 @@
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
-
-namespace {
-const char* const kContentResponseToClassifyResponseDelta =
-    "SupervisedUsers.ClassifyUrlThrottle."
-    "ContentResponseToClassifyResponseDelta";
-}  // namespace
 
 // static
 std::unique_ptr<SupervisedUserNavigationThrottle>
@@ -158,8 +153,9 @@ SupervisedUserNavigationThrottle::WillProcessResponse() {
     // Safety measure: do not execute the code below for the Default experiment
     // groups. 0 means that either the checks were never asynchronous, or that
     // they took less than 0ms rounded combined, which is safe approximation.
-    base::UmaHistogramTimes(kContentResponseToClassifyResponseDelta,
-                            total_delay_);
+    base::UmaHistogramTimes(
+        supervised_user::kClassifiedLaterThanContentResponseHistogramName,
+        total_delay_);
     VLOG(1) << "Time spent waiting for classifications: " << total_delay_;
   }
   return NavigationThrottle::PROCEED;

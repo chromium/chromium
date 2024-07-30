@@ -143,4 +143,9 @@ const char kDefaultEmptyFamilyMemberRole[] = "not_in_family";
 // LINT.IfChange
 const char kFamilyMemberRoleFeedbackTag[] = "Family_Member_Role";
 // LINT.ThenChange(//chrome/browser/feedback/android/java/src/org/chromium/chrome/browser/feedback/FamilyInfoFeedbackSource.java)
+
+const char kClassifiedEarlierThanContentResponseHistogramName[] =
+    "SupervisedUsers.ClassifyUrlThrottle.EarlierThanContentResponse";
+const char kClassifiedLaterThanContentResponseHistogramName[] =
+    "SupervisedUsers.ClassifyUrlThrottle.LaterThanContentResponse";
 }  // namespace supervised_user

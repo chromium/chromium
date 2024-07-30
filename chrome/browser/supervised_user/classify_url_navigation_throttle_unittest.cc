@@ -27,9 +27,6 @@ namespace supervised_user {
 namespace {
 
 static const char* kExampleURL = "https://example.com/";
-const char* const kClassifyResponseToContentResponseDelta =
-    "SupervisedUsers.ClassifyUrlThrottle."
-    "ClassifyResponseToContentResponseDelta";
 
 class MockSupervisedUserURLFilter : public SupervisedUserURLFilter {
  public:
@@ -88,8 +85,9 @@ TEST_F(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
   histogram_tester()->ExpectBucketCount(
       kSupervisedUserTopLevelURLFilteringResultHistogramName,
       SupervisedUserFilterTopLevelResult::kAllow, 1);
-  histogram_tester()->ExpectTotalCount(kClassifyResponseToContentResponseDelta,
-                                       /*expected_count(grew by)*/ 1);
+  histogram_tester()->ExpectTotalCount(
+      kClassifiedEarlierThanContentResponseHistogramName,
+      /*expected_count(grew by)*/ 1);
 }
 
 TEST_F(ClassifyUrlNavigationThrottleTest,

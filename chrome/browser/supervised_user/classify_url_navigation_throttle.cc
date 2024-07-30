@@ -25,6 +25,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
@@ -32,15 +33,6 @@
 #include "url/gurl.h"
 
 namespace supervised_user {
-
-namespace {
-const char* const kClassifyResponseToContentResponseDelta =
-    "SupervisedUsers.ClassifyUrlThrottle."
-    "ClassifyResponseToContentResponseDelta";
-const char* const kContentResponseToClassifyResponseDelta =
-    "SupervisedUsers.ClassifyUrlThrottle."
-    "ContentResponseToClassifyResponseDelta";
-}  // namespace
 
 ClassifyUrlNavigationThrottle::ThrottleCheckResult
 ClassifyUrlNavigationThrottle::WillProcessRequest() {
@@ -80,7 +72,7 @@ ClassifyUrlNavigationThrottle::WillProcessResponse() {
   }
 
   // All checks decided that it's safe to proceed.
-  base::UmaHistogramTimes(kClassifyResponseToContentResponseDelta,
+  base::UmaHistogramTimes(kClassifiedEarlierThanContentResponseHistogramName,
                           waiting_for_process_response_->Elapsed());
   VLOG(1) << "Decision was ready ahead of time:"
           << waiting_for_process_response_->Elapsed();
@@ -170,7 +162,7 @@ void ClassifyUrlNavigationThrottle::OnURLCheckDone(
   if (behavior == FilteringBehavior::kBlock) {
     ScheduleInterstitial({url, result});
   } else {
-    base::UmaHistogramTimes(kContentResponseToClassifyResponseDelta,
+    base::UmaHistogramTimes(kClassifiedLaterThanContentResponseHistogramName,
                             waiting_for_decision_->Elapsed());
     VLOG(1) << "Had to delay decision:" << waiting_for_decision_->Elapsed();
     Resume();
