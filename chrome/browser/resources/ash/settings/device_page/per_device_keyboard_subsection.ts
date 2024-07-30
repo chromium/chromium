@@ -244,6 +244,17 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       this.hasAmbientLightSensor =
           (await this.inputDeviceSettingsProvider.hasAmbientLightSensor())
               ?.hasAmbientLightSensor;
+
+      if (this.hasKeyboardBacklight && this.hasAmbientLightSensor) {
+        const crSlider = this.shadowRoot!
+                             .querySelector<SettingsSliderElement>(
+                                 '#keyboardBrightnessSlider')!.shadowRoot!
+                             .querySelector('cr-slider');
+        if (crSlider) {
+          // Set key press increment value to be 10.
+          crSlider.setAttribute('key-press-slider-increment', '10');
+        }
+      }
     }
   }
 
