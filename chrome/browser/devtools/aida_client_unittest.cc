@@ -81,9 +81,10 @@ class Delegate {
     succeed_ = absl::holds_alternative<network::ResourceRequest>(response);
     if (succeed_) {
       url_ = absl::get<network::ResourceRequest>(response).url;
-      ASSERT_TRUE(
-          absl::get<network::ResourceRequest>(response).headers.GetHeader(
-              net::HttpRequestHeaders::kAuthorization, &authorization_header_));
+      authorization_header_ =
+          absl::get<network::ResourceRequest>(response)
+              .headers.GetHeader(net::HttpRequestHeaders::kAuthorization)
+              .value();
     } else {
       error_ = absl::get<std::string>(response);
     }
