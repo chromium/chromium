@@ -114,6 +114,10 @@ class BackForwardCachePageLoadMetricsObserverTest
   // page end metric logging from the back forward page load metrics observer.
   void SetPageEndReasonLogged() { observer_->logged_page_end_metrics_ = true; }
 
+  // Should declare first to avoid dangling pointer detection in the following
+  // observers.
+  std::unique_ptr<FakePageLoadMetricsObserverDelegate> fake_delegate_;
+
   page_load_metrics::mojom::PageLoadTiming timing_;
   raw_ptr<BackForwardCachePageLoadMetricsObserver, DanglingUntriaged> observer_;
 
@@ -124,7 +128,6 @@ class BackForwardCachePageLoadMetricsObserverTest
   // cache, but is not currently in there.
   std::unique_ptr<BackForwardCachePageLoadMetricsObserver>
       observer_with_fake_delegate_;
-  std::unique_ptr<FakePageLoadMetricsObserverDelegate> fake_delegate_;
 
   content::MockNavigationHandle navigation_handle_;
   std::unique_ptr<base::SimpleTestTickClock> test_clock_;

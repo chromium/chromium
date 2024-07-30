@@ -258,8 +258,7 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
       const std::vector<mojom::CustomUserTimingMarkPtr>& timings) override {}
 
  private:
-  raw_ptr<PageLoadMetricsObserverDelegate, DanglingUntriaged> delegate_ =
-      nullptr;
+  raw_ptr<PageLoadMetricsObserverDelegate> delegate_ = nullptr;
 };
 
 }  // namespace page_load_metrics
