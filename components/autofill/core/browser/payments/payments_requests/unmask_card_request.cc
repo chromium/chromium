@@ -325,8 +325,7 @@ std::string UnmaskCardRequest::GetRequestContent() {
                                ->vcn_3ds_metadata->url_to_open.spec());
       challenge_option.Set("redirect_completion_result",
                            request_details_.redirect_completion_result.value());
-      request_dict.Set("redirect_challenge_option",
-                       std::move(challenge_option));
+      request_dict.Set("popup_challenge_option", std::move(challenge_option));
     }
   }
 
