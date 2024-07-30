@@ -4966,6 +4966,8 @@ static_library("test_support") {
     "picker/picker_test_util.h",
     "picker/search/mock_search_picker_client.cc",
     "picker/search/mock_search_picker_client.h",
+    "picker/views/mock_picker_search_results_view_delegate.cc",
+    "picker/views/mock_picker_search_results_view_delegate.h",
     "projector/test/mock_projector_metadata_controller.cc",
     "projector/test/mock_projector_metadata_controller.h",
     "public/cpp/fake_hats_bluetooth_revamp_trigger_impl.cc",
