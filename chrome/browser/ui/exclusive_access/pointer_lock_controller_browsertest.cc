@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
 }
 
 // TODO(crbug.com/348396470): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
 #define MAYBE_FastPointerLockUnlockRelock DISABLED_FastPointerLockUnlockRelock
 #else
 #define MAYBE_FastPointerLockUnlockRelock FastPointerLockUnlockRelock
@@ -137,7 +137,14 @@ IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
                    ->IsPointerLockedSilently());
 }
 
-IN_PROC_BROWSER_TEST_F(PointerLockControllerTest, SlowPointerLockUnlockRelock) {
+// TODO(crbug.com/348396470): Fix test flakiness.
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_SlowPointerLockUnlockRelock DISABLED_SlowPointerLockUnlockRelock
+#else
+#define MAYBE_SlowPointerLockUnlockRelock SlowPointerLockUnlockRelock
+#endif
+IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
+                       MAYBE_SlowPointerLockUnlockRelock) {
   // TODO(crbug.com/40514143): Replace with TaskEnvironment using MOCK_TIME.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
