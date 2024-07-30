@@ -20,6 +20,8 @@
 
 namespace safe_browsing {
 
+using enum ExtendedReportingLevel;
+
 DownloadUrlSBClient::DownloadUrlSBClient(
     download::DownloadItem* item,
     DownloadProtectionService* service,

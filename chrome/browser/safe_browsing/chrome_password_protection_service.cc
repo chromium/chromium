@@ -119,6 +119,7 @@
 using base::RecordAction;
 using base::UserMetricsAction;
 using content::BrowserThread;
+using enum safe_browsing::ExtendedReportingLevel;
 using sync_pb::GaiaPasswordReuse;
 using sync_pb::UserEventSpecifics;
 using GaiaPasswordCaptured = UserEventSpecifics::GaiaPasswordCaptured;

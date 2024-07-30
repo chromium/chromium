@@ -27,6 +27,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 using base::Time;
+using enum safe_browsing::ExtendedReportingLevel;
 
 namespace {
 

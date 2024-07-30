@@ -17,6 +17,8 @@
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
+using enum safe_browsing::ExtendedReportingLevel;
+
 namespace {
 
 // Update the correct UMA metric based on which pref was changed and which UI

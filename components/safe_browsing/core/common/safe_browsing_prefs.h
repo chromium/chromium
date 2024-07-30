@@ -262,10 +262,9 @@ inline constexpr char kSafeBrowsingAutomaticDeepScanPerformed[] =
 
 namespace safe_browsing {
 
-// TODO(crbug.com/355027426): Convert this enum to enum class.
 // Enumerates the level of Safe Browsing Extended Reporting that is currently
 // available.
-enum ExtendedReportingLevel {
+enum class ExtendedReportingLevel {
   // Extended reporting is off.
   SBER_LEVEL_OFF = 0,
   // The Legacy level of extended reporting is available, reporting happens in

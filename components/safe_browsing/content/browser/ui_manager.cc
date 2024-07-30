@@ -43,6 +43,8 @@ using safe_browsing::SBThreatType;
 
 namespace safe_browsing {
 
+using enum ExtendedReportingLevel;
+
 SafeBrowsingUIManager::SafeBrowsingUIManager(
     std::unique_ptr<Delegate> delegate,
     std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory,

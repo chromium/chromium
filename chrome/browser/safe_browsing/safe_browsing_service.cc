@@ -100,6 +100,8 @@ using content::BrowserThread;
 
 namespace safe_browsing {
 
+using enum ExtendedReportingLevel;
+
 namespace {
 
 // The number of user gestures to trace back for the referrer chain.

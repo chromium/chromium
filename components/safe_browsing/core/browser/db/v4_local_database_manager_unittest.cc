@@ -37,6 +37,8 @@
 
 namespace safe_browsing {
 
+using enum ExtendedReportingLevel;
+
 namespace {
 
 typedef std::vector<FullHashInfo> FullHashInfos;

@@ -39,6 +39,8 @@ using ::testing::_;
 
 namespace safe_browsing {
 
+using enum ExtendedReportingLevel;
+
 class FakeSafeBrowsingHatsDelegate : public SafeBrowsingHatsDelegate {
  public:
   void LaunchRedWarningSurvey(

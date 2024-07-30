@@ -102,7 +102,8 @@ std::string GetReportUrl(const V4ProtocolConfig& config,
                         base::EscapeQueryParamValue(api_key, true).c_str());
   }
   if (reporting_level)
-    url.append(base::StringPrintf("&ext=%d", *reporting_level));
+    url.append(
+        base::StringPrintf("&ext=%d", static_cast<int>(*reporting_level)));
   if (is_enhanced_protection)
     url.append(base::StringPrintf("&enh=%d", is_enhanced_protection));
   return url;

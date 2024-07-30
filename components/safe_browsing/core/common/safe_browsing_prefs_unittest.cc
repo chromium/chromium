@@ -19,6 +19,8 @@
 
 namespace safe_browsing {
 
+using enum ExtendedReportingLevel;
+
 class SafeBrowsingPrefsTest : public ::testing::Test {
  protected:
   void SetUp() override {
