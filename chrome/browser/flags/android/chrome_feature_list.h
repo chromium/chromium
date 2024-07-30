@@ -199,6 +199,11 @@ constexpr base::FeatureParam<int> kAuxiliarySearchMaxTabsCountParam(
     "auxiliary_search_max_donation_tab",
     100);
 
+constexpr base::FeatureParam<bool> kEdgeToEdgeBottomChinDebugParam(
+    &kEdgeToEdgeBottomChin,
+    "debug_bottom_chin",
+    /*default_value=*/false);
+
 constexpr base::FeatureParam<std::string> kQuickDeleteAndroidSurveyTriggerId(
     &kQuickDeleteAndroidSurvey,
     "trigger_id",

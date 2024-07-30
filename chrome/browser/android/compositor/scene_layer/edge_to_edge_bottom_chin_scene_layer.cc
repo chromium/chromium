@@ -9,6 +9,7 @@
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/ui_resource_layer.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/edge_to_edge/jni_headers/EdgeToEdgeBottomChinSceneLayer_jni.h"
 
 using base::android::JavaParamRef;
@@ -22,7 +23,8 @@ EdgeToEdgeBottomChinSceneLayer::EdgeToEdgeBottomChinSceneLayer(
     : SceneLayer(env, jobj),
       view_container_(cc::slim::Layer::Create()),
       view_layer_(cc::slim::SolidColorLayer::Create()),
-      divider_layer_(cc::slim::SolidColorLayer::Create()) {
+      divider_layer_(cc::slim::SolidColorLayer::Create()),
+      debug_layer_(cc::slim::SolidColorLayer::Create()) {
   layer()->SetIsDrawable(true);
 
   view_container_->SetIsDrawable(true);
@@ -36,6 +38,14 @@ EdgeToEdgeBottomChinSceneLayer::EdgeToEdgeBottomChinSceneLayer(
   divider_layer_->SetPosition(gfx::PointF(0, 0));
   divider_layer_->SetHideLayerAndSubtree(true);
   view_container_->AddChild(divider_layer_);
+
+  is_debugging_ = chrome::android::kEdgeToEdgeBottomChinDebugParam.Get();
+  if (is_debugging_) {
+    debug_layer_->SetIsDrawable(true);
+    debug_layer_->SetBackgroundColor(SkColors::kMagenta);
+    debug_layer_->SetOpacity(0.5f);
+    view_container_->AddChild(debug_layer_);
+  }
 }
 
 EdgeToEdgeBottomChinSceneLayer::~EdgeToEdgeBottomChinSceneLayer() = default;
@@ -57,6 +67,10 @@ void EdgeToEdgeBottomChinSceneLayer::UpdateEdgeToEdgeBottomChinLayer(
   // The color could be transparent or the same as |color_argb|
   divider_layer_->SetBackgroundColor(SkColor4f::FromColor(divider_color));
   divider_layer_->SetBounds(gfx::Size(container_width, 1));
+
+  if (is_debugging_) {
+    debug_layer_->SetBounds(gfx::Size(container_width / 2, container_height));
+  }
 }
 
 void EdgeToEdgeBottomChinSceneLayer::SetContentTree(
