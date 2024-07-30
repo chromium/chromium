@@ -219,6 +219,13 @@ TEST_P(TabStripRegionViewTest, TabSearchPositionLoggedOnConstruction) {
                                      expected_enum_val, 1);
 }
 
+TEST_P(TabStripRegionViewTest, HasMultiselectableState) {
+  ui::AXNodeData ax_node_data;
+  tab_strip_region_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data);
+  EXPECT_TRUE(ax_node_data.HasState(ax::mojom::State::kMultiselectable));
+}
+
 class TabStripRegionViewTestWithScrollingDisabled
     : public TabStripRegionViewTestBase {
  public:

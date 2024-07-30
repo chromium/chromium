@@ -699,7 +699,6 @@ std::u16string Tab::GetTooltipText(const gfx::Point& p) const {
 
 void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTab;
-  node_data->AddState(ax::mojom::State::kMultiselectable);
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                               IsSelected());
 

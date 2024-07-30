@@ -108,6 +108,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
+  GetViewAccessibility().SetIsMultiselectable(true);
 
   tab_strip_ = tab_strip.get();
   const Browser* browser = tab_strip_->GetBrowser();
