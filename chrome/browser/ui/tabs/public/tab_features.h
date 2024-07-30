@@ -21,6 +21,10 @@ namespace permissions {
 class PermissionIndicatorsTabData;
 }
 
+namespace enterprise_data_protection {
+class DataProtectionNavigationController;
+}
+
 namespace tabs {
 
 class TabInterface;
@@ -42,6 +46,11 @@ class TabFeatures {
 
   LensOverlayController* lens_overlay_controller() {
     return lens_overlay_controller_.get();
+  }
+
+  enterprise_data_protection::DataProtectionNavigationController*
+  data_protection_controller() {
+    return data_protection_controller_.get();
   }
 
   permissions::PermissionIndicatorsTabData* permission_indicators_tab_data() {
@@ -72,9 +81,10 @@ class TabFeatures {
  private:
   bool initialized_ = false;
 
-  // Features that are per-tab will each have a controller.
+  std::unique_ptr<
+      enterprise_data_protection::DataProtectionNavigationController>
+      data_protection_controller_;
   std::unique_ptr<LensOverlayController> lens_overlay_controller_;
-
   std::unique_ptr<permissions::PermissionIndicatorsTabData>
       permission_indicators_tab_data_;
 

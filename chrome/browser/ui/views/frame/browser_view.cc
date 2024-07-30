@@ -1803,16 +1803,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   if (AppUsesBorderlessMode() && !old_contents) {
     SetWindowManagementPermissionSubscriptionForBorderlessMode(new_contents);
   }
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK) || \
-    BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-  enterprise_data_protection::DataProtectionNavigationObserver::
-      GetDataProtectionSettings(
-          GetProfile(), web_contents(),
-          base::BindOnce(&BrowserView::ApplyDataProtectionSettings,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         web_contents()->GetWeakPtr()));
-#endif
 }
 
 void BrowserView::OnTabDetached(content::WebContents* contents,
@@ -2797,51 +2787,6 @@ void BrowserView::TouchModeChanged() {
   MaybeInitializeWebUITabStrip();
   MaybeShowWebUITabStripIPH();
 }
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK) || \
-    BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-
-void BrowserView::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  // It is possible for `clear_watermark_text_on_page_load_` to be set to false
-  // even when the watermark should be cleared.  However, in this case there
-  // is a queued call to `ApplyDataProtectionSettings()` which will correctly
-  // reset the watermark.  The scenario is as followed:
-  //
-  // 1/ User is viewing a page in Tab A that is watermarked.
-  // 2/ User loads a page that should not be watermarked into Tab A.
-  // 3/ `DelayApplyDataProtectionSettingsIfEmpty()` is called at navigation
-  //     finish time which sets clear_watermark_text_on_page_load_=true.
-  //    `DocumentOnLoadCompletedInPrimaryMainFrame()` will be called later.
-  // 4/ User switches to Tab B, which may or may not be watermarked.
-  //    This calls `ApplyDataProtectionSettings()` setting the watermark
-  //    appropriate to Tab B and sets clear_watermark_text_on_page_load_=false.
-  // 5/ User switches back to Tab A (which shows a page that should not be
-  //    watermarked, as described in step 2 above). This also calls
-  //    `ApplyDataProtectionSettings()` setting the watermark
-  //    appropriate to Tab A (i.e. clears the watermark) and sets
-  //    clear_watermark_text_on_page_load_=false.
-  // 6/ `DocumentOnLoadCompletedInPrimaryMainFrame()` is eventually called
-  //    which does nothing because clear_watermark_text_on_page_load_==false.
-  //    However, the watermark is already cleared in step #5.
-  //
-  // Note that steps #5 and #6 are racy but the final outcome is correct
-  // regardless of the order in which they execute.
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-  if (watermark_view_ && clear_watermark_text_on_page_load_) {
-    ApplyWatermarkSettings(std::string());
-  }
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
-
-#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-  if (clear_screenshot_protection_on_page_load_) {
-    ApplyScreenshotSettings(true);
-  }
-#endif
-}
-
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK) ||
-        // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
 void BrowserView::MaybeShowWebUITabStripIPH() {
   if (!webui_tab_strip_)
@@ -5576,35 +5521,11 @@ void BrowserView::UpdateFullscreenAllowedFromPolicy(
   }
 }
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK) || \
-    BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-
-void BrowserView::ApplyDataProtectionSettings(
-    base::WeakPtr<content::WebContents> expected_web_contents,
-    const enterprise_data_protection::UrlSettings& settings) {
-  // Since retrieving data protections is async, make sure that the view is
-  // still on the right tab before applying the settings.
-  if (!expected_web_contents || web_contents() != expected_web_contents.get()) {
-    return;
-  }
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-  ApplyWatermarkSettings(settings.watermark_text);
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
-
-#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-  ApplyScreenshotSettings(settings.allow_screenshots);
-#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-}
-
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 void BrowserView::ApplyWatermarkSettings(const std::string& watermark_text) {
   if (watermark_view_) {
     watermark_view_->SetString(watermark_text);
   }
-
-  // Watermark string should not be changed once the page loads.
-  clear_watermark_text_on_page_load_ = false;
 }
 #endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
@@ -5615,51 +5536,8 @@ void BrowserView::ApplyScreenshotSettings(bool allow) {
             gfx::kNullAcceleratedWidget);
 #endif  // BUILDFLAG(IS_WIN)
   GetWidget()->SetAllowScreenshots(allow);
-
-  // Screenshot protection should not be changed once the page loads.
-  clear_screenshot_protection_on_page_load_ = false;
 }
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-
-void BrowserView::DelayApplyDataProtectionSettingsIfEmpty(
-    base::WeakPtr<content::WebContents> expected_web_contents,
-    const enterprise_data_protection::UrlSettings& settings) {
-  // Since retrieving data protections is async, make sure that the view is
-  // still on the right tab before applying the settings.
-  if (!expected_web_contents || web_contents() != expected_web_contents.get()) {
-    return;
-  }
-
-#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-  if (!settings.allow_screenshots) {
-    ApplyScreenshotSettings(settings.allow_screenshots);
-  } else {
-    // Screenshot protection should be cleared.  Delay that until the page
-    // finishes loading.
-    clear_screenshot_protection_on_page_load_ = true;
-  }
-#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-  if (!settings.watermark_text.empty()) {
-    ApplyWatermarkSettings(settings.watermark_text);
-  } else {
-    // The watermark string should be cleared.  Delay that until the page
-    // finishes loading.
-    clear_watermark_text_on_page_load_ = true;
-  }
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
-
-  if (!on_delay_apply_data_protection_settings_if_empty_called_for_testing_
-           .is_null()) {
-    std::move(
-        on_delay_apply_data_protection_settings_if_empty_called_for_testing_)
-        .Run();
-  }
-}
-
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK) ||
-        // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
 BEGIN_METADATA(BrowserView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, FindBarBoundingBox)
