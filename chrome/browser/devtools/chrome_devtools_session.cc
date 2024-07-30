@@ -83,13 +83,14 @@ ChromeDevToolsSession::ChromeDevToolsSession(
           std::make_unique<AutofillHandler>(&dispatcher_, agent_host->GetId());
     }
   }
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kEnableUnsafeExtensionDebugging) &&
-      agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser &&
-      channel->GetClient()->AllowUnsafeOperations() &&
-      (IsDomainAvailableToUntrustedClient<ExtensionsHandler>() ||
-       channel->GetClient()->IsTrusted())) {
-    extensions_handler_ = std::make_unique<ExtensionsHandler>(&dispatcher_);
+  if (IsDomainAvailableToUntrustedClient<ExtensionsHandler>() ||
+      channel->GetClient()->IsTrusted()) {
+    extensions_handler_ = std::make_unique<ExtensionsHandler>(
+        &dispatcher_, agent_host->GetId(),
+        channel->GetClient()->AllowUnsafeOperations() &&
+            base::CommandLine::ForCurrentProcess()->HasSwitch(
+                ::switches::kEnableUnsafeExtensionDebugging) &&
+            agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser);
   }
   if (IsDomainAvailableToUntrustedClient<EmulationHandler>() ||
       channel->GetClient()->IsTrusted()) {
