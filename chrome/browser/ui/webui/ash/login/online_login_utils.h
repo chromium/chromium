@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
-#include "chrome/browser/extensions/api/cookies/cookies_api.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "components/account_id/account_id.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace ash {

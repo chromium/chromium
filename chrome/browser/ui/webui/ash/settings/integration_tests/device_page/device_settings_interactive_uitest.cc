@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/state_observer.h"

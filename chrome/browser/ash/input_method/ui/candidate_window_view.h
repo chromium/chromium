@@ -8,12 +8,15 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 #include "ui/base/ime/candidate_window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/view_factory.h"
+
+namespace ash::input_method {
+struct TextFieldContextualInfo;
+}  // namespace ash::input_method
 
 namespace ui {
 namespace ime {

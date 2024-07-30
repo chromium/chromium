@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/login/screens/core_oobe.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
-#include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_screens_handler_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
@@ -30,11 +29,14 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace ui {
 class ColorChangeHandler;
 }
+
+namespace color_change_listener::mojom {
+class PageHandler;
+}  // namespace color_change_listener::mojom
 
 namespace content {
 class WebUIDataSource;

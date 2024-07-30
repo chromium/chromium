@@ -8534,12 +8534,15 @@ static_library("browser_public_dependencies") {
     "//components/account_id",
     "//components/autofill/core/browser",
     "//components/commerce/core/product_specifications:product_specifications",
+    "//components/compose/core/browser:mojo_bindings",
     "//components/cross_device/logging",
     "//components/enterprise/buildflags",
     "//components/enterprise/common:files_scan_data",
     "//components/input",
+    "//components/media_router/common/mojom:media_controller",
     "//components/nacl/common:buildflags",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//components/page_image_service/mojom:mojo_bindings",
     "//components/page_info",
     "//components/page_info/core",
     "//components/payments/core",
@@ -8576,11 +8579,31 @@ static_library("browser_public_dependencies") {
       "//extensions/buildflags",
       "//google_apis/calendar:calendar",
       "//google_apis/common:common",
+      "//ui/webui/resources/cr_components/commerce:mojo_bindings",
+      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     ]
   }
   if (is_chromeos_ash) {
     public_deps += [
+      "//ash/components/arc/mojom",
+      "//ash/webui/os_feedback_ui/mojom",
+      "//chrome/common/extensions/api",
+      "//chrome/services/printing/public/mojom",
+      "//chrome/services/sharing/public/proto",
+      "//chromeos/ash/components/dbus:vm_applications_apps_proto",
+      "//chromeos/ash/components/dbus:vm_launch_proto",
+      "//chromeos/ash/components/dbus/anomaly_detector:proto",
+      "//chromeos/ash/components/dbus/chunneld:proto",
+      "//chromeos/ash/components/dbus/concierge:concierge_proto_lib",
+      "//chromeos/ash/components/dbus/seneschal:seneschal_proto",
+      "//chromeos/ash/components/dbus/spaced:spaced_proto",
+      "//chromeos/ash/components/drivefs/mojom",
+      "//chromeos/ash/components/drivefs/mojom:pinning_manager_types",
+      "//chromeos/ash/services/auth_factor_config/public/mojom",
       "//chromeos/components/sharesheet:constants",
+      "//components/enterprise/buildflags",
+      "//components/lens:buildflags",
+      "//components/webapps/common:mojo_bindings",
       "//ui/lottie",
     ]
   }
@@ -8708,11 +8731,14 @@ static_library("browser_generated_files") {
 
   if (is_chromeos_ash) {
     public_deps += [
+      "//chrome/browser/apps/app_preload_service/proto",
       "//chrome/browser/ash/app_list/search/ranking:proto",
       "//chrome/browser/ash/app_list/search/util:proto",
       "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
+      "//chrome/browser/ash/fusebox:fusebox_proto",
       "//chrome/browser/ash/mojo_service_manager:mojo_service_manager",
+      "//chrome/browser/ash/system_web_apps/types/proto",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/browser/nearby_sharing/instantmessaging/proto",
       "//chrome/browser/nearby_sharing/proto:tachyon_proto",
@@ -8743,6 +8769,7 @@ static_library("browser_generated_files") {
       "//chrome/browser/ui/webui/ash/settings/search/mojom",
       "//chrome/browser/ui/webui/ash/vm:mojo_bindings",
       "//chrome/browser/ui/webui/nearby_share:mojom",
+      "//chrome/browser/web_applications/proto",
     ]
   }
   if (is_chromeos) {

@@ -23,8 +23,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/mojom/app.mojom-forward.h"
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace gfx {

@@ -50,7 +50,11 @@ component("views") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//ash" ]
+    deps += [
+      "//ash",
+      "//ash/components/arc",
+      "//components/arc",
+    ]
   }
 }
 

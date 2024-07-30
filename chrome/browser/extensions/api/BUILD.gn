@@ -88,6 +88,13 @@ function_registration("api_registration") {
   if (is_chromeos) {
     deps += [ "//chrome/browser/chromeos/extensions:constants" ]
   }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash/extensions/autotest_private",
+      "//chrome/browser/ash/extensions/file_manager",
+    ]
+  }
 }
 
 if (is_win) {

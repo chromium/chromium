@@ -83,6 +83,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/url_util.h"
 #include "pdf/pdf_features.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"

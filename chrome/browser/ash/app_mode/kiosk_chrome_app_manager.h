@@ -21,7 +21,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/extension_id.h"
-#include "kiosk_system_session.h"
 #include "net/base/backoff_entry.h"
 
 class GURL;

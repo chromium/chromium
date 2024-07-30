@@ -9,9 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ui/base/app_types.h"
 #include "url/gurl.h"
 

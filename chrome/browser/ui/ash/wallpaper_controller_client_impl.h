@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -28,6 +27,10 @@ class AccountId;
 namespace {
 class WallpaperControllerClientImplTest;
 }
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace wallpaper_handlers {
 class WallpaperFetcherDelegate;
