@@ -38,7 +38,9 @@ enum class TipsNotificationType {
   kSignin = 2,
   kError = 3,
   kSetUpListContinuation = 4,
-  kMaxValue = kSetUpListContinuation,
+  kDocking = 5,
+  kOmniboxPosition = 6,
+  kMaxValue = kOmniboxPosition,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

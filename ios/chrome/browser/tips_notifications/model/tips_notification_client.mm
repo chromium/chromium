@@ -305,6 +305,8 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
       return ShouldSendSignin();
     case TipsNotificationType::kSetUpListContinuation:
       return ShouldSendSetUpListContinuation();
+    case TipsNotificationType::kDocking:
+    case TipsNotificationType::kOmniboxPosition:
     case TipsNotificationType::kError:
       NOTREACHED_NORETURN();
   }
@@ -383,6 +385,8 @@ void TipsNotificationClient::ShowUIForNotificationType(
     case TipsNotificationType::kSetUpListContinuation:
       ShowSetUpListContinuation();
       break;
+    case TipsNotificationType::kDocking:
+    case TipsNotificationType::kOmniboxPosition:
     case TipsNotificationType::kError:
       NOTREACHED();
   }

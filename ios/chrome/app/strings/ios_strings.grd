@@ -2597,6 +2597,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_ENABLE_BUTTON" desc="The text for the button in notifications opt-in screen that enables the selected notifications.">
         Turn on Notifications
       </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_BODY" desc="Text for the body of a Tips notification that reminds the user to set their preferred omnibox position">
+        Switch the position of your address bar for a customized experience.
+      </message>
       <message name="IDS_IOS_NTP_FEED_SIGNIN_FULL_PROMO_BODY" desc="The text on the body of the new tab page Feed Signin Promo, explaining that users will see more relevant content if they enable sync. [iOS only]">
         Sync for the most relevant content based on your interests.
       </message>
