@@ -162,7 +162,13 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
-IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivate) {
+// TODO(crbug.com/356369542): Fix flakiness on sanitizer bots.
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
+#define MAYBE_AutotestPrivate DISABLED_AutotestPrivate
+#else
+#define MAYBE_AutotestPrivate AutotestPrivate
+#endif
+IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, MAYBE_AutotestPrivate) {
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("default")) << message_;
 }
 
