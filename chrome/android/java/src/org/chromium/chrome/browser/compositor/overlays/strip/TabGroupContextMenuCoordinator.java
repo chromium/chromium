@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.ViewStub;
 
 import org.chromium.base.Log;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerType;
@@ -17,6 +19,8 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 /**
@@ -25,26 +29,25 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
  */
 public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordinator {
     private TabGroupVisualDataTextInputLayout mTabGroupTextInputLayout;
-    private Context mContext;
-    private boolean mIsIncognito;
     private static final String TAG = "TabGroupContextMenu";
 
+    /**
+     * @param onItemClickedCallback A callback for listening to clicks.
+     * @param tabModelSupplier The supplier of the tab model.
+     * @param shouldShowDeleteGroup Whether to show the delete group option.
+     */
     public TabGroupContextMenuCoordinator(
-            Context context,
-            View anchorView,
             OnItemClickedCallback onItemClicked,
-            int tabId,
-            boolean isIncognito,
+            Supplier<TabModel> tabModelSupplier,
             boolean shouldShowDeleteGroup) {
         super(
-                context,
                 R.layout.tab_strip_group_menu_layout,
-                anchorView,
                 onItemClicked,
-                tabId,
-                isIncognito,
-                shouldShowDeleteGroup);
-        mContext = context;
+                tabModelSupplier,
+                shouldShowDeleteGroup,
+                /* identityManager= */ null,
+                /* tabGroupSyncService= */ null,
+                /* dataSharingService= */ null);
     }
 
     @Override
@@ -53,18 +56,20 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         // update tab group title.
         mTabGroupTextInputLayout = contentView.findViewById(R.id.tab_group_title);
 
+        Context context = contentView.getContext();
+
         // TODO(crbug.com/355483736): Confirm the final horizontal padding for the menu and update
         // if necessary.
         // Set horizontal padding to custom view to match list items.
         int horizontalPadding =
-                mContext.getResources()
+                context.getResources()
                         .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding);
         mTabGroupTextInputLayout.setPadding(horizontalPadding, 0, horizontalPadding, 0);
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             ColorPickerCoordinator colorPickerCoordinator =
                     new ColorPickerCoordinator(
-                            mContext,
+                            context,
                             ColorPickerUtils.getTabGroupColorIdList(),
                             ((ViewStub) contentView.findViewById(R.id.color_picker_stub)).inflate(),
                             ColorPickerType.TAB_GROUP,
@@ -82,10 +87,21 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     }
 
     @Override
-    protected ModelList buildMenuActionItems(boolean isIncognito, boolean shouldShowDeleteGroup) {
+    protected void buildMenuActionItems(
+            ModelList modelList,
+            boolean isIncognito,
+            boolean shouldShowDeleteGroup,
+            boolean hasCollaborationData) {
         // TODO(crbug.com/354248683): Implement icon and texts for items like ungroup, close group
         // and open new tab in group.
-        return null;
+    }
+
+    @Override
+    public void buildCollaborationMenuItems(
+            ModelList itemList,
+            IdentityManager identityManager,
+            GroupDataOrFailureOutcome outcome) {
+        // Intentional no-op.
     }
 
     @Override

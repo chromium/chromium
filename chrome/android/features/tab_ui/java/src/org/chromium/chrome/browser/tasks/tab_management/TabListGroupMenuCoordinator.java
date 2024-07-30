@@ -4,14 +4,16 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
 import android.content.res.Resources;
-import android.view.View;
 
 import androidx.annotation.DimenRes;
 
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 /**
@@ -20,54 +22,40 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
  */
 public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator {
     /**
+     * @param onItemClickedCallback A callback for listening to clicks.
+     * @param tabModelSupplier The supplier of the tab model.
+     * @param shouldShowDeleteGroup Whether to show the delete group option.
+     */
+    public TabListGroupMenuCoordinator(
+            OnItemClickedCallback onItemClicked,
+            Supplier<TabModel> tabModelSupplier,
+            boolean shouldShowDeleteGroup) {
+        super(
+                R.layout.tab_switcher_action_menu_layout,
+                onItemClicked,
+                tabModelSupplier,
+                shouldShowDeleteGroup,
+                /* identityManager= */ null,
+                /* tabGroupSyncService= */ null,
+                /* dataSharingService= */ null);
+    }
+
+    /**
      * Creates a {@link TabListMediator.TabActionListener} that creates the menu and shows it when
      * clicked.
-     *
-     * @param onItemClicked The clicked listener callback that handles clicks on menu items.
-     * @param tabId The tabId that represents which tab to perform the onItemClicked action on.
-     * @param isIncognito Whether the current tab group model filter is in an incognito state.
-     * @param shouldShowDeleteGroup Whether to show the delete group menu item.
-     * @return A {@link TabListMediator.TabActionListener} for the button that opens up the menu.
      */
-    static TabListMediator.TabActionListener getTabListGroupMenuOnClickListener(
-            OnItemClickedCallback onItemClicked,
-            int tabId,
-            boolean isIncognito,
-            boolean shouldShowDeleteGroup) {
-        return (view, unusedTabId) -> {
-            Context context = view.getContext();
-            TabListGroupMenuCoordinator menu =
-                    new TabListGroupMenuCoordinator(
-                            context,
-                            view,
-                            onItemClicked,
-                            tabId,
-                            isIncognito,
-                            shouldShowDeleteGroup);
-            menu.display();
+    TabListMediator.TabActionListener getTabActionListener() {
+        return (view, tabId) -> {
+            createAndShowMenu(view, tabId);
         };
     }
 
-    private TabListGroupMenuCoordinator(
-            Context context,
-            View anchorView,
-            OnItemClickedCallback onItemClicked,
-            int tabId,
-            boolean isIncognito,
-            boolean shouldShowDeleteGroup) {
-        super(
-                context,
-                R.layout.tab_switcher_action_menu_layout,
-                anchorView,
-                onItemClicked,
-                tabId,
-                isIncognito,
-                shouldShowDeleteGroup);
-    }
-
     @Override
-    protected ModelList buildMenuActionItems(boolean isIncognito, boolean shouldShowDeleteGroup) {
-        ModelList itemList = new ModelList();
+    protected void buildMenuActionItems(
+            ModelList itemList,
+            boolean isIncognito,
+            boolean shouldShowDeleteGroup,
+            boolean hasCollaborationData) {
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.close_tab_group_menu_item,
@@ -107,7 +95,14 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                             isIncognito,
                             true));
         }
-        return itemList;
+    }
+
+    @Override
+    public void buildCollaborationMenuItems(
+            ModelList itemList,
+            IdentityManager identityManager,
+            GroupDataOrFailureOutcome outcome) {
+        // Intentional no-op.
     }
 
     @Override

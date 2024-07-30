@@ -8,14 +8,13 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -65,38 +64,6 @@ public class TabGridDialogMenuCoordinatorUnitTest {
     private static final String EMAIL = "fake@gmail.com";
     private static final Token TAB_GROUP_TOKEN = Token.createRandom();
 
-    /** Overrides {@link #buildMenuActionItems(boolean, boolean)} to get access to calling it. */
-    private static class TestMenuCoordinator extends TabGridDialogMenuCoordinator {
-        public TestMenuCoordinator(
-                Context context,
-                View anchorView,
-                OnItemClickedCallback onItemClicked,
-                int tabId,
-                boolean isIncognito,
-                boolean shouldShowDeleteGroup,
-                @Nullable TabModel tabModel,
-                @Nullable IdentityManager identityManager,
-                @Nullable TabGroupSyncService tabGroupSyncService,
-                @Nullable DataSharingService dataSharingService) {
-            super(
-                    context,
-                    anchorView,
-                    onItemClicked,
-                    tabId,
-                    isIncognito,
-                    shouldShowDeleteGroup,
-                    () -> tabModel,
-                    identityManager,
-                    tabGroupSyncService,
-                    dataSharingService);
-        }
-
-        @Override
-        public ModelList buildMenuActionItems(boolean isIncognito, boolean shouldShowDeleteGroup) {
-            return super.buildMenuActionItems(isIncognito, shouldShowDeleteGroup);
-        }
-    }
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -113,7 +80,9 @@ public class TabGridDialogMenuCoordinatorUnitTest {
     @Mock private OnItemClickedCallback mOnItemClickedCallback;
 
     @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
+    @Captor private ArgumentCaptor<ModelList> mModelListCaptor;
 
+    private TabGridDialogMenuCoordinator mMenuCoordinator;
     private Activity mActivity;
     private View mView;
 
@@ -124,6 +93,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mTab.getTabGroupId()).thenReturn(TAB_GROUP_TOKEN);
         when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
@@ -136,6 +106,17 @@ public class TabGridDialogMenuCoordinatorUnitTest {
         when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
         CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID1);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
+
+        mMenuCoordinator =
+                spy(
+                        new TabGridDialogMenuCoordinator(
+                                mOnItemClickedCallback,
+                                () -> mTabModel,
+                                () -> TAB_ID,
+                                /* shouldShowDeleteGroup= */ true,
+                                mIdentityManager,
+                                mTabGroupSyncService,
+                                mDataSharingService));
     }
 
     private void onActivity(TestActivity activity) {
@@ -144,203 +125,57 @@ public class TabGridDialogMenuCoordinatorUnitTest {
     }
 
     @Test
-    public void testGetCollaborationIdOrNull_NullTabModel() {
-        TestMenuCoordinator testMenuCoordinator =
-                new TestMenuCoordinator(
-                        mActivity,
-                        mView,
-                        mOnItemClickedCallback,
-                        TAB_ID,
-                        /* isIncognito= */ false,
-                        /* shouldShowDeleteGroup= */ true,
-                        /* tabModel= */ null,
-                        mIdentityManager,
-                        mTabGroupSyncService,
-                        mDataSharingService);
-        ModelList modelList =
-                testMenuCoordinator.buildMenuActionItems(
-                        /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
+    public void testBuildMenuItems_NoCollaborationData() {
+        ModelList modelList = new ModelList();
+        mMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ false,
+                /* shouldShowDeleteGroup= */ true,
+                /* hasCollaborationData= */ false);
 
         assertEquals(4, modelList.size());
         PropertyModel propertyModel = modelList.get(3).model;
         assertEquals(R.id.delete_tab, propertyModel.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        testMenuCoordinator.destroy();
     }
 
     @Test
-    public void testGetCollaborationIdOrNull_NullTabGroupSyncService() {
-        TestMenuCoordinator testMenuCoordinator =
-                new TestMenuCoordinator(
-                        mActivity,
-                        mView,
-                        mOnItemClickedCallback,
-                        TAB_ID,
-                        /* isIncognito= */ false,
-                        /* shouldShowDeleteGroup= */ true,
-                        mTabModel,
-                        mIdentityManager,
-                        /* tabGroupSyncService= */ null,
-                        mDataSharingService);
-        ModelList modelList =
-                testMenuCoordinator.buildMenuActionItems(
-                        /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
-
-        assertEquals(4, modelList.size());
-        PropertyModel propertyModel = modelList.get(3).model;
-        assertEquals(R.id.delete_tab, propertyModel.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        testMenuCoordinator.destroy();
-    }
-
-    @Test
-    public void testGetCollaborationIdOrNull_NullTab() {
-        when(mTabModel.getTabById(anyInt())).thenReturn(null);
-        TestMenuCoordinator testMenuCoordinator =
-                new TestMenuCoordinator(
-                        mActivity,
-                        mView,
-                        mOnItemClickedCallback,
-                        TAB_ID,
-                        /* isIncognito= */ false,
-                        /* shouldShowDeleteGroup= */ true,
-                        mTabModel,
-                        mIdentityManager,
-                        mTabGroupSyncService,
-                        mDataSharingService);
-        ModelList modelList =
-                testMenuCoordinator.buildMenuActionItems(
-                        /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
-
-        assertEquals(4, modelList.size());
-        PropertyModel propertyModel = modelList.get(3).model;
-        assertEquals(R.id.delete_tab, propertyModel.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        testMenuCoordinator.destroy();
-    }
-
-    @Test
-    public void testGetCollaborationIdOrNull_NullTabGroupId() {
-        when(mTab.getTabGroupId()).thenReturn(null);
-        TestMenuCoordinator testMenuCoordinator =
-                new TestMenuCoordinator(
-                        mActivity,
-                        mView,
-                        mOnItemClickedCallback,
-                        TAB_ID,
-                        /* isIncognito= */ false,
-                        /* shouldShowDeleteGroup= */ true,
-                        mTabModel,
-                        mIdentityManager,
-                        mTabGroupSyncService,
-                        mDataSharingService);
-        ModelList modelList =
-                testMenuCoordinator.buildMenuActionItems(
-                        /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
-
-        assertEquals(4, modelList.size());
-        PropertyModel propertyModel = modelList.get(3).model;
-        assertEquals(R.id.delete_tab, propertyModel.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        testMenuCoordinator.destroy();
-    }
-
-    @Test
-    public void testGetCollaborationIdOrNull_NullSavedTabGroup() {
-        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(null);
-        TestMenuCoordinator testMenuCoordinator =
-                new TestMenuCoordinator(
-                        mActivity,
-                        mView,
-                        mOnItemClickedCallback,
-                        TAB_ID,
-                        /* isIncognito= */ false,
-                        /* shouldShowDeleteGroup= */ true,
-                        mTabModel,
-                        mIdentityManager,
-                        mTabGroupSyncService,
-                        mDataSharingService);
-        ModelList modelList =
-                testMenuCoordinator.buildMenuActionItems(
-                        /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
-
-        assertEquals(4, modelList.size());
-        PropertyModel propertyModel = modelList.get(3).model;
-        assertEquals(R.id.delete_tab, propertyModel.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        testMenuCoordinator.destroy();
-    }
-
-    @Test
-    public void testDeleteSharedGroup() {
-        TestMenuCoordinator testMenuCoordinator =
-                new TestMenuCoordinator(
-                        mActivity,
-                        mView,
-                        mOnItemClickedCallback,
-                        TAB_ID,
-                        /* isIncognito= */ false,
-                        /* shouldShowDeleteGroup= */ true,
-                        mTabModel,
-                        mIdentityManager,
-                        mTabGroupSyncService,
-                        mDataSharingService);
-        ModelList modelList =
-                testMenuCoordinator.buildMenuActionItems(
-                        /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
+    public void testBuildMenuItems_HasCollaborationData() {
+        ModelList modelList = new ModelList();
+        mMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ false,
+                /* shouldShowDeleteGroup= */ true,
+                /* hasCollaborationData= */ true);
 
         assertEquals(3, modelList.size());
-
-        verify(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
-        GroupMember groupMember =
-                new GroupMember(
-                        GAIA_ID1,
-                        /* displayName= */ null,
-                        EMAIL,
-                        MemberRole.OWNER,
-                        /* avatarUrl= */ null);
-        GroupMember[] groupMemberArray = new GroupMember[] {groupMember};
-        GroupData groupData =
-                new GroupData(
-                        COLLABORATION_ID1,
-                        /* displayName= */ null,
-                        groupMemberArray,
-                        /* groupToken= */ null);
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
-        mReadGroupCallbackCaptor.getValue().onResult(outcome);
-
-        assertEquals(4, modelList.size());
-        PropertyModel propertyModel = modelList.get(3).model;
-        assertEquals(
-                R.id.delete_shared_group, propertyModel.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        testMenuCoordinator.destroy();
     }
 
     @Test
-    public void testLeaveGroup() {
-        TestMenuCoordinator testMenuCoordinator =
-                new TestMenuCoordinator(
-                        mActivity,
-                        mView,
-                        mOnItemClickedCallback,
-                        TAB_ID,
-                        /* isIncognito= */ false,
-                        /* shouldShowDeleteGroup= */ true,
-                        mTabModel,
-                        mIdentityManager,
-                        mTabGroupSyncService,
-                        mDataSharingService);
-        ModelList modelList =
-                testMenuCoordinator.buildMenuActionItems(
-                        /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
+    public void testBuildMenuItems_Incognito() {
+        ModelList modelList = new ModelList();
+        mMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ true,
+                /* shouldShowDeleteGroup= */ true,
+                /* hasCollaborationData= */ false);
 
         assertEquals(3, modelList.size());
+    }
 
-        verify(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
+    @Test
+    public void testBuildMenuItems_NoDelete() {
+        ModelList modelList = new ModelList();
+        mMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ false,
+                /* shouldShowDeleteGroup= */ false,
+                /* hasCollaborationData= */ false);
+
+        assertEquals(3, modelList.size());
+    }
+
+    @Test
+    public void testBuildCollaborationMenuItems_Member() {
         GroupMember groupMember1 =
                 new GroupMember(
                         GAIA_ID1,
@@ -364,69 +199,17 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         /* groupToken= */ null);
         GroupDataOrFailureOutcome outcome =
                 new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
-        mReadGroupCallbackCaptor.getValue().onResult(outcome);
 
-        assertEquals(4, modelList.size());
-        PropertyModel propertyModel = modelList.get(3).model;
+        ModelList modelList = new ModelList();
+        mMenuCoordinator.buildCollaborationMenuItems(modelList, mIdentityManager, outcome);
+
+        assertEquals(1, modelList.size());
+        PropertyModel propertyModel = modelList.get(0).model;
         assertEquals(R.id.leave_group, propertyModel.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        testMenuCoordinator.destroy();
     }
 
     @Test
-    public void testReadGroup_NullGroupData() {
-        TestMenuCoordinator testMenuCoordinator =
-                new TestMenuCoordinator(
-                        mActivity,
-                        mView,
-                        mOnItemClickedCallback,
-                        TAB_ID,
-                        /* isIncognito= */ false,
-                        /* shouldShowDeleteGroup= */ true,
-                        mTabModel,
-                        mIdentityManager,
-                        mTabGroupSyncService,
-                        mDataSharingService);
-        ModelList modelList =
-                testMenuCoordinator.buildMenuActionItems(
-                        /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
-
-        assertEquals(3, modelList.size());
-
-        verify(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(null, PeopleGroupActionFailure.UNKNOWN);
-        mReadGroupCallbackCaptor.getValue().onResult(outcome);
-
-        assertEquals(3, modelList.size());
-
-        testMenuCoordinator.destroy();
-    }
-
-    @Test
-    public void testReadGroup_NullCoreAccountInfo() {
-        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(null);
-        TestMenuCoordinator testMenuCoordinator =
-                new TestMenuCoordinator(
-                        mActivity,
-                        mView,
-                        mOnItemClickedCallback,
-                        TAB_ID,
-                        /* isIncognito= */ false,
-                        /* shouldShowDeleteGroup= */ true,
-                        mTabModel,
-                        mIdentityManager,
-                        mTabGroupSyncService,
-                        mDataSharingService);
-        ModelList modelList =
-                testMenuCoordinator.buildMenuActionItems(
-                        /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
-
-        assertEquals(3, modelList.size());
-
-        verify(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
+    public void testBuildCollaborationMenuItems_Owner() {
         GroupMember groupMember =
                 new GroupMember(
                         GAIA_ID1,
@@ -443,35 +226,18 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         /* groupToken= */ null);
         GroupDataOrFailureOutcome outcome =
                 new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
-        mReadGroupCallbackCaptor.getValue().onResult(outcome);
 
-        assertEquals(3, modelList.size());
+        ModelList modelList = new ModelList();
+        mMenuCoordinator.buildCollaborationMenuItems(modelList, mIdentityManager, outcome);
 
-        testMenuCoordinator.destroy();
+        assertEquals(1, modelList.size());
+        PropertyModel propertyModel = modelList.get(0).model;
+        assertEquals(
+                R.id.delete_shared_group, propertyModel.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
-    public void testReadGroup_NoMatchingMember() {
-        TestMenuCoordinator testMenuCoordinator =
-                new TestMenuCoordinator(
-                        mActivity,
-                        mView,
-                        mOnItemClickedCallback,
-                        TAB_ID,
-                        /* isIncognito= */ false,
-                        /* shouldShowDeleteGroup= */ true,
-                        mTabModel,
-                        mIdentityManager,
-                        mTabGroupSyncService,
-                        mDataSharingService);
-        ModelList modelList =
-                testMenuCoordinator.buildMenuActionItems(
-                        /* isIncognito= */ false, /* shouldShowDeleteGroup= */ true);
-
-        assertEquals(3, modelList.size());
-
-        verify(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
+    public void testBuildCollaborationMenuItems_Unknown() {
         GroupMember groupMember =
                 new GroupMember(
                         GAIA_ID2,
@@ -488,10 +254,41 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                         /* groupToken= */ null);
         GroupDataOrFailureOutcome outcome =
                 new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
+
+        ModelList modelList = new ModelList();
+        mMenuCoordinator.buildCollaborationMenuItems(modelList, mIdentityManager, outcome);
+
+        assertEquals(0, modelList.size());
+    }
+
+    @Test
+    public void testOnClick() {
+        GroupMember groupMember =
+                new GroupMember(
+                        GAIA_ID1,
+                        /* displayName= */ null,
+                        EMAIL,
+                        MemberRole.OWNER,
+                        /* avatarUrl= */ null);
+        GroupMember[] groupMemberArray = new GroupMember[] {groupMember};
+        GroupData groupData =
+                new GroupData(
+                        COLLABORATION_ID1,
+                        /* displayName= */ null,
+                        groupMemberArray,
+                        /* groupToken= */ null);
+        GroupDataOrFailureOutcome outcome =
+                new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
+        View.OnClickListener clickListener = mMenuCoordinator.getOnClickListener();
+        clickListener.onClick(mView);
+
+        verify(mDataSharingService)
+                .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
         mReadGroupCallbackCaptor.getValue().onResult(outcome);
 
-        assertEquals(3, modelList.size());
+        verify(mMenuCoordinator).buildMenuActionItems(any(), eq(false), eq(true), eq(true));
+        verify(mMenuCoordinator).buildCollaborationMenuItems(any(), any(), any());
 
-        testMenuCoordinator.destroy();
+        mMenuCoordinator.dismissForTesting();
     }
 }

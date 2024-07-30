@@ -9,6 +9,7 @@ import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.database.DataSetObserver;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
@@ -17,11 +18,18 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.VisibleForTesting;
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.base.LifetimeAssert;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuItemViewBinder;
@@ -44,108 +52,155 @@ public abstract class TabGroupOverflowMenuCoordinator {
         void onClick(@IdRes int menuId, int tabId);
     }
 
-    private final Context mContext;
-    protected final OnItemClickedCallback mOnItemClickedCallback;
-    protected final int mTabId;
-    private final ComponentCallbacks mComponentCallbacks;
-    private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-    private AnchoredPopupWindow mMenuWindow;
+    private static class OverflowMenuHolder {
+        private final Context mContext;
+        private final View mContentView;
+        private final ModelList mModelList = new ModelList();
+        private final ComponentCallbacks mComponentCallbacks;
+        private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
+        private AnchoredPopupWindow mMenuWindow;
 
-    /**
-     * @param context The app context.
-     * @param anchorView The view to anchor the UI on.
-     * @param onItemClickedCallback A callback for listening to clicks.
-     * @param tabId The tab ID for the tab or a tab ID from the group being acted on.
-     * @param isIncognito Whether the tab/group incognito.
-     * @param shouldShowDeleteGroup Whether to show the delete group option.
-     */
-    public TabGroupOverflowMenuCoordinator(
-            Context context,
-            @LayoutRes int menuLayout,
-            View anchorView,
-            OnItemClickedCallback onItemClickedCallback,
-            int tabId,
-            boolean isIncognito,
-            boolean shouldShowDeleteGroup) {
-        mContext = context;
-        mOnItemClickedCallback = onItemClickedCallback;
-        mTabId = tabId;
-        mComponentCallbacks =
-                new ComponentCallbacks() {
-                    @Override
-                    public void onConfigurationChanged(Configuration newConfig) {
-                        if (mMenuWindow == null || !mMenuWindow.isShowing()) return;
+        OverflowMenuHolder(
+                View anchorView,
+                @LayoutRes int menuLayout,
+                OnItemClickedCallback onItemClickedCallback,
+                boolean isIncognito,
+                int tabId,
+                @DimenRes int popupWidthRes,
+                @Nullable Callback<OverflowMenuHolder> onDismiss) {
+            Context context = anchorView.getContext();
+            mContext = context;
+            mComponentCallbacks =
+                    new ComponentCallbacks() {
+                        @Override
+                        public void onConfigurationChanged(Configuration newConfig) {
+                            if (mMenuWindow == null || !mMenuWindow.isShowing()) return;
+                            mMenuWindow.dismiss();
+                        }
+
+                        @Override
+                        public void onLowMemory() {}
+                    };
+            context.registerComponentCallbacks(mComponentCallbacks);
+
+            mContentView = LayoutInflater.from(context).inflate(menuLayout, null);
+
+            ListView listView = mContentView.findViewById(R.id.tab_group_action_menu_list);
+            ModelListAdapter adapter =
+                    new ModelListAdapter(mModelList) {
+                        @Override
+                        public long getItemId(int position) {
+                            ListItem item = (ListItem) getItem(position);
+                            return item.model.get(ListMenuItemProperties.MENU_ITEM_ID);
+                        }
+                    };
+            adapter.registerType(
+                    ListMenuItemType.MENU_ITEM,
+                    new LayoutViewBuilder(R.layout.list_menu_item),
+                    ListMenuItemViewBinder::binder);
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener(
+                    (p, v, pos, id) -> {
+                        onItemClickedCallback.onClick((int) id, tabId);
                         mMenuWindow.dismiss();
-                    }
+                    });
 
-                    @Override
-                    public void onLowMemory() {}
-                };
-        mContext.registerComponentCallbacks(mComponentCallbacks);
+            View decorView = ((Activity) mContentView.getContext()).getWindow().getDecorView();
+            ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
 
-        final View contentView = LayoutInflater.from(context).inflate(menuLayout, null);
-        setupMenu(contentView, anchorView, isIncognito, shouldShowDeleteGroup);
+            final @DrawableRes int bgDrawableId =
+                    isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
+
+            mMenuWindow =
+                    new AnchoredPopupWindow(
+                            context,
+                            decorView,
+                            AppCompatResources.getDrawable(context, bgDrawableId),
+                            mContentView,
+                            rectProvider);
+            mMenuWindow.setFocusable(true);
+            mMenuWindow.setHorizontalOverlapAnchor(true);
+            mMenuWindow.setVerticalOverlapAnchor(true);
+            mMenuWindow.setAnimationStyle(R.style.EndIconMenuAnim);
+            int popupWidth = context.getResources().getDimensionPixelSize(popupWidthRes);
+            mMenuWindow.setMaxWidth(popupWidth);
+
+            // Resize if any new elements are added.
+            adapter.registerDataSetObserver(
+                    new DataSetObserver() {
+                        @Override
+                        public void onChanged() {
+                            mMenuWindow.onRectChanged();
+                        }
+                    });
+
+            // When the menu is dismissed, call destroy to unregister the orientation listener.
+            mMenuWindow.addOnDismissListener(
+                    () -> {
+                        if (onDismiss != null) {
+                            onDismiss.onResult(this);
+                        }
+                        destroy();
+                    });
+        }
+
+        ModelList getModelList() {
+            return mModelList;
+        }
+
+        View getContentView() {
+            return mContentView;
+        }
+
+        void show() {
+            mMenuWindow.show();
+        }
+
+        void dismiss() {
+            mMenuWindow.dismiss();
+        }
+
+        void destroy() {
+            mContext.unregisterComponentCallbacks(mComponentCallbacks);
+            // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
+            // with a stack trace showing the stack during LifetimeAssert.create().
+            LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+        }
     }
 
-    private void setupMenu(
-            View contentView, View anchorView, boolean isIncognito, boolean shouldShowDeleteGroup) {
-        ListView listView = contentView.findViewById(R.id.tab_group_action_menu_list);
-        ModelList modelList = buildMenuActionItems(isIncognito, shouldShowDeleteGroup);
+    private final @LayoutRes int mMenuLayout;
+    private final OnItemClickedCallback mOnItemClickedCallback;
+    private final Supplier<TabModel> mTabModelSupplier;
+    private final boolean mShouldShowDeleteGroup;
+    private final @Nullable IdentityManager mIdentityManager;
+    private final @Nullable TabGroupSyncService mTabGroupSyncService;
+    private final @Nullable DataSharingService mDataSharingService;
+    private @Nullable OverflowMenuHolder mMenuHolder;
 
-        ModelListAdapter adapter =
-                new ModelListAdapter(modelList) {
-                    @Override
-                    public long getItemId(int position) {
-                        ListItem item = (ListItem) getItem(position);
-                        return item.model.get(ListMenuItemProperties.MENU_ITEM_ID);
-                    }
-                };
-        listView.setAdapter(adapter);
-        adapter.registerType(
-                ListMenuItemType.MENU_ITEM,
-                new LayoutViewBuilder(R.layout.list_menu_item),
-                ListMenuItemViewBinder::binder);
-        listView.setOnItemClickListener(
-                (p, v, pos, id) -> {
-                    mOnItemClickedCallback.onClick((int) id, mTabId);
-                    mMenuWindow.dismiss();
-                });
-
-        // Build custom views, such as the tab group title and color picker.
-        buildCustomView(contentView, isIncognito);
-
-        View decorView = ((Activity) contentView.getContext()).getWindow().getDecorView();
-        ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
-
-        final @DrawableRes int bgDrawableId =
-                isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
-
-        mMenuWindow =
-                new AnchoredPopupWindow(
-                        mContext,
-                        decorView,
-                        AppCompatResources.getDrawable(mContext, bgDrawableId),
-                        contentView,
-                        rectProvider);
-        mMenuWindow.setFocusable(true);
-        mMenuWindow.setHorizontalOverlapAnchor(true);
-        mMenuWindow.setVerticalOverlapAnchor(true);
-        mMenuWindow.setAnimationStyle(R.style.EndIconMenuAnim);
-        @DimenRes int popupWidthRes = getMenuWidth();
-        int popupWidth = mContext.getResources().getDimensionPixelSize(popupWidthRes);
-        mMenuWindow.setMaxWidth(popupWidth);
-
-        // Resize if any new elements are added.
-        adapter.registerDataSetObserver(
-                new DataSetObserver() {
-                    @Override
-                    public void onChanged() {
-                        mMenuWindow.onRectChanged();
-                    }
-                });
-
-        // When the menu is dismissed, call destroy to unregister the orientation listener.
-        mMenuWindow.addOnDismissListener(this::destroy);
+    /**
+     * @param menuLayout The menu layout to use.
+     * @param onItemClickedCallback A callback for listening to clicks.
+     * @param tabModelSupplier The supplier of the tab model.
+     * @param shouldShowDeleteGroup Whether to show the delete group option.
+     * @param identityManager Used for checking the current account.
+     * @param tabGroupSyncService Used to checking if a group is shared or synced.
+     * @param dataSharingService Used for checking the user is the owner of a group.
+     */
+    protected TabGroupOverflowMenuCoordinator(
+            @LayoutRes int menuLayout,
+            OnItemClickedCallback onItemClickedCallback,
+            Supplier<TabModel> tabModelSupplier,
+            boolean shouldShowDeleteGroup,
+            @Nullable IdentityManager identityManager,
+            @Nullable TabGroupSyncService tabGroupSyncService,
+            @Nullable DataSharingService dataSharingService) {
+        mMenuLayout = menuLayout;
+        mOnItemClickedCallback = onItemClickedCallback;
+        mTabModelSupplier = tabModelSupplier;
+        mShouldShowDeleteGroup = shouldShowDeleteGroup;
+        mIdentityManager = identityManager;
+        mTabGroupSyncService = tabGroupSyncService;
+        mDataSharingService = dataSharingService;
     }
 
     /**
@@ -161,26 +216,76 @@ public abstract class TabGroupOverflowMenuCoordinator {
     /**
      * Concrete class required to define what the ModelList for the menu contains.
      *
+     * @param itemList The {@link ModelList} to populate.
      * @param isIncognito Whether the current tab model is incognito or not.
      * @param shouldShowDeleteGroup Whether to show the delete group option.
+     * @param hasCollaborationData Whether the menu will call buildCollaborationMenuItems after.
      */
-    protected abstract ModelList buildMenuActionItems(
-            boolean isIncognito, boolean shouldShowDeleteGroup);
+    protected abstract void buildMenuActionItems(
+            ModelList itemList,
+            boolean isIncognito,
+            boolean shouldShowDeleteGroup,
+            boolean hasCollaborationData);
+
+    /**
+     * Concrete class required to define what to add for collaborations.
+     *
+     * @param itemList The {@link ModelList} to populate.
+     * @param identityManager Used for checking the current account.
+     * @param outcome The outcome of fetching collaboration data.
+     */
+    protected abstract void buildCollaborationMenuItems(
+            ModelList itemList, IdentityManager identityManager, GroupDataOrFailureOutcome outcome);
 
     /** Concrete class required to get a specific menu width for the menu pop up window. */
     protected abstract @DimenRes int getMenuWidth();
 
-    protected void display() {
-        if (mMenuWindow == null) return;
-
-        mMenuWindow.show();
+    protected void createAndShowMenu(View anchorView, int tabId) {
+        assert mMenuHolder == null;
+        boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
+        mMenuHolder =
+                new OverflowMenuHolder(
+                        anchorView,
+                        mMenuLayout,
+                        mOnItemClickedCallback,
+                        isIncognito,
+                        tabId,
+                        getMenuWidth(),
+                        this::onDismiss);
+        buildCustomView(mMenuHolder.getContentView(), isIncognito);
+        configureMenuItems(mMenuHolder.getModelList(), isIncognito, tabId);
+        mMenuHolder.show();
     }
 
-    @VisibleForTesting
-    public void destroy() {
-        mContext.unregisterComponentCallbacks(mComponentCallbacks);
-        // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
-        // with a stack trace showing the stack during LifetimeAssert.create().
-        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+    private void onDismiss(OverflowMenuHolder menuHolder) {
+        assert mMenuHolder == menuHolder;
+        mMenuHolder = null;
+    }
+
+    private void configureMenuItems(ModelList modelList, boolean isIncognito, int tabId) {
+        @Nullable String collaborationId = getCollaborationIdOrNull(tabId);
+        boolean hasCollaborationData =
+                !TextUtils.isEmpty(collaborationId)
+                        && mIdentityManager != null
+                        && mDataSharingService != null;
+        buildMenuActionItems(modelList, isIncognito, mShouldShowDeleteGroup, hasCollaborationData);
+        if (hasCollaborationData) {
+            mDataSharingService.readGroup(
+                    collaborationId,
+                    (outcome) -> buildCollaborationMenuItems(modelList, mIdentityManager, outcome));
+        }
+    }
+
+    private @Nullable String getCollaborationIdOrNull(int tabId) {
+        if (mTabModelSupplier == null || mTabGroupSyncService == null) {
+            return null;
+        } else {
+            return TabShareUtils.getCollaborationIdOrNull(
+                    tabId, mTabModelSupplier.get(), mTabGroupSyncService);
+        }
+    }
+
+    void dismissForTesting() {
+        mMenuHolder.dismiss();
     }
 }

@@ -159,6 +159,7 @@ public class TabGridDialogMediator
     private final Runnable mShowInviteFlowUIRunnable;
     private final ActionConfirmationManager mActionConfirmationManager;
 
+    private TabGridDialogMenuCoordinator mTabGridDialogMenuCoordinator;
     private TabGroupTitleEditor mTabGroupTitleEditor;
     private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
     private boolean mTabListEditorSetup;
@@ -867,16 +868,19 @@ public class TabGridDialogMediator
             tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
             dataSharingService = DataSharingServiceFactory.getForProfile(profile);
         }
+        if (mTabGridDialogMenuCoordinator == null) {
+            mTabGridDialogMenuCoordinator =
+                    new TabGridDialogMenuCoordinator(
+                            mToolbarMenuCallback,
+                            () -> mCurrentTabModelFilterSupplier.get().getTabModel(),
+                            () -> mCurrentTabId,
+                            shouldShowDeleteGroup,
+                            identityManager,
+                            tabGroupSyncService,
+                            dataSharingService);
+        }
 
-        return TabGridDialogMenuCoordinator.getTabGridDialogMenuOnClickListener(
-                mToolbarMenuCallback,
-                () -> mCurrentTabId,
-                () -> mModel.get(TabGridDialogProperties.IS_INCOGNITO),
-                shouldShowDeleteGroup,
-                () -> mCurrentTabModelFilterSupplier.get().getTabModel(),
-                identityManager,
-                tabGroupSyncService,
-                dataSharingService);
+        return mTabGridDialogMenuCoordinator.getOnClickListener();
     }
 
     private View.OnClickListener getShareBarClickListener() {

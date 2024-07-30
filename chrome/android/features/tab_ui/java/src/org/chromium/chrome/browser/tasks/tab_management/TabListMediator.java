@@ -373,6 +373,7 @@ class TabListMediator {
     private @NonNull final ActionConfirmationManager mActionConfirmationManager;
     private final Runnable mOnTabGroupCreation;
 
+    private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
     private @Nullable Profile mProfile;
     private Size mDefaultGridCardSize;
     private String mComponentName;
@@ -1963,14 +1964,21 @@ class TabListMediator {
             return mSelectableTabOnClickListener;
         } else {
             return isTabInTabGroup(tab)
-                    ? TabListGroupMenuCoordinator.getTabListGroupMenuOnClickListener(
-                            mOnMenuItemClickedCallback,
-                            tab.getId(),
-                            tab.isIncognito(),
-                            /* shouldShowDeleteGroup= */ TabGroupSyncFeatures.isTabGroupSyncEnabled(
-                                    mProfile))
+                    ? getTabGroupOverflowMenuClickListener()
                     : mTabClosedListener;
         }
+    }
+
+    private TabListMediator.TabActionListener getTabGroupOverflowMenuClickListener() {
+        if (mTabListGroupMenuCoordinator == null) {
+            boolean shouldShowDeleteGroup = TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile);
+            mTabListGroupMenuCoordinator =
+                    new TabListGroupMenuCoordinator(
+                            mOnMenuItemClickedCallback,
+                            () -> mCurrentTabModelFilterSupplier.get().getTabModel(),
+                            shouldShowDeleteGroup);
+        }
+        return mTabListGroupMenuCoordinator.getTabActionListener();
     }
 
     private TabListMediator.TabActionListener getTabClickListener(
