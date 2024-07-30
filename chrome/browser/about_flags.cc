@@ -6967,7 +6967,7 @@ const FeatureEntry kFeatureEntries[] = {
          kPriceTrackingSubscriptionServiceLocaleKeyName,
      commerce::flag_descriptions::
          kPriceTrackingSubscriptionServiceLocaleKeyDescription,
-     kOsDesktop,
+     kOsAndroid | kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kPriceTrackingSubscriptionServiceLocaleKey)},
 
 #if BUILDFLAG(IS_ANDROID)
