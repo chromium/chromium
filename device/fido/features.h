@@ -100,10 +100,6 @@ BASE_DECLARE_FEATURE(kWebAuthnRelatedOrigin);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kAllowExtensionsToSetWebAuthnRpIds);
 
-// Send and receive JSON from Play Services.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidFidoJson);
-
 // Prefer dispatching to a platform (i.e. internal transport) virtual
 // authenticator if available.
 COMPONENT_EXPORT(DEVICE_FIDO)

@@ -37,8 +37,6 @@ import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.blink.mojom.UserVerificationRequirement;
 import org.chromium.blink.mojom.UvmEntry;
-import org.chromium.device.DeviceFeatureList;
-import org.chromium.device.DeviceFeatureMap;
 import org.chromium.mojo_base.mojom.TimeDelta;
 
 import java.nio.ByteBuffer;
@@ -244,18 +242,6 @@ public final class Fido2Api {
 
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
-        if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_FIDO_JSON)) {
-            // 13: JSON serialisation of the request.
-            //
-            // Recent versions of Play Services will use this field and ignore the
-            // others. In time, we should be able to skip serialising anything else
-            // in this function.
-            int b = writeHeader(13, parcel);
-            parcel.writeString(
-                    Fido2CredentialRequestJni.get().createOptionsToJson(options.serialize()));
-            writeLength(b, parcel);
-        }
-
         // 2: PublicKeyCredentialRpEntity
 
         int b = writeHeader(2, parcel);
@@ -398,6 +384,15 @@ public final class Fido2Api {
             writeLength(b, parcel);
         }
 
+        // 13: JSON serialisation of the request.
+        //
+        // Recent versions of Play Services will use this field and ignore the others. In time, we
+        // should be able to skip serialising anything else in this function.
+        b = writeHeader(13, parcel);
+        parcel.writeString(
+                Fido2CredentialRequestJni.get().createOptionsToJson(options.serialize()));
+        writeLength(b, parcel);
+
         // 14: resultReceiver
         if (resultReceiver != null) {
             b = writeHeader(14, parcel);
@@ -506,18 +501,6 @@ public final class Fido2Api {
             Parcel parcel) {
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
-        if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_FIDO_JSON)) {
-            // 11: JSON serialisation of the request.
-            //
-            // Recent versions of Play Services will use this field and ignore the
-            // others. In time, we should be able to skip serialising anything else
-            // in this function.
-            int z = writeHeader(11, parcel);
-            parcel.writeString(
-                    Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize()));
-            writeLength(z, parcel);
-        }
-
         // 2: challenge
         int z = writeHeader(2, parcel);
         parcel.writeByteArray(options.challenge);
@@ -550,6 +533,14 @@ public final class Fido2Api {
         // 9: extensions
         z = writeHeader(9, parcel);
         appendGetAssertionExtensionsToParcel(options, tunnelId, parcel);
+        writeLength(z, parcel);
+
+        // 11: JSON serialisation of the request.
+        //
+        // Recent versions of Play Services will use this field and ignore the others. In time, we
+        // should be able to skip serialising anything else in this function.
+        z = writeHeader(11, parcel);
+        parcel.writeString(Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize()));
         writeLength(z, parcel);
 
         // 12: resultReceiver
@@ -973,8 +964,7 @@ public final class Fido2Api {
         }
 
         if (creationResponse != null) {
-            if (jsonString != null
-                    && DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_FIDO_JSON)) {
+            if (jsonString != null) {
                 // If the JSON form was provided then we use that and ignore the
                 // rest.
                 byte[] responseSerialized =
@@ -1016,8 +1006,7 @@ public final class Fido2Api {
         }
 
         if (assertionResponse != null) {
-            if (jsonString != null
-                    && DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_FIDO_JSON)) {
+            if (jsonString != null) {
                 // If the JSON form was provided then we use that and ignore the
                 // rest.
                 byte[] responseSerialized =
