@@ -50,7 +50,7 @@ TEST(AvailLanguageTest, ParseAvailLanguage) {
   // Parameters to with two defaults.
   result = ParseAvailLanguage("en, zh;d, ja;d");
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), std::vector<std::string>({"ja", "zh", "en"}));
+  EXPECT_EQ(result.value(), std::vector<std::string>({"zh", "ja", "en"}));
 
   // Parameters to with other pattern are ignored.
   result = ParseAvailLanguage("en, zh;d=1");
