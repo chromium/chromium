@@ -538,22 +538,25 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
 
   builder.SetOutlineOffset(builder.OutlineOffset().ClampNegativeToZero());
 
-  builder.SetMarginLeft(
-      AdjustedBoundedLength(builder.MarginLeft(), /*lower_bound=*/kMinMargin,
-                            /*upper_bound=*/std::nullopt,
-                            /*should_multiply_by_content_size=*/false));
-  builder.SetMarginRight(
-      AdjustedBoundedLength(builder.MarginRight(), /*lower_bound=*/kMinMargin,
-                            /*upper_bound=*/std::nullopt,
-                            /*should_multiply_by_content_size=*/false));
-  builder.SetMarginTop(
-      AdjustedBoundedLength(builder.MarginTop(), /*lower_bound=*/kMinMargin,
-                            /*upper_bound=*/std::nullopt,
-                            /*should_multiply_by_content_size=*/false));
-  builder.SetMarginBottom(
-      AdjustedBoundedLength(builder.MarginBottom(), /*lower_bound=*/kMinMargin,
-                            /*upper_bound=*/std::nullopt,
-                            /*should_multiply_by_content_size=*/false));
+  auto device_pixel_ratio =
+      GetDocument().GetFrame()->LocalFrameRoot().DevicePixelRatio();
+
+  builder.SetMarginLeft(AdjustedBoundedLength(
+      builder.MarginLeft(), /*lower_bound=*/kMinMargin * device_pixel_ratio,
+      /*upper_bound=*/std::nullopt,
+      /*should_multiply_by_content_size=*/false));
+  builder.SetMarginRight(AdjustedBoundedLength(
+      builder.MarginRight(), /*lower_bound=*/kMinMargin * device_pixel_ratio,
+      /*upper_bound=*/std::nullopt,
+      /*should_multiply_by_content_size=*/false));
+  builder.SetMarginTop(AdjustedBoundedLength(
+      builder.MarginTop(), /*lower_bound=*/kMinMargin * device_pixel_ratio,
+      /*upper_bound=*/std::nullopt,
+      /*should_multiply_by_content_size=*/false));
+  builder.SetMarginBottom(AdjustedBoundedLength(
+      builder.MarginBottom(), /*lower_bound=*/kMinMargin * device_pixel_ratio,
+      /*upper_bound=*/std::nullopt,
+      /*should_multiply_by_content_size=*/false));
 
   // Check and modify (if needed) properties related to the font.
   std::optional<FontDescription> new_font_description;

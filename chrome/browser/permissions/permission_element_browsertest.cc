@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
@@ -489,3 +490,38 @@ IN_PROC_BROWSER_TEST_P(PermissionElementStandardizedBrowserZoomTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          PermissionElementStandardizedBrowserZoomTest,
                          testing::Bool());
+
+// Test fixture identical with |PermissionElementBrowserTest| but with simulated
+// different DPI devices.
+class PermissionElementHighDPITest : public PermissionElementBrowserTest,
+                                     public testing::WithParamInterface<float> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PermissionElementBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor,
+                                    base::StringPrintf("%f", GetParam()));
+  }
+};
+
+// Ensure that the margin limit of 4px is applied regardless of device DPI.
+IN_PROC_BROWSER_TEST_P(PermissionElementHighDPITest, TestMargins) {
+  SkipInvalidElementMessage();
+  for (const auto& property :
+       {"marginTop", "marginBottom", "marginLeft", "marginRight"}) {
+    for (const auto& id : {"camera", "microphone", "camera-microphone"}) {
+      EXPECT_EQ(
+          "4px",
+          content::EvalJs(
+              web_contents(),
+              base::StrCat({content::JsReplace(
+                                "getComputedStyle(document.getElementById("
+                                "$1)).",
+                                id),
+                            property})));
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PermissionElementHighDPITest,
+                         testing::Values(1.f, 1.25f, 1.5f, 2.f, 3.f));
