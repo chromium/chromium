@@ -775,27 +775,26 @@ FlexibleBoxAlgorithm::ContentAlignmentNormalBehavior() {
 bool FlexibleBoxAlgorithm::ShouldApplyMinSizeAutoForChild(
     const LayoutBox& child) const {
   // See: https://drafts.csswg.org/css-flexbox/#min-size-auto
-  const Length& min = IsHorizontalFlow() ? child.StyleRef().MinWidth()
-                                         : child.StyleRef().MinHeight();
-  bool main_axis_is_childs_block_axis =
-      IsHorizontalFlow() != child.StyleRef().IsHorizontalWritingMode();
-  bool intrinsic_in_childs_block_axis =
-      main_axis_is_childs_block_axis && min.HasContentOrIntrinsic();
-  if (!min.HasAuto() && !intrinsic_in_childs_block_axis) {
+
+  // webkit-box treats min-size: auto as 0.
+  if (StyleRef().IsDeprecatedWebkitBox()) {
     return false;
   }
 
-  // webkit-box treats min-size: auto as 0.
-  if (StyleRef().IsDeprecatedWebkitBox())
+  if (child.ShouldApplySizeContainment()) {
     return false;
-
-  if (child.ShouldApplySizeContainment())
-    return false;
+  }
 
   // Note that the spec uses "scroll container", but it's resolved to just look
   // at the computed value of overflow not being scrollable, see
   // https://github.com/w3c/csswg-drafts/issues/7714#issuecomment-1879319762
-  return child.StyleRef().IsOverflowVisibleOrClip();
+  if (child.StyleRef().IsScrollContainer()) {
+    return false;
+  }
+
+  const Length& min = IsHorizontalFlow() ? child.StyleRef().MinWidth()
+                                         : child.StyleRef().MinHeight();
+  return min.HasAuto();
 }
 
 LayoutUnit FlexibleBoxAlgorithm::IntrinsicContentBlockSize() const {

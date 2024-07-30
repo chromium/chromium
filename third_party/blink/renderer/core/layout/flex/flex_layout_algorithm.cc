@@ -746,13 +746,13 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       min_max_sizes_in_main_axis_direction.max_size = ResolveMaxInlineLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
           MinMaxSizesFunc, max_property_in_main_axis);
-      min_max_sizes_in_cross_axis_direction = ComputeMinMaxBlockSizesDeprecated(
-          flex_basis_space, child, border_padding_in_child_writing_mode);
+      min_max_sizes_in_cross_axis_direction = ComputeMinMaxBlockSizes(
+          flex_basis_space, child, border_padding_in_child_writing_mode,
+          BlockSizeFunc);
     } else {
-      min_max_sizes_in_main_axis_direction.max_size =
-          ResolveMaxBlockLengthDeprecated(flex_basis_space, child_style,
-                                          border_padding_in_child_writing_mode,
-                                          max_property_in_main_axis);
+      min_max_sizes_in_main_axis_direction.max_size = ResolveMaxBlockLength(
+          flex_basis_space, child_style, border_padding_in_child_writing_mode,
+          max_property_in_main_axis, BlockSizeFunc);
       min_max_sizes_in_cross_axis_direction = ComputeMinMaxInlineSizes(
           flex_basis_space, child, border_padding_in_child_writing_mode,
           MinMaxSizesFunc);
@@ -908,10 +908,9 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
           MinMaxSizesFunc, min);
     } else {
-      min_max_sizes_in_main_axis_direction.min_size =
-          ResolveMinBlockLengthDeprecated(flex_basis_space, child_style,
-                                          border_padding_in_child_writing_mode,
-                                          min);
+      min_max_sizes_in_main_axis_direction.min_size = ResolveMinBlockLength(
+          flex_basis_space, child_style, border_padding_in_child_writing_mode,
+          min, BlockSizeFunc);
     }
     // Flex needs to never give a table a flexed main size that is less than its
     // min-content size, so floor the min main-axis size by min-content size.
@@ -975,8 +974,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
                       is_used_flex_basis_indefinite, min_max_sizes.has_value())
         .ng_input_node_ = child;
     // Save the layout result so that we can maybe reuse it later.
-    if (layout_result) {
-      DCHECK(!is_main_axis_inline_axis);
+    if (layout_result && !is_main_axis_inline_axis) {
       algorithm_.all_items_.back().layout_result_ = layout_result;
     }
     algorithm_.all_items_.back().max_content_contribution_ =

@@ -150,6 +150,20 @@ inline LayoutUnit ResolveInitialMinBlockLength(
       /* override_percentage_resolution_size */ nullptr,
       [](SizeType) { return kIndefiniteSize; }, border_padding.BlockSum());
 }
+inline LayoutUnit ResolveMinBlockLength(
+    const ConstraintSpace& constraint_space,
+    const ComputedStyle& style,
+    const BoxStrut& border_padding,
+    const Length& length,
+    BlockSizeFunctionRef block_size_func,
+    LayoutUnit override_available_size = kIndefiniteSize,
+    const LayoutUnit* override_percentage_resolution_size = nullptr) {
+  return ResolveBlockLengthInternal(
+      constraint_space, style, border_padding, length,
+      /* auto_length */ &Length::Auto(), override_available_size,
+      override_percentage_resolution_size, block_size_func,
+      border_padding.BlockSum());
+}
 inline LayoutUnit ResolveMinBlockLengthDeprecated(
     const ConstraintSpace& constraint_space,
     const ComputedStyle& style,
@@ -178,6 +192,21 @@ inline LayoutUnit ResolveInitialMaxBlockLength(
       /* override_available_size */ kIndefiniteSize,
       /* override_percentage_resolution_size */ nullptr,
       [](SizeType) { return kIndefiniteSize; }, LayoutUnit::Max());
+}
+inline LayoutUnit ResolveMaxBlockLength(
+    const ConstraintSpace& constraint_space,
+    const ComputedStyle& style,
+    const BoxStrut& border_padding,
+    const Length& length,
+    BlockSizeFunctionRef block_size_func,
+    LayoutUnit override_available_size = kIndefiniteSize,
+    const LayoutUnit* override_percentage_resolution_size = nullptr) {
+  // TODO(https://crbug.com/313072): Ensure that we don't do math on
+  // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
+  return ResolveBlockLengthInternal(
+      constraint_space, style, border_padding, length,
+      /* auto_length */ &Length::Auto(), override_available_size,
+      override_percentage_resolution_size, block_size_func, LayoutUnit::Max());
 }
 inline LayoutUnit ResolveMaxBlockLengthDeprecated(
     const ConstraintSpace& constraint_space,
@@ -233,6 +262,12 @@ inline LayoutUnit ResolveMainBlockLength(
 MinMaxSizes ComputeInitialMinMaxBlockSizes(const ConstraintSpace&,
                                            const BlockNode&,
                                            const BoxStrut& border_padding);
+MinMaxSizes ComputeMinMaxBlockSizes(
+    const ConstraintSpace&,
+    const BlockNode&,
+    const BoxStrut& border_padding,
+    BlockSizeFunctionRef,
+    LayoutUnit override_available_size = kIndefiniteSize);
 MinMaxSizes ComputeMinMaxBlockSizesDeprecated(
     const ConstraintSpace&,
     const BlockNode&,

@@ -528,6 +528,29 @@ MinMaxSizes ComputeInitialMinMaxBlockSizes(const ConstraintSpace& space,
   return sizes;
 }
 
+MinMaxSizes ComputeMinMaxBlockSizes(const ConstraintSpace& space,
+                                    const BlockNode& node,
+                                    const BoxStrut& border_padding,
+                                    BlockSizeFunctionRef block_size_func,
+                                    LayoutUnit override_available_size) {
+  const ComputedStyle& style = node.Style();
+  MinMaxSizes sizes = {
+      ResolveMinBlockLength(space, style, border_padding,
+                            style.LogicalMinHeight(), block_size_func,
+                            override_available_size),
+      ResolveMaxBlockLength(space, style, border_padding,
+                            style.LogicalMaxHeight(), block_size_func,
+                            override_available_size)};
+
+  // Tables can't shrink below their min-intrinsic size.
+  if (node.IsTable()) {
+    sizes.Encompass(block_size_func(SizeType::kIntrinsic));
+  }
+
+  sizes.max_size = std::max(sizes.max_size, sizes.min_size);
+  return sizes;
+}
+
 MinMaxSizes ComputeMinMaxBlockSizesDeprecated(
     const ConstraintSpace& space,
     const BlockNode& node,
@@ -631,8 +654,8 @@ MinMaxSizes ComputeMinMaxInlineSizes(const ConstraintSpace& space,
     sizes.max_size = std::min(sizes.max_size, transferred_sizes.max_size);
   }
 
+  // Tables can't shrink below their min-intrinsic size.
   if (node.IsTable()) {
-    // Tables can't shrink below their inline min-content size.
     sizes.Encompass(min_max_sizes_func(SizeType::kIntrinsic).sizes.min_size);
   }
 
