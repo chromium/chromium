@@ -115,9 +115,9 @@ void HttpStreamPool::IncrementTotalConnectingStreamCount() {
   ++total_connecting_stream_count_;
 }
 
-void HttpStreamPool::DecrementTotalConnectingStreamCount() {
-  CHECK_GT(total_connecting_stream_count_, 0u);
-  --total_connecting_stream_count_;
+void HttpStreamPool::DecrementTotalConnectingStreamCount(size_t amount) {
+  CHECK_GE(total_connecting_stream_count_, amount);
+  total_connecting_stream_count_ -= amount;
 }
 
 void HttpStreamPool::OnIPAddressChanged() {

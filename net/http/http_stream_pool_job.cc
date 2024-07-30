@@ -198,6 +198,7 @@ void HttpStreamPool::Job::ProcessPendingRequest() {
 }
 
 void HttpStreamPool::Job::CancelInFlightAttempts() {
+  pool()->DecrementTotalConnectingStreamCount(in_flight_attempts_.size());
   in_flight_attempts_.clear();
   slow_attempt_count_ = 0;
 }

@@ -1412,6 +1412,7 @@ TEST_F(HttpStreamPoolJobTest, SpdyOk) {
   ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 0u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+  ASSERT_EQ(pool().TotalConnectingStreamCount(), 0u);
 }
 
 TEST_F(HttpStreamPoolJobTest, SpdyCreateSessionFail) {

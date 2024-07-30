@@ -98,7 +98,11 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   // Increments/Decrements the total number of connecting streams this pool.
   void IncrementTotalConnectingStreamCount();
-  void DecrementTotalConnectingStreamCount();
+  void DecrementTotalConnectingStreamCount(size_t amount = 1);
+
+  size_t TotalConnectingStreamCount() const {
+    return total_connecting_stream_count_;
+  }
 
   size_t TotalActiveStreamCount() const {
     return total_handed_out_stream_count_ + total_idle_stream_count_ +
