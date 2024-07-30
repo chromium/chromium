@@ -546,11 +546,15 @@ class AvdConfig:
       # image.
       writable_system = bool(privileged_apk_tuples)
       gpu_mode = self.avd_launch_settings.gpu_mode or _DEFAULT_GPU_MODE
-      instance.Start(ensure_system_settings=False,
-                     read_only=False,
-                     writable_system=writable_system,
-                     gpu_mode=gpu_mode,
-                     debug_tags=debug_tags)
+      instance.Start(
+          ensure_system_settings=False,
+          read_only=False,
+          writable_system=writable_system,
+          gpu_mode=gpu_mode,
+          debug_tags=debug_tags,
+          # Set this flag to True to align with swarming AVD run.
+          require_fast_start=True,
+      )
 
       assert instance.device is not None, '`instance.device` not initialized.'
       # Android devices with full-disk encryption are encrypted on first boot,
