@@ -3407,6 +3407,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SHARING_PASSWORD_PICKER_NEXT_BUTTON" desc="Button text for the confirm action in the password picker view in the password sharing flow. [iOS only]">
         Next
       </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_PASSWORD_PICKER_PASSKEY_INFO" desc="Text in credential picker view in the password sharing flow explaining that the passkey entry on the list is disabled, because passkeys can't be shared. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
+        Passkeys can't be shared
+      </message>
       <message name="IDS_IOS_PASSWORD_SHARING_SHARE_BUTTON" desc="Button text for the confirm action in the password sharing flow. [iOS only]">
         Share
       </message>
