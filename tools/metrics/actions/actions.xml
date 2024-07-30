@@ -41127,6 +41127,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Tabs.ArchivedTabsDialogShown">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>Recorded when the archived tabs dialog is shown.</description>
+</action>
+
 <action name="Tabs.CloseAllArchivedTabsMenuItem">
   <owner>wylieb@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>

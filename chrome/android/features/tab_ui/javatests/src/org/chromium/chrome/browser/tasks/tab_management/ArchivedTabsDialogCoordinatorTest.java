@@ -575,6 +575,7 @@ public class ArchivedTabsDialogCoordinatorTest {
                                                 numTabs)))
                 .perform(click());
         mRobot.resultRobot.verifyTabListEditorIsVisible();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.ArchivedTabsDialogShown"));
     }
 
     private @TabListCoordinator.TabListMode int getMode() {

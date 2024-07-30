@@ -333,6 +333,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         moveToState(TabActionState.CLOSABLE);
         // Add the dialog view.
         mRootView.addView(mView);
+        RecordUserAction.record("Tabs.ArchivedTabsDialogShown");
     }
 
     /** Hides the dialog. */
