@@ -125,9 +125,8 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
       std::string& resource_contents,
       ContentVerifyJobAsyncRunMode run_mode) {
     TestContentVerifySingleJobObserver observer(extension.id(), resource_path);
-    scoped_refptr<ContentVerifyJob> verify_job = new ContentVerifyJob(
-        extension.id(), extension.version(), extension.path(), resource_path,
-        extension.manifest_version(), base::DoNothing());
+    auto verify_job = base::MakeRefCounted<ContentVerifyJob>(
+        extension.id(), extension.path(), resource_path);
 
     auto run_content_read_step = [](ContentVerifyJob* verify_job,
                                     std::string* resource_contents) {
@@ -139,15 +138,20 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
 
     switch (run_mode) {
       case kNone:
-        StartJob(verify_job);  // Read hashes asynchronously.
+        // Read hashes asynchronously.
+        StartJob(verify_job, extension.version(), extension.manifest_version(),
+                 base::DoNothing());
         run_content_read_step(verify_job.get(), &resource_contents);
         break;
       case kContentReadBeforeHashesReady:
         run_content_read_step(verify_job.get(), &resource_contents);
-        StartJob(verify_job);  // Read hashes asynchronously.
+        // Read hashes asynchronously.
+        StartJob(verify_job, extension.version(), extension.manifest_version(),
+                 base::DoNothing());
         break;
       case kHashesReadyBeforeContentRead:
-        StartJob(verify_job);
+        StartJob(verify_job, extension.version(), extension.manifest_version(),
+                 base::DoNothing());
         // Wait for hashes to become ready.
         observer.WaitForOnHashesReady();
         run_content_read_step(verify_job.get(), &resource_contents);
@@ -167,9 +171,9 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
   void StartContentVerifyJob(const Extension& extension,
                              const base::FilePath& resource_path) {
     auto verify_job = base::MakeRefCounted<ContentVerifyJob>(
-        extension.id(), extension.version(), extension.path(), resource_path,
-        extension.manifest_version(), base::DoNothing());
-    StartJob(verify_job);
+        extension.id(), extension.path(), resource_path);
+    StartJob(verify_job, extension.version(), extension.manifest_version(),
+             base::DoNothing());
   }
 
   // Returns an extension after extracting and loading it from a .zip file.
@@ -228,10 +232,15 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
   }
 
  private:
-  void StartJob(scoped_refptr<ContentVerifyJob> job) {
+  void StartJob(scoped_refptr<ContentVerifyJob> job,
+                const base::Version& extension_version,
+                int manifest_version,
+                ContentVerifyJob::FailureCallback failure_callback) {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&ContentVerifyJob::Start, job,
-                                  base::Unretained(content_verifier_.get())));
+                                  base::Unretained(content_verifier_.get()),
+                                  extension_version, manifest_version,
+                                  std::move(failure_callback)));
   }
 
   scoped_refptr<ContentVerifier> content_verifier_;
@@ -842,14 +851,15 @@ TEST_F(ContentVerifyJobWithHashFetchUnittest, ReadErrorBeforeHashReady) {
     // Then ContentVerifyJob sees a benign read error (MOJO_RESULT_ABORTED).
     scoped_refptr<ContentVerifyJob> verify_job =
         base::MakeRefCounted<ContentVerifyJob>(
-            extension->id(), extension->version(), extension->path(),
-            resource_path, extension->manifest_version(), base::DoNothing());
+            extension->id(), extension->path(), resource_path);
     auto do_read_abort_and_done =
         [](scoped_refptr<ContentVerifyJob> job,
            scoped_refptr<ContentVerifier> content_verifier,
+           scoped_refptr<Extension> extension,
            base::OnceClosure done_callback) {
           DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-          job->Start(content_verifier.get());
+          job->Start(content_verifier.get(), extension->version(),
+                     extension->manifest_version(), base::DoNothing());
           job->BytesRead(nullptr, 0u, MOJO_RESULT_ABORTED);
           job->DoneReading();
           std::move(done_callback).Run();
@@ -857,8 +867,9 @@ TEST_F(ContentVerifyJobWithHashFetchUnittest, ReadErrorBeforeHashReady) {
 
     base::RunLoop run_loop;
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(do_read_abort_and_done, verify_job,
-                                  content_verifier(), run_loop.QuitClosure()));
+        FROM_HERE,
+        base::BindOnce(do_read_abort_and_done, verify_job, content_verifier(),
+                       extension, run_loop.QuitClosure()));
     run_loop.Run();
 
     // After read error is seen, finally serve hash to |verify_job|.

@@ -72,7 +72,7 @@ enum class ReadScriptContentSource {
   // ExtensionResource.
   kFile,
   // ResourceBundle.
-  kResouceBundle,
+  kResourceBundle,
 };
 
 // The key for storing a dynamic content script's id.
@@ -123,7 +123,7 @@ ReadScriptContent(UserScript::Content* script_file,
     if (script_resource_id) {
       const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
       return {rb.LoadDataResourceString(*script_resource_id),
-              ReadScriptContentSource::kResouceBundle};
+              ReadScriptContentSource::kResourceBundle};
     }
     LOG(WARNING) << "Failed to get file path to "
                  << script_file->relative_path().value() << " from "
@@ -163,12 +163,6 @@ void VerifyContent(VerifyContentInfo info) {
     }
     job->DoneReading();
   }
-}
-
-void ForwardVerifyContentToIO(VerifyContentInfo info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&VerifyContent, std::move(info)));
 }
 
 void RecordContentScriptLength(const std::string& script_content) {
@@ -230,12 +224,9 @@ void LoadScriptContent(const mojom::HostID& host_id,
     VerifyContentInfo info(verifier, host_id.id, script_file->extension_root(),
                            script_file->relative_path(), content);
 
-    // Call VerifyContent() after yielding on UI thread so it is ensured that
-    // ContentVerifierIOData is populated at the time we call VerifyContent().
     // Priority set explicitly to avoid unwanted task priority inheritance.
-    content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(&ForwardVerifyContentToIO, std::move(info)));
+    content::GetIOThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
+        ->PostTask(FROM_HERE, base::BindOnce(&VerifyContent, std::move(info)));
   }
 
   if (!content)

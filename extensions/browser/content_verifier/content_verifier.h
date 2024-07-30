@@ -7,7 +7,8 @@
 
 #include <memory>
 #include <set>
-#include <string>
+#include <unordered_set>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -178,7 +179,12 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
     kMaxValue = kMiscFile,
   };
 
+  void StartOnIO();
   void ShutdownOnIO();
+
+  // If a verification is needed, starts the verification job and returns true.
+  // Otherwise, returns false without starting the job.
+  bool StartJob(const scoped_refptr<ContentVerifyJob>& job);
 
   struct CacheKey;
   class HashHelper;
@@ -208,6 +214,13 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   void OnExtensionUnloadedOnIO(const ExtensionId& extension_id,
                                const base::Version& extension_version);
 
+  // Called to indicate that all the relevant data is ready for the extension,
+  // and we can start verifying files.
+  void OnExtensionDataReady(const ExtensionId& extension_id);
+
+  // Called to remove all pending jobs for the extension.
+  void RemovePendingJobsForId(const ExtensionId& extension_id);
+
   // Called (typically by a verification job) to indicate that verification
   // failed while reading some file in `extension_id`. `failed_file_types` and
   // `manifest_version` indicate additional data about which file was detected
@@ -220,6 +233,18 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   // Returns the HashHelper instance, making sure we create it at most once.
   // Must *not* be called after |shutdown_on_io_| is set to true.
   HashHelper* GetOrCreateHashHelper();
+
+  // Set to true once |Start| is called to enable content verification. Updated
+  // and accessed only on IO thread.
+  bool verification_enabled_ = false;
+
+  // A set of extension ids for which the verification data is ready. Updated
+  // and accessed only on IO thread.
+  std::unordered_set<ExtensionId> ready_extensions_;
+
+  // Jobs which are waiting for the extension data to be ready. Updated and
+  // accessed only on IO thread.
+  std::vector<scoped_refptr<ContentVerifyJob>> pending_jobs_;
 
   // Set to true once we've begun shutting down on UI thread.
   // Updated and accessed only on UI thread.

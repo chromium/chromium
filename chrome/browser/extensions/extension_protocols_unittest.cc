@@ -265,6 +265,7 @@ class ExtensionProtocolsTestBase : public testing::Test,
     content_verifier_ = new ContentVerifier(
         browser_context(),
         std::make_unique<ChromeContentVerifierDelegate>(browser_context()));
+    content_verifier_->Start();
     static_cast<TestExtensionSystem*>(ExtensionSystem::Get(browser_context()))
         ->set_content_verifier(content_verifier_.get());
     loader_factory_.Bind(
@@ -287,6 +288,7 @@ class ExtensionProtocolsTestBase : public testing::Test,
                     bool incognito_enabled,
                     bool notifications_disabled) {
     EXPECT_TRUE(extension_registry()->AddEnabled(extension));
+    extension_registry()->TriggerOnLoaded(extension.get());
     ExtensionPrefs::Get(browser_context())
         ->SetIsIncognitoEnabled(extension->id(), incognito_enabled);
   }
@@ -294,6 +296,7 @@ class ExtensionProtocolsTestBase : public testing::Test,
   void RemoveExtension(const scoped_refptr<const Extension>& extension,
                        const UnloadedExtensionReason reason) {
     EXPECT_TRUE(extension_registry()->RemoveEnabled(extension->id()));
+    extension_registry()->TriggerOnUnloaded(extension.get(), reason);
     if (reason == UnloadedExtensionReason::DISABLE)
       EXPECT_TRUE(extension_registry()->AddDisabled(extension));
   }
@@ -855,11 +858,6 @@ TEST_P(ExtensionProtocolsTest, VerificationSeenForFileAccessErrors) {
   // Valid and readable 1024.js.
   {
     TestContentVerifySingleJobObserver observer(extension_id, kRelativePath);
-
-    content_verifier_->OnExtensionLoaded(browser_context(), extension.get());
-    // Wait for PostTask to ContentVerifierIOData::AddData() to finish.
-    content::RunAllPendingInMessageLoop();
-
     EXPECT_EQ(net::OK, DoRequestOrLoad(extension, kJs).result());
     EXPECT_EQ(ContentVerifyJob::NONE, observer.WaitForJobFinished());
   }
@@ -914,11 +912,6 @@ TEST_P(ExtensionProtocolsTest, VerificationSeenForZeroByteFile) {
   // Request empty.js.
   {
     TestContentVerifySingleJobObserver observer(extension_id, kRelativePath);
-
-    content_verifier_->OnExtensionLoaded(browser_context(), extension.get());
-    // Wait for PostTask to ContentVerifierIOData::AddData() to finish.
-    content::RunAllPendingInMessageLoop();
-
     EXPECT_EQ(net::OK, DoRequestOrLoad(extension, kEmptyJs).result());
     EXPECT_EQ(ContentVerifyJob::NONE, observer.WaitForJobFinished());
   }
@@ -971,11 +964,6 @@ TEST_P(ExtensionProtocolsTest, VerifyScriptListedAsIcon) {
   // Request background.js.
   {
     TestContentVerifySingleJobObserver observer(extension_id, kRelativePath);
-
-    content_verifier_->OnExtensionLoaded(browser_context(), extension.get());
-    // Wait for PostTask to ContentVerifierIOData::AddData() to finish.
-    base::RunLoop().RunUntilIdle();
-
     EXPECT_EQ(net::OK, DoRequestOrLoad(extension, kBackgroundJs).result());
     EXPECT_EQ(ContentVerifyJob::NONE, observer.WaitForJobFinished());
   }
@@ -985,12 +973,8 @@ TEST_P(ExtensionProtocolsTest, VerifyScriptListedAsIcon) {
     base::FilePath file_path = unzipped_path.AppendASCII("background.js");
     const std::string content = "new content";
     EXPECT_TRUE(base::WriteFile(file_path, content));
+
     TestContentVerifySingleJobObserver observer(extension_id, kRelativePath);
-
-    content_verifier_->OnExtensionLoaded(browser_context(), extension.get());
-    // Wait for PostTask to ContentVerifierIOData::AddData() to finish.
-    base::RunLoop().RunUntilIdle();
-
     EXPECT_EQ(net::OK, DoRequestOrLoad(extension, kBackgroundJs).result());
     EXPECT_EQ(ContentVerifyJob::HASH_MISMATCH, observer.WaitForJobFinished());
   }
