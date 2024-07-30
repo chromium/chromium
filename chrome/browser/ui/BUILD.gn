@@ -4616,6 +4616,7 @@ static_library("ui") {
       "views/extensions/reload_page_dialog.cc",
       "views/extensions/security_dialog_tracker.cc",
       "views/extensions/security_dialog_tracker.h",
+      "views/extensions/windows_utils_views.cc",
       "views/file_system_access/file_system_access_dangerous_file_dialog.cc",
       "views/file_system_access/file_system_access_dangerous_file_dialog.h",
       "views/file_system_access/file_system_access_icon_view.cc",

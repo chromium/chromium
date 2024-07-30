@@ -11703,6 +11703,7 @@ if (!is_android && !is_chromeos_device) {
     if (enable_extensions) {
       sources += [
         "../browser/extensions/api/extension_action/extension_action_api_interactive_uitest.cc",
+        "../browser/extensions/api/permissions/permissions_api_interactive_uitest.cc",
         "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_interactive_uitest.cc",
       ]
       deps += [ "//chrome/browser/controlled_frame:test_support" ]
