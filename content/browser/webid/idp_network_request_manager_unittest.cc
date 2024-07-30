@@ -108,9 +108,9 @@ std::string RemoveAllLinesWithKeyFromJson(const std::string& key,
 }
 
 url::Origin GetOriginHeader(const network::ResourceRequest& request) {
-  std::string origin;
-  request.headers.GetHeader(net::HttpRequestHeaders::kOrigin, &origin);
-  return url::Origin::Create(GURL(origin));
+  return url::Origin::Create(
+      GURL(request.headers.GetHeader(net::HttpRequestHeaders::kOrigin)
+               .value_or(std::string())));
 }
 
 class IdpNetworkRequestManagerTest : public ::testing::Test {
