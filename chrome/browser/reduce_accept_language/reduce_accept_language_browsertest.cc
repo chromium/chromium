@@ -346,13 +346,9 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
   // Returns the value of the Accept-Language request header from the last sent
   // request, or nullopt if the header could not be read.
   const std::optional<std::string>& GetLastAcceptLanguageHeaderValue() {
-    std::string accept_language_header_value;
-    if (url_loader_interceptor_->GetLastRequestHeaders().GetHeader(
-            "accept-language", &accept_language_header_value)) {
-      last_accept_language_value_ = accept_language_header_value;
-    } else {
-      last_accept_language_value_ = std::nullopt;
-    }
+    last_accept_language_value_ =
+        url_loader_interceptor_->GetLastRequestHeaders().GetHeader(
+            "accept-language");
     return last_accept_language_value_;
   }
 
