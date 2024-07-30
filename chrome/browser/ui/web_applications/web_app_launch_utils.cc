@@ -106,15 +106,6 @@ namespace web_app {
 
 namespace {
 
-ui::WindowShowState DetermineWindowShowState(bool is_system_web_app) {
-  // Show SWAs in Kiosk non-fullscreen.
-  if (chrome::IsRunningInForcedAppMode() && !is_system_web_app) {
-    return ui::SHOW_STATE_FULLSCREEN;
-  }
-
-  return ui::SHOW_STATE_DEFAULT;
-}
-
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            Browser* target_browser,
                                            const webapps::AppId& app_id,
@@ -480,36 +471,35 @@ void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id) {
   }
 }
 
-Browser* CreateWebApplicationWindow(Profile* profile,
-                                    const std::string& app_id,
-                                    WindowOpenDisposition disposition,
-                                    int32_t restore_id,
-                                    bool omit_from_session_restore,
-                                    bool can_resize,
-                                    bool can_maximize,
-                                    bool can_fullscreen,
-                                    bool is_system_web_app,
-                                    const gfx::Rect initial_bounds) {
+Browser::CreateParams CreateParamsForApp(const webapps::AppId& app_id,
+                                         bool is_popup,
+                                         bool trusted_source,
+                                         const gfx::Rect& window_bounds,
+                                         Profile* profile,
+                                         bool user_gesture) {
   std::string app_name = GenerateApplicationNameFromAppId(app_id);
-  Browser::CreateParams browser_params =
-      disposition == WindowOpenDisposition::NEW_POPUP
+  Browser::CreateParams params =
+      is_popup
           ? Browser::CreateParams::CreateForAppPopup(
-                app_name, /*trusted_source=*/true, initial_bounds, profile,
-                /*user_gesture=*/true)
+                app_name, trusted_source, window_bounds, profile, user_gesture)
           : Browser::CreateParams::CreateForApp(
-                app_name, /*trusted_source=*/true, initial_bounds, profile,
-                /*user_gesture=*/true);
-  browser_params.initial_show_state =
-      DetermineWindowShowState(is_system_web_app);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  browser_params.restore_id = restore_id;
-#endif
-  browser_params.omit_from_session_restore = omit_from_session_restore;
-  browser_params.can_resize = can_resize;
-  browser_params.can_maximize = can_maximize;
-  browser_params.can_fullscreen = can_fullscreen;
-  Browser* browser = Browser::Create(browser_params);
-  MaybeAddPinnedHomeTab(browser, app_id);
+                app_name, trusted_source, window_bounds, profile, user_gesture);
+  params.initial_show_state = chrome::IsRunningInForcedAppMode()
+                                  ? ui::SHOW_STATE_FULLSCREEN
+                                  : ui::SHOW_STATE_DEFAULT;
+  return params;
+}
+
+Browser* CreateWebAppWindowMaybeWithHomeTab(
+    const webapps::AppId& app_id,
+    const Browser::CreateParams& params) {
+  CHECK(params.type == Browser::Type::TYPE_APP_POPUP ||
+        params.type == Browser::Type::TYPE_APP);
+  Browser* browser = Browser::Create(params);
+  CHECK(GenerateApplicationNameFromAppId(app_id) == browser->app_name());
+  if (params.type != Browser::Type::TYPE_APP_POPUP) {
+    MaybeAddPinnedHomeTab(browser, app_id);
+  }
   return browser;
 }
 

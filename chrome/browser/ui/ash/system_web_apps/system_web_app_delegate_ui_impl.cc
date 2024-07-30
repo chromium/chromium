@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -17,6 +16,8 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -52,10 +53,18 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
 
   bool started_new_navigation = false;
   if (!browser) {
-    browser = web_app::CreateWebApplicationWindow(
-        profile, params.app_id, params.disposition, params.restore_id,
-        kOmitFromSessionRestore, ShouldAllowResize(), ShouldAllowMaximize(),
-        ShouldAllowFullscreen(), /*is_system_web_app=*/true);
+    Browser::CreateParams create_params = web_app::CreateParamsForApp(
+        params.app_id, params.disposition == WindowOpenDisposition::NEW_POPUP,
+        /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(), profile,
+        /*user_gesture=*/true);
+    create_params.restore_id = params.restore_id;
+    create_params.omit_from_session_restore = kOmitFromSessionRestore;
+    create_params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+    create_params.can_resize = ShouldAllowResize();
+    create_params.can_maximize = ShouldAllowMaximize();
+    create_params.can_fullscreen = ShouldAllowFullscreen();
+    browser = web_app::CreateWebAppWindowMaybeWithHomeTab(params.app_id,
+                                                          create_params);
     started_new_navigation = true;
   }
 

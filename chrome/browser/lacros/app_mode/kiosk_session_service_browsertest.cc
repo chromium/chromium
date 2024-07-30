@@ -27,6 +27,7 @@
 #include "chromeos/startup/browser_init_params.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/base_window.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 
 using crosapi::mojom::BrowserInitParams;
@@ -79,9 +80,12 @@ void SetBrowserInitParamsForWebKiosk() {
 void CreateKioskAppWindowAndWaitInitialized() {
   base::test::TestFuture<void> kiosk_initialized;
   KioskWebSessionInitializedWaiter waiter(kiosk_initialized.GetCallback());
-  web_app::CreateWebApplicationWindow(&GetProfile(), kWebAppUrl,
-                                      WindowOpenDisposition::NEW_POPUP,
-                                      /*restore_id=*/0);
+  Browser::CreateParams params = web_app::CreateParamsForApp(
+      kWebAppUrl,
+      /*is_popup*/ true,
+      /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(), &GetProfile(),
+      /*user_gesture=*/true);
+  web_app::CreateWebAppWindowMaybeWithHomeTab(kWebAppUrl, params);
   EXPECT_TRUE(kiosk_initialized.Wait());
   EXPECT_NE(
       KioskSessionServiceLacros::Get()->GetKioskBrowserSessionForTesting(),
@@ -102,9 +106,12 @@ bool DidSessionCloseNewWindow() {
 }
 
 Browser* CreateBrowserWithWindowOfType(WindowOpenDisposition window_type) {
-  Browser* browser = web_app::CreateWebApplicationWindow(
-      &GetProfile(), kWebAppUrl, window_type,
-      /*restore_id=*/0);
+  Browser::CreateParams params = web_app::CreateParamsForApp(
+      kWebAppUrl, window_type == WindowOpenDisposition::NEW_POPUP,
+      /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(), &GetProfile(),
+      /*user_gesture=*/true);
+  Browser* browser =
+      web_app::CreateWebAppWindowMaybeWithHomeTab(kWebAppUrl, params);
   browser->window()->Show();
   return browser;
 }

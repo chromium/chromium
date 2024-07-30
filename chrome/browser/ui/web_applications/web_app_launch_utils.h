@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
@@ -85,16 +86,18 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
 
 void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id);
 
-Browser* CreateWebApplicationWindow(Profile* profile,
-                                    const std::string& app_id,
-                                    WindowOpenDisposition disposition,
-                                    int32_t restore_id,
-                                    bool omit_from_session_restore = false,
-                                    bool can_resize = true,
-                                    bool can_maximize = true,
-                                    bool can_fullscreen = true,
-                                    bool is_system_web_app = false,
-                                    gfx::Rect initial_bounds = gfx::Rect());
+// This creates appropriate CreateParams for creating a PWA window or PWA popup
+// window.
+Browser::CreateParams CreateParamsForApp(const webapps::AppId& app_id,
+                                         bool is_popup,
+                                         bool trusted_source,
+                                         const gfx::Rect& window_bounds,
+                                         Profile* profile,
+                                         bool user_gesture);
+
+Browser* CreateWebAppWindowMaybeWithHomeTab(
+    const webapps::AppId& app_id,
+    const Browser::CreateParams& params);
 
 content::WebContents* NavigateWebApplicationWindow(
     Browser* browser,

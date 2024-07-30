@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/geometry/rect.h"
 
 using crosapi::mojom::BrowserInitParams;
 using crosapi::mojom::BrowserInitParamsPtr;
@@ -37,10 +38,12 @@ const char kWebAppUrl[] = "https://www.example.com/";
 }
 
 void CreateKioskWindow() {
-  web_app::CreateWebApplicationWindow(ProfileManager::GetPrimaryUserProfile(),
-                                      kWebAppUrl,
-                                      WindowOpenDisposition::NEW_POPUP,
-                                      /*restore_id=*/0);
+  Browser::CreateParams params = web_app::CreateParamsForApp(
+      kWebAppUrl,
+      /*is_popup=*/true, /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(),
+      /*profile=*/ProfileManager::GetPrimaryUserProfile(),
+      /*user_gesture*/ true);
+  web_app::CreateWebAppWindowMaybeWithHomeTab(kWebAppUrl, params);
 }
 
 void SetBrowserInitParamsForWebKiosk() {

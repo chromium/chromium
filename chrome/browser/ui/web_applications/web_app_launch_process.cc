@@ -31,6 +31,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "extensions/common/constants.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "url/gurl.h"
 
@@ -330,8 +331,16 @@ Browser* WebAppLaunchProcess::CreateBrowserForLaunch() {
                                                  /*user_gesture=*/true));
   }
 
-  return CreateWebApplicationWindow(&*profile_, params_->app_id,
-                                    params_->disposition, params_->restore_id);
+  Browser::CreateParams browser_params = web_app::CreateParamsForApp(
+      params_->app_id,
+      /*is_popup=*/params_->disposition == WindowOpenDisposition::NEW_POPUP,
+      /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(),
+      /*profile=*/&profile_.get(),
+      /*user_gesture*/ true);
+#if BUILDFLAG(IS_CHROMEOS)
+  browser_params.restore_id = params_->restore_id;
+#endif
+  return CreateWebAppWindowMaybeWithHomeTab(params_->app_id, browser_params);
 }
 
 WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
