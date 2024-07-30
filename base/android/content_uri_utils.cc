@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/files/file.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/base_jni/ContentUriUtils_jni.h"
@@ -22,11 +23,39 @@ bool ContentUriExists(const FilePath& content_uri) {
   return Java_ContentUriUtils_contentUriExists(env, j_uri);
 }
 
-File OpenContentUriForRead(const FilePath& content_uri) {
+std::optional<std::string> TranslateOpenFlagsToJavaMode(uint32_t open_flags) {
+  // The allowable modes from ParcelFileDescriptor#parseMode() are
+  // ("r", "w", "wt", "wa", "rw", "rwt"), we disallow "w" which has been the
+  // source of android security issues.
+
+  // Ignore async.
+  open_flags &= ~File::FLAG_ASYNC;
+
+  switch (open_flags) {
+    case File::FLAG_OPEN | File::FLAG_READ:
+      return "r";
+    case File::FLAG_OPEN_ALWAYS | File::FLAG_READ | File::FLAG_WRITE:
+      return "rw";
+    case File::FLAG_OPEN_ALWAYS | File::FLAG_APPEND:
+      return "wa";
+    case File::FLAG_CREATE_ALWAYS | File::FLAG_READ | File::FLAG_WRITE:
+      return "rwt";
+    case File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE:
+      return "wt";
+    default:
+      return std::nullopt;
+  }
+}
+
+File OpenContentUri(const FilePath& content_uri, uint32_t open_flags) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_uri =
       ConvertUTF8ToJavaString(env, content_uri.value());
-  jint fd = Java_ContentUriUtils_openContentUriForRead(env, j_uri);
+  auto mode = TranslateOpenFlagsToJavaMode(open_flags);
+  CHECK(mode.has_value()) << "Unsupported flags=0x" << std::hex << open_flags;
+  ScopedJavaLocalRef<jstring> j_mode =
+      ConvertUTF8ToJavaString(env, mode.value());
+  jint fd = Java_ContentUriUtils_openContentUri(env, j_uri, j_mode);
   if (fd < 0)
     return File();
   return File(fd);

@@ -50,7 +50,7 @@ void HandleFileUploadRequest(
     }
 #if BUILDFLAG(IS_ANDROID)
     if (file_path.IsContentUri()) {
-      files.push_back(base::OpenContentUriForRead(file_path));
+      files.push_back(base::OpenContentUri(file_path, file_flags));
     } else {
       files.emplace_back(file_path, file_flags);
     }

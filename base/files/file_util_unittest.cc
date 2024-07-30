@@ -4434,10 +4434,14 @@ TEST_F(FileUtilTest, DISABLED_ValidContentUriTest) {
   EXPECT_EQ(image_size, content_uri_size);
 
   // We should be able to read the file.
-  File file = OpenContentUriForRead(path);
+  File file = OpenContentUri(path, File::FLAG_OPEN | File::FLAG_READ);
   EXPECT_TRUE(file.IsValid());
   auto buffer = std::make_unique<char[]>(image_size);
   EXPECT_TRUE(file.ReadAtCurrentPos(buffer.get(), image_size));
+
+  // We should be able to open the file as writable.
+  file = OpenContentUri(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
+  EXPECT_TRUE(file.IsValid());
 }
 
 TEST_F(FileUtilTest, NonExistentContentUriTest) {
@@ -4449,7 +4453,7 @@ TEST_F(FileUtilTest, NonExistentContentUriTest) {
   EXPECT_FALSE(GetFileSize(path, &size));
 
   // We should not be able to read the file.
-  File file = OpenContentUriForRead(path);
+  File file = OpenContentUri(path, File::FLAG_OPEN | File::FLAG_READ);
   EXPECT_FALSE(file.IsValid());
 }
 #endif

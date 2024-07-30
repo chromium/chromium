@@ -982,7 +982,7 @@ bool GetFileInfo(const FilePath& file_path, File::Info* results) {
   stat_wrapper_t file_info;
 #if BUILDFLAG(IS_ANDROID)
   if (file_path.IsContentUri()) {
-    File file = OpenContentUriForRead(file_path);
+    File file = OpenContentUri(file_path, File::FLAG_OPEN | File::FLAG_READ);
     if (!file.IsValid()) {
       return false;
     }
@@ -1357,7 +1357,7 @@ bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
   File infile;
 #if BUILDFLAG(IS_ANDROID)
   if (from_path.IsContentUri()) {
-    infile = OpenContentUriForRead(from_path);
+    infile = OpenContentUri(from_path, File::FLAG_OPEN | File::FLAG_READ);
   } else {
     infile = File(from_path, File::FLAG_OPEN | File::FLAG_READ);
   }

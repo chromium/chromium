@@ -71,15 +71,18 @@ public abstract class ContentUriUtils {
     }
 
     /**
-     * Opens the content URI for reading, and returns the file descriptor to
-     * the caller. The caller is responsible for closing the file descriptor.
+     * Opens the content URI for the specified mode, and returns the file descriptor to the caller.
+     * The caller is responsible for closing the file descriptor.
      *
      * @param uriString the content URI to open
+     * @param mode the mode to open. Allows all values from ParcelFileDescriptor#parseMode(): ("r",
+     *     "w", "wt", "wa", "rw" or "rwt"), but disallows "w" which has been the source of android
+     *     security issues.
      * @return file descriptor upon success, or -1 otherwise.
      */
     @CalledByNative
-    public static int openContentUriForRead(String uriString) {
-        AssetFileDescriptor afd = getAssetFileDescriptor(uriString);
+    public static int openContentUri(String uriString, String mode) {
+        AssetFileDescriptor afd = getAssetFileDescriptor(uriString, mode);
         if (afd != null) {
             return afd.getParcelFileDescriptor().detachFd();
         }
@@ -96,7 +99,7 @@ public abstract class ContentUriUtils {
     public static boolean contentUriExists(String uriString) {
         AssetFileDescriptor asf = null;
         try {
-            asf = getAssetFileDescriptor(uriString);
+            asf = getAssetFileDescriptor(uriString, "r");
             return asf != null;
         } finally {
             // Do not use StreamUtil.closeQuietly here, as AssetFileDescriptor
@@ -120,7 +123,7 @@ public abstract class ContentUriUtils {
     @CalledByNative
     public static long getContentUriFileSize(String uriString) {
         long size = -1;
-        AssetFileDescriptor afd = getAssetFileDescriptor(uriString);
+        AssetFileDescriptor afd = getAssetFileDescriptor(uriString, "r");
         if (afd != null) {
             size = afd.getLength();
         }
@@ -149,9 +152,17 @@ public abstract class ContentUriUtils {
      * Helper method to open a content URI and returns the ParcelFileDescriptor.
      *
      * @param uriString the content URI to open.
+     * @param mode the mode to open. Allows all values from ParcelFileDescriptor#parseMode(): ("r",
+     *     "w", "wt", "wa", "rw" or "rwt"), but disallows "w" which has been the source of android
+     *     security issues.
      * @return AssetFileDescriptor of the content URI, or NULL if the file does not exist.
      */
-    private static AssetFileDescriptor getAssetFileDescriptor(String uriString) {
+    private static AssetFileDescriptor getAssetFileDescriptor(String uriString, String mode) {
+        if ("w".equals(mode)) {
+            Log.e(TAG, "Cannot open files with mode 'w'");
+            return null;
+        }
+
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         Uri uri = Uri.parse(uriString);
 
@@ -163,7 +174,7 @@ public abstract class ContentUriUtils {
                     afd = resolver.openTypedAssetFileDescriptor(uri, streamTypes[0], null);
                 }
             } else {
-                afd = resolver.openAssetFileDescriptor(uri, "r");
+                afd = resolver.openAssetFileDescriptor(uri, mode);
             }
             if (afd != null && afd.getStartOffset() != 0) {
                 StreamUtil.closeQuietly(afd);

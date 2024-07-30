@@ -45,7 +45,8 @@ void ReadFile(const base::FilePath& file_path,
   base::File file;
 #if BUILDFLAG(IS_ANDROID)
   if (file_path.IsContentUri()) {
-    file = base::OpenContentUriForRead(file_path);
+    file = base::OpenContentUri(file_path,
+                                base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (!file.IsValid()) {
       OnReadComplete(main_task_runner, std::move(cb), false /*success*/,
                      std::vector<char>());

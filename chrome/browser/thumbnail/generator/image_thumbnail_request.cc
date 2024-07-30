@@ -36,7 +36,8 @@ std::vector<uint8_t> LoadImageData(const base::FilePath& path) {
   base::File file;
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
-    file = base::OpenContentUriForRead(path);
+    file = base::OpenContentUri(path,
+                                base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (!file.IsValid())
       return data;
   }

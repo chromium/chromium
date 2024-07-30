@@ -170,10 +170,7 @@ FileStream::Context::OpenResult FileStream::Context::OpenFileImpl(
   base::File file;
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
-    // Check that only Read flags are set.
-    DCHECK_EQ(open_flags & ~base::File::FLAG_ASYNC,
-              base::File::FLAG_OPEN | base::File::FLAG_READ);
-    file = base::OpenContentUriForRead(path);
+    file = base::OpenContentUri(path, open_flags);
   } else {
 #endif  // BUILDFLAG(IS_ANDROID)
     // FileStream::Context actually closes the file asynchronously,
