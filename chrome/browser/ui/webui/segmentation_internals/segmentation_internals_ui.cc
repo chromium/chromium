@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_page_handler_impl.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -39,9 +40,11 @@ void SegmentationInternalsUI::CreatePageHandler(
     mojo::PendingRemote<segmentation_internals::mojom::Page> page,
     mojo::PendingReceiver<segmentation_internals::mojom::PageHandler>
         receiver) {
-  segmentation_internals_page_handler_ =
-      std::make_unique<SegmentationInternalsPageHandlerImpl>(
-          std::move(receiver), std::move(page), profile_);
+  segmentation_internals_page_handler_ = std::make_unique<
+      SegmentationInternalsPageHandlerImpl>(
+      std::move(receiver), std::move(page),
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          profile_));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SegmentationInternalsUI)

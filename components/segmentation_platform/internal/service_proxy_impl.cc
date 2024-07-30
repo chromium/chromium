@@ -219,6 +219,8 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
       result.back().segment_status.emplace_back(
           segment_id.first, SegmentMetadataToString(*info),
           PredictionResultToString(*info, current_segment_rank),
+          base::Time::FromDeltaSinceWindowsEpoch(
+              base::Microseconds(info->prediction_result().timestamp_us())),
           can_execute_segment);
     }
   }

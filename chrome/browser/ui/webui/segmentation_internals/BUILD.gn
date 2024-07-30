@@ -7,4 +7,5 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "segmentation_internals.mojom" ]
   webui_module_path = "/"
+  deps = [ "//mojo/public/mojom/base" ]
 }
