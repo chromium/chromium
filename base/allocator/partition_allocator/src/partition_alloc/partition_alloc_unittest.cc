@@ -2524,6 +2524,42 @@ TEST_P(PartitionAllocDeathTest, MTEProtectsFreedPtr) {
       },
       testing::KilledBySignal(SIGSEGV), "");
 }
+
+// Check that accessing freed memory will not trigger a crash in
+// SuspendTagCheckingScope.
+TEST_P(PartitionAllocDeathTest, SuspendTagCheckingScope) {
+  base::CPU cpu;
+  if (!cpu.has_mte()) {
+    // This test won't pass on systems without MTE.
+    GTEST_SKIP();
+  }
+
+  constexpr uint64_t kCookie = 0x1234567890ABCDEF;
+  constexpr uint64_t kQuarantined = 0xEFEFEFEFEFEFEFEF;
+
+  // Make an arbitrary-sized small allocation.
+  size_t alloc_size = 64 - ExtraAllocSize(allocator);
+  uint64_t* ptr =
+      static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
+  EXPECT_TRUE(ptr);
+
+  // Invalidate ptr by freeing it.
+  allocator.root()->Free(ptr);
+
+  // Writing to ptr after free() should usually crash but not in
+  // |SuspendTagCheckingScope|.
+  {
+    partition_alloc::SuspendTagCheckingScope scope;
+    *ptr = kQuarantined;
+  }
+  // Check that access after the scope will crash.
+  EXPECT_EXIT(
+      {
+        // Should be in synchronous MTE mode for running this test.
+        *ptr = kQuarantined;
+      },
+      testing::KilledBySignal(SIGSEGV), "");
+}
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
 // Make sure that malloc(-1) dies.

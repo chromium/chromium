@@ -149,6 +149,20 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PermissiveMte {
 };
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
+// Stops MTE tag checking for the current thread while this is alive. This does
+// not affect the return value for GetMemoryTaggingModeForCurrentThread().
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SuspendTagCheckingScope final {
+ public:
+  SuspendTagCheckingScope() noexcept;
+  ~SuspendTagCheckingScope();
+
+ private:
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+  // Stores the previous value of the Tag Check Override (TCO) register.
+  uint64_t previous_tco_;
+#endif
+};
+
 }  // namespace partition_alloc
 
 #endif  // PARTITION_ALLOC_TAGGING_H_
