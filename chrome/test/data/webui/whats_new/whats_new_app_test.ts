@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://whats-new/whats_new_app.js';
-
 import {CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
@@ -11,6 +9,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {ModulePosition, ScrollDepth} from 'chrome://whats-new/whats_new.mojom-webui.js';
+import {formatModuleName} from 'chrome://whats-new/whats_new_app.js';
 import {WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
 
 import {TestWhatsNewBrowserProxy} from './test_whats_new_browser_proxy.js';
@@ -207,5 +206,23 @@ suite('WhatsNewAppTest', function() {
         await proxy.handler.whenCalled('recordModuleLinkClicked');
     assertEquals('FeatureWithLink', clickedModule[0]);
     assertEquals(ModulePosition.kSpotlight1, clickedModule[1]);
+  });
+
+  test('with different module name formats', async () => {
+    // Formats legacy format correctly.
+    assertEquals('ChromeFeature', formatModuleName('123-chrome-feature'));
+    // Ignores modern format.
+    assertEquals('ChromeFeature', formatModuleName('ChromeFeature'));
+
+    // Edge-cases
+    // Ignores when no hyphens present.
+    assertEquals('chrome', formatModuleName('chrome'));
+    // Ignores when starts with numbers, but does not contain hyphens.
+    assertEquals('123feature', formatModuleName('123feature'));
+    // Works when starts or ends with hyphen
+    assertEquals('Feature', formatModuleName('feature-'));
+    assertEquals('Feature', formatModuleName('-feature'));
+    // Does not remove numbers within name.
+    assertEquals('Chrome123Feature', formatModuleName('chrome-123-feature'));
   });
 });
