@@ -29,13 +29,6 @@
     width: 100%;
   }
 
-  #underline {
-    /* TODO(b/355505296): use linear gradient for the underline */
-    border-bottom: 3px dashed var(--cros-sys-muted_variant);
-    border-radius: 0;
-    width: 100%;
-  }
-
   #thumbnailsLoadingText {
     color: var(--cros-sys-on_primary_container);
     font: var(--cros-annotation-1-font);
@@ -45,8 +38,25 @@
     font: var(--cros-button-2-font);
     padding: 0px 12px;
   }
-</style>
 
+  #underline {
+    background-image:
+        linear-gradient(to right, transparent 65%, var(--cros-sys-app_base_shaded) 35%),
+        linear-gradient(to right, #D7E6FF, #C7E4FF, #DCE2FF, #ECDCFB);
+    background-size: 12px 3px, 100% 3px;
+    border: none;
+    height: 3px;
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #underline {
+      background-image:
+        linear-gradient(to right, transparent 65%, var(--cros-sys-app_base_shaded) 35%),
+        linear-gradient(to right, #217BFE, #078EFB, #AC87EB, #EE4D5D);
+    }
+  }
+</style>
 <div id="container">
   <div id="inputTextArea">
     <cr-textarea id="queryInput"
