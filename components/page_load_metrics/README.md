@@ -10,7 +10,7 @@ are unavailable on iOS.
 This component has the following structure:
 - components/page_load_metrics/browser: browser process code
 - components/page_load_metrics/common/: code shared by browser and renderer, such
-                                    as IPC messages
+as IPC messages
 - components/page_load_metrics/renderer : renderer process code
 
 For additional information on this subsystem, see
