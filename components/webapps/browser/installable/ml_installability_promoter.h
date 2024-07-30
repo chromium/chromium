@@ -43,7 +43,8 @@ class AppBannerManager;
 class MlInstallOperationTracker;
 class SiteManifestMetricsTask;
 
-constexpr base::TimeDelta kTimeToWaitForWebContentsObservers = base::Seconds(3);
+constexpr base::TimeDelta kTimeToWaitForWebContentsObservers =
+    base::Seconds(10);
 
 struct SiteInstallMetrics {
   bool is_fully_installed;
