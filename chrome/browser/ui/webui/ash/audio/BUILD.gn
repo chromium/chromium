@@ -11,3 +11,30 @@ mojom("mojo_bindings") {
   sources = [ "audio.mojom" ]
   webui_module_path = "/"
 }
+
+static_library("audio") {
+  sources = [
+    "audio_handler.cc",
+    "audio_handler.h",
+    "audio_ui.cc",
+    "audio_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/common",
+    "//chromeos/ash/components/audio",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser/resources/chromeos/audio:resources",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui",
+  ]
+}
