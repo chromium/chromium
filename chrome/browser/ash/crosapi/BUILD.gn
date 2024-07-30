@@ -689,6 +689,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/policy/dlp/test:test_support",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/printing:test_support",
     "//chrome/browser/ash/printing/oauth2",
