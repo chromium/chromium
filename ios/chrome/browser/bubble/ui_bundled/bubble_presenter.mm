@@ -18,8 +18,17 @@
 #import "components/omnibox/browser/omnibox_event_global_tracker.h"
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view.h"
+#import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_delegate.h"
+#import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/toolbar_swipe_gesture_in_product_help_view.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/utils.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -39,13 +48,6 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
-#import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view.h"
-#import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_delegate.h"
-#import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/toolbar_swipe_gesture_in_product_help_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -73,7 +75,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
 }  // namespace
 
-@interface BubblePresenter () <GestureInProductHelpViewDelegate>
+@interface BubblePresenter () <GestureInProductHelpViewDelegate,
+                               OverlayPresenterObserving>
 
 // Used to display the bottom toolbar tip in-product help promotion bubble.
 // `nil` if the tip bubble has not yet been presented. Once the bubble is
@@ -123,6 +126,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       _deviceSwitcherResultDispatcher;
 
   id<TabStripCommands> _tabStripCommandsHandler;
+
+  std::unique_ptr<OverlayPresenterObserver> _overlayPresenterObserver;
 }
 
 #pragma mark - Public
@@ -146,6 +151,13 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     _settingsMap = settingsMap;
     _deviceSwitcherResultDispatcher = deviceSwitcherResultDispatcher;
     _tabStripCommandsHandler = tabStripCommandsHandler;
+
+    _webContentOverlayPresenter = nullptr;
+    _infobarBannerPresenter = nullptr;
+    _infobarModalPresenter = nullptr;
+    _overlayPresenterObserver =
+        std::make_unique<OverlayPresenterObserverBridge>(self);
+
     self.started = YES;
   }
   return self;
@@ -154,6 +166,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 - (void)stop {
   [self hideAllHelpBubbles];
   self.started = NO;
+  self.webContentOverlayPresenter = nullptr;
+  self.infobarBannerPresenter = nullptr;
+  self.infobarModalPresenter = nullptr;
+  _overlayPresenterObserver = nullptr;
   self.webStateList = nullptr;
   self.engagementTracker = nullptr;
   self.settingsMap = nullptr;
@@ -735,6 +751,45 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                             kSwipedAsInstructedByGestureIPH];
 }
 
+#pragma mark - Setter
+
+- (void)setWebContentOverlayPresenter:(raw_ptr<OverlayPresenter>)presenter {
+  CHECK(presenter == nullptr ||
+        presenter->GetModality() == OverlayModality::kWebContentArea);
+  if (_webContentOverlayPresenter) {
+    _webContentOverlayPresenter->RemoveObserver(
+        _overlayPresenterObserver.get());
+  }
+  _webContentOverlayPresenter = presenter;
+  if (_webContentOverlayPresenter) {
+    presenter->AddObserver(_overlayPresenterObserver.get());
+  }
+}
+
+- (void)setInfobarBannerPresenter:(raw_ptr<OverlayPresenter>)presenter {
+  CHECK(presenter == nullptr ||
+        presenter->GetModality() == OverlayModality::kInfobarBanner);
+  if (_infobarBannerPresenter) {
+    _infobarBannerPresenter->RemoveObserver(_overlayPresenterObserver.get());
+  }
+  _infobarBannerPresenter = presenter;
+  if (_infobarBannerPresenter) {
+    presenter->AddObserver(_overlayPresenterObserver.get());
+  }
+}
+
+- (void)setInfobarModalPresenter:(raw_ptr<OverlayPresenter>)presenter {
+  CHECK(presenter == nullptr ||
+        presenter->GetModality() == OverlayModality::kInfobarModal);
+  if (_infobarModalPresenter) {
+    _infobarModalPresenter->RemoveObserver(_overlayPresenterObserver.get());
+  }
+  _infobarModalPresenter = presenter;
+  if (_infobarModalPresenter) {
+    presenter->AddObserver(_overlayPresenterObserver.get());
+  }
+}
+
 #pragma mark - GestureInProductHelpViewDelegate
 
 - (void)gestureInProductHelpView:(GestureInProductHelpView*)view
@@ -778,6 +833,30 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     // Do nothing. Swipe happens outside of the view.
   } else {
     NOTREACHED_IN_MIGRATION();
+  }
+}
+
+#pragma mark - OverlayPresenterObserving
+
+- (void)overlayPresenter:(OverlayPresenter*)presenter
+    willShowOverlayForRequest:(OverlayRequest*)request
+          initialPresentation:(BOOL)initialPresentation {
+  [self hideAllHelpBubbles];
+}
+
+- (void)overlayPresenterDestroyed:(OverlayPresenter*)presenter {
+  switch (presenter->GetModality()) {
+    case OverlayModality::kWebContentArea:
+      self.webContentOverlayPresenter = nullptr;
+      break;
+    case OverlayModality::kInfobarBanner:
+      self.infobarBannerPresenter = nullptr;
+      break;
+    case OverlayModality::kInfobarModal:
+      self.infobarModalPresenter = nullptr;
+      break;
+    case OverlayModality::kTesting:
+      NOTREACHED();
   }
 }
 
@@ -887,6 +966,15 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
   // Do not present the bubble if there is no current tab.
   if (!self.webStateList->GetActiveWebState()) {
+    return NO;
+  }
+  // Do not present bubble if an overlay is showing.
+  if ((self.webContentOverlayPresenter &&
+       self.webContentOverlayPresenter->IsShowingOverlayUI()) ||
+      (self.infobarBannerPresenter &&
+       self.infobarBannerPresenter->IsShowingOverlayUI()) ||
+      (self.infobarModalPresenter &&
+       self.infobarModalPresenter->IsShowingOverlayUI())) {
     return NO;
   }
   // Do not present the bubble if the tab is not scrolled to the top.

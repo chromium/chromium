@@ -39,6 +39,7 @@ include_rules = [
   "+ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h",
+  "+ios/chrome/browser/overlays/model/public/overlay_presenter.h",
   "+ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h",
   "+ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h",
   "+ios/chrome/browser/parcel_tracking",

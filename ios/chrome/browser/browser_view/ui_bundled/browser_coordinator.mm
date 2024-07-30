@@ -101,6 +101,7 @@
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
@@ -1034,6 +1035,13 @@ enum class ToolbarKind {
                                      tracker:engagementTracker
                                 webStateList:self.browser->GetWebStateList()];
   _bubblePresenter.layoutGuideCenter = _layoutGuideCenter;
+  _bubblePresenter.webContentOverlayPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kWebContentArea);
+  _bubblePresenter.infobarBannerPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kInfobarBanner);
+  _bubblePresenter.infobarModalPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kInfobarModal);
+
   _bubblePresenter.delegate = self;
   [_dispatcher startDispatchingToTarget:_bubblePresenter
                             forProtocol:@protocol(HelpCommands)];
