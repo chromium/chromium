@@ -521,7 +521,7 @@ scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
 }
 
 bool CanvasResourceSharedImage::IsValid() const {
-  return GetClientSharedImage() != nullptr;
+  return !!owning_thread_data_.client_shared_image;
 }
 
 void CanvasResourceSharedImage::BeginReadAccess() {
