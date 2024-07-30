@@ -7201,7 +7201,7 @@ crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_ap
 [ Mac14 ] external/wpt/WebCryptoAPI/derive_bits_keys/pbkdf2.https.any.html?3001-4000 [ Crash ]
 [ Mac14 ] external/wpt/WebCryptoAPI/derive_bits_keys/pbkdf2.https.any.worker.html?3001-4000 [ Crash ]
 [ Mac14 ] external/wpt/webrtc/RTCDataChannel-send-close.html [ Skip Timeout ]
-[ Mac14 ] fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash ]
+[ Mac14 ] fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Failure Pass ]
 [ Mac14 ] gamepad/multiple-event-listeners.html [ Failure Pass ]
 [ Mac14 ] http/tests/inspector-protocol/fedcm/fedcm-open-url.js [ Failure Pass ]
 [ Mac14 ] http/tests/misc/script-no-store.html [ Timeout ]
@@ -7526,3 +7526,6 @@ crbug.com/356041709 [ Linux ] http/tests/devtools/elements/highlight/highlight-c
 crbug.com/40899458 fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass Timeout ]
 
 crbug.com/352831220 virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/common-to-both-axes-supercedes-first-in-tree-order.html [ Failure Pass ]
+
+# Gardener 2024-07-30
+crbug.com/356177815 [ Win11-arm64 ] http/tests/cookies/partitioned-cookies/partitioned-cookies-in-parallel-frames.https.html [ Failure Pass ]
