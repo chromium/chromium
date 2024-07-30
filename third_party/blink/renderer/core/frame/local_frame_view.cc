@@ -4313,6 +4313,13 @@ void LocalFrameView::VisibilityForThrottlingChanged() {
 void LocalFrameView::VisibilityChanged(
     blink::mojom::FrameVisibility visibility) {
   frame_->GetLocalFrameHostRemote().VisibilityChanged(visibility);
+
+  // LocalFrameClient member may not be valid in some tests.
+  if (frame_->Client() && frame_->Client()->GetWebFrame() &&
+      frame_->Client()->GetWebFrame()->Client()) {
+    frame_->Client()->GetWebFrame()->Client()->OnFrameVisibilityChanged(
+        visibility);
+  }
 }
 
 void LocalFrameView::RenderThrottlingStatusChanged() {

@@ -39,6 +39,8 @@ class MockWebMediaPlayerDelegateObserver
   // WebMediaPlayerDelegate::Observer implementation.
   MOCK_METHOD0(OnPageHidden, void());
   MOCK_METHOD0(OnPageShown, void());
+  MOCK_METHOD0(OnFrameHidden, void());
+  MOCK_METHOD0(OnFrameShown, void());
   MOCK_METHOD0(OnIdleTimeout, void());
 };
 

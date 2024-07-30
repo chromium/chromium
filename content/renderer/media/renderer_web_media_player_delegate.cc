@@ -214,19 +214,19 @@ void RendererWebMediaPlayerDelegate::OnPageVisibilityChanged(
     RecordAction(base::UserMetricsAction("Media.Shown"));
 
     for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
-         it.Advance())
+         it.Advance()) {
       it.GetCurrentValue()->OnPageShown();
-
-    ScheduleUpdateTask();
+    }
   } else {
     RecordAction(base::UserMetricsAction("Media.Hidden"));
 
     for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
-         it.Advance())
+         it.Advance()) {
       it.GetCurrentValue()->OnPageHidden();
-
-    ScheduleUpdateTask();
+    }
   }
+
+  ScheduleUpdateTask();
 }
 
 void RendererWebMediaPlayerDelegate::SetIdleCleanupParamsForTesting(
@@ -324,6 +324,30 @@ void RendererWebMediaPlayerDelegate::CleanUpIdlePlayers(
       player->OnIdleTimeout();
     }
   }
+}
+
+void RendererWebMediaPlayerDelegate::OnFrameVisibilityChanged(
+    blink::mojom::FrameVisibility render_status) {
+  bool is_rendered =
+      (render_status != blink::mojom::FrameVisibility::kNotRendered);
+  if (is_rendered == is_rendered_) {
+    return;
+  }
+
+  is_rendered_ = is_rendered;
+  if (is_rendered_) {
+    for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
+         it.Advance()) {
+      it.GetCurrentValue()->OnFrameShown();
+    }
+  } else {
+    for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
+         it.Advance()) {
+      it.GetCurrentValue()->OnFrameHidden();
+    }
+  }
+
+  ScheduleUpdateTask();
 }
 
 void RendererWebMediaPlayerDelegate::OnDestruct() {

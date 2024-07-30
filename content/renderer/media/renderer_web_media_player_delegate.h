@@ -67,6 +67,8 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
 
   // content::RenderFrameObserver overrides.
   void OnDestruct() override;
+  void OnFrameVisibilityChanged(
+      blink::mojom::FrameVisibility render_status) override;
 
   // blink::WebViewObserver overrides.
   void OnPageVisibilityChanged(
@@ -151,6 +153,9 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
   // Last page shown/hidden state sent to the player.  Unset if we have not sent
   // any message.  Used to elide duplicates.
   std::optional<bool> is_shown_;
+
+  // Last rendered status sent to the player from the containing frame.
+  bool is_rendered_ = false;
 
   base::WeakPtrFactory<RendererWebMediaPlayerDelegate> weak_ptr_factory_{this};
 };

@@ -107,6 +107,9 @@ void FakeLocalFrame::ReportContentSecurityPolicyViolation(
 void FakeLocalFrame::DidUpdateFramePolicy(
     const blink::FramePolicy& frame_policy) {}
 
+void FakeLocalFrame::OnFrameVisibilityChanged(
+    blink::mojom::FrameVisibility visibility) {}
+
 void FakeLocalFrame::PostMessageEvent(
     const std::optional<blink::RemoteFrameToken>& source_frame_token,
     const std::u16string& source_origin,

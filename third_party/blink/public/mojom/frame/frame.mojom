@@ -984,6 +984,12 @@ interface LocalFrame {
   // container policy.
   DidUpdateFramePolicy(blink.mojom.FramePolicy frame_policy);
 
+  // Notifies the renderer process that the associated frame has changed its
+  // visibility status. Visibility status changes occur when the frame moves
+  // in/out of the viewport, or when the render status of the object changes,
+  // e.g. if the frame gets set a "display: none" or "visibility: hidden" style.
+  OnFrameVisibilityChanged(blink.mojom.FrameVisibility visibility);
+
   // Posts a message from a frame in another process to the current renderer.
   // |source_frame_token| is the frame token of the RemoteFrame in the current
   // renderer representing the frame (from a different renderer) where this

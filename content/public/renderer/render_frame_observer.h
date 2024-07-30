@@ -28,6 +28,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
@@ -92,6 +93,10 @@ class CONTENT_EXPORT RenderFrameObserver
   // Called when the RenderFrame visiblity is changed.
   virtual void WasHidden() {}
   virtual void WasShown() {}
+
+  // Called when the RenderFrame's visibility status changes.
+  virtual void OnFrameVisibilityChanged(
+      blink::mojom::FrameVisibility render_status) {}
 
   // Navigation callbacks.
   //

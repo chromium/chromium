@@ -37,6 +37,15 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
     // switching).
     virtual void OnPageShown() = 0;
 
+    // Called when the host frame is not rendered on the host page. This should
+    // be called whenever the host frame's:
+    // - 'display' property is set to 'none';
+    // - 'visibility' property is set to 'hidden';
+    virtual void OnFrameHidden() = 0;
+
+    // Called when the host frame is rendered on the host page.
+    virtual void OnFrameShown() = 0;
+
     // Called when an idle player has become stale, usually interpreted to mean
     // that it is unlikely to be interacted with in the near future.
     //
