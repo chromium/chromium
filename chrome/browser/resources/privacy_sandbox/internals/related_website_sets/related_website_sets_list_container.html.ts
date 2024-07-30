@@ -28,8 +28,9 @@ export function getHtml(this: RelatedWebsiteSetsListContainerElement) {
 <div id="related-website-sets" class="card" role="list"
     ?hidden="${this.errorMessage}">
   ${this.filteredItems.map(item => html`
-    <related-website-set-list-item id=${item.primarySite}
-        .primarySite="${item.primarySite}" .memberSites="${item.memberSites}"
+    <related-website-set-list-item id="${item.primarySite}"
+        .primarySite="${item.primarySite}"
+        .memberSites="${this.getMemberSites_(item)}"
         .managedByEnterprise="${item.managedByEnterprise}"
         .query="${this.query}"
         @expanded-toggled="${this.onExpandedToggled_}">

@@ -77,6 +77,10 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
   }
 
   protected boldQuery_(site: string) {
+    if (site.includes('://')) {
+      site = site.split('://')[1]!;
+    }
+
     if (!this.query) {
       return site;
     }
