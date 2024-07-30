@@ -2040,7 +2040,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/searchbox",
-      "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/web_applications",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",
