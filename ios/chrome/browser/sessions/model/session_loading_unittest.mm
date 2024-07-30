@@ -27,7 +27,7 @@ struct TabInfo {
   const int opener_index = -1;
   const int opener_navigation_index = -1;
   const int navigation_item_count = 1;
-  const web::WebStateID unique_identifier;
+  const std::optional<web::WebStateID> unique_identifier;
 };
 
 // Information about a tab group.
@@ -68,6 +68,13 @@ std::string TestUrlForIdentifier(web::WebStateID identifier) {
   return base::StringPrintf("https://example.com/%d", identifier.identifier());
 }
 
+// Returns a WebStateListStorage representing an empty session.
+ios::proto::WebStateListStorage EmptySessionStorage() {
+  ios::proto::WebStateListStorage storage;
+  storage.set_active_index(-1);
+  return storage;
+}
+
 // Creates a WebStateListStorage from a SessionInfo.
 ios::proto::WebStateListStorage StorageFromSessionInfo(SessionInfo info) {
   DCHECK_LT(info.active_index, static_cast<int>(info.tabs.size()));
@@ -78,9 +85,9 @@ ios::proto::WebStateListStorage StorageFromSessionInfo(SessionInfo info) {
   storage.set_pinned_item_count(info.pinned_tab_count);
   for (const TabInfo& tab : info.tabs) {
     ios::proto::WebStateListItemStorage* item_storage = storage.add_items();
-    web::WebStateID web_state_id = tab.unique_identifier.valid()
-                                       ? tab.unique_identifier
-                                       : web::WebStateID::NewUnique();
+    const web::WebStateID web_state_id = tab.unique_identifier.has_value()
+                                             ? tab.unique_identifier.value()
+                                             : web::WebStateID::NewUnique();
     item_storage->set_identifier(web_state_id.identifier());
     if (tab.opener_index != -1 && tab.opener_navigation_index != -1) {
       DCHECK_GE(tab.opener_index, 0);
@@ -92,6 +99,15 @@ ios::proto::WebStateListStorage StorageFromSessionInfo(SessionInfo info) {
       opener_storage->set_index(tab.opener_index);
       opener_storage->set_navigation_index(tab.opener_navigation_index);
     }
+
+    if (tab.navigation_item_count > 0) {
+      web::proto::WebStateMetadataStorage* item_metadata =
+          item_storage->mutable_metadata();
+
+      item_metadata->set_navigation_item_count(tab.navigation_item_count);
+      item_metadata->mutable_active_page()->set_page_url(
+          TestUrlForIdentifier(web_state_id));
+    }
   }
   for (const GroupInfo& group : info.groups) {
     ios::proto::TabGroupStorage* group_storage = storage.add_groups();
@@ -102,12 +118,14 @@ ios::proto::WebStateListStorage StorageFromSessionInfo(SessionInfo info) {
   return storage;
 }
 
-// Writes the session storage to disk at `path` optionally marking some
-// items as having no navigation items (so that they are dropped during
-// load). Returns whether the operation was successful.
+// Writes the session described by `session_info` to disk at `path`, and
+// stores the session metadata to `storage` (can be used to compare what
+// is read to what is saved).
 bool WriteSessionStorage(const base::FilePath& path,
-                         ios::proto::WebStateListStorage storage,
-                         RemovingIndexes removing_indexes) {
+                         const SessionInfo& session_info,
+                         ios::proto::WebStateListStorage& storage) {
+  storage = StorageFromSessionInfo(session_info);
+
   const base::FilePath metadata_path = path.Append(kSessionMetadataFilename);
   bool success = ios::sessions::WriteProto(metadata_path, storage);
 
@@ -118,20 +136,6 @@ bool WriteSessionStorage(const base::FilePath& path,
 
     const base::FilePath item_dir =
         ios::sessions::WebStateDirectory(path, item_id);
-
-    // Write the item metadata (with a navigation item count of zero if
-    // the index is contained in `removing_indexes`).
-    const base::FilePath item_metadata_path =
-        item_dir.Append(kWebStateMetadataStorageFilename);
-
-    web::proto::WebStateMetadataStorage item_metadata;
-    if (!removing_indexes.Contains(index)) {
-      item_metadata.set_navigation_item_count(1);
-      item_metadata.mutable_active_page()->set_page_url(
-          TestUrlForIdentifier(item_id));
-    }
-
-    success |= ios::sessions::WriteProto(item_metadata_path, item_metadata);
 
     // Write the item storage (can be a default protobuf message since the
     // value is never read by LoadSessionStorage, only the presence of the
@@ -192,8 +196,7 @@ TEST_F(SessionLoadingTest, FilterItems) {
   EXPECT_EQ(storage, ios::sessions::FilterItems(storage, RemovingIndexes{}));
 
   // Check that closing all items return an empty session.
-  const ios::proto::WebStateListStorage empty_storage =
-      StorageFromSessionInfo(SessionInfo{});
+  const ios::proto::WebStateListStorage empty_storage = EmptySessionStorage();
   EXPECT_EQ(empty_storage, ios::sessions::FilterItems(
                                storage, RemovingIndexes{0, 1, 2, 3, 4}));
 
@@ -227,9 +230,8 @@ TEST_F(SessionLoadingTest, LoadSessionStorage) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Write the session described by kSessionInfo.
-  const ios::proto::WebStateListStorage session =
-      StorageFromSessionInfo(kSessionInfo);
-  ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
+  ios::proto::WebStateListStorage session;
+  ASSERT_TRUE(WriteSessionStorage(root, kSessionInfo, session));
 
   // Load the session and check it is correct.
   const ios::proto::WebStateListStorage loaded =
@@ -258,10 +260,25 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_FilterEmptyItems) {
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
 
-  // Write the session described by kSessionInfo.
-  const ios::proto::WebStateListStorage session =
-      StorageFromSessionInfo(kSessionInfo);
-  ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{0, 2}));
+  // A session with some tabs without any navigation (expected to be
+  // dropped when loading the session from disk).
+  const TabInfo tabs[] = {
+      TabInfo{.navigation_item_count = 0},
+      TabInfo{},
+      TabInfo{.navigation_item_count = 0},
+      TabInfo{.opener_index = 1, .opener_navigation_index = 1},
+      TabInfo{.opener_index = 3, .opener_navigation_index = 1},
+  };
+
+  const SessionInfo session_info = {
+      .active_index = 1,
+      .pinned_tab_count = 2,
+      .tabs = base::make_span(tabs),
+  };
+
+  // Write the session.
+  ios::proto::WebStateListStorage session;
+  ASSERT_TRUE(WriteSessionStorage(root, session_info, session));
 
   // Load the session and check it is correct.
   const ios::proto::WebStateListStorage loaded =
@@ -291,21 +308,20 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_FilterDuplicateItems) {
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
 
-  web::WebStateID same_web_state_id = web::WebStateID::NewUnique();
-  TabInfo tabs[] = {
+  const web::WebStateID same_web_state_id = web::WebStateID::NewUnique();
+  const TabInfo tabs[] = {
       TabInfo{.unique_identifier = same_web_state_id},
       TabInfo{.unique_identifier = same_web_state_id},
   };
-  SessionInfo session_info = {
+  const SessionInfo session_info = {
       .active_index = 1,
       .pinned_tab_count = 1,
       .tabs = base::make_span(tabs),
   };
 
   // Write the session described by session_info.
-  const ios::proto::WebStateListStorage session =
-      StorageFromSessionInfo(session_info);
-  ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
+  ios::proto::WebStateListStorage session;
+  ASSERT_TRUE(WriteSessionStorage(root, session_info, session));
 
   // Load the session and check it is correct.
   const ios::proto::WebStateListStorage loaded =
@@ -335,9 +351,8 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_EmptySession) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Write the session described by an empty SessionInfo object.
-  const ios::proto::WebStateListStorage session =
-      StorageFromSessionInfo(SessionInfo{});
-  ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
+  ios::proto::WebStateListStorage session;
+  ASSERT_TRUE(WriteSessionStorage(root, SessionInfo{}, session));
 
   // Load the session and check it is correct.
   const ios::proto::WebStateListStorage loaded =
@@ -360,45 +375,10 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_MissingSession) {
   // Load the session and check it is empty.
   const ios::proto::WebStateListStorage loaded =
       ios::sessions::LoadSessionStorage(root);
-  EXPECT_EQ(loaded, StorageFromSessionInfo(SessionInfo{}));
+  EXPECT_EQ(loaded, EmptySessionStorage());
   EXPECT_EQ(loaded.items_size(), 0);
 
   // Expect no log as there was no session. We never got to complete the
-  // filtering stage.
-  histogram_tester_.ExpectTotalCount(
-      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0);
-}
-
-// Tests that LoadSessionStorage returns an empty session if some of the
-// items metadata is missing.
-TEST_F(SessionLoadingTest, LoadSessionStorage_MissingItemMetadata) {
-  base::ScopedTempDir scoped_temp_dir;
-  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
-  const base::FilePath root = scoped_temp_dir.GetPath();
-
-  // Write the session described by kSessionInfo.
-  const ios::proto::WebStateListStorage session =
-      StorageFromSessionInfo(kSessionInfo);
-  ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
-
-  // Delete one item metadata.
-  ASSERT_GT(session.items_size(), 0);
-  const web::WebStateID item_id =
-      web::WebStateID::FromSerializedValue(session.items(0).identifier());
-
-  const base::FilePath item_metadata_path =
-      ios::sessions::WebStateDirectory(root, item_id)
-          .Append(kWebStateMetadataStorageFilename);
-
-  ASSERT_TRUE(ios::sessions::DeleteRecursively(item_metadata_path));
-
-  // Load the session and check it is empty.
-  const ios::proto::WebStateListStorage loaded =
-      ios::sessions::LoadSessionStorage(root);
-  EXPECT_EQ(loaded, StorageFromSessionInfo(SessionInfo{}));
-  EXPECT_EQ(loaded.items_size(), 0);
-
-  // Expect no log as there was no item metadata. We never got to complete the
   // filtering stage.
   histogram_tester_.ExpectTotalCount(
       "Tabs.DroppedDuplicatesCountOnSessionRestore", 0);
@@ -412,9 +392,8 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_MissingItemStorage) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Write the session described by kSessionInfo.
-  const ios::proto::WebStateListStorage session =
-      StorageFromSessionInfo(kSessionInfo);
-  ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
+  ios::proto::WebStateListStorage session;
+  ASSERT_TRUE(WriteSessionStorage(root, kSessionInfo, session));
 
   // Delete one item storage.
   ASSERT_GT(session.items_size(), 0);
@@ -430,7 +409,7 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_MissingItemStorage) {
   // Load the session and check it is empty.
   const ios::proto::WebStateListStorage loaded =
       ios::sessions::LoadSessionStorage(root);
-  EXPECT_EQ(loaded, StorageFromSessionInfo(SessionInfo{}));
+  EXPECT_EQ(loaded, EmptySessionStorage());
   EXPECT_EQ(loaded.items_size(), 0);
 
   // Expect no log as there was a missing item storage. We never got to complete
@@ -446,21 +425,23 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_InvalidIdentifiers) {
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
 
-  // Write a corrupt session.
-  const web::WebStateID invalid_id = web::WebStateID();
-  ASSERT_FALSE(invalid_id.valid());
+  // Session with an invalid unique identifier.
+  const TabInfo tabs[] = {
+      TabInfo{.unique_identifier = web::WebStateID()},
+  };
+
+  const SessionInfo session_info = {
+      .active_index = 0,
+      .tabs = base::make_span(tabs),
+  };
 
   ios::proto::WebStateListStorage session;
-  session.add_items()->set_identifier(invalid_id.identifier());
-  session.set_active_index(0);
-  ASSERT_EQ(session.items_size(), 1);
-
-  ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
+  ASSERT_TRUE(WriteSessionStorage(root, session_info, session));
 
   // Load the session and check it is correct.
   const ios::proto::WebStateListStorage loaded =
       ios::sessions::LoadSessionStorage(root);
-  EXPECT_EQ(loaded, StorageFromSessionInfo(SessionInfo{}));
+  EXPECT_EQ(loaded, EmptySessionStorage());
   EXPECT_EQ(loaded.items_size(), 0);
 
   // Expect no log as there was an invalid identifier. We never got to complete
@@ -481,7 +462,7 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_FilterDuplicateItemsWithGroups) {
   web::WebStateID another_web_state_id = web::WebStateID::NewUnique();
   web::WebStateID yet_another_web_state_id = web::WebStateID::NewUnique();
   web::WebStateID and_another_web_state_id = web::WebStateID::NewUnique();
-  TabInfo tabs[] = {
+  const TabInfo tabs[] = {
       TabInfo{.unique_identifier = same_web_state_id},
       TabInfo{.unique_identifier = same_web_state_id},
       TabInfo{.unique_identifier = other_web_state_id},        // In 1st group
@@ -492,13 +473,13 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_FilterDuplicateItemsWithGroups) {
       TabInfo{.unique_identifier = same_web_state_id},         // In 4th group
       TabInfo{.unique_identifier = and_another_web_state_id},  // In 4th group
   };
-  GroupInfo groups[] = {
+  const GroupInfo groups[] = {
       GroupInfo{.start = 2, .count = 2},
       GroupInfo{.start = 4, .count = 2},
       GroupInfo{.start = 6, .count = 1},
       GroupInfo{.start = 7, .count = 2},
   };
-  SessionInfo session_info = {
+  const SessionInfo session_info = {
       .active_index = 0,
       .pinned_tab_count = 0,
       .tabs = base::make_span(tabs),
@@ -506,9 +487,8 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_FilterDuplicateItemsWithGroups) {
   };
 
   // Write the session described by session_info.
-  const ios::proto::WebStateListStorage session =
-      StorageFromSessionInfo(session_info);
-  ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
+  ios::proto::WebStateListStorage session;
+  ASSERT_TRUE(WriteSessionStorage(root, session_info, session));
 
   // Load the session and check it is correct.
   const ios::proto::WebStateListStorage loaded =

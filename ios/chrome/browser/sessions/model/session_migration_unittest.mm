@@ -398,66 +398,6 @@ bool GenerateOptimizedSession(const base::FilePath& root,
   return ios::sessions::WriteProto(filename, storage);
 }
 
-// Creates an optimized session named `name` following `session_info` and
-// writes it to the expected location relative to `root`. It returns
-// whether the creation was a success. The format will be pre M-122.
-bool GenerateOptimizedSessionPreM122(const base::FilePath& root,
-                                     const std::string& name,
-                                     SessionInfo session_info) {
-  const base::FilePath session_dir = GetOptimizedSessionDir(root, name);
-
-  ios::proto::WebStateListStorage storage;
-  storage.set_active_index(session_info.active_index);
-  storage.set_pinned_item_count(session_info.pinned_tab_count);
-
-  // Create all the tabs for the session. Note that the WebStateList metadata
-  // is stored with the tab in the legacy format.
-  for (size_t index = 0; index < session_info.tabs.size(); ++index) {
-    const web::WebStateID identifier = web::WebStateID::NewUnique();
-    const base::FilePath item_dir =
-        GetOptimizedWebStateDir(session_dir, identifier);
-    const TabInfo& tab_info = session_info.tabs[index];
-
-    ios::proto::WebStateListItemStorage& item_storage = *storage.add_items();
-    item_storage.set_identifier(identifier.identifier());
-    if (tab_info.opener_index != -1 && tab_info.opener_navigation_index != -1) {
-      item_storage.mutable_opener()->set_index(tab_info.opener_index);
-      item_storage.mutable_opener()->set_navigation_index(
-          tab_info.opener_navigation_index);
-    }
-
-    // Write the tab metadata file.
-    if (!ios::sessions::WriteProto(
-            item_dir.Append(kWebStateMetadataStorageFilename),
-            CreateWebStateMetadataStorage())) {
-      return false;
-    }
-
-    // Write the tab data file.
-    if (!ios::sessions::WriteProto(item_dir.Append(kWebStateStorageFilename),
-                                   CreateWebStateStorage())) {
-      return false;
-    }
-
-    // Create fake web session data for the tab. As the file contains
-    // opaque data from WebKit, the migration code does not care about
-    // the format.
-    if (tab_info.create_web_session) {
-      const base::FilePath filename = item_dir.Append(kWebStateSessionFilename);
-
-      NSData* data = [[NSString stringWithFormat:@"data %zu", index]
-          dataUsingEncoding:NSUTF8StringEncoding];
-      if (!ios::sessions::WriteFile(filename, data)) {
-        return false;
-      }
-    }
-  }
-
-  // Write the session metadata file.
-  const base::FilePath filename = session_dir.Append(kSessionMetadataFilename);
-  return ios::sessions::WriteProto(filename, storage);
-}
-
 // Checks whether the optimized session in `root` named `name` corresponds
 // to the session described by `session_info`.
 void CheckOptimizedSession(const base::FilePath& root,
@@ -930,43 +870,6 @@ TEST_F(SessionMigrationTest, BatchToLegacy) {
   EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName1, kSessionInfo1));
   EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName2, kSessionInfo2));
   EXPECT_TRUE(GenerateOptimizedSession(otr, kSessionName1, SessionInfo()));
-
-  // Check that the migration is a success.
-  const int32_t identifier = web::WebStateID::NewUnique().identifier();
-  ASSERT_EQ(ios::sessions::MigrationResult::Success(identifier),
-            ios::sessions::MigrateSessionsInPathsToLegacy(paths, identifier));
-
-  // Check that the directories containing optimized sessions have been
-  // deleted in all paths.
-  for (const base::FilePath& path : paths) {
-    const base::FilePath optimized_dir =
-        path.Append(kSessionRestorationDirname);
-    EXPECT_FALSE(ios::sessions::DirectoryExists(optimized_dir));
-  }
-
-  // Check that the sessions have been correctly converted.
-  CheckLegacySession(root, kSessionName1, kSessionInfo1);
-  CheckLegacySession(root, kSessionName2, kSessionInfo2);
-  CheckLegacySession(otr, kSessionName1, SessionInfo());
-}
-
-// Tests batch migrating sessions from optimized (pre M-122) to legacy works
-// correctly.
-TEST_F(SessionMigrationTest, BatchToLegacyPreM122) {
-  base::ScopedTempDir scoped_temp_dir;
-  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
-  const base::FilePath root = scoped_temp_dir.GetPath();
-  const base::FilePath otr = root.Append(kOTRDirectory);
-  const std::vector<base::FilePath> paths{root, otr};
-
-  // Generate a few optimized (pre M-122) sessions for the main and OTR
-  // BrowserStates.
-  EXPECT_TRUE(
-      GenerateOptimizedSessionPreM122(root, kSessionName1, kSessionInfo1));
-  EXPECT_TRUE(
-      GenerateOptimizedSessionPreM122(root, kSessionName2, kSessionInfo2));
-  EXPECT_TRUE(
-      GenerateOptimizedSessionPreM122(otr, kSessionName1, SessionInfo()));
 
   // Check that the migration is a success.
   const int32_t identifier = web::WebStateID::NewUnique().identifier();

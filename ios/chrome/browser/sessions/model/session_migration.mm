@@ -132,36 +132,6 @@ std::optional<OptimizedSession> OptimizedSession::FromPath(
     const base::FilePath item_dir = session_dir.Append(
         base::StringPrintf("%08x", item_storage.identifier()));
 
-    // While developing the optimised session storage, at some point, the
-    // metadata for WebStates were saved in individual files. As all those
-    // metadata files had to be loaded on startup, this resulted in many
-    // file loads for users with a large number of tabs. This code is here
-    // to convert those sessions to the new storage.
-    //
-    // Since saving in many individual files was never released to stable,
-    // nor enabled via finch, the only users that manually enabled it via
-    // chrome://flags may have the data in that state.
-    //
-    // Thus there is no need to keep this code for many releases (as the
-    // feature was not yet supported when enabled). This workaround can
-    // be removed as soon as M-123.
-    //
-    // TODO(crbug.com/40945317): cleanup when no longer required.
-    if (!item_storage.has_metadata()) {
-      const base::FilePath item_metadata_path =
-          item_dir.Append(kWebStateMetadataStorageFilename);
-
-      google::protobuf::RepeatedPtrField<ios::proto::WebStateListItemStorage>&
-          repeated_field = *metadata_storage.mutable_items();
-
-      web::proto::WebStateMetadataStorage& item_metadata =
-          *(repeated_field[index].mutable_metadata());
-
-      if (!ParseProto(item_metadata_path, item_metadata)) {
-        return std::nullopt;
-      }
-    }
-
     const base::FilePath item_path = item_dir.Append(kWebStateStorageFilename);
     if (!ParseProto(item_path, storage.emplace_back())) {
       return std::nullopt;

@@ -238,38 +238,6 @@ ios::proto::WebStateListStorage LoadSessionStorage(
     const base::FilePath web_state_dir =
         WebStateDirectory(directory, web_state_id);
 
-    // While developing the optimized session storage, at some point, the
-    // metadata for WebStates were saved in individual files. As all those
-    // metadata files had to be loaded on startup, this resulted in many
-    // file loads for users with a large number of tabs. This code is here
-    // to convert those sessions to the new storage.
-    //
-    // Since saving in many individual files was never released to stable,
-    // nor enabled via finch, the only users that manually enabled it via
-    // chrome://flags may have the data in that state.
-    //
-    // Thus there is no need to keep this code for many releases (as the
-    // feature was not yet supported when enabled). This workaround can
-    // be removed as soon as M-123.
-    //
-    // TODO(crbug.com/40945317): cleanup when no longer required.
-    if (!item.has_metadata()) {
-      const base::FilePath web_state_metadata_file =
-          web_state_dir.Append(kWebStateMetadataStorageFilename);
-
-      google::protobuf::RepeatedPtrField<ios::proto::WebStateListItemStorage>&
-          repeated_field = *session.mutable_items();
-
-      web::proto::WebStateMetadataStorage& metadata =
-          *(repeated_field[index].mutable_metadata());
-
-      // If the item metadata cannot be loaded, then the session has been
-      // corrupted; return an empty session.
-      if (!ParseProto(web_state_metadata_file, metadata)) {
-        return EmptyWebStateListStorage();
-      }
-    }
-
     const base::FilePath web_state_storage_file =
         web_state_dir.Append(kWebStateStorageFilename);
 
