@@ -17,9 +17,12 @@
 
 namespace media {
 
-// Kill switch in case things explode. Remove after M132.
+// Kill switches in case things explode. Remove after M132.
 BASE_FEATURE(kAllowOnlyAudioCodecsDuringDemuxing,
              "AllowOnlyAudioCodecsDuringDemuxing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kForbidH264ParsingDuringDemuxing,
+             "ForbidH264ParsingDuringDemuxing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Internal buffer size used by AVIO for reading.
@@ -113,6 +116,12 @@ FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
 
   // Enable fast, but inaccurate seeks for MP3.
   format_context_->flags |= AVFMT_FLAG_FAST_SEEK;
+
+  // We don't allow H.264 parsing during demuxing since we have our own parser
+  // and the ffmpeg one increases memory usage unnecessarily.
+  if (base::FeatureList::IsEnabled(kForbidH264ParsingDuringDemuxing)) {
+    format_context_->flags |= AVFMT_FLAG_NOH264PARSE;
+  }
 
   // Ensures format parsing errors will bail out. From an audit on 11/2017, all
   // instances were real failures. Solves bugs like http://crbug.com/710791.
