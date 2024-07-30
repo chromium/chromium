@@ -212,13 +212,13 @@ void StartURLLoader(
 
   // Load everything by default, but respect the Range header if present.
   std::optional<net::HttpByteRange> range;
-  std::string range_header;
-  if (request.headers.GetHeader(net::HttpRequestHeaders::kRange,
-                                &range_header)) {
+  if (std::optional<std::string> range_header =
+          request.headers.GetHeader(net::HttpRequestHeaders::kRange);
+      range_header) {
     std::vector<net::HttpByteRange> ranges;
     // For simplicity, only allow a single range. This is expected to be
     // sufficient for WebUI content.
-    if (!net::HttpUtil::ParseRangeHeader(range_header, &ranges) ||
+    if (!net::HttpUtil::ParseRangeHeader(*range_header, &ranges) ||
         ranges.size() > 1u || !ranges[0].IsValid()) {
       CallOnError(std::move(client_remote),
                   net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
@@ -228,8 +228,9 @@ void StartURLLoader(
   }
 
   std::string path = URLDataSource::URLToRequestPath(request.url);
-  std::string origin_header;
-  request.headers.GetHeader(net::HttpRequestHeaders::kOrigin, &origin_header);
+  std::string origin_header =
+      request.headers.GetHeader(net::HttpRequestHeaders::kOrigin)
+          .value_or(std::string());
 
   scoped_refptr<net::HttpResponseHeaders> headers =
       URLDataManagerBackend::GetHeaders(source, request.url, origin_header);
