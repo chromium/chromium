@@ -239,6 +239,9 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_USE_SRCOVER_FOR_FILTERS
 
+// TODO(b/328051548): Rebaseline images and enable this.
+#define SK_DISABLE_MODULES_FOR_KNOWN_RUNTIME_EFFECTS
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
