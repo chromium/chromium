@@ -223,6 +223,7 @@ inline const base::Version kDefaultVersion("1.0.0.0");
 
 inline constexpr char kTestPref1[] = "pref1";
 inline constexpr char kTestPref2[] = "pref2";
+inline constexpr char kTestPref3[] = "pref3";
 
 // testing::InvokeArgument<N> does not work with base::OnceCallback. Use this
 // gmock action template to invoke base::OnceCallback. `k` is the k-th argument
@@ -589,8 +590,9 @@ class CampaignsManagerTest : public testing::Test {
     local_state_->registry()->RegisterStringPref(ash::prefs::kDemoModeStoreId,
                                                  std::string());
     pref_->registry()->RegisterListPref(
-        kTestPref1, base::Value::List().Append("value_0").Append("value_1"));
-    pref_->registry()->RegisterStringPref(kTestPref2, "value_2");
+        kTestPref1, base::Value::List().Append("v0").Append("v1"));
+    pref_->registry()->RegisterStringPref(kTestPref2, "v2");
+    pref_->registry()->RegisterStringPref(kTestPref3, "v3");
   }
 };
 
@@ -2066,20 +2068,30 @@ TEST_F(CampaignsManagerTest, GetCampaignMatchMultiTargetingsMismatch) {
 
 TEST_F(CampaignsManagerTest, GetCampaignWithInvalidPrefTargeting) {
   LoadComponentWithUserPrefTargeting(R"(
-    {
-      "pref1": "value_0",
-      "pref2": ["value_2"]
-    })");
+    [
+      {
+        "name": "pref1",
+        "value": "v0"
+      }
+    ])");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignWithPrefTargetingMismatch) {
   LoadComponentWithUserPrefTargeting(R"(
-    {
-      "pref1": ["value_2"],
-      "pref2": ["value_0"]
-    })");
+    [
+      {
+        "name": "pref1",
+        "value": ["v1"]
+      }
+    ],
+    [
+      {
+        "name": "pref2",
+        "value": ["v"]
+      }
+    ])");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
@@ -2087,13 +2099,22 @@ TEST_F(CampaignsManagerTest, GetCampaignWithPrefTargetingMismatch) {
 TEST_F(CampaignsManagerTest, GetCampaignWithPrefTargetingMatch) {
   // This 2nd set of considtion match pref1 = value_0 and pref2 = value_2.
   LoadComponentWithUserPrefTargeting(R"(
-    {
-      "pref1": ["value_2"]
-    },
-    {
-      "pref1": ["value_0", "value_3"],
-      "pref2": ["value_2"]
-    })");
+    [
+      {
+        "name": "pref1",
+        "value": ["v", "v1"]
+      },
+      {
+        "name": "pref2",
+        "value": ["v2"]
+      }
+    ],
+    [
+      {
+        "name": "pref3",
+        "value": ["v3"]
+      }
+    ])");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
