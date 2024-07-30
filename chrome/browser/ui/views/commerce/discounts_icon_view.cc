@@ -158,6 +158,8 @@ void DiscountsIconView::MaybeShowBubble(bool from_user) {
                            base::BindOnce(&DiscountsIconView::UnpauseAnimation,
                                           weak_ptr_factory_.GetWeakPtr()));
 
+  tab_helper->DiscountsBubbleShown(discount_infos[0].id);
+
   commerce::metrics::DiscountsMetricCollector::RecordDiscountBubbleShown(
       should_auto_show,
       GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());

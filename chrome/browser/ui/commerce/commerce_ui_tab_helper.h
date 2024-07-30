@@ -121,7 +121,9 @@ class CommerceUiTabHelper
   // A notification that the price tracking icon was clicked.
   void OnPriceTrackingIconClicked();
 
-  // A notification that the coupon code in the Discounts bubble is copied.
+  // TODO(b/355566609): Expose the DiscountsPageActionController getter instead
+  // of the discount related methods below.
+  //  A notification that the coupon code in the Discounts bubble is copied.
   void OnDiscountsCouponCodeCopied();
   // Return whether the coupon code is copied. This will reset the copied
   // status.
@@ -130,6 +132,7 @@ class CommerceUiTabHelper
   // |discount_id|.
   virtual bool ShouldAutoShowDiscountsBubble(uint64_t discount_id,
                                              bool is_merchant_wide);
+  void DiscountsBubbleShown(uint64_t discount_id);
 
   PriceTrackingPageActionController* GetPriceTrackingControllerForTesting();
 

@@ -658,6 +658,10 @@ bool CommerceUiTabHelper::ShouldAutoShowDiscountsBubble(uint64_t discount_id,
       discount_id, is_merchant_wide);
 }
 
+void CommerceUiTabHelper::DiscountsBubbleShown(uint64_t discount_id) {
+  discounts_page_action_controller_->DiscountsBubbleShown(discount_id);
+}
+
 void CommerceUiTabHelper::RecordIconMetrics(PageActionIconType page_action,
                                             bool from_icon_use) {
   if (icon_use_recorded_for_page_.contains(page_action)) {
