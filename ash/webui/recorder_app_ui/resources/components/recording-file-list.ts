@@ -16,11 +16,11 @@ import './cra/cra-menu.js';
 import './recording-file-list-item.js';
 import './recording-search-box.js';
 
-import {Menu} from 'chrome://resources/cros_components/menu/menu.js';
 import {
   createRef,
   css,
   html,
+  live,
   PropertyDeclarations,
   ref,
   repeat,
@@ -41,6 +41,8 @@ import {
   getYesterday,
   isInThisMonth,
 } from '../core/utils/datetime.js';
+
+import {CraMenu} from './cra/cra-menu.js';
 
 interface RecordingSearchResult {
   highlight: [number, number]|null;
@@ -117,6 +119,7 @@ export class RecordingFileList extends ReactiveLitElement {
       flex-flow: column;
       font: var(--cros-headline-1-font);
       gap: 16px;
+
       /* The height is full height minus footer size. */
       height: calc(100% - 48px);
       justify-content: center;
@@ -135,7 +138,9 @@ export class RecordingFileList extends ReactiveLitElement {
 
   private readonly searchQuery = signal('');
 
-  private readonly sortMenuRef = createRef<Menu>();
+  private readonly sortMenuRef = createRef<CraMenu>();
+
+  private readonly sortMenuOpened = signal(false);
 
   private onSortingTypeClick(newSortType: RecordingSortType) {
     settings.mutate((d) => {
@@ -144,10 +149,20 @@ export class RecordingFileList extends ReactiveLitElement {
   }
 
   private renderSortMenu() {
+    const onMenuOpen = () => {
+      this.sortMenuOpened.value = true;
+    };
+
+    const onMenuClose = () => {
+      this.sortMenuOpened.value = false;
+    };
+
     return html`<cra-menu
       id="sort-recording-menu"
       anchor="sort-recording-button"
       ${ref(this.sortMenuRef)}
+      @opened=${onMenuOpen}
+      @closed=${onMenuClose}
     >
       <cros-menu-item
         headline=${i18n.recordingListSortByDateOption}
@@ -168,6 +183,10 @@ export class RecordingFileList extends ReactiveLitElement {
     </cra-menu>`;
   }
 
+  private toggleSortMenu() {
+    this.sortMenuRef.value?.toggle();
+  }
+
   private renderHeader() {
     const onQueryChange = (ev: CustomEvent<string>) => {
       this.searchQuery.value = ev.detail;
@@ -175,18 +194,16 @@ export class RecordingFileList extends ReactiveLitElement {
 
     return html`<div id="header">
         <span>${i18n.recordingListHeader}</span>
-        <recording-search-box
-          @query-changed=${onQueryChange}
-        >
+        <recording-search-box @query-changed=${onQueryChange}>
         </recording-search-box>
         <cra-icon-button
           id="sort-recording-button"
-          buttonstyle="floating"
-          @click=${() => {
-      this.sortMenuRef.value?.show();
-    }}
+          buttonstyle="toggle"
+          @click=${this.toggleSortMenu}
+          .selected=${live(this.sortMenuOpened.value)}
         >
           <cra-icon slot="icon" name="sort_by"></cra-icon>
+          <cra-icon slot="selectedIcon" name="sort_by"></cra-icon>
           <!-- TODO: b/336963138 - Add button tooltip -->
         </cra-icon-button>
       </div>
@@ -239,7 +256,8 @@ export class RecordingFileList extends ReactiveLitElement {
     return groups;
   }
 
-  private searchRecordings(recordings: RecordingMetadata[]
+  private searchRecordings(
+    recordings: RecordingMetadata[],
   ): RecordingSearchResult[] {
     const query = this.searchQuery.value.trim().toLocaleLowerCase();
 
@@ -264,9 +282,10 @@ export class RecordingFileList extends ReactiveLitElement {
   }
 
   private getRenderRecordingItems(): RenderRecordingItem[] {
-    function recordingToRenderRecordingItem(
-      {highlight, recording}: RecordingSearchResult,
-    ): RenderRecordingItem {
+    function recordingToRenderRecordingItem({
+      highlight,
+      recording,
+    }: RecordingSearchResult): RenderRecordingItem {
       return {
         id: `record-${recording.id}`,
         kind: 'recording',
@@ -299,7 +318,7 @@ export class RecordingFileList extends ReactiveLitElement {
     // Sort by recording titles ascendingly (A to Z).
     if (settings.value.recordingSortType === RecordingSortType.NAME) {
       const sortedRecordings = recordings.sort(
-        (a, b) => a.recording.title.localeCompare(b.recording.title)
+        (a, b) => a.recording.title.localeCompare(b.recording.title),
       );
       return sortedRecordings.map(
         (recording) => recordingToRenderRecordingItem(recording),
