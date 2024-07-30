@@ -13,7 +13,6 @@ import {down, up} from 'chrome://webui-test/mouse_mock_interactions.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 // clang-format on
 
@@ -29,7 +28,6 @@ suite('cr-icon-button', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     button = document.createElement('cr-icon-button');
     document.body.appendChild(button);
-    await flushTasks();
   });
 
   test('enabled/disabled', async () => {
@@ -158,21 +156,21 @@ suite('cr-icon-button', function() {
     button.addEventListener('click', clickHandler);
 
     button.disabled = true;
-    await flushTasks();
+    await microtasksFinished();
     pressAndReleaseKeyOn(button, -1, [], 'Enter');
     pressAndReleaseKeyOn(button, -1, [], ' ');
     downAndUp();
     button.click();
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(0, clickCount);
 
     button.disabled = false;
-    await flushTasks();
+    await microtasksFinished();
     pressAndReleaseKeyOn(button, -1, [], 'Enter');
     pressAndReleaseKeyOn(button, -1, [], ' ');
     downAndUp();
     button.click();
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(4, clickCount);
     button.removeEventListener('click', clickHandler);
   });

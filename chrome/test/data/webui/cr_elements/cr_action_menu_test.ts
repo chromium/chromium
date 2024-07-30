@@ -14,8 +14,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 import {getTrustedHTML as getTrustedStaticHtml} from 'chrome://resources/js/static_types.js';
 // clang-format on
@@ -209,7 +208,7 @@ suite('CrActionMenu', function() {
     item.classList.add('dropdown-item');
     menu.insertBefore(item, items[0]!);
     menu.showAt(dots);
-    await flushTasks();
+    await microtasksFinished();
 
     down();
     assertEquals(item, getDeepActiveElement());
@@ -327,12 +326,12 @@ suite('CrActionMenu', function() {
     items[1]!.setAttribute('role', 'checkbox');
     menu.showAt(dots);
 
-    await flushTasks();
+    await microtasksFinished();
     assertEquals('menuitem', items[0]!.getAttribute('role'));
     assertEquals('checkbox', items[1]!.getAttribute('role'));
 
     menu.insertBefore(newItem, items[0]!);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals('menuitem', newItem.getAttribute('role'));
   });
 

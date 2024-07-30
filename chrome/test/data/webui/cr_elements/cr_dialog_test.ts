@@ -15,8 +15,7 @@ import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_in
 import type {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import {keyDownOn, keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 // clang-format on
 
@@ -410,7 +409,7 @@ suite('cr-dialog', function() {
         dialog.shadowRoot!.querySelector('#cr-container-shadow-bottom');
     assertTrue(!!bottomShadow);
 
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(topShadow!.classList.contains('has-shadow'));
     assertFalse(bottomShadow!.classList.contains('has-shadow'));
   });
@@ -576,7 +575,7 @@ suite('cr-dialog', function() {
         }
         document.addEventListener('keydown', assertKeydownNotReached);
 
-        await flushTasks();
+        await microtasksFinished();
         keyDownOn(dialog, 65, [], 'a');
         keyDownOn(document.body, 65, [], 'a');
         document.removeEventListener('keydown', assertKeydownNotReached);
@@ -601,7 +600,7 @@ suite('cr-dialog', function() {
         }
         document.addEventListener('keydown', assertKeydownCount);
 
-        await flushTasks();
+        await microtasksFinished();
         keyDownOn(dialog, 65, [], 'a');
         assertEquals(1, keydownCounter);
         document.removeEventListener('keydown', assertKeydownCount);
