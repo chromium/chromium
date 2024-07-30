@@ -41,7 +41,9 @@ concept IsSupportedTensorType =
 
 inline constexpr char kPlaceholderInputName[] = "placeholder";
 
-// Get name identifiers used in CoreML model files for output operands.
+// Get name identifiers used in CoreML model files for input or output operands.
+std::string GetCoreMLNameFromInput(std::string_view input_name,
+                                   uint64_t operand_id);
 std::string GetCoreMLNameFromOutput(std::string_view output_name,
                                     uint64_t operand_id);
 
@@ -59,9 +61,6 @@ class GraphBuilderCoreml {
   // future operations can look them up based on operand id.
   // When an operation is decomposed, additional `OperandInfo` entities are
   // created to represent intermediate layers.
-
-  // For the inputs of the model, this information is exposed publicly via
-  // FindInputOperandInfo.
   struct OperandInfo {
     OperandInfo();
     OperandInfo(std::string name,
@@ -82,40 +81,17 @@ class GraphBuilderCoreml {
     CoreML::Specification::MILSpec::DataType mil_data_type;
   };
 
-  // Used by `GraphImplCoreml` to get model input's information. The model
-  // inputs dimensions are always non scalar.
-  struct InputOperandInfo {
-    InputOperandInfo();
-    InputOperandInfo(std::string name,
-                     std::vector<uint32_t> dimensions,
-                     OperandDataType data_type);
-    InputOperandInfo(InputOperandInfo&);
-    InputOperandInfo(InputOperandInfo&&);
-    ~InputOperandInfo();
-
-    // Identifier for this operand in coreml model file.
-    std::string coreml_name;
-    std::vector<uint32_t> dimensions;
-    OperandDataType data_type;
-  };
-
   struct Result {
     explicit Result(base::FilePath ml_package_dir);
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
     ~Result();
 
-    // This method must be called with an `input_name` which corresponds to some
-    // input, or else it will crash.
-    InputOperandInfo FindModelInputOperandInfo(
-        const std::string& input_name) const;
     const base::FilePath& GetModelFilePath();
 
     [[nodiscard]] const OperandInfo& GetOperandInfo(uint64_t operand_id) const;
 
     const base::FilePath ml_package_dir;
-    // Used to get operand info to specify input for a MILSpec::Operation.
-    std::map<std::string, uint64_t> input_name_to_id_map;
     std::map<uint64_t, OperandInfo> id_to_operand_info_map;
   };
 
@@ -354,9 +330,6 @@ class GraphBuilderCoreml {
   // Accessors for fields declared in `result_`.
   const base::FilePath& ml_package_dir() const {
     return result_->ml_package_dir;
-  }
-  std::map<std::string, uint64_t>& input_name_to_id_map() const {
-    return result_->input_name_to_id_map;
   }
   std::map<uint64_t, OperandInfo>& id_to_operand_info_map() const {
     return result_->id_to_operand_info_map;

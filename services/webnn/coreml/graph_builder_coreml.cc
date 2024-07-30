@@ -572,16 +572,6 @@ std::string SanitizeName(std::string_view name) {
   return sanitized_name;
 }
 
-std::string GetCoreMLNameFromInput(std::string_view input_name,
-                                   uint64_t operand_id) {
-  // Prefix is added to user provided names to avoid collision with intermediate
-  // operands' names. `operand_id` is added to avoid collision with other
-  // inputs' sanitized values.
-  return base::JoinString({kInputNamePrefix, SanitizeName(input_name),
-                           base::NumberToString(operand_id)},
-                          kStringSeparator);
-}
-
 CoreML::Specification::MILSpec::Value CreateFloatValue(
     CoreML::Specification::MILSpec::DataType mil_data_type,
     float value) {
@@ -593,6 +583,16 @@ CoreML::Specification::MILSpec::Value CreateFloatValue(
 }
 
 }  // namespace
+
+std::string GetCoreMLNameFromInput(std::string_view input_name,
+                                   uint64_t operand_id) {
+  // Prefix is added to user provided names to avoid collision with intermediate
+  // operands' names. `operand_id` is added to avoid collision with other
+  // inputs' sanitized values.
+  return base::JoinString({kInputNamePrefix, SanitizeName(input_name),
+                           base::NumberToString(operand_id)},
+                          kStringSeparator);
+}
 
 std::string GetCoreMLNameFromOutput(std::string_view output_name,
                                     uint64_t operand_id) {
@@ -1067,10 +1067,6 @@ GraphBuilderCoreml::AddInput(
   CoreML::Specification::MILSpec::NamedValueType& input =
       *main_function.add_inputs();
   PopulateNamedValueTypeForInput(input_id, input);
-
-  CHECK(input_name_to_id_map()
-            .try_emplace(operand.name.value(), input_id)
-            .second);
 
   if (operand.descriptor.shape().empty()) {
     ASSIGN_OR_RETURN(
@@ -3012,39 +3008,9 @@ GraphBuilderCoreml::OperandInfo::~OperandInfo() = default;
 GraphBuilderCoreml::OperandInfo::OperandInfo(OperandInfo&) = default;
 GraphBuilderCoreml::OperandInfo::OperandInfo(OperandInfo&&) = default;
 
-GraphBuilderCoreml::InputOperandInfo::InputOperandInfo(
-    std::string name,
-    std::vector<uint32_t> dimensions,
-    OperandDataType data_type)
-    : coreml_name(std::move(name)),
-      dimensions(std::move(dimensions)),
-      data_type(data_type) {}
-
-GraphBuilderCoreml::InputOperandInfo::InputOperandInfo() = default;
-GraphBuilderCoreml::InputOperandInfo::~InputOperandInfo() = default;
-GraphBuilderCoreml::InputOperandInfo::InputOperandInfo(InputOperandInfo&) =
-    default;
-GraphBuilderCoreml::InputOperandInfo::InputOperandInfo(InputOperandInfo&&) =
-    default;
-
 GraphBuilderCoreml::Result::Result(base::FilePath ml_package_dir)
     : ml_package_dir(std::move(ml_package_dir)) {}
 GraphBuilderCoreml::Result::~Result() = default;
-
-GraphBuilderCoreml::InputOperandInfo
-GraphBuilderCoreml::Result::FindModelInputOperandInfo(
-    const std::string& input_name) const {
-  auto it = input_name_to_id_map.find(input_name);
-  CHECK(it != input_name_to_id_map.end());
-  const OperandInfo& input_operand_info = GetOperandInfo(it->second);
-  // Some internally generated operands don't have a matching mojom data type,
-  // but model inputs all should have valid mojom data types.
-  return InputOperandInfo{
-      input_operand_info.external_coreml_name,
-      input_operand_info.dimensions.empty() ? std::vector<uint32_t>({1})
-                                            : input_operand_info.dimensions,
-      MILDataTypeToOperandType(input_operand_info.mil_data_type)};
-}
 
 const base::FilePath& GraphBuilderCoreml::Result::GetModelFilePath() {
   return ml_package_dir;

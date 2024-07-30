@@ -118,28 +118,6 @@ uint32_t GetDataTypeByteSize(MLMultiArrayDataType data_type) {
   }
 }
 
-std::optional<MLMultiArrayDataType> ToMLMultiArrayDataType(
-    OperandDataType data_type) {
-  switch (data_type) {
-    case OperandDataType::kFloat32:
-      return MLMultiArrayDataTypeFloat32;
-    case OperandDataType::kFloat16:
-      if (__builtin_available(macOS 14, *)) {
-        return MLMultiArrayDataTypeFloat16;
-      }
-      NOTREACHED_NORETURN();
-    case OperandDataType::kInt32:
-      return MLMultiArrayDataTypeInt32;
-    case OperandDataType::kUint32:
-    case OperandDataType::kInt64:
-    case OperandDataType::kUint64:
-    case OperandDataType::kInt8:
-    case OperandDataType::kUint8:
-      // Unsupported data types in coreml.
-      return std::nullopt;
-  }
-}
-
 void ExtractOutputRecursively(base::span<const uint8_t> bytes,
                               base::span<const uint32_t> dimensions,
                               base::span<const uint32_t> strides,
@@ -188,6 +166,44 @@ mojo_base::BigBuffer ExtractMaybeNonContiguousOutput(
   ExtractOutputRecursively(bytes, dimensions, strides, item_byte_size,
                            base::span(output));
   return output;
+}
+
+// Compute strides which may be used to construct an `MLMultiArray` given
+// `multi_array_constraint`.
+// See https://developer.apple.com/documentation/coreml/mlmultiarray/strides.
+//
+// For example, given a 4D input `shape`, its strides would be as follows:
+// [
+//   shape[1] * shape[2] * shape[3],
+//   shape[2] * shape[3],
+//   shape[3],
+//   1
+// ];
+NSMutableArray* CalculateStrides(
+    MLMultiArrayConstraint* multi_array_constraint) {
+  // Empty shapes are not supported for input or output operands.
+  CHECK_GT(multi_array_constraint.shape.count, 0u);
+
+  NSMutableArray* strides =
+      [NSMutableArray arrayWithCapacity:multi_array_constraint.shape.count];
+
+  // Fill `strides` in reverse order, then return the list in reverse.
+
+  // The last stride is always 1.
+  uint32_t current_stride = 1;
+  [strides addObject:@(current_stride)];
+
+  for (uint32_t i = multi_array_constraint.shape.count - 1; i > 0; --i) {
+    // Overflow checks are not needed here because this calculation will always
+    // result in a value less than the similar calculation performed (with
+    // overflow checks) in `OperandDescriptor::Create()` - and
+    // `multi_array_constraint` corresponds to an `OperandDescriptor`.
+    current_stride *= multi_array_constraint.shape[i].unsignedIntegerValue;
+
+    [strides addObject:@(current_stride)];
+  }
+
+  return [[[strides reverseObjectEnumerator] allObjects] mutableCopy];
 }
 
 }  // namespace
@@ -243,27 +259,16 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
   UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelTranslate",
                              ml_model_write_timer.Elapsed());
 
-  // Collect information about model inputs that are required
-  // later for model evaluation.
-  std::vector<std::pair<std::string, CoreMLFeatureInfo>>
-      input_feature_info_vector;
-  input_feature_info_vector.reserve(
-      compute_resource_info.input_names_to_descriptors.size());
-  for (auto const& [name, _] :
-       compute_resource_info.input_names_to_descriptors) {
-    std::optional<GraphImplCoreml::CoreMLFeatureInfo> coreml_feature_info =
-        GetCoreMLFeatureInfo(
-            build_graph_result->FindModelInputOperandInfo(name));
-    if (!coreml_feature_info.has_value()) {
-      std::move(callback).Run(base::unexpected(mojom::Error::New(
-          mojom::Error::Code::kUnknownError, "Model inputs error.")));
-      return;
-    }
-    input_feature_info_vector.emplace_back(
-        name, std::move(coreml_feature_info.value()));
+  // Create a map of the names used internally by CoreML to the names used
+  // externally by WebNN for all inputs and outputs.
+  std::vector<std::pair<std::string, std::string>> coreml_name_to_operand_name(
+      graph_info->input_operands.size() + graph_info->output_operands.size());
+  for (auto const& input_id : graph_info->input_operands) {
+    auto& name = graph_info->id_to_operand_map.at(input_id)->name;
+    CHECK(name.has_value());
+    coreml_name_to_operand_name.emplace_back(
+        GetCoreMLNameFromInput(name.value(), input_id), name.value());
   }
-
-  std::vector<std::pair<std::string, std::string>> coreml_name_to_operand_name;
   for (auto const& output_id : graph_info->output_operands) {
     auto& name = graph_info->id_to_operand_map.at(output_id)->name;
     CHECK(name.has_value());
@@ -271,12 +276,8 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
         GetCoreMLNameFromOutput(name.value(), output_id), name.value());
   }
 
-  auto input_feature_info = std::make_unique<CoreMLFeatureInfoMap>(
-      std::move(input_feature_info_vector));
-
   auto params = std::make_unique<Params>(
-      std::move(compute_resource_info), std::move(input_feature_info),
-      std::move(coreml_name_to_operand_name));
+      std::move(compute_resource_info), std::move(coreml_name_to_operand_name));
 
   [MLModel
       compileModelAtURL:base::apple::FilePathToNSURL(
@@ -379,62 +380,28 @@ void GraphImplCoreml::DidCreateAndBuild(
 }
 
 // static
-MLFeatureValue* GraphImplCoreml::CreateFeatureValue(
-    GraphImplCoreml::CoreMLFeatureInfo* feature_info,
+MLFeatureValue* GraphImplCoreml::CreateMultiArrayFeatureValueFromBytes(
+    MLMultiArrayConstraint* multi_array_constraint,
     mojo_base::BigBuffer data) {
   NSError* error;
   __block mojo_base::BigBuffer captured_data = std::move(data);
-  MLMultiArray* multi_array =
-      [[MLMultiArray alloc] initWithDataPointer:captured_data.data()
-                                          shape:feature_info->shape
-                                       dataType:feature_info->data_type
-                                        strides:feature_info->stride
-                                    deallocator:^(void* bytes) {
-                                      mojo_base::BigBuffer destroy_in_block =
-                                          std::move(captured_data);
-                                    }
-                                          error:&error];
+  MLMultiArray* multi_array = [[MLMultiArray alloc]
+      initWithDataPointer:captured_data.data()
+                    shape:multi_array_constraint.shape
+                 dataType:multi_array_constraint.dataType
+                  strides:CalculateStrides(multi_array_constraint)
+              deallocator:^(void* bytes) {
+                mojo_base::BigBuffer destroy_in_block =
+                    std::move(captured_data);
+              }
+                    error:&error];
   CHECK(!error);
   return [MLFeatureValue featureValueWithMultiArray:multi_array];
-}
-
-// static
-std::optional<GraphImplCoreml::CoreMLFeatureInfo>
-GraphImplCoreml::GetCoreMLFeatureInfo(
-    const GraphBuilderCoreml::InputOperandInfo& operand_info) {
-  std::optional<MLMultiArrayDataType> data_type =
-      ToMLMultiArrayDataType(operand_info.data_type);
-  if (!data_type.has_value()) {
-    return std::nullopt;
-  }
-  NSMutableArray* shape =
-      [[NSMutableArray alloc] initWithCapacity:operand_info.dimensions.size()];
-  NSMutableArray* stride =
-      [[NSMutableArray alloc] initWithCapacity:operand_info.dimensions.size()];
-  base::CheckedNumeric<uint32_t> expected_size = 1;
-  for (uint32_t dimension : operand_info.dimensions) {
-    expected_size *= dimension;
-  }
-  if (!expected_size.IsValid()) {
-    LOG(ERROR) << "[WebNN] Error GetCoreMLFeatureInfo expected size overflow";
-    return std::nullopt;
-  }
-  uint32_t current_stride = expected_size.ValueOrDie();
-  for (uint32_t dimension : operand_info.dimensions) {
-    [shape addObject:@(dimension)];
-    // since expected_size was computed by multiplying all dimensions together
-    // current_stride has to be perfectly divisible by dimension.
-    current_stride = current_stride / dimension;
-    [stride addObject:@(current_stride)];
-  }
-  return GraphImplCoreml::CoreMLFeatureInfo(*data_type, shape, stride,
-                                            operand_info.coreml_name);
 }
 
 GraphImplCoreml::GraphImplCoreml(ContextImplCoreml* context,
                                  std::unique_ptr<Params> params)
     : WebNNGraphImpl(context, std::move(params->compute_resource_info)),
-      input_feature_info_(std::move(params->input_feature_info)),
       coreml_name_to_operand_name_(
           std::move(params->coreml_name_to_operand_name)),
       ml_model_(params->ml_model) {
@@ -452,27 +419,12 @@ void GraphImplCoreml::ComputeImpl(
 
   base::ElapsedTimer model_predict_timer;
 
-  // Create MLFeatureValue for each of the `named_inputs`.
   NSMutableSet* feature_names = [[NSMutableSet alloc] init];
   NSMutableDictionary* feature_values = [[NSMutableDictionary alloc] init];
-  for (auto& [key, buffer] : named_inputs) {
-    auto feature_info = input_feature_info_->find(key);
-    CHECK(feature_info != input_feature_info_->end());
-    NSString* feature_name =
-        base::SysUTF8ToNSString(feature_info->second.coreml_name);
-    [feature_names addObject:feature_name];
-
-    MLFeatureValue* feature_value =
-        CreateFeatureValue(&feature_info->second, std::move(buffer));
-    if (!feature_value) {
-      std::move(callback).Run(mojom::ComputeResult::NewError(mojom::Error::New(
-          mojom::Error::Code::kUnknownError, "Input initialization error")));
-      return;
-    }
-    feature_values[feature_name] = feature_value;
-  }
 
   if (named_inputs.empty()) {
+    CHECK_EQ(ml_model_.modelDescription.inputDescriptionsByName.count, 1u);
+
     NSString* placeholder_name = base::SysUTF8ToNSString(kPlaceholderInputName);
     [feature_names addObject:placeholder_name];
     NSError* error;
@@ -484,6 +436,43 @@ void GraphImplCoreml::ComputeImpl(
     CHECK(!error);
     feature_values[placeholder_name] =
         [MLFeatureValue featureValueWithMultiArray:placeholder_input];
+  } else {
+    CHECK_EQ(named_inputs.size(),
+             ml_model_.modelDescription.inputDescriptionsByName.count);
+
+    // Create an `MLFeatureValue` for each of the `named_inputs`.
+    NSString* feature_name;
+    for (feature_name in ml_model_.modelDescription.inputDescriptionsByName) {
+      [feature_names addObject:feature_name];
+
+      MLFeatureDescription* feature_description =
+          ml_model_.modelDescription.inputDescriptionsByName[feature_name];
+      CHECK_EQ(feature_description.type,
+               MLFeatureType::MLFeatureTypeMultiArray);
+
+      auto operand_name_it = coreml_name_to_operand_name_.find(
+          base::SysNSStringToUTF8(feature_name));
+      CHECK(operand_name_it != coreml_name_to_operand_name_.end());
+
+      auto buffer_it = named_inputs.find(operand_name_it->second);
+      CHECK(buffer_it != named_inputs.end());
+
+      mojo_base::BigBuffer buffer = std::move(buffer_it->second);
+
+      MLFeatureValue* feature_value = CreateMultiArrayFeatureValueFromBytes(
+          feature_description.multiArrayConstraint, std::move(buffer));
+      if (!feature_value) {
+        std::move(callback).Run(mojom::ComputeResult::NewError(
+            mojom::Error::New(mojom::Error::Code::kUnknownError,
+                              "Input initialization error")));
+        return;
+      }
+
+      // Assert that `feature_value` is compatible with `feature_description`.
+      CHECK([feature_description isAllowedValue:feature_value]);
+
+      feature_values[feature_name] = feature_value;
+    }
   }
 
   // Run the MLModel asynchronously.
@@ -590,10 +579,8 @@ void GraphImplCoreml::DispatchImpl(
 
 GraphImplCoreml::Params::Params(
     ComputeResourceInfo compute_resource_info,
-    std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
     base::flat_map<std::string, std::string> coreml_name_to_operand_name)
     : compute_resource_info(std::move(compute_resource_info)),
-      input_feature_info(std::move(input_feature_info)),
       coreml_name_to_operand_name(std::move(coreml_name_to_operand_name)) {}
 
 GraphImplCoreml::Params::~Params() = default;
