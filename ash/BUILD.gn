@@ -3820,6 +3820,7 @@ test("ash_unittests") {
     "metrics/login_metrics_recorder_unittest.cc",
     "metrics/login_unlock_throughput_recorder_unittest.cc",
     "metrics/pointer_metrics_recorder_unittest.cc",
+    "metrics/post_login_metrics_recorder_unittest.cc",
     "metrics/stylus_metrics_recorder_unittest.cc",
     "metrics/task_switch_metrics_recorder_unittest.cc",
     "metrics/task_switch_time_tracker_unittest.cc",
