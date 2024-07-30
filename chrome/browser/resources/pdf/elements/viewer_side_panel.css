@@ -19,6 +19,16 @@
   padding-inline: 16px;
 }
 
+h2 {
+  font: normal 400 13px sans-serif;
+  margin: 0;
+  margin-inline-start: 14px;
+}
+
+#brush-options {
+  padding-top: 28px;
+}
+
 #brush-selector {
   border-bottom: 1px solid var(--side-panel-border-color);
   display: flex;
@@ -31,9 +41,18 @@
   margin: 8px;
 }
 
-#colors {
+#colors,
+#sizes {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  justify-content: center;
+  margin: 16px 0 32px;
+  padding: 0 8px;
+}
+
+#sizes cr-icon-button {
+  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-size: 48px;
 }
 
 .color-chip {
@@ -42,6 +61,7 @@
   cursor: pointer;
   border: 1px solid rgba(32, 33, 36, 0.5);
   border-radius: 12px;
+  margin: 0;
   height: 24px;
   width: 24px;
 }
@@ -52,8 +72,6 @@
   display: flex;
   height: 48px;
   justify-content: center;
-  margin: 0;
-  padding: 0;
   width: 48px;
 }
 
