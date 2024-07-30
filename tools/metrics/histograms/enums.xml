@@ -19449,6 +19449,7 @@ from previous Chrome versions.
   <int value="-609034895" label="QuickActionSearchWidgetAndroid:enabled"/>
   <int value="-608775184" label="PasswordsWeaknessCheck:enabled"/>
   <int value="-608691289" label="EnableHeatmapPalmDetection:enabled"/>
+  <int value="-608174849" label="RelatedSearchesSwitch:disabled"/>
   <int value="-608065163" label="PermissionChipRequestTypeSensitive:disabled"/>
   <int value="-607970607" label="PostQuantumKyber:enabled"/>
   <int value="-607925721" label="WebViewVulkan:disabled"/>
@@ -20545,6 +20546,7 @@ from previous Chrome versions.
       label="CrOSLateBootAudioOffloadCrasDSPToSOF:disabled"/>
   <int value="-145804373"
       label="DocumentPictureInPictureAnimateResize:disabled"/>
+  <int value="-145792524" label="RelatedSearchesSwitch:enabled"/>
   <int value="-145418947" label="webview-disable-package-allowlist-throttling"/>
   <int value="-145345223" label="ThirdPartyStoragePartitioning:enabled"/>
   <int value="-144134779" label="AndroidPayIntegrationV2:disabled"/>

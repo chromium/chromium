@@ -4687,6 +4687,11 @@ const char kRelatedSearchesAllLanguageName[] =
 const char kRelatedSearchesAllLanguageDescription[] =
     "Enables requesting related searches suggestions for all the languages.";
 
+const char kRelatedSearchesSwitchName[] =
+    "Enables an experiment for Related Searches on Android";
+const char kRelatedSearchesSwitchDescription[] =
+    "Enables requesting related searches suggestions.";
+
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[] =
     "Revoke site-level notification permission on Android";
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[] =

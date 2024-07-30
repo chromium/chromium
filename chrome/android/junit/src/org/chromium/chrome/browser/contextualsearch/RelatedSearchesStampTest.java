@@ -94,6 +94,12 @@ public class RelatedSearchesStampTest {
                 ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE, support);
     }
 
+    /** Sets whether the Related Searches switch is enabled. */
+    private void setRelatedSearchesSwitch(boolean enable) {
+        mFeatureListValues.addFeatureFlagOverride(
+                ChromeFeatureList.RELATED_SEARCHES_SWITCH, enable);
+    }
+
     /** Sets the standard config setup that we're using for Related Searches experiments. */
     private void setStandardExperimentRequirements() {
         // For experimentation we currently require all users have all the permissions
@@ -106,6 +112,7 @@ public class RelatedSearchesStampTest {
         setStandardExperimentRequirements();
         setCanSendUrl(true);
         setCanSendContent(true);
+        setRelatedSearchesSwitch(true);
     }
 
     // ====================================================================================
@@ -251,5 +258,20 @@ public class RelatedSearchesStampTest {
         assertFalse(
                 "Replacing a non-existing parameter is adding the new parameter anyway!",
                 shouldBeUnchanged.contains("qqq"));
+    }
+
+    @Test
+    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
+    public void testRelatedSearchSwitchIsDisabled() {
+        setStandardDefaultLaunchConfiguration();
+        setRelatedSearchesSwitch(false);
+        assertThat(
+                "related searches should be disabled!",
+                mStamp.getRelatedSearchesStamp(GERMAN),
+                is(""));
+        assertThat(
+                "related searches should be disabled!",
+                mStamp.getRelatedSearchesStamp(ENGLISH),
+                is(""));
     }
 }

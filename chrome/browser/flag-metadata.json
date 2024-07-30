@@ -7751,6 +7751,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "related-searches-switch",
+    "owners": [ "gangwu@chromium.org", "related-searches-vteam@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "related-website-sets-dev-ui",
     "owners": [
       "kmg@google.com",

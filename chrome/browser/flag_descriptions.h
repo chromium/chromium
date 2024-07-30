@@ -2767,6 +2767,9 @@ extern const char kReengagementNotificationDescription[];
 extern const char kRelatedSearchesAllLanguageName[];
 extern const char kRelatedSearchesAllLanguageDescription[];
 
+extern const char kRelatedSearchesSwitchName[];
+extern const char kRelatedSearchesSwitchDescription[];
+
 extern const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[];
 extern const char
     kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[];

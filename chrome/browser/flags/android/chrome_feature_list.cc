@@ -281,6 +281,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRecordSuppressionMetrics,
     &kReengagementNotification,
     &kRelatedSearchesAllLanguage,
+    &kRelatedSearchesSwitch,
     &kReportParentalControlSitesChild,
     &kSearchInCCT,
     &kSearchResumptionModuleAndroid,
@@ -892,6 +893,10 @@ BASE_FEATURE(kReengagementNotification,
 
 BASE_FEATURE(kRelatedSearchesAllLanguage,
              "RelatedSearchesAllLanguage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRelatedSearchesSwitch,
+             "RelatedSearchesSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReportParentalControlSitesChild,
