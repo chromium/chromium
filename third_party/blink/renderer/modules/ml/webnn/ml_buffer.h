@@ -84,6 +84,8 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   void OnDidReadBuffer(ScriptPromiseResolver<DOMArrayBuffer>* resolver,
                        webnn::mojom::blink::ReadBufferResultPtr result);
 
+  void OnConnectionError();
+
   Member<MLContext> ml_context_;
 
   // Represents a valid MLBufferDescriptor.
@@ -95,6 +97,10 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   // The `WebNNBuffer` is a buffer that can be used by the hardware
   // accelerated OS machine learning API.
   HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNBuffer> remote_buffer_;
+
+  // Keep a set of unresolved `ScriptPromiseResolver`s which will be
+  // rejected when the Mojo pipe is unexpectedly disconnected.
+  HeapHashSet<Member<ScriptPromiseResolver<DOMArrayBuffer>>> pending_resolvers_;
 };
 
 }  // namespace blink

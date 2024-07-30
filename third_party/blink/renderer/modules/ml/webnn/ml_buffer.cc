@@ -30,6 +30,8 @@ MLBuffer::MLBuffer(
   remote_buffer_.Bind(
       std::move(create_buffer_success->buffer_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
+  remote_buffer_.set_disconnect_handler(
+      WTF::BindOnce(&MLBuffer::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 MLBuffer::~MLBuffer() = default;
@@ -37,6 +39,7 @@ MLBuffer::~MLBuffer() = default;
 void MLBuffer::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
   visitor->Trace(remote_buffer_);
+  visitor->Trace(pending_resolvers_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -49,10 +52,10 @@ Vector<uint32_t> MLBuffer::shape() const {
 }
 
 void MLBuffer::destroy() {
-  // Calling reset on a bound remote will disconnect or destroy the buffer in
-  // the service. The remote buffer must remain unbound after calling destroy()
-  // because it is valid to call destroy() multiple times.
-  remote_buffer_.reset();
+  // Calling OnConnectionError() will disconnect and destroy the buffer in
+  // the service. The remote buffer must remain unbound after calling
+  // OnConnectionError() because it is valid to call destroy() multiple times.
+  OnConnectionError();
 }
 
 const webnn::OperandDescriptor& MLBuffer::Descriptor() const {
@@ -72,6 +75,8 @@ uint64_t MLBuffer::PackedByteLength() const {
 }
 
 void MLBuffer::ReadBufferImpl(ScriptPromiseResolver<DOMArrayBuffer>* resolver) {
+  pending_resolvers_.insert(resolver);
+
   // Remote context gets automatically unbound when the execution context
   // destructs.
   if (!remote_buffer_.is_bound()) {
@@ -85,11 +90,11 @@ void MLBuffer::ReadBufferImpl(ScriptPromiseResolver<DOMArrayBuffer>* resolver) {
                                            WrapPersistent(resolver)));
 }
 
-// TODO(crbug.com/40278771): Keep a set of unresolved resolvers and reject them
-// if `remote_buffer_` encounters a connection error.
 void MLBuffer::OnDidReadBuffer(
     ScriptPromiseResolver<DOMArrayBuffer>* resolver,
     webnn::mojom::blink::ReadBufferResultPtr result) {
+  pending_resolvers_.erase(resolver);
+
   if (result->is_error()) {
     const webnn::mojom::blink::Error& read_buffer_error = *result->get_error();
     resolver->RejectWithDOMException(
@@ -113,6 +118,16 @@ void MLBuffer::WriteBufferImpl(base::span<const uint8_t> src_data,
 
   // Copy src data.
   remote_buffer_->WriteBuffer(src_data);
+}
+
+void MLBuffer::OnConnectionError() {
+  remote_buffer_.reset();
+
+  for (const auto& resolver : pending_resolvers_) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     "Invalid buffer state");
+  }
+  pending_resolvers_.clear();
 }
 
 }  // namespace blink

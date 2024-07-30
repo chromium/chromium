@@ -273,7 +273,20 @@ const testReadWebNNBuffer = (testName) => {
 
     await promise_rejects_dom(
         t, 'InvalidStateError', mlContext.readBuffer(mlBuffer));
-  }, `${testName} / destroy`);
+  }, `${testName} / read_after_destroy`);
+
+  promise_test(async t => {
+    let mlBuffer =
+        await mlContext.createBuffer({dataType: 'int32', dimensions: [2, 3]});
+
+    let promise = mlContext.readBuffer(mlBuffer);
+    let anotherPromise = mlContext.readBuffer(mlBuffer);
+
+    mlBuffer.destroy();
+
+    await promise_rejects_dom(t, 'InvalidStateError', promise);
+    await promise_rejects_dom(t, 'InvalidStateError', anotherPromise);
+  }, `${testName} / read_before_destroy`);
 
   promise_test(async () => {
     let mlBuffer =
