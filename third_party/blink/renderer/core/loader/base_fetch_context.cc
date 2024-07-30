@@ -463,6 +463,21 @@ BaseFetchContext::CheckCSPForRequest(
 }
 
 std::optional<ResourceRequestBlockedReason>
+BaseFetchContext::CheckAndEnforceCSPForRequest(
+    mojom::blink::RequestContextType request_context,
+    network::mojom::RequestDestination request_destination,
+    const KURL& url,
+    const ResourceLoaderOptions& options,
+    ReportingDisposition reporting_disposition,
+    const KURL& url_before_redirects,
+    ResourceRequest::RedirectStatus redirect_status) const {
+  return CheckCSPForRequestInternal(
+      request_context, request_destination, url, options, reporting_disposition,
+      url_before_redirects, redirect_status,
+      ContentSecurityPolicy::CheckHeaderType::kCheckAll);
+}
+
+std::optional<ResourceRequestBlockedReason>
 BaseFetchContext::CheckCSPForRequestInternal(
     mojom::blink::RequestContextType request_context,
     network::mojom::RequestDestination request_destination,

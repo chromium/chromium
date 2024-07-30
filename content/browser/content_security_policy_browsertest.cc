@@ -31,6 +31,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -295,6 +296,49 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, CSPAttributeTooLong) {
 
   EXPECT_EQ(main_frame_host()->child_count(), 1u);
   EXPECT_FALSE(main_frame_host()->child_at(0)->csp_attribute());
+}
+
+class TransparentPlaceholderImageContentSecurityPolicyBrowserTest
+    : public ContentSecurityPolicyBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  TransparentPlaceholderImageContentSecurityPolicyBrowserTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          blink::features::kSimplifyLoadingTransparentPlaceholderImage);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          blink::features::kSimplifyLoadingTransparentPlaceholderImage);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    TransparentPlaceholderImageContentSecurityPolicyBrowserTest,
+    TransparentPlaceholderImageContentSecurityPolicyBrowserTest,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    TransparentPlaceholderImageContentSecurityPolicyBrowserTest,
+    ImgSrcBlocked) {
+  const char* page = R"(
+    data:text/html,
+    <meta http-equiv="Content-Security-Policy" content="img-src 'none';">
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+  )";
+
+  GURL url(page);
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(
+      "Refused to load the image "
+      "'data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
+      "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' because it violates the following "
+      "Content Security Policy directive: \"img-src 'none'\".\n");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 namespace {

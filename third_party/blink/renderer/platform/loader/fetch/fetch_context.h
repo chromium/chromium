@@ -141,6 +141,18 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return ResourceRequestBlockedReason::kOther;
   }
 
+  virtual std::optional<ResourceRequestBlockedReason>
+  CheckAndEnforceCSPForRequest(
+      mojom::blink::RequestContextType,
+      network::mojom::RequestDestination request_destination,
+      const KURL&,
+      const ResourceLoaderOptions&,
+      ReportingDisposition,
+      const KURL& url_before_redirects,
+      ResourceRequest::RedirectStatus) const {
+    return ResourceRequestBlockedReason::kOther;
+  }
+
   // Populates the ResourceRequest using the given values and information
   // stored in the FetchContext implementation. Used by ResourceFetcher to
   // prepare a ResourceRequest instance at the start of resource loading.

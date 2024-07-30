@@ -68,6 +68,14 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       ReportingDisposition,
       const KURL& url_before_redirects,
       ResourceRequest::RedirectStatus) const override;
+  std::optional<ResourceRequestBlockedReason> CheckAndEnforceCSPForRequest(
+      mojom::blink::RequestContextType,
+      network::mojom::RequestDestination request_destination,
+      const KURL&,
+      const ResourceLoaderOptions&,
+      ReportingDisposition,
+      const KURL& url_before_redirects,
+      ResourceRequest::RedirectStatus) const override;
 
   void Trace(Visitor*) const override;
 
