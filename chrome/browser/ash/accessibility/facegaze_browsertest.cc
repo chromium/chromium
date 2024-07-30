@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -420,6 +421,26 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, OpenSettingsPage) {
   // Move mouth right to open the FaceGaze settings page.
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
       MediapipeGesture::MOUTH_RIGHT, 40));
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ToggleVirtualKeyboard) {
+  utils()->EnableFaceGaze(
+      Config()
+          .Default()
+          .WithGesturesToMacros(
+              {{FaceGazeGesture::JAW_OPEN, MacroName::TOGGLE_VIRTUAL_KEYBOARD}})
+          .WithGestureConfidences({{FaceGazeGesture::JAW_OPEN, 30}}));
+
+  base::RunLoop waiter;
+  ash::Shell::Get()
+      ->accessibility_controller()
+      ->SetVirtualKeyboardVisibleCallbackForTesting(
+          base::BindLambdaForTesting([&waiter]() { waiter.Quit(); }));
+
+  // Open jaw to toggle the virtual keyboard.
+  utils()->ProcessFaceLandmarkerResult(
+      MockFaceLandmarkerResult().WithGesture(MediapipeGesture::JAW_OPEN, 40));
   waiter.Run();
 }
 

@@ -168,6 +168,9 @@ export enum MacroName {
   // If FaceGaze is enabled, opens the FaceGaze settings subpage.
   OPEN_FACEGAZE_SETTINGS = 47,
 
+  // Shows/hides the virtual keyboard.
+  TOGGLE_VIRTUAL_KEYBOARD = 48,
+
   // Any new actions should match with Voice Access's semantic tags where
   // possible.
 }

@@ -3133,6 +3133,10 @@ void AccessibilityController::SetVirtualKeyboardVisible(bool is_visible) {
   } else {
     Shell::Get()->keyboard_controller()->HideKeyboard(HideReason::kUser);
   }
+
+  if (set_virtual_keyboard_visible_callback_) {
+    set_virtual_keyboard_visible_callback_.Run();
+  }
 }
 
 void AccessibilityController::ToggleMouseKeys() {
@@ -3497,6 +3501,11 @@ void AccessibilityController::AddShowConfirmationDialogCallbackForTesting(
 
 bool AccessibilityController::VerifyFeaturesDataForTesting() {
   return VerifyFeaturesData();
+}
+
+void AccessibilityController::SetVirtualKeyboardVisibleCallbackForTesting(
+    base::RepeatingCallback<void()> callback) {
+  set_virtual_keyboard_visible_callback_ = std::move(callback);
 }
 
 }  // namespace ash

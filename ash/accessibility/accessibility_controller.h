@@ -670,6 +670,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     return select_to_speak_event_handler_.get();
   }
 
+  void SetVirtualKeyboardVisibleCallbackForTesting(
+      base::RepeatingCallback<void()> callback);
+
  private:
   // Populate |features_| with the feature of the correct type.
   void CreateAccessibilityFeatures();
@@ -771,6 +774,8 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   bool no_switch_access_disable_confirmation_dialog_for_testing_ = false;
   bool switch_access_disable_dialog_showing_ = false;
   bool skip_switch_access_notification_ = false;
+
+  base::RepeatingCallback<void()> set_virtual_keyboard_visible_callback_;
 
   // Used to control the highlights of caret, cursor and focus.
   std::unique_ptr<AccessibilityHighlightController>

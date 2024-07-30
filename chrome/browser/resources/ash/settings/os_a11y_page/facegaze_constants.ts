@@ -28,6 +28,7 @@ export const FaceGazeActions: MacroName[] = [
   MacroName.KEY_PRESS_UP,
   MacroName.KEY_PRESS_TOGGLE_OVERVIEW,
   MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE,
+  MacroName.TOGGLE_VIRTUAL_KEYBOARD,
 ];
 
 // All possible facial gestures.
@@ -137,6 +138,8 @@ export class FaceGazeUtils {
         return 'Open overview of windows';
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
         return 'Play or pause media';
+      case MacroName.TOGGLE_VIRTUAL_KEYBOARD:
+        return 'Show or hide the virtual keyboard';
       default:
         // Other macros are not supported in FaceGaze.
         console.error('Display text requested for unsupported macro ' + macro);
