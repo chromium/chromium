@@ -144,7 +144,7 @@ class SidePanelBorder : public views::Border {
     }
 
     // Paint the inner border around SidePanel content.
-    const float stroke_thickness = views::Separator::kThickness * dsf;
+    const float stroke_thickness = views::Separator::kThickness;
 
     cc::PaintFlags flags;
     flags.setStrokeWidth(stroke_thickness);
