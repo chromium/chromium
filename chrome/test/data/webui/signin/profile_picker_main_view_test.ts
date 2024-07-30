@@ -5,16 +5,15 @@
 import 'chrome://profile-picker/profile_picker.js';
 
 import type {ProfileCardElement, ProfilePickerMainViewElement, ProfileState} from 'chrome://profile-picker/profile_picker.js';
-import {loadTimeData, ManageProfilesBrowserProxyImpl, NavigationMixin, Routes} from 'chrome://profile-picker/profile_picker.js';
+import {loadTimeData, ManageProfilesBrowserProxyImpl, NavigationMixinLit, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
-class NavigationElement extends NavigationMixin
-(PolymerElement) {
+class NavigationElement extends NavigationMixinLit(CrLitElement) {
   static get is() {
     return 'navigation-element';
   }
@@ -22,8 +21,7 @@ class NavigationElement extends NavigationMixin
   changeCalled: boolean = false;
   route: string = '';
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.reset();
   }
 
@@ -57,7 +55,6 @@ suite('ProfilePickerMainViewTest', function() {
     document.body.appendChild(navigationElement);
     mainViewElement = document.createElement('profile-picker-main-view');
     document.body.appendChild(mainViewElement);
-    return waitBeforeNextRender(mainViewElement);
   }
 
   function resetPolicies() {
@@ -75,7 +72,7 @@ suite('ProfilePickerMainViewTest', function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
     resetPolicies();
-    return resetTest();
+    resetTest();
   });
 
   /**
@@ -104,14 +101,14 @@ suite('ProfilePickerMainViewTest', function() {
     webUIListenerCallback('profiles-list-changed', [...profiles]);
 
     // Await for the profiles to be rendered before proceeding.
-    await waitAfterNextRender(mainViewElement.$.profiles);
+    await microtasksFinished();
   }
 
   async function simulateProfileRemoved(profilePath: string) {
     webUIListenerCallback('profile-removed', profilePath);
 
     // Await for the profiles to be rendered before proceeding.
-    await waitAfterNextRender(mainViewElement.$.profiles);
+    await microtasksFinished();
   }
 
   async function verifyProfileCard(
@@ -230,7 +227,7 @@ suite('ProfilePickerMainViewTest', function() {
     navigationElement.reset();
     assertEquals(addProfile.style.display, 'none');
     addProfile.click();
-    flushTasks();
+    await microtasksFinished();
     assertTrue(!navigationElement.changeCalled);
   });
 
@@ -265,7 +262,6 @@ suite('ProfilePickerMainViewTest', function() {
     assertTrue(mainViewElement.$.askOnStartup.hidden);
     const profiles = generateProfilesList(2);
     await simulateProfilesListChanged(profiles);
-    flushTasks();
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
     assertTrue(!mainViewElement.$.askOnStartup.hidden);

@@ -17,7 +17,7 @@ import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, Routes} fr
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished, whenCheck} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
@@ -80,7 +80,7 @@ suite('ProfilePickerAppTest', function() {
 
     webUIListenerCallback(
         'profiles-list-changed', [browserProxy.profileSample]);
-    flushTasks();
+    await microtasksFinished();
     assertEquals(profilesContainer.querySelectorAll('profile-card').length, 1);
     mainView.$.addProfile.click();
     await waitForProfileCreationLoad();
@@ -107,7 +107,7 @@ suite('ProfilePickerAppTest', function() {
       accountImageUrl: 'account-image-url',
     };
     webUIListenerCallback('available-accounts-changed', [availableAccount]);
-    flushTasks();
+    await microtasksFinished();
     choice.$.signInButton.click();
     // Start Lacros signin flow.
     await microtasksFinished();
@@ -130,7 +130,7 @@ suite('ProfilePickerAppTest', function() {
     assertTrue(!!choice);
     // No available account.
     webUIListenerCallback('available-accounts-changed', []);
-    flushTasks();
+    await microtasksFinished();
     choice.$.signInButton.click();
     return browserProxy.whenCalled('selectNewAccount');
   });
