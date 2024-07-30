@@ -1091,7 +1091,7 @@ TEST_F(NetworkServiceTest, SetMaskedDomainList) {
       mojo_base::ProtoWrapper(mdl),
       /*exclusion_list=*/std::vector<std::string>());
 
-  EXPECT_TRUE(service()->network_service_proxy_allow_list()->IsPopulated());
+  EXPECT_TRUE(service()->masked_domain_list_manager()->IsPopulated());
 }
 
 class TestCookieEncryptionProvider : public mojom::CookieEncryptionProvider {

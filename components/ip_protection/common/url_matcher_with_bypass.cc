@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/masked_domain_list/url_matcher_with_bypass.h"
+#include "components/ip_protection/common/url_matcher_with_bypass.h"
 
 #include <memory>
 #include <string>
@@ -19,7 +19,7 @@
 #include "net/base/schemeful_site.h"
 #include "url_matcher_with_bypass.h"
 
-namespace network {
+namespace ip_protection {
 
 namespace {
 
@@ -203,4 +203,4 @@ UrlMatcherWithBypassResult UrlMatcherWithBypass::Matches(
   return UrlMatcherWithBypassResult::kNoMatch;
 }
 
-}  // namespace network
+}  // namespace ip_protection

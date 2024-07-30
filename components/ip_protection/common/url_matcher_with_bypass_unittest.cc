@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/masked_domain_list/url_matcher_with_bypass.h"
+#include "components/ip_protection/common/url_matcher_with_bypass.h"
 
 #include <optional>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace network {
+namespace ip_protection {
 
 namespace {
 using ::masked_domain_list::MaskedDomainList;
@@ -370,4 +370,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param.name;
                          });
 
-}  // namespace network
+}  // namespace ip_protection

@@ -6805,6 +6805,7 @@ test("unit_tests") {
     "//components/image_fetcher/core:test_support",
     "//components/infobars/content",
     "//components/input",
+    "//components/ip_protection:common",
     "//components/invalidation",
     "//components/invalidation/impl",
     "//components/invalidation/impl:test_support",

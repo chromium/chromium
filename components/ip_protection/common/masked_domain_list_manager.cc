@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-#include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
+#include "components/ip_protection/common/masked_domain_list_manager.h"
 
 #include <set>
 #include <vector>
@@ -10,20 +10,20 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/ip_protection/common/url_matcher_with_bypass.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
-#include "services/network/masked_domain_list/url_matcher_with_bypass.h"
 #include "services/network/public/cpp/features.h"
 #include "url/url_constants.h"
 
-namespace network {
+namespace ip_protection {
 namespace {
+using ::ip_protection::UrlMatcherWithBypassResult;
 using ::masked_domain_list::PublicSuffixListRule;
 using ::masked_domain_list::Resource;
 using ::masked_domain_list::ResourceOwner;
-using ::network::UrlMatcherWithBypassResult;
 using ::network::mojom::IpProtectionProxyBypassPolicy;
 
 // Returns a `ResourceOwner` identical to the input `resource_owner` but without
@@ -44,18 +44,18 @@ ResourceOwner RemovePslPrivateDomainsFromOwnedResources(
 
 }  // namespace
 
-NetworkServiceProxyAllowList::NetworkServiceProxyAllowList(
+MaskedDomainListManager::MaskedDomainListManager(
     IpProtectionProxyBypassPolicy policy)
     : proxy_bypass_policy_{policy} {}
 
-NetworkServiceProxyAllowList::~NetworkServiceProxyAllowList() = default;
+MaskedDomainListManager::~MaskedDomainListManager() = default;
 
-NetworkServiceProxyAllowList::NetworkServiceProxyAllowList(
-    const NetworkServiceProxyAllowList&) {}
+MaskedDomainListManager::MaskedDomainListManager(
+    const MaskedDomainListManager&) {}
 
-NetworkServiceProxyAllowList NetworkServiceProxyAllowList::CreateForTesting(
+MaskedDomainListManager MaskedDomainListManager::CreateForTesting(
     const std::map<std::string, std::set<std::string>>& first_party_map) {
-  auto allow_list = NetworkServiceProxyAllowList(
+  auto allow_list = MaskedDomainListManager(
       IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame);
 
   auto mdl = masked_domain_list::MaskedDomainList();
@@ -69,24 +69,25 @@ NetworkServiceProxyAllowList NetworkServiceProxyAllowList::CreateForTesting(
     resource.set_domain(domain);
   }
 
-  allow_list.UseMaskedDomainList(mdl,
-                                 /*exclusion_list=*/std::vector<std::string>());
+  allow_list.UpdateMaskedDomainList(
+      mdl,
+      /*exclusion_list=*/std::vector<std::string>());
   return allow_list;
 }
 
-bool NetworkServiceProxyAllowList::IsEnabled() const {
+bool MaskedDomainListManager::IsEnabled() const {
   return base::FeatureList::IsEnabled(network::features::kMaskedDomainList);
 }
 
-bool NetworkServiceProxyAllowList::IsPopulated() const {
+bool MaskedDomainListManager::IsPopulated() const {
   return url_matcher_with_bypass_.IsPopulated();
 }
 
-size_t NetworkServiceProxyAllowList::EstimateMemoryUsage() const {
+size_t MaskedDomainListManager::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(url_matcher_with_bypass_);
 }
 
-bool NetworkServiceProxyAllowList::Matches(
+bool MaskedDomainListManager::Matches(
     const GURL& request_url,
     const net::NetworkAnonymizationKey& network_anonymization_key) const {
   std::optional<net::SchemefulSite> top_frame_site =
@@ -146,7 +147,7 @@ bool NetworkServiceProxyAllowList::Matches(
   }
 }
 
-std::set<std::string> NetworkServiceProxyAllowList::ExcludeDomainsFromMDL(
+std::set<std::string> MaskedDomainListManager::ExcludeDomainsFromMDL(
     const std::set<std::string>& mdl_domains,
     const std::set<std::string>& excluded_domains) {
   if (excluded_domains.empty()) {
@@ -181,7 +182,7 @@ std::set<std::string> NetworkServiceProxyAllowList::ExcludeDomainsFromMDL(
   return mdl_domains_after_exclusions;
 }
 
-void NetworkServiceProxyAllowList::UseMaskedDomainList(
+void MaskedDomainListManager::UpdateMaskedDomainList(
     const masked_domain_list::MaskedDomainList& mdl,
     const std::vector<std::string>& exclusion_list) {
   const int experiment_group_id =
@@ -251,19 +252,20 @@ void NetworkServiceProxyAllowList::UseMaskedDomainList(
     }
     AddPublicSuffixListRules(psl_private_domains);
   }
+  // TODO(crbug.com/356109549): Consider renaming this metric.
   base::UmaHistogramMemoryKB(
       "NetworkService.MaskedDomainList.NetworkServiceProxyAllowList."
       "EstimatedMemoryUsageInKB",
       EstimateMemoryUsage() / 1024);
 }
 
-bool NetworkServiceProxyAllowList::MatchesPublicSuffixList(
+bool MaskedDomainListManager::MatchesPublicSuffixList(
     const GURL& resource_url) const {
   return public_suffix_list_matcher_.Evaluate(resource_url) !=
          net::SchemeHostPortMatcherResult::kNoMatch;
 }
 
-void NetworkServiceProxyAllowList::AddPublicSuffixListRules(
+void MaskedDomainListManager::AddPublicSuffixListRules(
     const std::set<std::string>& domains) {
   for (const std::string& domain : domains) {
     auto domain_rule =
@@ -292,4 +294,4 @@ void NetworkServiceProxyAllowList::AddPublicSuffixListRules(
   }
 }
 
-}  // namespace network
+}  // namespace ip_protection

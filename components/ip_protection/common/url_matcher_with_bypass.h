@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_MASKED_DOMAIN_LIST_URL_MATCHER_WITH_BYPASS_H_
-#define SERVICES_NETWORK_MASKED_DOMAIN_LIST_URL_MATCHER_WITH_BYPASS_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_URL_MATCHER_WITH_BYPASS_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_URL_MATCHER_WITH_BYPASS_H_
 
 #include <map>
 #include <memory>
@@ -18,7 +18,7 @@
 #include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 
-namespace network {
+namespace ip_protection {
 
 // The result of evaluating a URL in the UrlMatcherWithBypass.
 enum class UrlMatcherWithBypassResult {
@@ -34,7 +34,7 @@ enum class UrlMatcherWithBypassResult {
 // This is a helper class for creating URL match lists for subresource request
 // that can be bypassed with additional sets of rules based on the top frame
 // URL.
-class COMPONENT_EXPORT(NETWORK_SERVICE) UrlMatcherWithBypass {
+class UrlMatcherWithBypass {
  public:
   UrlMatcherWithBypass();
   ~UrlMatcherWithBypass();
@@ -99,6 +99,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UrlMatcherWithBypass {
       match_list_with_bypass_map_;
 };
 
-}  // namespace network
+}  // namespace ip_protection
 
-#endif  // SERVICES_NETWORK_MASKED_DOMAIN_LIST_URL_MATCHER_WITH_BYPASS_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_URL_MATCHER_WITH_BYPASS_H_

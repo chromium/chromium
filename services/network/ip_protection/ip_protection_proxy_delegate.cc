@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -23,13 +24,14 @@
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
-#include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/url_loader.h"
 #include "url/url_constants.h"
 
 namespace network {
 
 namespace {
+
+using ip_protection::MaskedDomainListManager;
 
 // An enumeration of the `chain_id` values supplied in the GetProxyInfo RPC
 // response, for use with `UmaHistogramEnumeration`. These values are persisted
@@ -56,14 +58,14 @@ IpProtectionProxyChainId ChainIdToEnum(int chain_id) {
 }  // namespace
 
 IpProtectionProxyDelegate::IpProtectionProxyDelegate(
-    NetworkServiceProxyAllowList* network_service_proxy_allow_list,
+    MaskedDomainListManager* masked_domain_list_manager,
     std::unique_ptr<IpProtectionConfigCache> ipp_config_cache,
     bool is_ip_protection_enabled)
-    : network_service_proxy_allow_list_(network_service_proxy_allow_list),
+    : masked_domain_list_manager_(masked_domain_list_manager),
       ipp_config_cache_(std::move(ipp_config_cache)),
       is_ip_protection_enabled_(is_ip_protection_enabled) {
-  CHECK(network_service_proxy_allow_list_);
-  CHECK(network_service_proxy_allow_list_->IsEnabled());
+  CHECK(masked_domain_list_manager_);
+  CHECK(masked_domain_list_manager_->IsEnabled());
   CHECK(ipp_config_cache_);
 }
 
@@ -193,12 +195,11 @@ IpProtectionProxyDelegate::CheckEligibility(
                                             : net::SchemefulSite())
              << ") - " << message;
   };
-  if (!network_service_proxy_allow_list_->IsPopulated()) {
+  if (!masked_domain_list_manager_->IsPopulated()) {
     dvlog("proxy allow list not populated");
     return ProtectionEligibility::kUnknown;
   }
-  if (!network_service_proxy_allow_list_->Matches(url,
-                                                  network_anonymization_key)) {
+  if (!masked_domain_list_manager_->Matches(url, network_anonymization_key)) {
     dvlog("proxy allow list did not match");
     return ProtectionEligibility::kIneligible;
   }

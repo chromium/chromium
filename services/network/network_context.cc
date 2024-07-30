@@ -2500,7 +2500,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // `params_->ip_protection_config_getter` is set (to avoid creating proxy
   // delegates for network contexts that don't participate in IP Protection, or
   // for any network context when the IP Protection feature is disabled).
-  auto* nspal = network_service_->network_service_proxy_allow_list();
+  auto* nspal = network_service_->masked_domain_list_manager();
   if (!params_->initial_custom_proxy_config && nspal->IsEnabled()) {
     auto ipp_config_cache = std::make_unique<IpProtectionConfigCacheImpl>(
         std::make_unique<IpProtectionConfigGetterMojoImpl>(

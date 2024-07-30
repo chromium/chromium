@@ -2,30 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_MASKED_DOMAIN_LIST_NETWORK_SERVICE_PROXY_ALLOW_LIST_H_
-#define SERVICES_NETWORK_MASKED_DOMAIN_LIST_NETWORK_SERVICE_PROXY_ALLOW_LIST_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_MASKED_DOMAIN_LIST_MANAGER_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_MASKED_DOMAIN_LIST_MANAGER_H_
 
+#include "components/ip_protection/common/url_matcher_with_bypass.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/scheme_host_port_matcher.h"
-#include "services/network/masked_domain_list/url_matcher_with_bypass.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom-forward.h"
 
-namespace network {
+namespace ip_protection {
 
-// Class NetworkServiceProxyAllowlist is a pseudo-singleton owned by the
+// Class MaskedDomainListManager is a pseudo-singleton owned by the
 // NetworkService. It uses the MaskedDomainList to generate the
 // CustomProxyConfigPtr needed for NetworkContexts that are using the Privacy
 // Proxy and determines if pairs of request and top_frame URLs are eligible.
-class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
+class MaskedDomainListManager {
  public:
-  explicit NetworkServiceProxyAllowList(
+  explicit MaskedDomainListManager(
       network::mojom::IpProtectionProxyBypassPolicy);
-  ~NetworkServiceProxyAllowList();
-  NetworkServiceProxyAllowList(const NetworkServiceProxyAllowList&);
+  ~MaskedDomainListManager();
+  MaskedDomainListManager(const MaskedDomainListManager&);
 
-  static NetworkServiceProxyAllowList CreateForTesting(
+  static MaskedDomainListManager CreateForTesting(
       const std::map<std::string, std::set<std::string>>& first_party_map);
 
   // Estimates dynamic memory usage.
@@ -53,8 +53,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
 
   // Use the Masked Domain List and exclusion list to generate the allow list
   // and the 1P bypass rules.
-  void UseMaskedDomainList(const masked_domain_list::MaskedDomainList& mdl,
-                           const std::vector<std::string>& exclusion_list);
+  void UpdateMaskedDomainList(const masked_domain_list::MaskedDomainList& mdl,
+                              const std::vector<std::string>& exclusion_list);
 
  private:
   // Policy that determines which domains are bypassed from IP Protection.
@@ -80,10 +80,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
   // Add domains to the `public_suffix_list_matcher_`.
   void AddPublicSuffixListRules(const std::set<std::string>& domains);
 
-  FRIEND_TEST_ALL_PREFIXES(NetworkServiceProxyAllowListBaseTest,
+  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListManagerBaseTest,
                            ExclusionSetDomainsRemovedFromMDL);
 };
 
-}  // namespace network
+}  // namespace ip_protection
 
-#endif  // SERVICES_NETWORK_MASKED_DOMAIN_LIST_NETWORK_SERVICE_PROXY_ALLOW_LIST_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_MASKED_DOMAIN_LIST_MANAGER_H_
