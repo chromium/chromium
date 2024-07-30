@@ -103,6 +103,7 @@ static_library("file_manager") {
     "//chrome/browser/chromeos/drivefs",
     "//chrome/browser/chromeos/drivefs:native_message_host_origins",
     "//chrome/browser/devtools",
+    "//chrome/browser/feedback",
     "//chrome/browser/pdf",
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/pdf:pdf_service",

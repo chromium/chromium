@@ -123,6 +123,7 @@ static_library("ash") {
     "//chrome/browser/ash/power",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
+    "//chrome/browser/feedback",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles",
     "//chrome/browser/resources/chromeos/bluetooth_pairing_dialog:resources",

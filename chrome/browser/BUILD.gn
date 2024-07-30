@@ -1920,13 +1920,15 @@ static_library("browser") {
   # Any circular includes must depend on the target
   # "browser_public_dependencies".
   allow_circular_includes_from = [
-    "//chrome/browser/media/webrtc",
     "//chrome/browser/ai",
     "//chrome/browser/autofill",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
-    "//chrome/browser/search",
+    "//chrome/browser/feedback",
+    "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/google",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/search",
 
     # Circular dependency due to SystemNetworkContextManager.
     "//chrome/browser/image_fetcher",
@@ -2014,6 +2016,8 @@ static_library("browser") {
     "//chrome/browser/devtools",
     "//chrome/browser/enterprise/platform_auth:features",
     "//chrome/browser/favicon",
+    "//chrome/browser/feedback",
+    "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/fingerprinting_protection",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/image_decoder",
@@ -3185,8 +3189,6 @@ static_library("browser") {
       "feed/android/refresh_task_scheduler_impl.cc",
       "feed/android/refresh_task_scheduler_impl.h",
       "feed/android/web_feed_bridge.cc",
-      "feedback/android/family_info_feedback_source.cc",
-      "feedback/android/family_info_feedback_source.h",
       "first_run/android/first_run_prefs.cc",
       "first_run/android/first_run_prefs.h",
       "first_run/android/first_run_utils.cc",
@@ -3848,32 +3850,6 @@ static_library("browser") {
       "enterprise/signals/device_info_fetcher.cc",
       "enterprise/signals/device_info_fetcher.h",
       "enterprise/signals/signals_common.h",
-      "feedback/feedback_dialog_utils.cc",
-      "feedback/feedback_dialog_utils.h",
-      "feedback/feedback_uploader_chrome.cc",
-      "feedback/feedback_uploader_chrome.h",
-      "feedback/feedback_uploader_factory_chrome.cc",
-      "feedback/feedback_uploader_factory_chrome.h",
-      "feedback/show_feedback_page.cc",
-      "feedback/show_feedback_page.h",
-      "feedback/system_logs/about_system_logs_fetcher.cc",
-      "feedback/system_logs/about_system_logs_fetcher.h",
-      "feedback/system_logs/chrome_system_logs_fetcher.cc",
-      "feedback/system_logs/chrome_system_logs_fetcher.h",
-      "feedback/system_logs/log_sources/chrome_internal_log_source.cc",
-      "feedback/system_logs/log_sources/chrome_internal_log_source.h",
-      "feedback/system_logs/log_sources/crash_ids_source.cc",
-      "feedback/system_logs/log_sources/crash_ids_source.h",
-      "feedback/system_logs/log_sources/device_event_log_source.cc",
-      "feedback/system_logs/log_sources/device_event_log_source.h",
-      "feedback/system_logs/log_sources/family_info_log_source.cc",
-      "feedback/system_logs/log_sources/family_info_log_source.h",
-      "feedback/system_logs/log_sources/memory_details_log_source.cc",
-      "feedback/system_logs/log_sources/memory_details_log_source.h",
-      "feedback/system_logs/log_sources/performance_log_source.cc",
-      "feedback/system_logs/log_sources/performance_log_source.h",
-      "feedback/system_logs/log_sources/related_website_sets_source.cc",
-      "feedback/system_logs/log_sources/related_website_sets_source.h",
       "first_run/first_run.cc",
       "first_run/first_run.h",
       "first_run/first_run_dialog.h",
@@ -4715,20 +4691,6 @@ static_library("browser") {
         "component_updater/hyphenation_component_installer.h",
       ]
     }
-
-    if (chrome_root_store_supported) {
-      sources += [
-        "feedback/system_logs/log_sources/chrome_root_store_log_source.cc",
-        "feedback/system_logs/log_sources/chrome_root_store_log_source.h",
-      ]
-    }
-  }
-  if (is_chromeos_lacros) {
-    assert(enable_system_notifications)
-    sources += [
-      "feedback/system_logs/log_sources/ozone_wayland_state_dump_source.cc",
-      "feedback/system_logs/log_sources/ozone_wayland_state_dump_source.h",
-    ]
   }
   if (is_chromeos_ash) {
     assert(enable_system_notifications)
@@ -4770,8 +4732,6 @@ static_library("browser") {
       "enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator.h",
       "enterprise/reporting/android_app_info_generator.cc",
       "enterprise/reporting/android_app_info_generator.h",
-      "feedback/system_logs/log_sources/lacros_log_files_log_source.cc",
-      "feedback/system_logs/log_sources/lacros_log_files_log_source.h",
       "file_system_access/cloud_identifier/cloud_identifier_util_ash.cc",
       "file_system_access/cloud_identifier/cloud_identifier_util_ash.h",
       "icon_loader_chromeos.cc",
@@ -5866,7 +5826,6 @@ static_library("browser") {
       "chrome_browser_main_parts_lacros.h",
       "chromeos/kcer/kcer_factory_lacros.cc",
       "chromeos/kcer/kcer_factory_lacros.h",
-      "feedback/show_feedback_page_lacros.cc",
       "lacros/account_manager/account_cache.cc",
       "lacros/account_manager/account_cache.h",
       "lacros/account_manager/account_manager_util.cc",

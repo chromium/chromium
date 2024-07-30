@@ -788,6 +788,7 @@ source_set("extensions") {
     # TODO(crbug.com/353284909): Remove this circular dependency.
     "//chrome/browser/media/webrtc",
 
+    "//chrome/browser/feedback",
     "//chrome/browser/ui/views/toolbar",
   ]
 
@@ -830,6 +831,7 @@ source_set("extensions") {
     "//chrome/browser:font_pref",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/feedback",
     "//chrome/browser/search",
     "//chrome/browser/search/background",
     "//chrome/browser/search_engines",

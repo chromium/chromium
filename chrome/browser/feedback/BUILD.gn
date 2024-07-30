@@ -2,6 +2,166 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+import("//build/config/chromeos/ui_mode.gni")
+
 source_set("feedback_enum") {
   sources = [ "public/feedback_source.h" ]
+}
+
+source_set("feedback") {
+  sources = []
+  public_deps = []
+  deps = []
+  if (is_android) {
+    sources += [
+      "android/family_info_feedback_source.cc",
+      "android/family_info_feedback_source.h",
+    ]
+    public_deps += [
+      "//components/supervised_user/core/browser",
+      "//components/supervised_user/core/browser:fetcher",
+      "//components/supervised_user/core/browser/proto",
+    ]
+    deps += [
+      "//base",
+      "//chrome/browser/feedback/android:jni_headers",
+      "//chrome/browser/profiles:profile",
+      "//content/public/browser",
+      "//services/network/public/cpp",
+    ]
+  } else {
+    # The non-android feed code has circular dependencies and the easiest way to
+    # decouple is to separate between the interface and the implementation. Many
+    # parts of Chrome want to call a method "ShowFeedback" to show the feedback
+    # page (the interface). The implementation of the feedback uploader requires
+    # fetching data from many different components (the implementation).
+    sources += [
+      "feedback_dialog_utils.h",
+      "feedback_uploader_chrome.h",
+      "feedback_uploader_factory_chrome.h",
+      "show_feedback_page.h",
+      "system_logs/chrome_system_logs_fetcher.h",
+    ]
+    public_deps += [
+      "//base",
+      "//build/config/chromebox_for_meetings:buildflags",
+      "//chrome/browser/feedback:feedback_enum",
+      "//components/feedback",
+      "//components/feedback/content:factory",
+      "//components/invalidation/public",
+      "//components/sessions:session_id",
+      "//components/signin/public/identity_manager",
+    ]
+  }
+}
+
+source_set("feedback_impl") {
+  sources = []
+  deps = [ ":feedback" ]
+  public_deps = [ "//components/feedback" ]
+  if (!is_android) {
+    sources += [
+      "feedback_dialog_utils.cc",
+      "feedback_uploader_chrome.cc",
+      "feedback_uploader_factory_chrome.cc",
+      "show_feedback_page.cc",
+      "system_logs/about_system_logs_fetcher.cc",
+      "system_logs/about_system_logs_fetcher.h",
+      "system_logs/chrome_system_logs_fetcher.cc",
+      "system_logs/log_sources/chrome_internal_log_source.cc",
+      "system_logs/log_sources/chrome_internal_log_source.h",
+      "system_logs/log_sources/chrome_root_store_log_source.cc",
+      "system_logs/log_sources/chrome_root_store_log_source.h",
+      "system_logs/log_sources/crash_ids_source.cc",
+      "system_logs/log_sources/crash_ids_source.h",
+      "system_logs/log_sources/device_event_log_source.cc",
+      "system_logs/log_sources/device_event_log_source.h",
+      "system_logs/log_sources/family_info_log_source.cc",
+      "system_logs/log_sources/family_info_log_source.h",
+      "system_logs/log_sources/memory_details_log_source.cc",
+      "system_logs/log_sources/memory_details_log_source.h",
+      "system_logs/log_sources/performance_log_source.cc",
+      "system_logs/log_sources/performance_log_source.h",
+      "system_logs/log_sources/related_website_sets_source.cc",
+      "system_logs/log_sources/related_website_sets_source.h",
+    ]
+    public_deps += [
+      "//chrome/browser/feedback:feedback_enum",
+      "//components/feedback/content:factory",
+      "//components/supervised_user/core/browser:fetcher",
+      "//components/supervised_user/core/browser/proto",
+      "//components/upload_list",
+    ]
+    deps += [
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/crash_upload_list",
+      "//chrome/browser/devtools",
+      "//chrome/browser/extensions",
+      "//chrome/browser/google",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/sync",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/common",
+      "//components/device_event_log",
+      "//components/feedback",
+      "//components/performance_manager",
+      "//components/supervised_user/core/browser",
+      "//content/public/browser",
+      "//extensions/browser",
+      "//extensions/browser/api/feedback_private",
+      "//extensions/browser/api/power",
+      "//net",
+      "//services/cert_verifier:lib",
+    ]
+  }
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/components/kiosk",
+      "//chromeos/version",
+    ]
+    if (is_chromeos_lacros) {
+      sources += [
+        "show_feedback_page_lacros.cc",
+        "system_logs/log_sources/ozone_wayland_state_dump_source.cc",
+        "system_logs/log_sources/ozone_wayland_state_dump_source.h",
+      ]
+      deps += [
+        "//chromeos/lacros",
+        "//chromeos/startup",
+        "//ui/ozone",
+      ]
+    }
+    if (is_chromeos_ash) {
+      sources += [
+        "system_logs/log_sources/lacros_log_files_log_source.cc",
+        "system_logs/log_sources/lacros_log_files_log_source.h",
+      ]
+      deps += [
+        "//ash",
+        "//ash/constants",
+        "//ash/webui/os_feedback_ui:url_constants",
+        "//ash/webui/system_apps/public:system_web_app_type",
+        "//chrome/browser/ash/arc",
+        "//chrome/browser/ash/arc/policy",
+        "//chrome/browser/ash/crosapi",
+        "//chrome/browser/ash/crosapi:browser_util",
+        "//chrome/browser/ash/login",
+        "//chrome/browser/ash/login/demo_mode",
+        "//chrome/browser/ash/policy/enrollment",
+        "//chrome/browser/ash/system_logs",
+        "//chrome/browser/ash/system_web_apps",
+        "//chrome/browser/ui/ash/multi_user",
+        "//chrome/browser/ui/ash/system_web_apps",
+        "//chromeos/ash/components/dbus/debug_daemon",
+        "//chromeos/ash/components/dbus/spaced",
+        "//chromeos/ash/components/login/auth",
+        "//chromeos/ash/components/settings",
+        "//chromeos/ash/components/system",
+      ]
+    }
+  }
 }

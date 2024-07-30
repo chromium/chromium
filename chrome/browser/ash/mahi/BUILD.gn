@@ -26,6 +26,7 @@ static_library("mahi") {
     "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//chrome/browser/ash/magic_boost",
+    "//chrome/browser/feedback",
     "//chromeos/components/magic_boost/public/cpp:cpp",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/strings:strings_grit",

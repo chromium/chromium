@@ -389,6 +389,7 @@ static_library("crosapi") {
     "//chrome/browser/ash/system_web_apps/apps/media_app",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/ash/trusted_vault",
+    "//chrome/browser/feedback",
     "//chrome/browser/image_decoder:image_decoder",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/profiles:profile",

@@ -420,6 +420,7 @@ static_library("ui") {
     # New dependencies inside of //chrome/browser that generate header files
     # should be added to //chrome/browser:browser_generated_files.
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/feedback",
     "//chrome/browser/headless",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/search",
@@ -453,6 +454,7 @@ static_library("ui") {
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
+    "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/fingerprinting_protection",
     "//chrome/browser/google",
     "//chrome/browser/image_decoder",
@@ -744,6 +746,8 @@ static_library("ui") {
     # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
+    "//chrome/browser/feedback",
+    "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/profiling_host",
 
