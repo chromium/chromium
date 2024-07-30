@@ -44,8 +44,9 @@ class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
                               const std::string&)> callback) override;
 
  private:
-  // Lazily binds the agent.
-  const mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent>& GetAgent();
+  // Lazily binds the agent to `render_frame_host`.
+  const mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent>& GetAgent(
+      content::RenderFrameHost* render_frame_host);
 
   mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent> agent_;
 
