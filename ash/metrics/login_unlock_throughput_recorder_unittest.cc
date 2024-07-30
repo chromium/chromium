@@ -341,15 +341,11 @@ TEST_P(LoginUnlockThroughputRecorderLoginAnimationTest,
     EXPECT_CALL(check_point, Call("shelf_updated_3")).Times(1);
 
     EXPECT_CALL(mock_observer, OnAllExpectedShelfIconLoaded(_)).Times(1);
-
-    // OnShelfAnimationFinished is triggered immediately as no shelf animation
-    // is ongoing at this point.
-    // TODO(junis): We should fix the order so that OnShelfAnimationFinished is
-    // called after OnShelfIconsLoadedAndSessionRestoreDone.
-    EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
-
     EXPECT_CALL(mock_observer, OnShelfIconsLoadedAndSessionRestoreDone(_))
         .Times(1);
+    // OnShelfAnimationFinished is triggered immediately as no shelf animation
+    // is ongoing at this point.
+    EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
 
     EXPECT_CALL(check_point, Call("shelf_icons_loaded")).Times(1);
 
@@ -465,12 +461,8 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
       EXPECT_CALL(mock_observer, OnAllBrowserWindowsPresented(_)).Times(1);
       EXPECT_CALL(check_point, Call("last_window_presented")).Times(1);
     } else {
-      // TODO(junis): Currently due to implementation issue,
-      // OnAllBrowserWindowsPresented is called before OnAllBrowserWindowsShown
-      // if no display is enabled. We should fix it to trigger
-      // OnAllBrowserWindowsShown first.
-      EXPECT_CALL(mock_observer, OnAllBrowserWindowsPresented(_)).Times(1);
       EXPECT_CALL(mock_observer, OnAllBrowserWindowsShown(_)).Times(1);
+      EXPECT_CALL(mock_observer, OnAllBrowserWindowsPresented(_)).Times(1);
       EXPECT_CALL(check_point, Call("last_window_shown")).Times(1);
       EXPECT_CALL(check_point, Call("last_window_presented")).Times(1);
     }
@@ -556,26 +548,18 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
       EXPECT_CALL(mock_observer, OnAllBrowserWindowsPresented(_)).Times(1);
       EXPECT_CALL(check_point, Call("all_windows_presented")).Times(1);
     } else {
-      // TODO(junis): Currently due to implementation issue,
-      // OnAllBrowserWindowsPresented is called before OnAllBrowserWindowsShown
-      // if no display is enabled. We should fix it to trigger
-      // OnAllBrowserWindowsShown first.
-      EXPECT_CALL(mock_observer, OnAllBrowserWindowsPresented(_)).Times(1);
       EXPECT_CALL(mock_observer, OnAllBrowserWindowsShown(_)).Times(1);
+      EXPECT_CALL(mock_observer, OnAllBrowserWindowsPresented(_)).Times(1);
       EXPECT_CALL(check_point, Call("all_windows_shown")).Times(1);
       EXPECT_CALL(check_point, Call("all_windows_presented")).Times(1);
     }
 
     EXPECT_CALL(mock_observer, OnAllExpectedShelfIconLoaded(_)).Times(1);
-
-    // OnShelfAnimationFinished is triggered immediately as no shelf animation
-    // is ongoing at this point.
-    // TODO(junis): We should fix the order so that OnShelfAnimationFinished is
-    // called after OnShelfIconsLoadedAndSessionRestoreDone.
-    EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
-
     EXPECT_CALL(mock_observer, OnShelfIconsLoadedAndSessionRestoreDone(_))
         .Times(1);
+    // OnShelfAnimationFinished is triggered immediately as no shelf animation
+    // is ongoing at this point.
+    EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
 
     EXPECT_CALL(check_point, Call("shelf_icons_loaded")).Times(1);
 
@@ -659,28 +643,18 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
       EXPECT_CALL(mock_observer, OnAllBrowserWindowsShown(_)).Times(1);
       EXPECT_CALL(check_point, Call("all_windows_shown")).Times(1);
       EXPECT_CALL(mock_observer, OnAllBrowserWindowsPresented(_)).Times(1);
-
-      // TODO(junis): We should fix the order so that OnShelfAnimationFinished
-      // is called after OnShelfIconsLoadedAndSessionRestoreDone.
-      EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
       EXPECT_CALL(mock_observer, OnShelfIconsLoadedAndSessionRestoreDone(_))
           .Times(1);
+      EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
 
       EXPECT_CALL(check_point, Call("all_windows_presented")).Times(1);
     } else {
-      // TODO(junis): Currently due to implementation issue,
-      // OnAllBrowserWindowsPresented is called before OnAllBrowserWindowsShown
-      // if no display is enabled. We should fix it to trigger
-      // OnAllBrowserWindowsShown first.
+      EXPECT_CALL(mock_observer, OnAllBrowserWindowsShown(_)).Times(1);
       EXPECT_CALL(mock_observer, OnAllBrowserWindowsPresented(_)).Times(1);
-
-      // TODO(junis): We should fix the order so that OnShelfAnimationFinished
-      // is called after OnShelfIconsLoadedAndSessionRestoreDone.
-      EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
       EXPECT_CALL(mock_observer, OnShelfIconsLoadedAndSessionRestoreDone(_))
           .Times(1);
+      EXPECT_CALL(mock_observer, OnShelfAnimationFinished(_)).Times(1);
 
-      EXPECT_CALL(mock_observer, OnAllBrowserWindowsShown(_)).Times(1);
       EXPECT_CALL(check_point, Call("all_windows_shown")).Times(1);
       EXPECT_CALL(check_point, Call("all_windows_presented")).Times(1);
     }

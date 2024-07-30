@@ -146,6 +146,12 @@ void WindowRestoreTracker::OnShown(int window_id, ui::Compositor* compositor) {
   }
   iter->second = State::kShown;
 
+  const bool all_shown = CountWindowsInState(State::kNotCreated) == 0 &&
+                         CountWindowsInState(State::kCreated) == 0;
+  if (all_shown && on_shown_) {
+    std::move(on_shown_).Run();
+  }
+
   if (compositor &&
       display::Screen::GetScreen()->GetPrimaryDisplay().detected()) {
     compositor->RequestSuccessfulPresentationTimeForNextFrame(
@@ -154,12 +160,6 @@ void WindowRestoreTracker::OnShown(int window_id, ui::Compositor* compositor) {
   } else if (compositor) {
     // Primary display not detected. Assume it's a headless unit.
     OnPresented(window_id);
-  }
-
-  const bool all_shown = CountWindowsInState(State::kNotCreated) == 0 &&
-                         CountWindowsInState(State::kCreated) == 0;
-  if (all_shown && on_shown_) {
-    std::move(on_shown_).Run();
   }
 }
 
@@ -391,6 +391,11 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
   DCHECK(!shelf_animation_end_scheduled_);
   shelf_animation_end_scheduled_ = true;
 
+  auto now = base::TimeTicks::Now();
+  for (auto& obs : observers_) {
+    obs.OnShelfIconsLoadedAndSessionRestoreDone(now);
+  }
+
   scoped_throughput_reporter_blocker_.reset();
 
   // TotalAnimationThroughputReporter (login_animation_throughput_reporter_)
@@ -423,11 +428,6 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
       weak_ptr_factory_.GetWeakPtr());
 
   (new ShelfAnimationObserver(on_shelf_animation_end))->StartObserving();
-
-  auto now = base::TimeTicks::Now();
-  for (auto& obs : observers_) {
-    obs.OnShelfIconsLoadedAndSessionRestoreDone(now);
-  }
 
   post_login_deferred_task_timer_.Stop();
   if (!post_login_deferred_task_runner_->Started()) {
