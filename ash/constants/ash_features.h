@@ -422,7 +422,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGalleryAppPdfEditNotification);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<std::string> kGalleryAppPdfEditNotificationText;
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kGlanceablesV2);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGlanceablesTimeManagementClassroomStudentView);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1220,7 +1219,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsTriggerByEventEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsTriggerByBrowserEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGlanceablesTimeManagementClassroomStudentViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
