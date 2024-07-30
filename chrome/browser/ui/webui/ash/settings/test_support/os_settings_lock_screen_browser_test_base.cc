@@ -58,7 +58,7 @@ void OSSettingsLockScreenBrowserTestBase::SetUpOnMainThread() {
 
 mojom::LockScreenSettingsAsyncWaiter
 OSSettingsLockScreenBrowserTestBase::OpenLockScreenSettings() {
-  if (ash::features::IsUseAuthPanelInSettingsEnabled()) {
+  if (ash::features::IsUseAuthPanelInSessionEnabled()) {
     base::test::TestFuture<AuthHubConnector*, AuthSurfaceRegistry::AuthSurface>
         future;
     auto subscription =
@@ -100,7 +100,7 @@ void OSSettingsLockScreenBrowserTestBase::
 
 mojom::LockScreenSettingsAsyncWaiter
 OSSettingsLockScreenBrowserTestBase::OpenLockScreenSettingsAndAuthenticate() {
-  if (ash::features::IsUseAuthPanelInSettingsEnabled()) {
+  if (ash::features::IsUseAuthPanelInSessionEnabled()) {
     OpenLockScreenSettings();
     AuthenticateViaCryptohomePasswordEngine(false);
   } else {
@@ -121,7 +121,7 @@ mojom::LockScreenSettingsAsyncWaiter OSSettingsLockScreenBrowserTestBase::
         const std::string& setting_id) {
   std::string relative_url = "/osPrivacy/lockScreen?settingId=";
   relative_url += setting_id;
-  if (ash::features::IsUseAuthPanelInSettingsEnabled()) {
+  if (ash::features::IsUseAuthPanelInSessionEnabled()) {
     base::test::TestFuture<AuthHubConnector*, AuthSurfaceRegistry::AuthSurface>
         future;
     auto subscription =

@@ -125,17 +125,13 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
   auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
   DCHECK(account_id.is_valid());
   DCHECK_NE(auth_token_provider_, nullptr);
-  // Auth panel and Active session auth shouldn't be enabled the same time.
-  CHECK(!((features::IsUseAuthPanelInPasswordManagerEnabled() ||
-           features::IsUseAuthPanelInSettingsEnabled()) &&
-          features::IsActiveSessionAuthEnabled()));
 
   if (reason == Reason::kAccessPasswordManager &&
-      features::IsUseAuthPanelInPasswordManagerEnabled()) {
+      features::IsUseAuthPanelInSessionEnabled()) {
     CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
                            account_id);
   } else if (reason == Reason::kAccessAuthenticationSettings &&
-             features::IsUseAuthPanelInSettingsEnabled()) {
+             features::IsUseAuthPanelInSessionEnabled()) {
     CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
                            account_id);
   } else {

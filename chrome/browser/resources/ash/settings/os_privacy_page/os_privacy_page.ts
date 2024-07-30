@@ -72,9 +72,7 @@ export class OsSettingsPrivacyPageElement extends
 
       /**
        * Authentication token.
-       * This is only used if `isAuthPanelEnabled_` and
-       * `isActiveSessionAuthEnabled_` is set to false. i.e if the
-       * `UseAuthPanelInSettings` feature is disabled.
+       * This is only used if `isAuthPanelInSessionEnabled_` is set to false.
        */
       authTokenInfo_: {
         type: Object,
@@ -84,9 +82,7 @@ export class OsSettingsPrivacyPageElement extends
       /**
        * The variable that stores the authentication token we receive
        * from AuthPanel or ActiveSessionAuth.
-       * This is only used if `isAuthPanelEnabled_` or
-       * `isActiveSessionAuthEnabled_` is set to true. i.e if the
-       * `UseAuthPanelInSettings` feature is enabled.
+       * This is only used if `isAuthPanelInSessionEnabled_`
        */
       authTokenReply_: {
         type: Object,
@@ -127,22 +123,10 @@ export class OsSettingsPrivacyPageElement extends
        * True if auth panel will be used for authentication instead of
        * password prompt dialog.
        */
-      isAuthPanelEnabled_: {
+      isAuthPanelInSessionEnabled_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isAuthPanelEnabled');
-        },
-        readOnly: true,
-      },
-
-      /**
-       * True if active session auth will be used for authentication instead of
-       * password prompt dialog.
-       */
-      isActiveSessionAuthEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isActiveSessionAuthEnabled');
         },
         readOnly: true,
       },
@@ -311,8 +295,7 @@ export class OsSettingsPrivacyPageElement extends
   private dataAccessShiftTabPressed_: boolean;
   private fingerprintUnlockEnabled_: boolean;
   private isAccountManagerEnabled_: boolean;
-  private isAuthPanelEnabled_: boolean;
-  private isActiveSessionAuthEnabled_: boolean;
+  private isAuthPanelInSessionEnabled_: boolean;
   private isGuestMode_: boolean;
   private isRevampWayfindingEnabled_: boolean;
   private isRevenBranding_: boolean;
@@ -501,7 +484,7 @@ export class OsSettingsPrivacyPageElement extends
 
     this.isAuthenticating_ = true;
 
-    if (!this.isAuthPanelEnabled_ && !this.isActiveSessionAuthEnabled_) {
+    if (!this.isAuthPanelInSessionEnabled_) {
       this.showPasswordPromptDialog_ = true;
       this.isAuthenticating_ = false;
       return;
@@ -522,7 +505,7 @@ export class OsSettingsPrivacyPageElement extends
   }
 
   private getAuthToken_(): string|undefined {
-    if (!this.isAuthPanelEnabled_ && !this.isActiveSessionAuthEnabled_) {
+    if (!this.isAuthPanelInSessionEnabled_) {
       return this.authTokenInfo_?.token;
     }
     return this.authTokenReply_?.token;
@@ -533,7 +516,7 @@ export class OsSettingsPrivacyPageElement extends
    * submit when too many attempts were made when using PrefStore based PIN.
    */
   private async onInvalidateTokenRequested_(): Promise<void> {
-    if (!this.isAuthPanelEnabled_ && !this.isActiveSessionAuthEnabled_) {
+    if (!this.isAuthPanelInSessionEnabled_) {
       this.authTokenInfo_ = undefined;
       return;
     }
@@ -546,13 +529,12 @@ export class OsSettingsPrivacyPageElement extends
   }
 
   private onPasswordPromptDialogClose_(): void {
-    if ((this.isAuthPanelEnabled_ || this.isActiveSessionAuthEnabled_) &&
-        !this.authTokenReply_) {
+    if (this.isAuthPanelInSessionEnabled_ && !this.authTokenReply_) {
       Router.getInstance().navigateToPreviousRoute();
       return;
     }
 
-    if (!this.isAuthPanelEnabled_ && !this.isActiveSessionAuthEnabled_) {
+    if (!this.isAuthPanelInSessionEnabled_) {
       this.showPasswordPromptDialog_ = false;
       this.isAuthenticating_ = false;
       if (!this.authTokenInfo_) {
@@ -570,7 +552,7 @@ export class OsSettingsPrivacyPageElement extends
    * Should request the password again to get latest token.
    */
   private onAuthTokenInvalid_(): void {
-    if (this.isAuthPanelEnabled_ || this.isActiveSessionAuthEnabled_) {
+    if (this.isAuthPanelInSessionEnabled_) {
       this.authTokenReply_ = undefined;
       return;
     }

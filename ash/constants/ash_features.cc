@@ -3023,29 +3023,10 @@ BASE_FEATURE(kUseAnnotatedAccountId,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This features toggles which implementation is used for authentication UIs on
-// Chrome password manager on ChromeOS. When the feature is enabled,
+// ChromeOS settings or PasswordManager. When the feature is enabled,
 // `AuthPanel` is used as an authentication UI.
-BASE_FEATURE(kUseAuthPanelInPasswordManager,
-             "UseAuthPanelInPasswordManager",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This features toggles which implementation is used for authentication UIs on
-// ChromeOS settings. When the feature is enabled,
-// `AuthPanel` is used as an authentication UI.
-BASE_FEATURE(kUseAuthPanelInSettings,
-             "UseAuthPanelInSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This feature dictates whether AuthPanel is restricted to only passwords,
-// or has the full suite of auth factors available.
-BASE_FEATURE(kAuthPanelUsesOnlyPassword,
-             "AuthPanelUsesOnlyPassword",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// This features controls the ActiveSessionAuth UI is enabled for authentication
-// on ChromeOS settings and password manager.
-BASE_FEATURE(kActiveSessionAuth,
-             "ActiveSessionAuth",
+BASE_FEATURE(kUseAuthPanelInSession,
+             "UseAuthPanelInSession",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This features controls whether or not passwordless setup is enabled, such as
@@ -4917,24 +4898,12 @@ bool ShouldUseV2DeviceSync() {
          base::FeatureList::IsEnabled(kCryptAuthV2DeviceSync);
 }
 
-bool IsUseAuthPanelInPasswordManagerEnabled() {
-  return base::FeatureList::IsEnabled(kUseAuthPanelInPasswordManager);
-}
-
-bool IsUseAuthPanelInSettingsEnabled() {
-  return base::FeatureList::IsEnabled(kUseAuthPanelInSettings);
-}
-
-bool IsAuthPanelUsingOnlyPassword() {
-  return base::FeatureList::IsEnabled(kAuthPanelUsesOnlyPassword);
+bool IsUseAuthPanelInSessionEnabled() {
+  return base::FeatureList::IsEnabled(kUseAuthPanelInSession);
 }
 
 bool IsAllowPasswordlessSetupEnabled() {
   return base::FeatureList::IsEnabled(kAllowPasswordlessSetup);
-}
-
-bool IsActiveSessionAuthEnabled() {
-  return base::FeatureList::IsEnabled(kActiveSessionAuth);
 }
 
 bool ShouldEnterOverviewFromWallpaper() {

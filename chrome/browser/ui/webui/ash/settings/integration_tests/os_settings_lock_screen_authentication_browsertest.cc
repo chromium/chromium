@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsLockScreenAuthenticationTest,
   base::HistogramTester histograms;
   auto lock_screen_settings = OpenLockScreenSettings();
 
-  if (ash::features::IsUseAuthPanelInSettingsEnabled()) {
+  if (ash::features::IsUseAuthPanelInSessionEnabled()) {
     ASSERT_FALSE(cryptohome_.IsAuthenticated(GetAccountId()));
     lock_screen_settings.AssertAuthenticated(false);
 
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsLockScreenAuthenticationTest, FailedUnlock) {
   base::HistogramTester histograms;
   auto lock_screen_settings = OpenLockScreenSettings();
 
-  if (ash::features::IsUseAuthPanelInSettingsEnabled()) {
+  if (ash::features::IsUseAuthPanelInSessionEnabled()) {
     ASSERT_FALSE(cryptohome_.IsAuthenticated(GetAccountId()));
     lock_screen_settings.AssertAuthenticated(false);
 

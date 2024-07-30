@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, MaximumLengthAutosubmit) {
 // autosubmit but with a locked-out PIN.
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
   auto go_to_lock_screen_settings_and_authenticate = [&]() {
-    if (ash::features::IsUseAuthPanelInSettingsEnabled()) {
+    if (ash::features::IsUseAuthPanelInSessionEnabled()) {
       OpenLockScreenSettings();
       AuthenticateViaCryptohomePasswordEngine(/*keep_alive_connector=*/false);
       return mojom::LockScreenSettingsAsyncWaiter{
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
 
   pin_settings.TryEnablePinAutosubmit(kFirstPin);
 
-  if (ash::features::IsUseAuthPanelInSettingsEnabled()) {
+  if (ash::features::IsUseAuthPanelInSessionEnabled()) {
     base::test::TestFuture<AuthHubConnector*, AuthSurfaceRegistry::AuthSurface>
         future;
     auto subscription =

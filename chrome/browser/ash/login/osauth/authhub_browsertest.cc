@@ -32,8 +32,7 @@ using testing::Invoke;
 class AuthHubTest : public LoginManagerTest {
  public:
   AuthHubTest() {
-    feature_list_.InitAndDisableFeature(
-        ash::features::kAuthPanelUsesOnlyPassword);
+    feature_list_.InitAndDisableFeature(ash::features::kUseAuthPanelInSession);
   }
   ~AuthHubTest() override = default;
 
