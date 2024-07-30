@@ -222,6 +222,86 @@ TEST_P(TabGroupServiceWrapperUnitTest, UpdateVisualData) {
   EXPECT_EQ(new_color, retrieved_group->color());
 }
 
+TEST_P(TabGroupServiceWrapperUnitTest, UpdateGroupPositionPinnedState) {
+  tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+
+  SavedTabGroup group(
+      kGroupTitle, kGroupColor,
+      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
+      kGroupId, local_id);
+  service()->AddGroup(std::move(group));
+
+  std::optional<SavedTabGroup> retrieved_group = service()->GetGroup(kGroupId);
+  EXPECT_TRUE(retrieved_group.has_value());
+
+  const bool pinned_state = retrieved_group->is_pinned();
+  service()->UpdateGroupPosition(retrieved_group->saved_guid(), !pinned_state,
+                                 std::nullopt);
+  retrieved_group = service()->GetGroup(kGroupId);
+  EXPECT_NE(retrieved_group->is_pinned(), pinned_state);
+
+  service()->UpdateGroupPosition(retrieved_group->saved_guid(), pinned_state,
+                                 std::nullopt);
+  retrieved_group = service()->GetGroup(kGroupId);
+  EXPECT_EQ(retrieved_group->is_pinned(), pinned_state);
+}
+
+TEST_P(TabGroupServiceWrapperUnitTest, UpdateGroupPositionIndex) {
+  auto get_index = [&](const LocalTabGroupID& local_id) -> int {
+    std::vector<SavedTabGroup> groups = service()->GetAllGroups();
+    auto it = base::ranges::find_if(groups, [&](const SavedTabGroup& group) {
+      return group.local_group_id() == local_id;
+    });
+
+    if (it == groups.end()) {
+      return -1;
+    }
+
+    return std::distance(groups.begin(), it);
+  };
+
+  LocalTabGroupID local_id_1 = tab_groups::TabGroupId::GenerateNew();
+  LocalTabGroupID local_id_2 = tab_groups::TabGroupId::GenerateNew();
+  LocalTabGroupID local_id_3 = tab_groups::TabGroupId::GenerateNew();
+
+  SavedTabGroup group_1(
+      kGroupTitle, kGroupColor,
+      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
+      kGroupId, local_id_1);
+  SavedTabGroup group_2(
+      kGroupTitle, kGroupColor,
+      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
+      base::Uuid::GenerateRandomV4(), local_id_2);
+  SavedTabGroup group_3(
+      kGroupTitle, kGroupColor,
+      {FirstTab(kGroupId), SecondTab(kGroupId), ThirdTab(kGroupId)}, 0,
+      base::Uuid::GenerateRandomV4(), local_id_3);
+  service()->AddGroup(std::move(group_1));
+  service()->AddGroup(std::move(group_2));
+  service()->AddGroup(std::move(group_3));
+
+  std::vector<SavedTabGroup> all_groups = service()->GetAllGroups();
+  ASSERT_EQ(3u, all_groups.size());
+  EXPECT_EQ(0, get_index(local_id_3));
+  EXPECT_EQ(1, get_index(local_id_2));
+  EXPECT_EQ(2, get_index(local_id_1));
+
+  service()->UpdateGroupPosition(kGroupId, std::nullopt, 0);
+  EXPECT_EQ(0, get_index(local_id_1));
+  EXPECT_EQ(1, get_index(local_id_3));
+  EXPECT_EQ(2, get_index(local_id_2));
+
+  service()->UpdateGroupPosition(kGroupId, std::nullopt, 1);
+  EXPECT_EQ(0, get_index(local_id_3));
+  EXPECT_EQ(1, get_index(local_id_1));
+  EXPECT_EQ(2, get_index(local_id_2));
+
+  service()->UpdateGroupPosition(kGroupId, std::nullopt, 2);
+  EXPECT_EQ(0, get_index(local_id_3));
+  EXPECT_EQ(1, get_index(local_id_2));
+  EXPECT_EQ(2, get_index(local_id_1));
+}
+
 // Verifies that we add tabs to a group at the correct position.
 TEST_P(TabGroupServiceWrapperUnitTest, AddTab) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();

@@ -88,11 +88,25 @@ void TabGroupServiceWrapper::UpdateVisualData(
   OnTabGroupVisualsChanged(group->saved_guid());
 }
 
-void TabGroupServiceWrapper::ToggleGroupPinnedState(const base::Uuid& sync_id) {
+void TabGroupServiceWrapper::UpdateGroupPosition(const base::Uuid& sync_id,
+                                                 std::optional<bool> is_pinned,
+                                                 std::optional<int> new_index) {
   if (ShouldUseSyncService()) {
-    sync_service_->ToggleGroupPinnedState(sync_id);
+    sync_service_->UpdateGroupPosition(sync_id, is_pinned, new_index);
   } else {
-    saved_keyed_service_->model()->TogglePinState(sync_id);
+    std::optional<SavedTabGroup> group = GetGroup(sync_id);
+    if (!group.has_value()) {
+      return;
+    }
+
+    if (is_pinned.has_value() && group->is_pinned() != is_pinned) {
+      saved_keyed_service_->model()->TogglePinState(sync_id);
+    }
+
+    if (new_index.has_value()) {
+      saved_keyed_service_->model()->ReorderGroupLocally(sync_id,
+                                                         new_index.value());
+    }
   }
 }
 

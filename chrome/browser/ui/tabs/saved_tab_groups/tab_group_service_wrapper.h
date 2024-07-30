@@ -44,7 +44,9 @@ class TabGroupServiceWrapper : public TabGroupSyncService {
   void RemoveGroup(const base::Uuid& sync_id) override;
   void UpdateVisualData(const LocalTabGroupID local_group_id,
                         const TabGroupVisualData* visual_data) override;
-  void ToggleGroupPinnedState(const base::Uuid& sync_id) override;
+  void UpdateGroupPosition(const base::Uuid& sync_id,
+                           std::optional<bool> is_pinned,
+                           std::optional<int> new_index) override;
 
   void AddTab(const LocalTabGroupID& group_id,
               const LocalTabID& tab_id,

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iterator>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -26,6 +27,7 @@
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -759,22 +761,77 @@ class PinningTabGroupSyncServiceTest : public TabGroupSyncServiceTest {
       const PinningTabGroupSyncServiceTest&) = delete;
 };
 
-TEST_F(PinningTabGroupSyncServiceTest, ToggleGroupPinnedState) {
-  tab_groups::TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
-
+TEST_F(PinningTabGroupSyncServiceTest, UpdateGroupPositionPinnedState) {
   auto group = tab_group_sync_service_->GetGroup(local_group_id_1_);
   EXPECT_TRUE(group.has_value());
 
   const bool pinned_state = group->is_pinned();
-  tab_group_sync_service_->ToggleGroupPinnedState(group->saved_guid());
-
+  tab_group_sync_service_->UpdateGroupPosition(group->saved_guid(),
+                                               !pinned_state, std::nullopt);
   group = tab_group_sync_service_->GetGroup(local_group_id_1_);
   EXPECT_NE(group->is_pinned(), pinned_state);
 
-  tab_group_sync_service_->ToggleGroupPinnedState(group->saved_guid());
-
+  tab_group_sync_service_->UpdateGroupPosition(group->saved_guid(),
+                                               pinned_state, std::nullopt);
   group = tab_group_sync_service_->GetGroup(local_group_id_1_);
-  EXPECT_EQ(group->is_pinned(), group_1_.is_pinned());
+  EXPECT_EQ(group->is_pinned(), pinned_state);
+}
+
+TEST_F(PinningTabGroupSyncServiceTest, UpdateGroupPositionIndex) {
+  auto get_index = [&](const LocalTabGroupID& local_id) -> int {
+    std::vector<SavedTabGroup> groups = tab_group_sync_service_->GetAllGroups();
+    auto it = base::ranges::find_if(groups, [&](const SavedTabGroup& group) {
+      return group.local_group_id() == local_id;
+    });
+
+    if (it == groups.end()) {
+      return -1;
+    }
+
+    return std::distance(groups.begin(), it);
+  };
+
+  std::vector<SavedTabGroup> all_groups =
+      tab_group_sync_service_->GetAllGroups();
+  ASSERT_EQ(3u, all_groups.size());
+
+  tab_group_sync_service_->UpdateLocalTabGroupMapping(
+      all_groups[0].saved_guid(), test::GenerateRandomTabGroupID());
+  tab_group_sync_service_->UpdateLocalTabGroupMapping(
+      all_groups[1].saved_guid(), test::GenerateRandomTabGroupID());
+  tab_group_sync_service_->UpdateLocalTabGroupMapping(
+      all_groups[2].saved_guid(), test::GenerateRandomTabGroupID());
+
+  // Groups are inserted FILO style (like a stack data structure).
+  all_groups = tab_group_sync_service_->GetAllGroups();
+  const LocalTabGroupID group_id_3 = all_groups[0].local_group_id().value();
+  const LocalTabGroupID group_id_2 = all_groups[1].local_group_id().value();
+  const LocalTabGroupID group_id_1 = all_groups[2].local_group_id().value();
+
+  const base::Uuid group_sync_id_3 = all_groups[0].saved_guid();
+  const base::Uuid group_sync_id_1 = all_groups[2].saved_guid();
+
+  EXPECT_EQ(0, get_index(group_id_3));
+  EXPECT_EQ(1, get_index(group_id_2));
+  EXPECT_EQ(2, get_index(group_id_1));
+
+  tab_group_sync_service_->UpdateGroupPosition(group_sync_id_3, std::nullopt,
+                                               2);
+  EXPECT_EQ(0, get_index(group_id_2));
+  EXPECT_EQ(1, get_index(group_id_1));
+  EXPECT_EQ(2, get_index(group_id_3));
+
+  tab_group_sync_service_->UpdateGroupPosition(group_sync_id_1, std::nullopt,
+                                               0);
+  EXPECT_EQ(0, get_index(group_id_1));
+  EXPECT_EQ(1, get_index(group_id_2));
+  EXPECT_EQ(2, get_index(group_id_3));
+
+  tab_group_sync_service_->UpdateGroupPosition(group_sync_id_3, std::nullopt,
+                                               1);
+  EXPECT_EQ(0, get_index(group_id_1));
+  EXPECT_EQ(1, get_index(group_id_3));
+  EXPECT_EQ(2, get_index(group_id_2));
 }
 
 }  // namespace tab_groups
