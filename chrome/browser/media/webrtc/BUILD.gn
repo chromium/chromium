@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 import("//build/config/ozone.gni")
@@ -184,12 +186,14 @@ source_set("webrtc") {
       "tab_desktop_media_list.cc",
       "tab_desktop_media_list.h",
     ]
-    public_deps += [ "//extensions/buildflags" ]
-    deps += [
-      "//extensions/browser",
-      "//extensions/browser/kiosk",
-      "//extensions/common",
-    ]
+    if (enable_extensions) {
+      public_deps += [ "//extensions/buildflags" ]
+      deps += [
+        "//extensions/browser",
+        "//extensions/browser/kiosk",
+        "//extensions/common",
+      ]
+    }
   }
 
   if (is_mac) {
