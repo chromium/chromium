@@ -2606,7 +2606,6 @@ TEST_P(PartitionAllocDeathTest, SuspendTagCheckingScope) {
     GTEST_SKIP();
   }
 
-  constexpr uint64_t kCookie = 0x1234567890ABCDEF;
   constexpr uint64_t kQuarantined = 0xEFEFEFEFEFEFEFEF;
 
   // Make an arbitrary-sized small allocation.
