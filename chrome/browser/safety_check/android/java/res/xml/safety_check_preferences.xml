@@ -24,13 +24,13 @@ found in the LICENSE file.
     <org.chromium.chrome.browser.safety_check.SafetyCheckElementPreference
         android:key="passwords_account"
         android:title="@string/safety_check_passwords_title"
-        android:icon="@drawable/ic_vpn_key_grey"
+        android:icon="@drawable/ic_password_manager_key"
         app:iconTint="@macro/default_icon_color"
         app:allowDividerBelow="false" />
     <org.chromium.chrome.browser.safety_check.SafetyCheckElementPreference
         android:key="passwords_local"
         android:title="@string/safety_check_passwords_title"
-        android:icon="@drawable/ic_vpn_key_grey"
+        android:icon="@drawable/ic_password_manager_key"
         app:iconTint="@macro/default_icon_color"
         app:allowDividerBelow="false" />
     <!-- Safe Browsing -->

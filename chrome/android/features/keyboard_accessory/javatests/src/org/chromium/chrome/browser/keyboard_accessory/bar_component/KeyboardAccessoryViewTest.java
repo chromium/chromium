@@ -912,7 +912,7 @@ public class KeyboardAccessoryViewTest {
                         ((KeyboardAccessoryButtonGroupView) buttons)
                                 .addButton(
                                         buttons.getContext()
-                                                .getDrawable(R.drawable.ic_vpn_key_grey),
+                                                .getDrawable(R.drawable.ic_password_manager_key),
                                         "Key Icon");
                     }
 

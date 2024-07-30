@@ -318,7 +318,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             case DialogOption.CLEAR_HISTORY:
                 return R.drawable.ic_watch_later_24dp;
             case DialogOption.CLEAR_PASSWORDS:
-                return R.drawable.ic_vpn_key_grey;
+                return R.drawable.ic_password_manager_key;
             case DialogOption.CLEAR_SITE_SETTINGS:
                 return R.drawable.ic_tv_options_input_settings_rotated_grey;
             case DialogOption.CLEAR_TABS:
