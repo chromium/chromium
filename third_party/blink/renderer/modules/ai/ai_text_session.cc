@@ -99,7 +99,7 @@ class AITextSession::Responder final
 
   HeapMojoReceiver<blink::mojom::blink::ModelStreamingResponder, Responder>
       receiver_;
-  SelfKeepAlive<Responder> keep_alive_;
+  SelfKeepAlive<Responder> keep_alive_{this};
 };
 
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
@@ -166,7 +166,6 @@ class AITextSession::StreamingResponder final
           AIMetrics::GetAISessionResponseCallbackCountMetricName(
               AIMetrics::AISessionType::kText),
           response_callback_count_);
-      keep_alive_.Clear();
       return;
     }
     // When the status is kOngoing, update the response size and enqueue the
@@ -183,7 +182,6 @@ class AITextSession::StreamingResponder final
   HeapMojoReceiver<blink::mojom::blink::ModelStreamingResponder,
                    StreamingResponder>
       receiver_;
-  SelfKeepAlive<StreamingResponder> keep_alive_;
 };
 
 AITextSession::AITextSession(
