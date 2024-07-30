@@ -206,7 +206,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   using Bucket = internal::PartitionBucket;
   using FreeListEntry = internal::PartitionFreelistEntry;
   using SuperPageExtentEntry = internal::PartitionSuperPageExtentEntry;
-  using DirectMapExtent = internal::PartitionDirectMapExtent;
+  using WritableDirectMapExtent = internal::WritablePartitionDirectMapExtent;
+  using ReadOnlyDirectMapExtent = internal::ReadOnlyPartitionDirectMapExtent;
 
   enum class QuarantineMode : uint8_t {
     kAlwaysDisabled,
@@ -351,7 +352,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   uintptr_t next_partition_page_end = 0;
   SuperPageExtentEntry* current_extent = nullptr;
   SuperPageExtentEntry* first_extent = nullptr;
-  DirectMapExtent* direct_map_list
+  ReadOnlyDirectMapExtent* direct_map_list
       PA_GUARDED_BY(internal::PartitionRootLock(this)) = nullptr;
   SlotSpanMetadata*
       global_empty_slot_span_ring[internal::kMaxFreeableSpans] PA_GUARDED_BY(
@@ -1142,7 +1143,7 @@ PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
   uintptr_t slot_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   auto* direct_map_metadata =
-      PartitionDirectMapMetadata::FromSlotSpanMetadata(slot_span);
+      ReadOnlyPartitionDirectMapMetadata::FromSlotSpanMetadata(slot_span);
   size_t padding_for_alignment =
       direct_map_metadata->direct_map_extent.padding_for_alignment;
   PA_DCHECK(padding_for_alignment ==

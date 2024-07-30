@@ -370,7 +370,8 @@ void MakeSuperPageExtentEntriesShared(PartitionRoot* root,
   }
 
   // For direct-mapped.
-  for (const internal::PartitionDirectMapExtent* extent = root->direct_map_list;
+  for (const internal::ReadOnlyPartitionDirectMapExtent* extent =
+           root->direct_map_list;
        extent != nullptr; extent = extent->next_extent) {
     internal::PartitionAddressSpace::MapMetadata(
         reinterpret_cast<uintptr_t>(extent) & internal::kSuperPageBaseMask,
@@ -1324,7 +1325,7 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
       internal::IsManagedByDirectMap(reinterpret_cast<uintptr_t>(slot_span)));
 
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
-  auto* extent = DirectMapExtent::FromSlotSpanMetadata(slot_span);
+  auto* extent = ReadOnlyDirectMapExtent::FromSlotSpanMetadata(slot_span);
   size_t current_reservation_size = extent->reservation_size;
   // Calculate the new reservation size the way PartitionDirectMap() would, but
   // skip the alignment, because this call isn't requesting it.
@@ -1680,7 +1681,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
       }
     }
 
-    for (DirectMapExtent* extent = direct_map_list;
+    for (const ReadOnlyDirectMapExtent* extent = direct_map_list;
          extent && num_direct_mapped_allocations < kMaxReportableDirectMaps;
          extent = extent->next_extent, ++num_direct_mapped_allocations) {
       PA_DCHECK(!extent->next_extent ||
