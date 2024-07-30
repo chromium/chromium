@@ -124,10 +124,10 @@ void HashAffiliationFetcherTest::VerifyRequestPayload(
   for (const auto prefix : request.hash_prefixes())
     actual_hash_prefixes.push_back(prefix);
 
-  std::string content_type;
-  intercepted_headers_.GetHeader(net::HttpRequestHeaders::kContentType,
-                                 &content_type);
-  EXPECT_EQ("application/x-protobuf", content_type);
+  EXPECT_EQ(
+      "application/x-protobuf",
+      intercepted_headers_.GetHeader(net::HttpRequestHeaders::kContentType)
+          .value_or(std::string()));
   EXPECT_THAT(actual_hash_prefixes,
               testing::UnorderedElementsAreArray(expected_hash_prefixes));
   EXPECT_EQ(request.mask().change_password_info(),
