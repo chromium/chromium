@@ -1437,20 +1437,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.TasksSurface.TimeSpentBeforeDismissLens" units="ms"
-    expires_after="M97">
-  <owner>yusuyoutube@google.com</owner>
-  <owner>benwgold@google.com</owner>
-  <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
-  <owner>lens-chrome@google.com</owner>
-  <summary>
-    Logs the elapsed time between the time when user enters the Google Lens and
-    the time when user dismisses Lens and returns to Chrome. Only logged on
-    Android.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.TileTitle" enum="NTPTileTitleSource"
     expires_after="2024-07-21">
   <owner>romanarora@chromium.org</owner>
@@ -1520,20 +1506,6 @@ chromium-metrics-reviews@google.com.
     The time spent on the new tab page as measured from when it was loaded or
     last brought to the foreground until it was navigated away from or hidden.
     Only measured on Android and iOS.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.TimeSpentBeforeDismissLens" units="ms"
-    expires_after="2022-06-19">
-  <owner>yusuyoutube@google.com</owner>
-  <owner>benwgold@google.com</owner>
-  <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
-  <owner>lens-chrome@google.com</owner>
-  <summary>
-    Logs the elapsed time between the time when user enters the Google Lens and
-    the time when user dismisses Lens and returns to Chrome. Only logged on
-    Android.
   </summary>
 </histogram>
 
