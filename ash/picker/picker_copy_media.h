@@ -5,12 +5,19 @@
 #ifndef ASH_PICKER_PICKER_COPY_MEDIA_H_
 #define ASH_PICKER_PICKER_COPY_MEDIA_H_
 
-#include <string_view>
+#include <memory>
 
 #include "ash/ash_export.h"
 #include "ash/picker/picker_rich_media.h"
 
+namespace ui {
+class ClipboardData;
+}
+
 namespace ash {
+
+ASH_EXPORT std::unique_ptr<ui::ClipboardData> ClipboardDataFromMedia(
+    const PickerRichMedia& media);
 
 // Copies rich media into the clipboard.
 ASH_EXPORT void CopyMediaToClipboard(const PickerRichMedia& media);

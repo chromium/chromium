@@ -4,11 +4,16 @@
 
 #include "ash/picker/picker_insert_media.h"
 
+#include <string>
 #include <utility>
+#include <variant>
 
+#include "ash/picker/picker_clipboard_insertion.h"
+#include "ash/picker/picker_copy_media.h"
 #include "ash/picker/picker_rich_media.h"
 #include "base/base64.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/logging.h"
@@ -17,7 +22,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "net/base/mime_util.h"
+#include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_type.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -58,23 +65,10 @@ std::optional<GURL> ConvertToDataUrl(std::string_view media_type,
       {"data:", media_type, ";base64,", base::Base64Encode(*data)}));
 }
 
-}  // namespace
-
-bool InputFieldSupportsInsertingMedia(const PickerRichMedia& media,
-                                      ui::TextInputClient& client) {
-  return std::visit(base::Overloaded{
-                        [](const PickerTextMedia& media) { return true; },
-                        [](const PickerLinkMedia& media) { return true; },
-                        [&client](const PickerLocalFileMedia& media) {
-                          return client.CanInsertImage();
-                        },
-                    },
-                    media);
-}
-
-void InsertMediaToInputField(PickerRichMedia media,
-                             ui::TextInputClient& client,
-                             OnInsertMediaCompleteCallback callback) {
+void InsertMediaToInputFieldNoClipboard(
+    PickerRichMedia media,
+    ui::TextInputClient& client,
+    OnInsertMediaCompleteCallback callback) {
   std::visit(
       base::Overloaded{
           [&client, &callback](PickerTextMedia media) mutable {
@@ -84,7 +78,6 @@ void InsertMediaToInputField(PickerRichMedia media,
             std::move(callback).Run(InsertMediaResult::kSuccess);
           },
           [&client, &callback](PickerLinkMedia media) mutable {
-            // TODO(b/322729192): Insert a real hyperlink.
             client.InsertText(base::UTF8ToUTF16(media.url.spec()),
                               ui::TextInputClient::InsertTextCursorBehavior::
                                   kMoveCursorAfterText);
@@ -122,6 +115,49 @@ void InsertMediaToInputField(PickerRichMedia media,
           },
       },
       std::move(media));
+}
+
+}  // namespace
+
+bool InputFieldSupportsInsertingMedia(const PickerRichMedia& media,
+                                      ui::TextInputClient& client) {
+  return std::visit(base::Overloaded{
+                        [](const PickerTextMedia& media) { return true; },
+                        [](const PickerLinkMedia& media) { return true; },
+                        [&client](const PickerLocalFileMedia& media) {
+                          return client.CanInsertImage();
+                        },
+                    },
+                    media);
+}
+
+void InsertMediaToInputField(PickerRichMedia media,
+                             ui::TextInputClient& client,
+                             OnInsertMediaCompleteCallback callback) {
+  if (std::holds_alternative<PickerLinkMedia>(media) &&
+      client.GetTextInputType() == ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE) {
+    InsertClipboardData(
+        ClipboardDataFromMedia(media),
+        base::BindOnce(
+            [](PickerRichMedia media, base::WeakPtr<ui::TextInputClient> client,
+               OnInsertMediaCompleteCallback callback, bool success) {
+              if (success) {
+                std::move(callback).Run(InsertMediaResult::kSuccess);
+                return;
+              }
+              if (client == nullptr) {
+                std::move(callback).Run(InsertMediaResult::kUnsupported);
+                return;
+              }
+              InsertMediaToInputFieldNoClipboard(std::move(media), *client,
+                                                 std::move(callback));
+            },
+            std::move(media), client.AsWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  InsertMediaToInputFieldNoClipboard(std::move(media), client,
+                                     std::move(callback));
 }
 
 }  // namespace ash

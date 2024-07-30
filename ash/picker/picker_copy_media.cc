@@ -28,6 +28,8 @@ namespace {
 
 constexpr char kPickerCopyToClipboardToastId[] = "picker_copy_to_clipboard";
 
+}  // namespace
+
 std::unique_ptr<ui::ClipboardData> ClipboardDataFromMedia(
     const PickerRichMedia& media) {
   auto data = std::make_unique<ui::ClipboardData>();
@@ -53,8 +55,6 @@ std::unique_ptr<ui::ClipboardData> ClipboardDataFromMedia(
              media);
   return data;
 }
-
-}  // namespace
 
 void CopyMediaToClipboard(const PickerRichMedia& media) {
   CHECK_DEREF(ui::ClipboardNonBacked::GetForCurrentThread())
