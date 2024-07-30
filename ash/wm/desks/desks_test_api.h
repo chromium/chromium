@@ -91,6 +91,7 @@ class DesksTestApi {
   // from zero state if necessary.
   static views::MenuItemView* OpenDeskContextMenuAndGetMenuItem(
       aura::Window* root,
+      DeskBarViewBase::Type bar_type,
       size_t index,
       DeskActionContextMenu::CommandId command_id);
 };

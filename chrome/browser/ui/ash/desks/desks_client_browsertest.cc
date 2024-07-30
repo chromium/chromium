@@ -361,7 +361,8 @@ void ClickSaveDeskAsTemplateButton(bool wait_for_ui) {
     // Get the menu option to save the desk as a template and click it.
     views::MenuItemView* menu_item =
         ash::DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
-            ash::Shell::GetPrimaryRootWindow(), /*index=*/0u,
+            ash::Shell::GetPrimaryRootWindow(),
+            ash::DeskBarViewBase::Type::kOverview, /*index=*/0u,
             ash::DeskActionContextMenu::CommandId::kSaveAsTemplate);
     ASSERT_TRUE(menu_item);
     ClickView(menu_item);

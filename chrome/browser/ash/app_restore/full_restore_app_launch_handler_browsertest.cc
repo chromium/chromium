@@ -270,8 +270,8 @@ void ClickSaveDeskAsTemplateButton() {
 void SelectSaveDeskAsTemplateMenuItem(int index) {
   views::MenuItemView* menu_item =
       ash::DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
-          ash::Shell::GetPrimaryRootWindow(), index,
-          ash::DeskActionContextMenu::CommandId::kSaveAsTemplate);
+          ash::Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
+          index, ash::DeskActionContextMenu::CommandId::kSaveAsTemplate);
   ASSERT_TRUE(menu_item);
   ClickView(menu_item);
 

@@ -214,6 +214,7 @@ views::MenuItemView* DesksTestApi::GetDeskActionContextMenuItem(
 // static
 views::MenuItemView* DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
     aura::Window* root,
+    DeskBarViewBase::Type bar_type,
     size_t index,
     DeskActionContextMenu::CommandId command_id) {
   ui::test::EventGenerator event_generator(root);
@@ -222,8 +223,7 @@ views::MenuItemView* DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
     event_generator.ClickLeftButton();
   };
 
-  auto* bar_view = const_cast<DeskBarViewBase*>(
-      GetDeskBarView(DeskBarViewBase::Type::kOverview));
+  auto* bar_view = const_cast<DeskBarViewBase*>(GetDeskBarView(bar_type));
   // Expand the desk bar if necessary.
   if (bar_view->IsZeroState()) {
     // Click the default desk button so it will expand to a `DeskMiniView`.

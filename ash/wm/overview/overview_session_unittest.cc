@@ -5323,8 +5323,8 @@ TEST_P(OverviewRasterScaleTest,
   if (features::IsForestFeatureEnabled()) {
     views::MenuItemView* combine_item_view =
         DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
-            Shell::GetPrimaryRootWindow(), /*index=*/2,
-            DeskActionContextMenu::CommandId::kCombineDesks);
+            Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
+            /*index=*/2, DeskActionContextMenu::CommandId::kCombineDesks);
     LeftClickOn(combine_item_view);
   } else {
     CombineDesksViaMiniView(mini_view, GetEventGenerator());
@@ -5344,8 +5344,8 @@ TEST_P(OverviewRasterScaleTest,
   if (features::IsForestFeatureEnabled()) {
     views::MenuItemView* combine_item_view =
         DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
-            Shell::GetPrimaryRootWindow(), /*index=*/0,
-            DeskActionContextMenu::CommandId::kCombineDesks);
+            Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
+            /*index=*/0, DeskActionContextMenu::CommandId::kCombineDesks);
     LeftClickOn(combine_item_view);
   } else {
     CombineDesksViaMiniView(mini_view, GetEventGenerator());

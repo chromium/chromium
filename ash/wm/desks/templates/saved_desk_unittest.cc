@@ -343,7 +343,8 @@ class SavedDeskTest : public OverviewTestBase,
       aura::Window* root,
       DeskActionContextMenu::CommandId command_id) {
     return DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
-        root, DesksController::Get()->GetActiveDeskIndex(), command_id);
+        root, DeskBarViewBase::Type::kOverview,
+        DesksController::Get()->GetActiveDeskIndex(), command_id);
   }
 
   // Opens overview mode and then clicks the save desk as template button. This

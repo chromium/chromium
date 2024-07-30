@@ -202,6 +202,7 @@ bool DoesActiveDeskContainWindow(aura::Window* window) {
                         window);
 }
 
+// Combines or closes a desk.
 void CloseDeskFromMiniView(DeskMiniView* desk_mini_view,
                            ui::test::EventGenerator* event_generator) {
   DCHECK(desk_mini_view);
@@ -210,6 +211,8 @@ void CloseDeskFromMiniView(DeskMiniView* desk_mini_view,
   const gfx::Point mini_view_center =
       desk_mini_view->GetBoundsInScreen().CenterPoint();
   event_generator->MoveMouseTo(mini_view_center);
+
+  // This is the combine button if available, close button otherwise.
   const CloseButton* close_button =
       GetCloseDeskButtonForMiniView(desk_mini_view);
   EXPECT_TRUE(close_button->GetVisible());
@@ -1392,12 +1395,8 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
   EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
 
   auto* mru_tracker = Shell::Get()->mru_window_tracker();
-  EXPECT_EQ(mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk),
-            aura::WindowTracker::WindowList({
-                win0.get(),
-                win2.get(),
-                win1.get(),
-            }));
+  EXPECT_THAT(mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk),
+              ElementsAre(win0.get(), win2.get(), win1.get()));
 
   // Active desk_4 and enter overview mode, and add a single window.
   Desk* desk_4 = controller->GetDeskAtIndex(3);
@@ -1429,7 +1428,16 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
   TestDeskObserver desk_1_observer;
   desk_1->AddObserver(&desk_1_observer);
 
-  CloseDeskFromMiniView(mini_view, GetEventGenerator());
+  if (features::IsForestFeatureEnabled()) {
+    views::MenuItemView* menu_item =
+        DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
+            Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
+            /*index=*/0u, DeskActionContextMenu::CommandId::kCombineDesks);
+    LeftClickOn(menu_item);
+  } else {
+    // This will combine `desk_1` into `desk_4`.
+    CloseDeskFromMiniView(mini_view, GetEventGenerator());
+  }
 
   EXPECT_EQ(0, desk_1_observer.notify_counts());
   EXPECT_EQ(1, desk_4_observer.notify_counts());
@@ -1471,21 +1479,11 @@ TEST_P(DesksTest, RemoveInactiveDeskFromOverview) {
 
   // Verify that the stacking order is correct (top-most comes last, and
   // top-most is the same as MRU).
-  EXPECT_EQ(mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk),
-            aura::WindowTracker::WindowList({
-                win3.get(),
-                win0.get(),
-                win2.get(),
-                win1.get(),
-            }));
-  EXPECT_EQ(desk_4->GetDeskContainerForRoot(Shell::GetPrimaryRootWindow())
-                ->children(),
-            aura::WindowTracker::WindowList({
-                win1.get(),
-                win2.get(),
-                win0.get(),
-                win3.get(),
-            }));
+  EXPECT_THAT(mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk),
+              ElementsAre(win3.get(), win0.get(), win2.get(), win1.get()));
+  EXPECT_THAT(desk_4->GetDeskContainerForRoot(Shell::GetPrimaryRootWindow())
+                  ->children(),
+              ElementsAre(win1.get(), win2.get(), win0.get(), win3.get()));
 }
 
 TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
@@ -1512,13 +1510,8 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
 
   // The MRU across all desks is now {win2, win3, win0, win1}.
   auto* mru_tracker = Shell::Get()->mru_window_tracker();
-  EXPECT_EQ(mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks),
-            aura::WindowTracker::WindowList({
-                win2.get(),
-                win3.get(),
-                win0.get(),
-                win1.get(),
-            }));
+  EXPECT_THAT(mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks),
+              ElementsAre(win2.get(), win3.get(), win0.get(), win1.get()));
 
   // Enter overview mode, and remove desk_2 from its mini-view close button.
   auto* overview_controller = OverviewController::Get();
@@ -1541,7 +1534,16 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   TestDeskObserver desk_2_observer;
   desk_2->AddObserver(&desk_2_observer);
 
-  CloseDeskFromMiniView(mini_view, GetEventGenerator());
+  if (features::IsForestFeatureEnabled()) {
+    views::MenuItemView* menu_item =
+        DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
+            Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
+            /*index=*/1u, DeskActionContextMenu::CommandId::kCombineDesks);
+    LeftClickOn(menu_item);
+  } else {
+    // This will combine `desk_2` into `desk_1`.
+    CloseDeskFromMiniView(mini_view, GetEventGenerator());
+  }
 
   EXPECT_EQ(1, desk_1_observer.notify_counts());
   EXPECT_EQ(0, desk_2_observer.notify_counts());
@@ -1567,13 +1569,8 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   EXPECT_TRUE(overview_grid->GetOverviewItemContaining(win3.get()));
 
   // The new MRU order is {win0, win1, win2, win3}.
-  EXPECT_EQ(mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk),
-            aura::WindowTracker::WindowList({
-                win0.get(),
-                win1.get(),
-                win2.get(),
-                win3.get(),
-            }));
+  EXPECT_THAT(mru_tracker->BuildMruWindowList(DesksMruType::kActiveDesk),
+              ElementsAre(win0.get(), win1.get(), win2.get(), win3.get()));
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win0.get()),
             overview_grid->item_list()[0].get());
   EXPECT_EQ(overview_grid->GetOverviewItemContaining(win1.get()),
@@ -9315,30 +9312,16 @@ class DeskBarTest
                            DeskBarViewBase::Type bar_type) {
     CHECK(features::IsForestFeatureEnabled());
 
-    // Hover the mouse over the mini view to make the desk action buttons
-    // visible.
-    const auto* desk_bar_view = GetDeskBarView(root, bar_type);
-    ASSERT_LT(index, desk_bar_view->mini_views().size());
-    auto* target_mini_view = desk_bar_view->mini_views()[index].get();
-    GetEventGenerator()->MoveMouseTo(
-        target_mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
-    auto* menu_button =
-        target_mini_view->desk_action_view()->context_menu_button();
-    ASSERT_TRUE(menu_button->GetVisible());
-
-    // Click the context menu button.
-    LeftClickOn(menu_button);
-    ash::DeskActionContextMenu* menu = target_mini_view->context_menu();
-    ASSERT_TRUE(menu);
-
     // Get the menu option to save the desk as a template and click it.
     views::MenuItemView* menu_item =
-        ash::DesksTestApi::GetDeskActionContextMenuItem(
-            menu, ash::DeskActionContextMenu::CommandId::kCombineDesks);
+        DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
+            root, bar_type, index,
+            DeskActionContextMenu::CommandId::kCombineDesks);
     ASSERT_TRUE(menu_item);
 
     if (bar_type == DeskBarViewBase::Type::kDeskButton &&
-        target_mini_view->desk()->is_active()) {
+        DesksController::Get()->GetActiveDeskIndex() ==
+            static_cast<int>(index)) {
       DeskSwitchAnimationWaiter waiter;
       LeftClickOn(menu_item);
       waiter.Wait();
