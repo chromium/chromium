@@ -843,10 +843,6 @@ extern const char kPasswordSharingDescription[];
 extern const char kDownloadedPDFOpeningName[];
 extern const char kDownloadedPDFOpeningDescription[];
 
-// Title and description for the flag to enable chrome://policy/test.
-extern const char kEnablePolicyTestPageName[];
-extern const char kEnablePolicyTestPageDescription[];
-
 // Title and description for the flag to enable the Privacy Guide.
 extern const char kPrivacyGuideIosName[];
 extern const char kPrivacyGuideIosDescription[];

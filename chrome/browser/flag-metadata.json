@@ -3775,16 +3775,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "enable-policy-test-page",
-    "owners": [ "scobici@google.com", "ydago@google.com", "//components/policy/OWNERS" ],
-    "expiry_milestone": 128
-  },
-  {
-    "name": "enable-policy-test-page-ios",
-    "owners": [ "scobici@google.com", "ydago@google.com", "//components/policy/OWNERS" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "enable-preferences-account-storage",
     "owners": [ "ankushkush@google.com", "treib@chromium.org" ],
     "expiry_milestone": 132

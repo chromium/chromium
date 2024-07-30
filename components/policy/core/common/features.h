@@ -14,9 +14,6 @@
 namespace policy {
 namespace features {
 
-// Enable the policy test page at chrome://policy/test.
-POLICY_EXPORT BASE_DECLARE_FEATURE(kEnablePolicyTestPage);
-
 }  // namespace features
 }  // namespace policy
 
