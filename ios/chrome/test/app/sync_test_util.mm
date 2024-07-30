@@ -56,7 +56,7 @@
 
 namespace {
 
-fake_server::FakeServer* gSyncFakeServer = nullptr;
+std::unique_ptr<fake_server::FakeServer> gSyncFakeServer;
 
 NSString* const kSyncTestErrorDomain = @"SyncTestDomain";
 
@@ -88,23 +88,22 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkServerEntity(
 namespace chrome_test_util {
 
 bool IsFakeSyncServerSetUp() {
-  return gSyncFakeServer;
+  return gSyncFakeServer.get();
 }
 
 void SetUpFakeSyncServer() {
   DCHECK(!gSyncFakeServer);
   base::FilePath user_data_dir;
   base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir);
-  gSyncFakeServer =
-      new fake_server::FakeServer(user_data_dir.AppendASCII("FakeServer"));
+  gSyncFakeServer = std::make_unique<fake_server::FakeServer>(
+      user_data_dir.AppendASCII("FakeServer"));
   OverrideSyncNetwork(fake_server::CreateFakeServerHttpPostProviderFactory(
       gSyncFakeServer->AsWeakPtr()));
 }
 
 void TearDownFakeSyncServer() {
   DCHECK(gSyncFakeServer);
-  delete gSyncFakeServer;
-  gSyncFakeServer = nullptr;
+  gSyncFakeServer.reset();
   OverrideSyncNetwork(syncer::CreateHttpPostProviderFactory());
 }
 
@@ -142,7 +141,7 @@ BOOL VerifyNumberOfSyncEntitiesWithName(syncer::ModelType type,
                                         size_t count,
                                         NSError** error) {
   DCHECK(gSyncFakeServer);
-  fake_server::FakeServerVerifier verifier(gSyncFakeServer);
+  fake_server::FakeServerVerifier verifier(gSyncFakeServer.get());
   testing::AssertionResult result =
       verifier.VerifyEntityCountByTypeAndName(count, type, name);
   if (result != testing::AssertionSuccess() && error != nil) {
@@ -333,7 +332,7 @@ BOOL VerifySessionsOnSyncServer(const std::multiset<std::string>& expected_urls,
   DCHECK(gSyncFakeServer);
   fake_server::SessionsHierarchy expected_sessions;
   expected_sessions.AddWindow(expected_urls);
-  fake_server::FakeServerVerifier verifier(gSyncFakeServer);
+  fake_server::FakeServerVerifier verifier(gSyncFakeServer.get());
   testing::AssertionResult result = verifier.VerifySessions(expected_sessions);
   if (result != testing::AssertionSuccess() && error != nil) {
     NSDictionary* errorInfo = @{
@@ -350,7 +349,7 @@ BOOL VerifySessionsOnSyncServer(const std::multiset<std::string>& expected_urls,
 BOOL VerifyHistoryOnSyncServer(const std::multiset<GURL>& expected_urls,
                                NSError** error) {
   DCHECK(gSyncFakeServer);
-  fake_server::FakeServerVerifier verifier(gSyncFakeServer);
+  fake_server::FakeServerVerifier verifier(gSyncFakeServer.get());
   testing::AssertionResult result = verifier.VerifyHistory(expected_urls);
   if (result != testing::AssertionSuccess() && error != nil) {
     NSDictionary* errorInfo = @{
@@ -491,7 +490,7 @@ void AddBookmarkWithSyncPassphrase(const std::string& sync_passphrase) {
   gSyncFakeServer->InjectEntity(std::move(server_entity));
   fake_server::SetNigoriInFakeServer(
       syncer::BuildCustomPassphraseNigoriSpecifics(key_params),
-      gSyncFakeServer);
+      gSyncFakeServer.get());
 }
 
 }  // namespace chrome_test_util
