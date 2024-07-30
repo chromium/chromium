@@ -8,16 +8,19 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,6 +96,41 @@ TEST_F(StandardManagementPolicyProviderTest, RequiredExtension) {
                       .Build();
   EXPECT_FALSE(provider_.ExtensionMayModifySettings(webstore.get(),
                                                     policy.get(), nullptr));
+}
+
+// Tests the behavior of the ManagementPolicy provider methods for extensions
+// installed by sys-admin policies in low-trust environments.
+TEST_F(StandardManagementPolicyProviderTest,
+       ExternalPolicyExtensionsInLowTrustEnvironment) {
+  // Mark enterprise management authority for platform as NONE to simulate an
+  // un-trusted environment.
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  // Dummy CWS extension not installed from the store
+  auto extension = ExtensionBuilder("CWSPolicyInstalledExtension")
+                       .SetVersion("1.0")
+                       .SetManifestVersion(3)
+                       .SetLocation(ManifestLocation::kExternalPolicy)
+                       .SetManifestKey("update_url",
+                                       extension_urls::kChromeWebstoreUpdateURL)
+                       .AddFlags(Extension::MAY_BE_UNTRUSTED)
+                       .Build();
+
+  std::u16string error16;
+  EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
+  EXPECT_EQ(std::u16string(), error16);
+
+  EXPECT_FALSE(provider_.UserMayModifySettings(extension.get(), &error16));
+  EXPECT_NE(std::u16string(), error16);
+
+  // CWS extensions should remain enabled when installed by external policy.
+  EXPECT_FALSE(
+      provider_.MustRemainDisabled(extension.get(), nullptr, &error16));
+  EXPECT_NE(std::u16string(), error16);
+  EXPECT_TRUE(provider_.MustRemainEnabled(extension.get(), &error16));
+  EXPECT_NE(std::u16string(), error16);
 }
 
 // Tests the behavior of the ManagementPolicy provider methods for a component

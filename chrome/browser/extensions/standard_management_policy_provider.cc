@@ -240,7 +240,8 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
           kDisableOffstoreForceInstalledExtensionsInLowTrustEnviroment) &&
       highest_trustworthiness <
           policy::ManagementAuthorityTrustworthiness::TRUSTED &&
-      !extension->from_webstore() &&
+      !(extension->from_webstore() ||
+        settings_->UpdatesFromWebstore(*extension)) &&
       installation_mode == ExtensionManagement::INSTALLATION_FORCED &&
       Manifest::IsPolicyLocation(extension->location())) {
     if (reason) {
