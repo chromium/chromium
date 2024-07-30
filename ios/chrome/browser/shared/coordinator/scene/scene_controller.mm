@@ -2550,6 +2550,8 @@ using UserFeedbackDataCallback =
 }
 
 - (void)settingsWasDismissed {
+  // Cleanup Password Checkup after its UI was dismissed.
+  [self stopPasswordCheckupCoordinator];
   [self.settingsNavigationController cleanUpSettings];
   self.settingsNavigationController = nil;
 }
@@ -3525,6 +3527,8 @@ using UserFeedbackDataCallback =
   BOOL resetSigninState = self.signinCoordinator != nil;
   completion = ^{
     __typeof(self) strongSelf = weakSelf;
+    // Cleanup settings resources after dismissal.
+    [strongSelf settingsWasDismissed];
     if (completion) {
       completion();
     }
@@ -3544,7 +3548,6 @@ using UserFeedbackDataCallback =
     __weak UIViewController* weakPresentingViewController =
         [self.settingsNavigationController presentingViewController];
     ProceduralBlock dismissSettings = ^() {
-      [weakSelf.settingsNavigationController cleanUpSettings];
       UIViewController* strongPresentingViewController =
           weakPresentingViewController;
       if (strongPresentingViewController) {
@@ -3555,7 +3558,6 @@ using UserFeedbackDataCallback =
         // The view is already dismissed. Completion should still be called.
         completion();
       }
-      weakSelf.settingsNavigationController = nil;
       weakSelf.dismissingSettings = NO;
     };
     // `self.signinCoordinator` can be presented on top of the settings, to
@@ -3806,6 +3808,14 @@ using UserFeedbackDataCallback =
          tabOpenedCompletion:nil];
 }
 
+// Stops and deletes `passwordCheckupCoordinator`.
+- (void)stopPasswordCheckupCoordinator {
+  [self.passwordCheckupCoordinator stop];
+
+  self.passwordCheckupCoordinator.delegate = nil;
+  self.passwordCheckupCoordinator = nil;
+}
+
 #pragma mark - IncognitoInterstitialCoordinatorDelegate
 
 - (void)shouldStopIncognitoInterstitial:
@@ -3820,10 +3830,7 @@ using UserFeedbackDataCallback =
     (PasswordCheckupCoordinator*)coordinator {
   DCHECK_EQ(self.passwordCheckupCoordinator, coordinator);
 
-  [self.passwordCheckupCoordinator stop];
-
-  self.passwordCheckupCoordinator.delegate = nil;
-  self.passwordCheckupCoordinator = nil;
+  [self stopPasswordCheckupCoordinator];
 }
 
 #pragma mark - PasswordManagerReauthenticationDelegate
