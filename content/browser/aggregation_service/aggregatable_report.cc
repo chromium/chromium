@@ -29,6 +29,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -234,12 +235,13 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
             data, contribution, payload_contents.filtering_id_max_bytes);
       });
 
-  int number_of_null_contributions_to_add =
+  // This property is enforced by `AggregatableReportRequest::Create()`.
+  CHECK_GE(payload_contents.max_contributions_allowed,
+           payload_contents.contributions.size());
+  const size_t number_of_null_contributions_to_add =
       payload_contents.max_contributions_allowed -
       payload_contents.contributions.size();
-  CHECK_GE(number_of_null_contributions_to_add, 0);
-
-  for (int i = 0; i < number_of_null_contributions_to_add; ++i) {
+  for (size_t i = 0; i < number_of_null_contributions_to_add; ++i) {
     AppendEncodedContributionToCborArray(
         data,
         blink::mojom::AggregatableReportHistogramContribution(
@@ -302,13 +304,14 @@ ConvertPayloadContentsFromProto(
         url::Origin::Create(GURL(proto.aggregation_coordinator_origin()));
   }
 
-  int max_contributions_allowed = proto.max_contributions_allowed();
-  if (max_contributions_allowed < 0) {
+  if (proto.max_contributions_allowed() < 0) {
     return std::nullopt;
-  } else if (max_contributions_allowed == 0) {
-    // Don't pad reports stored before padding was implemented.
-    max_contributions_allowed = contributions.size();
   }
+  // Don't pad reports stored before padding was implemented.
+  const size_t max_contributions_allowed =
+      proto.max_contributions_allowed() == 0
+          ? contributions.size()
+          : base::saturated_cast<size_t>(proto.max_contributions_allowed());
 
   std::optional<size_t> filtering_id_max_bytes;
   if (proto.has_filtering_id_max_bytes()) {
@@ -559,7 +562,7 @@ AggregationServicePayloadContents::AggregationServicePayloadContents(
         contributions,
     blink::mojom::AggregationServiceMode aggregation_mode,
     std::optional<url::Origin> aggregation_coordinator_origin,
-    int max_contributions_allowed,
+    base::StrictNumeric<size_t> max_contributions_allowed,
     std::optional<size_t> filtering_id_max_bytes)
     : operation(operation),
       contributions(std::move(contributions)),
@@ -731,7 +734,7 @@ AggregatableReportRequest::CreateInternal(
   }
 
   if (payload_contents.max_contributions_allowed <
-      static_cast<int>(payload_contents.contributions.size())) {
+      payload_contents.contributions.size()) {
     return std::nullopt;
   }
 

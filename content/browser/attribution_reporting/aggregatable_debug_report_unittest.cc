@@ -1037,7 +1037,7 @@ TEST_P(AggregatableDebugReportTest, CreateAggregatableReportRequest) {
           blink::mojom::AggregationServiceMode::kDefault,
           /*aggregation_coordinator_origin=*/
           url::Origin::Create(GURL("https://a.test")),
-          /*max_contributions_allowed=*/2, expected_filtering_id_max_bytes),
+          /*max_contributions_allowed=*/2u, expected_filtering_id_max_bytes),
       AggregatableReportSharedInfo(
           scheduled_report_time, report_id,
           /*reporting_origin=*/

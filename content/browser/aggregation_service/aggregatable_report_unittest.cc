@@ -901,13 +901,6 @@ TEST_F(AggregatableReportTest,
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
 
-  payload_contents.max_contributions_allowed = -1;
-
-  std::optional<AggregatableReportRequest> negative_request =
-      AggregatableReportRequest::Create(payload_contents,
-                                        example_request.shared_info().Clone());
-  EXPECT_FALSE(negative_request.has_value());
-
   payload_contents.contributions.emplace_back(/*bucket=*/456,
                                               /*value=*/78,
                                               /*filtering_id=*/std::nullopt);
@@ -1033,7 +1026,7 @@ TEST_F(AggregatableReportTest, MaxContributionsAllowed) {
   std::optional<AggregatableReportRequest> parsed_request =
       AggregatableReportRequest::Deserialize(proto);
   ASSERT_TRUE(parsed_request.has_value());
-  EXPECT_EQ(parsed_request->payload_contents().max_contributions_allowed, 20);
+  EXPECT_EQ(parsed_request->payload_contents().max_contributions_allowed, 20u);
   EXPECT_EQ(parsed_request->delay_type(),
             AggregatableReportRequest::DelayType::ScheduledWithFullDelay);
 }
@@ -1354,7 +1347,7 @@ TEST(AggregatableReportProtoMigrationTest,
                   /*filtering_id=*/std::nullopt)},
               blink::mojom::AggregationServiceMode::kDefault,
               /*aggregation_coordinator_origin=*/std::nullopt,
-              /*max_contributions_allowed=*/1,
+              /*max_contributions_allowed=*/1u,
               /*filtering_id_max_bytes=*/std::nullopt),
           AggregatableReportSharedInfo(
               base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
@@ -1402,7 +1395,7 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
                   /*filtering_id=*/std::nullopt)},
               blink::mojom::AggregationServiceMode::kDefault,
               /*aggregation_coordinator_origin=*/std::nullopt,
-              /*max_contributions_allowed=*/1,
+              /*max_contributions_allowed=*/1u,
               /*filtering_id_max_bytes=*/std::nullopt),
           AggregatableReportSharedInfo(
               base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
@@ -1451,7 +1444,7 @@ TEST(
                   /*filtering_id=*/std::nullopt)},
               blink::mojom::AggregationServiceMode::kDefault,
               /*aggregation_coordinator_origin=*/std::nullopt,
-              /*max_contributions_allowed=*/1,
+              /*max_contributions_allowed=*/1u,
               /*filtering_id_max_bytes=*/std::nullopt),
           AggregatableReportSharedInfo(
               base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
@@ -1519,7 +1512,7 @@ TEST_F(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
                     /*filtering_id=*/std::nullopt)},
                 blink::mojom::AggregationServiceMode::kDefault,
                 test_case.aggregation_coordinator_origin,
-                /*max_contributions_allowed=*/20,
+                /*max_contributions_allowed=*/20u,
                 /*filtering_id_max_bytes=*/std::nullopt),
             AggregatableReportSharedInfo(
                 /*scheduled_report_time=*/base::Time::Now(),

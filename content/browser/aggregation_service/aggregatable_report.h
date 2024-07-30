@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -53,7 +54,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
           contributions,
       blink::mojom::AggregationServiceMode aggregation_mode,
       std::optional<url::Origin> aggregation_coordinator_origin,
-      int max_contributions_allowed,
+      base::StrictNumeric<size_t> max_contributions_allowed,
       std::optional<size_t> filtering_id_max_bytes);
 
   AggregationServicePayloadContents(
@@ -70,7 +71,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
       contributions;
   blink::mojom::AggregationServiceMode aggregation_mode;
   std::optional<url::Origin> aggregation_coordinator_origin;
-  int max_contributions_allowed;
+  size_t max_contributions_allowed;
   std::optional<size_t> filtering_id_max_bytes;
 };
 
