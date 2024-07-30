@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/calendar/calendar_keyed_service.h"
+#include "chrome/browser/ash/calendar/calendar_keyed_service.h"
 
 #include <string>
 #include <vector>
@@ -85,11 +85,11 @@ CalendarKeyedService::CalendarKeyedService(Profile* profile,
 }
 
 CalendarKeyedService::~CalendarKeyedService() {
-  CHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
 void CalendarKeyedService::Initialize() {
-  CHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::vector<std::string> scopes;
   scopes.push_back(GaiaConstants::kCalendarReadOnlyOAuth2Scope);
@@ -124,7 +124,7 @@ void CalendarKeyedService::Shutdown() {
 
 base::OnceClosure CalendarKeyedService::GetCalendarList(
     CalendarListCallback callback) {
-  CHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(callback);
 
   if (!sender_) {
@@ -141,7 +141,7 @@ base::OnceClosure CalendarKeyedService::GetEventList(
     CalendarEventListCallback callback,
     const base::Time start_time,
     const base::Time end_time) {
-  CHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(callback);
   if (start_time > end_time || !sender_) {
     std::move(callback).Run(google_apis::OTHER_ERROR, /*events=*/nullptr);
@@ -160,7 +160,7 @@ base::OnceClosure CalendarKeyedService::GetEventList(
     const base::Time end_time,
     const std::string& calendar_id,
     const std::string& calendar_color_id) {
-  CHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(callback);
   if (start_time > end_time || !sender_) {
     std::move(callback).Run(google_apis::OTHER_ERROR, /*events=*/nullptr);

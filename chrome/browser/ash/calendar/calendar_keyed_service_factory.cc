@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
+#include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/ash/calendar/calendar_keyed_service.h"
+#include "chrome/browser/ash/calendar/calendar_keyed_service.h"
 #include "components/user_manager/user.h"
 
 namespace ash {

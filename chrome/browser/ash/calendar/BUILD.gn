@@ -6,7 +6,6 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-# TODO(b/351889331): Move this out from ui since it's not ui code.
 static_library("calendar") {
   sources = [
     "calendar_client_impl.cc",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_CALENDAR_CALENDAR_KEYED_SERVICE_H_
-#define CHROME_BROWSER_UI_ASH_CALENDAR_CALENDAR_KEYED_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_CALENDAR_CALENDAR_KEYED_SERVICE_H_
+#define CHROME_BROWSER_ASH_CALENDAR_CALENDAR_KEYED_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/ash/calendar/calendar_client_impl.h"
+#include "chrome/browser/ash/calendar/calendar_client_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "google_apis/calendar/calendar_api_requests.h"
@@ -21,10 +21,6 @@
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-namespace ash {
-class Shell;
-}  // namespace ash
 
 namespace google_apis {
 
@@ -121,7 +117,8 @@ class CalendarKeyedService : public KeyedService {
   void Shutdown() override;
 
   // The class is expected to run on UI thread.
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
+
   const raw_ptr<Profile> profile_;
   const AccountId account_id_;
   CalendarClientImpl calendar_client_;
@@ -134,4 +131,4 @@ class CalendarKeyedService : public KeyedService {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_ASH_CALENDAR_CALENDAR_KEYED_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_CALENDAR_CALENDAR_KEYED_SERVICE_H_

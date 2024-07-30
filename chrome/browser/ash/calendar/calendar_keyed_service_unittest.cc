@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/calendar/calendar_keyed_service.h"
+#include "chrome/browser/ash/calendar/calendar_keyed_service.h"
 
 #include <memory>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
+#include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
