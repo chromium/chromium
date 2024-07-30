@@ -2542,25 +2542,6 @@
             ]
         }
     ],
-    "AutofillTestFormWithTestAddresses": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillTestFormWithTestAddresses"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillUKMExperimentalFields": [
         {
             "platforms": [
