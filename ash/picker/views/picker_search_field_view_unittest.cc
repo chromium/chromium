@@ -235,7 +235,7 @@ TEST_F(PickerSearchFieldViewTest, ClickingBackButtonTriggersCallback) {
 }
 
 TEST_F(PickerSearchFieldViewTest,
-       SetTextfieldActiveDescendantNotifiesImmediatelyWhenFocused) {
+       SetTextfieldActiveDescendantNotifiesAfterDelayWhenFocused) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->Show();
@@ -249,6 +249,12 @@ TEST_F(PickerSearchFieldViewTest,
 
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   view->SetTextfieldActiveDescendant(&descendant);
+
+  EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
+
+  task_environment()->FastForwardBy(
+      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()),
             descendant.GetViewAccessibility().GetUniqueId());
@@ -292,7 +298,8 @@ TEST_F(PickerSearchFieldViewTest,
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
 
-  task_environment()->FastForwardBy(base::Milliseconds(1500));
+  task_environment()->FastForwardBy(
+      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()),
             descendant.GetViewAccessibility().GetUniqueId());
@@ -317,7 +324,8 @@ TEST_F(PickerSearchFieldViewTest,
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
 
-  task_environment()->FastForwardBy(base::Milliseconds(1500));
+  task_environment()->FastForwardBy(
+      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()), 0);
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
@@ -339,7 +347,8 @@ TEST_F(PickerSearchFieldViewTest,
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   view->RequestFocus();
   view->SetTextfieldActiveDescendant(&descendant2);
-  task_environment()->FastForwardBy(base::Milliseconds(1500));
+  task_environment()->FastForwardBy(
+      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
 
   EXPECT_EQ(GetActiveDescendantId(*view->textfield()),
             descendant2.GetViewAccessibility().GetUniqueId());

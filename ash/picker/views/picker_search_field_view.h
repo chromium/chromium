@@ -41,6 +41,11 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
       base::RepeatingCallback<void(const std::u16string& query)>;
   using BackCallback = base::RepeatingClosure;
 
+  // The delay before notifying the initial active descendant when the textfield
+  // is focused. Same value as Launcher.
+  static constexpr base::TimeDelta kNotifyInitialActiveDescendantA11yDelay =
+      base::Milliseconds(1500);
+
   // `search_callback` is called asynchronously whenever the contents of the
   // search field changes (with debouncing logic to avoid unnecessary calls).
   // `key_event_handler` and `performance_metrics` must live as long as this
@@ -101,6 +106,8 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
 
   // Updates the textfield border when the clear button visibility changes.
   void UpdateTextfieldBorder();
+  // Schedules a delayed announcement of the initial active descendant.
+  void ScheduleNotifyInitialActiveDescendantForA11y();
   // Notifies the initial active descendant for the screen reader.
   void NotifyInitialActiveDescendantForA11y();
 
@@ -115,8 +122,7 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
 
   // Tracks pending active descendant change when the textfield is not focused.
   views::ViewTracker active_descendant_tracker_;
-  // When this view gains focus, delay the active descendant change
-  // notification.
+  // Delay the initial active descendant change notification for a query.
   base::OneShotTimer notify_initial_active_descendant_timer_;
 };
 

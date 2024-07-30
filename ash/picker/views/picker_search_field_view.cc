@@ -54,11 +54,6 @@ constexpr int kDefaultTextfieldHorizontalMargin = 16;
 // Margins around the textfield focus indicator bar.
 constexpr auto kTextfieldFocusIndicatorMargins = gfx::Insets::VH(6, 0);
 
-// The delay before notifying the initial active descendant when the textfield
-// is focused. Same value as Launcher.
-constexpr base::TimeDelta kNotifyInitialActiveDescendantA11yDelay =
-    base::Milliseconds(1500);
-
 }  // namespace
 
 PickerSearchFieldView::PickerSearchFieldView(
@@ -151,6 +146,8 @@ void PickerSearchFieldView::ContentsChanged(
   clear_button_->SetVisible(!new_contents.empty());
   UpdateTextfieldBorder();
 
+  ScheduleNotifyInitialActiveDescendantForA11y();
+
   search_callback_.Run(new_contents);
 }
 
@@ -168,17 +165,7 @@ void PickerSearchFieldView::OnDidChangeFocus(View* focused_before,
     performance_metrics_->MarkInputFocus();
   }
 
-  if (active_descendant_tracker_) {
-    // Delay the active descendant change so that:
-    // (1) There's no jarring transition of the screen reader's focus rectangle.
-    // (2) There's time for the screen reader to receive the focus event so that
-    // it can start listening for active descendant changes.
-    notify_initial_active_descendant_timer_.Start(
-        FROM_HERE, kNotifyInitialActiveDescendantA11yDelay,
-        base::BindOnce(
-            &PickerSearchFieldView::NotifyInitialActiveDescendantForA11y,
-            base::Unretained(this)));
-  }
+  ScheduleNotifyInitialActiveDescendantForA11y();
 }
 
 const std::u16string& PickerSearchFieldView::GetPlaceholderText() const {
@@ -192,14 +179,16 @@ void PickerSearchFieldView::SetPlaceholderText(
 }
 
 void PickerSearchFieldView::SetTextfieldActiveDescendant(views::View* view) {
-  // The screen reader does not announce active descendant changes when the
-  // textfield is not focused. In that case, track the active descendant and
-  // announce it when the textfield gains focus.
-  if (!textfield_->HasFocus()) {
+  // If the initial active descendant has not been announced yet, then track
+  // this descendant so it can be announced when the timer fires.
+  if (!textfield_->HasFocus() ||
+      notify_initial_active_descendant_timer_.IsRunning()) {
     active_descendant_tracker_.SetView(view);
     return;
   }
 
+  // The initial active descendant has been announced, so announce this
+  // descendant immediately.
   if (view) {
     textfield_->GetViewAccessibility().SetActiveDescendant(*view);
   } else {
@@ -240,6 +229,18 @@ void PickerSearchFieldView::UpdateTextfieldBorder() {
   textfield_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       0, back_button_->GetVisible() ? 0 : kDefaultTextfieldHorizontalMargin, 0,
       clear_button_->GetVisible() ? 0 : kDefaultTextfieldHorizontalMargin)));
+}
+
+void PickerSearchFieldView::ScheduleNotifyInitialActiveDescendantForA11y() {
+  // Delay the active descendant change so that:
+  // (1) There's no jarring transition of the screen reader's focus rectangle.
+  // (2) There's time for the screen reader to read out the change to input
+  // field contents.
+  notify_initial_active_descendant_timer_.Start(
+      FROM_HERE, kNotifyInitialActiveDescendantA11yDelay,
+      base::BindOnce(
+          &PickerSearchFieldView::NotifyInitialActiveDescendantForA11y,
+          base::Unretained(this)));
 }
 
 void PickerSearchFieldView::NotifyInitialActiveDescendantForA11y() {

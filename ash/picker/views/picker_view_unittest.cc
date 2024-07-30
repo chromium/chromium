@@ -2182,8 +2182,9 @@ TEST_F(PickerViewTest, CategoryZeroStateShowsNoResultsPageWithIllustration) {
                 IDS_PICKER_NO_RESULTS_FOR_BROWSING_HISTORY_LABEL_TEXT));
 }
 
-TEST_F(PickerViewTest,
-       ChangingPseudoFocusOnZeroStateNotifiesActiveDescendantChange) {
+TEST_F(
+    PickerViewTest,
+    ChangingPseudoFocusOnZeroStateNotifiesInitialActiveDescendantChangeAfterDelay) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kClipboard,
                                PickerCategory::kLinks},
@@ -2194,7 +2195,31 @@ TEST_F(PickerViewTest,
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
 
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 0);
+
+  task_environment()->FastForwardBy(
+      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
+
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 1);
+}
+
+TEST_F(
+    PickerViewTest,
+    ChangingPseudoFocusOnZeroStateNotifiesActiveDescendantChangeImmediately) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kClipboard,
+                               PickerCategory::kLinks},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  task_environment()->FastForwardBy(
+      PickerSearchFieldView::kNotifyInitialActiveDescendantA11yDelay);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 2);
 }
 
 TEST_F(PickerViewTest, EnterOnZeroState) {
