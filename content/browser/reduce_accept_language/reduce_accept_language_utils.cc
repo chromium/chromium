@@ -161,9 +161,9 @@ bool ReduceAcceptLanguageUtils::ReadAndPersistAcceptLanguageForNavigation(
     return false;
   }
 
-  std::string initial_accept_language;
-  if (!request_headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage,
-                                 &initial_accept_language)) {
+  std::optional<std::string> initial_accept_language =
+      request_headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage);
+  if (!initial_accept_language) {
     // If we can't find Accept-Language in the request header, we directly
     // return false since we expect we added the reduced Accept-Language when
     // initializing the navigation request.
@@ -171,7 +171,7 @@ bool ReduceAcceptLanguageUtils::ReadAndPersistAcceptLanguageForNavigation(
   }
 
   PersistLanguageResult persist_params = GetLanguageToPersist(
-      initial_accept_language, parsed_headers->content_language.value(),
+      *initial_accept_language, parsed_headers->content_language.value(),
       delegate_->GetUserAcceptLanguages(),
       parsed_headers->avail_language.value());
 

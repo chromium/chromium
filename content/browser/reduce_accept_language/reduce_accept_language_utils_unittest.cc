@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/avail_language_header_parser.h"
 #include "services/network/public/cpp/content_language_parser.h"
 #include "services/network/public/cpp/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -277,10 +278,8 @@ TEST_F(AcceptLanguageUtilsTests, AddNavigationRequestAcceptLanguageHeaders) {
     std::optional<std::string> added_accept_language =
         reduce_language_utils.AddNavigationRequestAcceptLanguageHeaders(
             url::Origin::Create(url), root, &headers);
-    std::string accept_language_header;
-    EXPECT_TRUE(headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage,
-                                  &accept_language_header));
-    EXPECT_EQ("en", accept_language_header);
+    EXPECT_THAT(headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage),
+                testing::Optional(std::string("en")));
     EXPECT_EQ("en", added_accept_language.value());
 
     // Verify child node still has the accept language header.
@@ -292,10 +291,8 @@ TEST_F(AcceptLanguageUtilsTests, AddNavigationRequestAcceptLanguageHeaders) {
         reduce_language_utils.AddNavigationRequestAcceptLanguageHeaders(
             url::Origin::Create(url), child0, &child_http_headers);
 
-    accept_language_header.clear();
-    EXPECT_TRUE(headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage,
-                                  &accept_language_header));
-    EXPECT_EQ("en", accept_language_header);
+    EXPECT_THAT(headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage),
+                testing::Optional(std::string("en")));
     EXPECT_EQ("en", added_accept_language.value());
 
     // Verify use the persist language when it's available instead of user first
@@ -307,10 +304,8 @@ TEST_F(AcceptLanguageUtilsTests, AddNavigationRequestAcceptLanguageHeaders) {
     added_accept_language =
         reduce_language_utils.AddNavigationRequestAcceptLanguageHeaders(
             url::Origin::Create(url), root, &headers);
-    accept_language_header.clear();
-    EXPECT_TRUE(headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage,
-                                  &accept_language_header));
-    EXPECT_EQ(test_persisted_lang, accept_language_header);
+    EXPECT_THAT(headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage),
+                testing::Optional(test_persisted_lang));
     EXPECT_EQ(test_persisted_lang, added_accept_language.value());
     // Verify commit language has the same value.
     std::optional<std::string> commit_lang =
@@ -328,10 +323,8 @@ TEST_F(AcceptLanguageUtilsTests, AddNavigationRequestAcceptLanguageHeaders) {
     added_accept_language =
         reduce_language_utils.AddNavigationRequestAcceptLanguageHeaders(
             url::Origin::Create(url), root, &headers);
-    accept_language_header.clear();
-    EXPECT_TRUE(headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage,
-                                  &accept_language_header));
-    EXPECT_EQ("en", accept_language_header);
+    EXPECT_THAT(headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage),
+                testing::Optional(std::string("en")));
     EXPECT_EQ("en", added_accept_language.value());
   }
 }
