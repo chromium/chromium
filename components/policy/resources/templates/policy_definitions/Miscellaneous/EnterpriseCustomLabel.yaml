@@ -17,8 +17,8 @@ features:
   dynamic_refresh: true
   per_profile: true
   user_only: true
-future_on:
-- chrome.*
+supported_on:
+- chrome.*:128-
 owners:
 - file://components/enterprise/OWNERS
 - ydago@chromium.org
