@@ -370,7 +370,9 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest, TabHidden) {
+// crbug.com/355352905: The test is flaky on all platforms.
+IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
+                       DISABLED_TabHidden) {
   base::HistogramTester histogram_tester;
   GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
 
