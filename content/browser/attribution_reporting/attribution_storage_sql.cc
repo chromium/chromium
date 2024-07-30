@@ -1496,7 +1496,7 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
                        num_aggregatable_reports_deleted);
 }
 
-bool AttributionStorageSql::HasCapacityForStoringSource(
+int64_t AttributionStorageSql::CountActiveSourcesWithSourceOrigin(
     const SuitableOrigin& origin,
     const base::Time now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1506,10 +1506,9 @@ bool AttributionStorageSql::HasCapacityForStoringSource(
   statement.BindString(0, origin.Serialize());
   statement.BindTime(1, now);
   if (!statement.Step()) {
-    return false;
+    return -1;
   }
-  int64_t count = statement.ColumnInt64(0);
-  return count < delegate_->GetMaxSourcesPerOrigin();
+  return statement.ColumnInt64(0);
 }
 
 AttributionStorageSql::ConversionCapacityStatus

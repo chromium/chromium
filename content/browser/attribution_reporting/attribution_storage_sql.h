@@ -265,7 +265,8 @@ class CONTENT_EXPORT AttributionStorageSql {
   // reports. Returns false on failure.
   [[nodiscard]] bool DeleteExpiredSources();
 
-  bool HasCapacityForStoringSource(
+  // Returns a negative value on failure.
+  int64_t CountActiveSourcesWithSourceOrigin(
       const attribution_reporting::SuitableOrigin& origin,
       base::Time now);
 

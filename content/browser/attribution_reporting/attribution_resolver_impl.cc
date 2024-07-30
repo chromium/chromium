@@ -224,8 +224,11 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
     last_deleted_expired_sources_ = source_time;
   }
 
-  if (!storage_.HasCapacityForStoringSource(common_info.source_origin(),
-                                            source_time)) {
+  if (int64_t count = storage_.CountActiveSourcesWithSourceOrigin(
+          common_info.source_origin(), source_time);
+      count < 0) {
+    return make_result(StoreSourceResult::InternalError());
+  } else if (int64_t max = delegate_->GetMaxSourcesPerOrigin(); count >= max) {
     if (int64_t file_size = storage_.StorageFileSizeKB(); file_size > -1) {
       base::UmaHistogramCounts10M(
           "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2",
@@ -239,8 +242,7 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
             file_size * 1024 / *number_of_sources);
       }
     }
-    return make_result(StoreSourceResult::InsufficientSourceCapacity(
-        delegate_->GetMaxSourcesPerOrigin()));
+    return make_result(StoreSourceResult::InsufficientSourceCapacity(max));
   }
 
   switch (storage_.SourceAllowedForReportingOriginPerSiteLimit(source,
