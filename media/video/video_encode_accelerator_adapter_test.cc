@@ -19,6 +19,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/viz/test/test_context_provider.h"
 #include "media/base/bitrate.h"
 #include "media/base/media_util.h"
 #include "media/base/video_frame.h"
@@ -52,8 +53,10 @@ class VideoEncodeAcceleratorAdapterTest
     vea_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
 
     vea_ = new FakeVideoEncodeAccelerator(vea_runner_);
+    sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+    sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
     gpu_factories_ =
-        std::make_unique<MockGpuVideoAcceleratorFactories>(nullptr);
+        std::make_unique<MockGpuVideoAcceleratorFactories>(sii_.get());
     supported_profiles_ = {
         VideoEncodeAccelerator::SupportedProfile(
             profile_,
@@ -215,6 +218,7 @@ class VideoEncodeAcceleratorAdapterTest
   base::test::TaskEnvironment task_environment_;
   raw_ptr<FakeVideoEncodeAccelerator, AcrossTasksDanglingUntriaged>
       vea_;  // owned by |vae_adapter_|
+  scoped_refptr<gpu::TestSharedImageInterface> sii_;
   std::unique_ptr<MockGpuVideoAcceleratorFactories> gpu_factories_;
   std::unique_ptr<VideoEncodeAcceleratorAdapter> vae_adapter_;
   scoped_refptr<base::SequencedTaskRunner> vea_runner_;

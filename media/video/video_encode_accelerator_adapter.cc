@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_log.h"
@@ -39,6 +40,11 @@
 namespace media {
 
 namespace {
+
+// Allow MappableSI to be used for VideoEncoderAcceleratorAdapter.
+BASE_FEATURE(kUseMappableSIForVideoEncoderAcceleratorAdapter,
+             "UseMappableSIForVideoEncoderAcceleratorAdapter",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // HW encoders expect a nonzero bitrate, so |kVEADefaultBitratePerPixel| is used
 // to estimate bits per second for ~30 fps with ~1/16 compression rate.
@@ -192,27 +198,71 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(gfx::Rect(coded_size_).Contains(gfx::Rect(visible_size)));
 
-    if (available_gmbs_.empty()) {
-      constexpr auto kBufferFormat = gfx::BufferFormat::YUV_420_BIPLANAR;
-      constexpr auto kBufferUsage =
-          gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
-      auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
-          coded_size_, kBufferFormat, kBufferUsage);
-      if (!gmb)
-        return nullptr;
+    const auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+    const auto si_format = viz::GetSharedImageFormat(buffer_format);
+    const auto buffer_usage =
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
 
+    // Setting some default usage in order to get a mappable shared image.
+    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE |
+                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+    scoped_refptr<VideoFrame> video_frame;
+    gpu::SyncToken sync_token;
+    if (base::FeatureList::IsEnabled(
+            kUseMappableSIForVideoEncoderAcceleratorAdapter)) {
+      if (available_shared_images_.empty()) {
+        auto* sii = gpu_factories_->SharedImageInterface();
+        if (!sii) {
+          LOG(ERROR) << "SharedImageInterface is null.";
+          return nullptr;
+        }
+
+        auto shared_image =
+            sii->CreateSharedImage({si_format, coded_size_, gfx::ColorSpace(),
+                                    gpu::SharedImageUsageSet(si_usage),
+                                    "VideoEncodeAcceleratorAdapter"},
+                                   gpu::kNullSurfaceHandle, buffer_usage);
+        if (!shared_image) {
+          LOG(ERROR) << "Unable to create a mappable shared image.";
+          return nullptr;
+        }
+        sync_token = sii->GenVerifiedSyncToken();
+        available_shared_images_.push_back(std::move(shared_image));
+      }
+
+      auto shared_image = std::move(available_shared_images_.back());
+      available_shared_images_.pop_back();
+
+      auto shared_image_release_cb =
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &GpuMemoryBufferVideoFramePool::ReuseFrame, this, shared_image));
+      video_frame = media::VideoFrame::WrapMappableSharedImage(
+          std::move(shared_image), sync_token, GL_TEXTURE_2D,
+          std::move(shared_image_release_cb), gfx::Rect(visible_size),
+          visible_size, base::TimeDelta());
+      return video_frame;
+    }
+
+    if (available_gmbs_.empty()) {
+      auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
+          coded_size_, buffer_format, buffer_usage);
+      if (!gmb) {
+        return nullptr;
+      }
       available_gmbs_.push_back(std::move(gmb));
     }
 
     auto gmb = std::move(available_gmbs_.back());
     available_gmbs_.pop_back();
 
-    auto video_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
+    video_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
         gfx::Rect(visible_size), visible_size, std::move(gmb),
         base::TimeDelta());
     video_frame->SetReleaseMailboxAndGpuMemoryBufferCB(
         base::BindPostTaskToCurrentDefault(
-            base::BindOnce(&GpuMemoryBufferVideoFramePool::ReuseFrame, this)));
+            base::BindOnce(&GpuMemoryBufferVideoFramePool::ReuseFrame, this,
+                           /*shared_image=*/nullptr)));
     return video_frame;
   }
 
@@ -220,18 +270,34 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
   friend class RefCountedThreadSafe<GpuMemoryBufferVideoFramePool>;
   ~GpuMemoryBufferVideoFramePool() = default;
 
-  void ReuseFrame(const gpu::SyncToken& token,
+  // |shared_image| will be used when MappableSI is enabled. It will be null
+  // otherwise.
+  void ReuseFrame(scoped_refptr<gpu::ClientSharedImage> shared_image,
+                  const gpu::SyncToken& token,
                   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     constexpr size_t kMaxPooledFrames = 5;
-    if (available_gmbs_.size() < kMaxPooledFrames)
-      available_gmbs_.push_back(std::move(gpu_memory_buffer));
+    if (shared_image) {
+      CHECK(base::FeatureList::IsEnabled(
+          kUseMappableSIForVideoEncoderAcceleratorAdapter));
+      CHECK(!gpu_memory_buffer);
+      if (available_shared_images_.size() < kMaxPooledFrames) {
+        available_shared_images_.push_back(std::move(shared_image));
+      }
+    } else {
+      if (available_gmbs_.size() < kMaxPooledFrames) {
+        available_gmbs_.push_back(std::move(gpu_memory_buffer));
+      }
+    }
   }
 
   const raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
   const gfx::Size coded_size_;
 
   std::vector<std::unique_ptr<gfx::GpuMemoryBuffer>> available_gmbs_;
+
+  // Available mappable shared images.
+  std::vector<scoped_refptr<gpu::ClientSharedImage>> available_shared_images_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -1133,8 +1199,14 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   // |mapped_gpu_frame| has the color space respecting the color conversion in
   // ConvertAndScale().
 #if BUILDFLAG(IS_MAC)
-  gpu_frame->GetGpuMemoryBuffer()->SetColorSpace(
-      mapped_gpu_frame->ColorSpace());
+  if (base::FeatureList::IsEnabled(
+          kUseMappableSIForVideoEncoderAcceleratorAdapter)) {
+    gpu_frame->shared_image(0)->SetColorSpaceOnNativeBuffer(
+        mapped_gpu_frame->ColorSpace());
+  } else {
+    gpu_frame->GetGpuMemoryBuffer()->SetColorSpace(
+        mapped_gpu_frame->ColorSpace());
+  }
 #endif
   gpu_frame->set_color_space(mapped_gpu_frame->ColorSpace());
 
