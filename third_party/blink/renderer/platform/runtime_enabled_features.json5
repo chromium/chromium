@@ -4324,6 +4324,11 @@
       public: true,
     },
     {
+      // crbug.com/356190942
+      name: "VerticalInputRangeKeyOperationFix",
+      status: "stable",
+    },
+    {
       // Whether a video element should automatically play fullscreen unless
       // 'playsinline' is set.
       name: "VideoAutoFullscreen",

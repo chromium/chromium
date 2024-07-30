@@ -11,6 +11,7 @@
 <input type=range id=horiz-range-rtl dir=rtl min=0 max=100 value=50 onchange='handleChange()'>
 <input type=range id=vert-range min=0 max=100 value=50 onchange='handleChange()' style='writing-mode: vertical-lr;'>
 <input type=range id=vert-range-rtl dir=rtl min=0 max=100 value=50 onchange='handleChange()' style='writing-mode: vertical-lr;'>
+<input type=range id=slr min=0 max=100 value=50 onchange='handleChange()' style='writing-mode: sideways-lr;'>
 <input type=range id=step-any min=0 max=200 value=100 step='any' onchange='handleChange()' style='writing-mode: vertical-lr;'>
 <input type=range id=small-range min=0 max=10 value=6 step=3 onchange='handleChange()' style='writing-mode: vertical-lr;'>
 <input type=range id=disabled disabled min=0 max=100 value=1 step=1 onchange='handleChange()' style='writing-mode: vertical-lr;'>
@@ -124,7 +125,7 @@ test(() => {
 
   // Press the up arrow key.
   sendKey(input, 'ArrowUp');
-  assert_equals(input.value, '51');
+  assert_equals(input.value, '49');
 
   // Press the down arrow key.
   sendKey(input, 'ArrowDown');
@@ -169,7 +170,7 @@ test(() => {
 
   // Press the left arrow key.
   sendKey(input, 'ArrowLeft');
-  assert_equals(input.value, '51');
+  assert_equals(input.value, '49');
 
   // Press the right arrow key.
   sendKey(input, 'ArrowRight');
@@ -193,18 +194,39 @@ test(() => {
 }, 'Tests for a vertical range with rtl');
 
 test(() => {
+  const input = document.getElementById('slr');
+  input.focus();
+
+  // Press the up arrow key.
+  sendKey(input, 'ArrowUp');
+  assert_equals(input.value, '51');
+
+  // Press the down arrow key.
+  sendKey(input, 'ArrowDown');
+  assert_equals(input.value, '50');
+
+  // Press the left arrow key.
+  sendKey(input, 'ArrowLeft');
+  assert_equals(input.value, '51');
+
+  // Press the right arrow key.
+  sendKey(input, 'ArrowRight');
+  assert_equals(input.value, '50');
+}, 'Tests for a range in sideways-lr writing-mode');
+
+test(() => {
   const input = document.getElementById('step-any');
   input.focus();
 
   // Press the up arrow key.
   let lastChangeEventCounter = changeEventCounter;
-  sendKey(input, 'ArrowUp');
+  sendKey(input, 'ArrowDown');
   assert_equals(input.value, '102');
   assert_equals(changeEventCounter, lastChangeEventCounter + 1);
 
   // Press the down arrow key.
   lastChangeEventCounter = changeEventCounter;
-  sendKey(input, 'ArrowDown');
+  sendKey(input, 'ArrowUp');
   assert_equals(input.value, '100');
   assert_equals(changeEventCounter, lastChangeEventCounter + 1);
 
@@ -234,13 +256,13 @@ test(() => {
 
   // Edge cases.
   input.valueAsNumber = 199;
-  sendKey(input, 'ArrowUp');
+  sendKey(input, 'ArrowDown');
   assert_equals(input.value, '200');
   lastChangeEventCounter = changeEventCounter;
-  sendKey(input, 'ArrowUp');
+  sendKey(input, 'ArrowDown');
   assert_equals(input.value, '200');
   assert_equals(changeEventCounter, lastChangeEventCounter);
-  sendKey(input, 'ArrowDown');
+  sendKey(input, 'ArrowUp');
   assert_equals(input.value, '198');
 
   input.valueAsNumber = 199;
@@ -254,13 +276,13 @@ test(() => {
   assert_equals(input.value, '180');
 
   input.valueAsNumber = 1;
-  sendKey(input, 'ArrowDown');
+  sendKey(input, 'ArrowUp');
   assert_equals(input.value, '0');
   lastChangeEventCounter = changeEventCounter;
-  sendKey(input, 'ArrowDown');
+  sendKey(input, 'ArrowUp');
   assert_equals(input.value, '0');
   assert_equals(changeEventCounter, lastChangeEventCounter);
-  sendKey(input, 'ArrowUp');
+  sendKey(input, 'ArrowDown');
   assert_equals(input.value, '2');
 
   input.valueAsNumber = 1;
