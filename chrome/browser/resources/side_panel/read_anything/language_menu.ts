@@ -3,23 +3,23 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_icons.css.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons_lit.html.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import './icons.html.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {toastDurationMs, ToolbarEvent} from './common.js';
-import {getTemplate} from './language_menu.html.js';
+import {getCss} from './language_menu.css.js';
+import {getHtml} from './language_menu.html.js';
 import {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode} from './voice_language_util.js';
 
 export interface LanguageMenuElement {
@@ -64,41 +64,64 @@ function isSubstring(value: string, substring: string): boolean {
   return value.toLowerCase().includes(substring.toLowerCase());
 }
 
-const LanguageMenuElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
+const LanguageMenuElementBase =
+    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
 export class LanguageMenuElement extends LanguageMenuElementBase {
   static get is() {
     return 'language-menu';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      enabledLangs: Array,
-      availableVoices: Array,
-      languageSearchValue_: String,
-      localeToDisplayName: Object,
-      voicePackInstallStatus: {
-        type: Object,
-        observer: 'voicePackInstallStatusChanged_',
-      },
-      selectedLang: String,
-      currentNotifications_: Array,
-      lastDownloadedLang: String,
-      toastTitle_: {
-        type: String,
-        computed: 'getLanguageDownloadedTitle_(localeToDisplayName,' +
-            'lastDownloadedLang)',
-      },
-      availableLanguages_: {
-        type: Array,
-        computed: 'computeAvailableLanguages_(localeToDisplayName,' +
-            'currentNotifications_,selectedLang,languageSearchValue_)',
-      },
+      enabledLangs: {type: Array},
+      availableVoices: {type: Array},
+      localeToDisplayName: {type: Object},
+      voicePackInstallStatus: {type: Object},
+      selectedLang: {type: String},
+      lastDownloadedLang: {type: String},
+      languageSearchValue_: {type: String},
+      currentNotifications_: {type: Array},
+      toastTitle_: {type: String},
+      availableLanguages_: {type: Array},
     };
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedProperties.has('selectedLang') ||
+        changedProperties.has('localeToDisplayName') ||
+        changedPrivateProperties.has('currentNotifications_') ||
+        changedPrivateProperties.has('languageSearchValue_')) {
+      this.availableLanguages_ = this.computeAvailableLanguages_();
+    }
+
+    if (changedProperties.has('lastDownloadedLang')) {
+      this.toastTitle_ = this.getLanguageDownloadedTitle_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('voicePackInstallStatus')) {
+      this.updateNotifications_(
+          /* newVoiceStatuses= */ this.voicePackInstallStatus,
+          /* oldVoiceStatuses= */
+          changedProperties.get('voicePackInstallStatus'));
+    }
   }
 
   selectedLang: string;
@@ -107,10 +130,11 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   lastDownloadedLang: string;
 
   availableVoices: SpeechSynthesisVoice[];
-  private languageSearchValue_: string = '';
-  private toastDuration_: number = toastDurationMs;
+  protected languageSearchValue_: string = '';
+  protected toastTitle_: string = '';
+  protected toastDuration_: number = toastDurationMs;
   voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode};
-  private readonly availableLanguages_: LanguageDropdownItem[];
+  protected availableLanguages_: LanguageDropdownItem[] = [];
   // Use this variable instead of AVAILABLE_GOOGLE_TTS_LOCALES
   // directly to better aid in testing.
   localesOfLangPackVoices: Set<string> =
@@ -127,20 +151,20 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   // current state. Before copying over the map, check the diff of
   // the new voicePackInstallStatus and our previous snapshot. If there are
   // any differences, add these to the currentNotifications_ map.
-  private voicePackInstallStatusChanged_(
-      newValue: {[language: string]: VoiceClientSideStatusCode},
-      oldValue?: {[language: string]: VoiceClientSideStatusCode}) {
-    for (const key of Object.keys(newValue)) {
-      const newStatus = newValue[key];
+  private updateNotifications_(
+      newVoiceStatuses: {[language: string]: VoiceClientSideStatusCode},
+      oldVoiceStatuses?: {[language: string]: VoiceClientSideStatusCode}) {
+    for (const lang of Object.keys(newVoiceStatuses)) {
+      const newStatus = newVoiceStatuses[lang];
       // Since the downloading messages are cleared quickly, we should still
       // show "downloading" notifications, even if they were previously shown.
       if (isDownloading(newStatus)) {
-        this.setNotification(key, newStatus);
-      } else if (oldValue && oldValue[key] !== newStatus) {
+        this.setNotification(lang, newStatus);
+      } else if (oldVoiceStatuses && oldVoiceStatuses[lang] !== newStatus) {
         // Update the notification status for recently changed language keys.
         // Only show updates that occur while the language menu is open- don't
         // show notifications if updates occurred before the menu opened.
-        this.setNotification(key, newStatus);
+        this.setNotification(lang, newStatus);
       }
     }
   }
@@ -151,23 +175,20 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       [lang]: status,
     };
   }
-  private closeLanguageMenu_() {
+  protected closeLanguageMenu_() {
     this.$.languageMenu.close();
   }
 
-  private onClearSearchClick_() {
+  protected onClearSearchClick_() {
     this.languageSearchValue_ = '';
   }
 
-  private onToggleChange_(event: DomRepeatEvent<LanguageDropdownItem>) {
-    const index = event.model.index!;
+  protected onToggleChange_(e: Event) {
+    const index =
+        Number.parseInt((e.currentTarget as HTMLElement).dataset['index']!);
     const language = this.availableLanguages_[index].languageCode;
 
-    this.dispatchEvent(new CustomEvent(ToolbarEvent.LANGUAGE_TOGGLE, {
-      bubbles: true,
-      composed: true,
-      detail: {language},
-    }));
+    this.fire(ToolbarEvent.LANGUAGE_TOGGLE, {language});
   }
 
   private getDisplayName(lang: string) {
@@ -192,8 +213,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     return new Set([]);
   }
 
-  // TODO(b/40927698): Investigate removing currentNotifications as a
-  // dependency.
   private computeAvailableLanguages_(): LanguageDropdownItem[] {
     if (!this.availableVoices) {
       return [];
@@ -296,20 +315,24 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   // Runtime errors were thrown when this.i18n() was called in a Polymer
   // computed bindining callback function, so instead we call this.i18n from the
   // html via a wrapper.
-  private i18nWraper(s: string): string {
-    if (!s) {
+  protected i18nWraper(s: string): string {
+    if (s.length === 0) {
       return '';
     }
     return `${this.i18n(s)}`;
   }
 
 
-  private searchHasLanguages(): boolean {
+  protected searchHasLanguages(): boolean {
     // We should only show the "No results" string when there are no available
     // languages and there is a valid search term.
     return (this.availableLanguages_.length > 0) ||
         (!this.languageSearchValue_) ||
         (this.languageSearchValue_.trim().length === 0);
+  }
+
+  protected onLanguageSearchValueChanged_(e: CustomEvent<{value: string}>) {
+    this.languageSearchValue_ = e.detail.value;
   }
 }
 

@@ -1,0 +1,101 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+ #languageMenu::part(dialog) {
+  --scroll-border-color: var(--color-side-panel-dialog-divider);
+  background: var(--color-side-panel-content-background);
+  height: fit-content;
+  width: 275px;
+}
+
+cr-icon {
+  --icon-size: 24px;
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+.language-menu-title-bar {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.language-menu-title {
+  display: table-cell;
+  float: left;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.language-menu-close-button {
+  display: table-cell;
+  float: right;
+  vertical-align: middle;
+}
+
+.language-line {
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.dropdown-line {
+  align-items: center;
+  height: 48px;
+}
+
+.language-name {
+  font-size: 13px;
+  font-weight: 500;
+  max-width: 100%;
+  overflow: hidden;
+  padding-inline-end: 16px;
+  text-overflow: ellipsis;
+}
+
+.language-menu-body {
+  height: 45vh;
+  padding-bottom: 16px;
+}
+
+.search-field {
+  padding: 0 var(--sp-body-padding) 0 var(--sp-body-padding);
+}
+
+.notification-error-true {
+  color: var(--color-sys-error);
+}
+
+#toast-in-dialog {
+  bottom: 0;
+  left: 0;
+  min-width: 245px;
+  width: 80%;
+}
+
+#toastDiv {
+  line-height: 1.2;
+  white-space: normal;
+}
+
+#toastTitle {
+  display: block;
+  font-size: 1em;
+}
+
+#toastMessage {
+  display: inline-block;
+  font-size: 1em;
+}
