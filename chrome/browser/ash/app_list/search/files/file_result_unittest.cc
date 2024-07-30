@@ -286,9 +286,8 @@ TEST_F(FileResultTest, FileMetadataPopulatedForDisplay) {
   file_metadata_load_waiter.Run();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(metadata.file_info.size, kJpegDataSize);
-  EXPECT_EQ(metadata.file_info.last_modified,
-            base::Time::FromSecondsSinceUnixEpoch(2));
+  EXPECT_EQ(metadata.size, kJpegDataSize);
+  EXPECT_EQ(metadata.last_modified, base::Time::FromSecondsSinceUnixEpoch(2));
   EXPECT_EQ(result.displayable_file_path().value(), "My files/test.jpg");
 
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();

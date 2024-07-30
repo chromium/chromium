@@ -220,7 +220,7 @@ void SearchResultImageListView::OnImageMetadataLoaded(
   // Check that there are 3 labels in `metadata_content_labels_`.
   CHECK_EQ(metadata_content_labels_.size(), kNumOfContentLabels);
   metadata_content_labels_[2]->SetText(
-      GetFormattedTime(metadata.file_info.last_modified));
+      GetFormattedTime(metadata.last_modified));
 }
 
 int SearchResultImageListView::DoUpdate() {

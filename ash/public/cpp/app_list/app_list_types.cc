@@ -312,14 +312,6 @@ void SystemInfoAnswerCardData::UpdateBarChartPercentage(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// FileMetadata:
-
-FileMetadata::FileMetadata() = default;
-FileMetadata::FileMetadata(const FileMetadata&) = default;
-FileMetadata& FileMetadata::operator=(const FileMetadata&) = default;
-FileMetadata::~FileMetadata() = default;
-
-////////////////////////////////////////////////////////////////////////////////
 // FileMetadataLoader:
 
 FileMetadataLoader::FileMetadataLoader() = default;

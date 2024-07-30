@@ -73,7 +73,7 @@ ash::FileMetadata MetadataLoaderForTest() {
   base::Time last_modified;
   EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00", &last_modified));
 
-  metadata.file_info.last_modified = last_modified;
+  metadata.last_modified = last_modified;
   return metadata;
 }
 

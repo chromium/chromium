@@ -94,13 +94,12 @@ ash::FileMetadata GetFileMetadata(base::FilePath file_path) {
   CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI))
       << "FileIO attempted on UI thread.";
 
-  ash::FileMetadata metadata;
   base::File::Info info;
-  if (base::GetFileInfo(file_path, &info)) {
-    metadata.file_info = info;
+  if (!base::GetFileInfo(file_path, &info)) {
+    return base::File::Info();
   }
 
-  return metadata;
+  return info;
 }
 
 void LogRelevance(ChromeSearchResult::ResultType result_type,

@@ -581,14 +581,7 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
 };
 
 // Data required for showing file info.
-struct ASH_PUBLIC_EXPORT FileMetadata {
-  FileMetadata();
-  FileMetadata(const FileMetadata&);
-  FileMetadata& operator=(const FileMetadata&);
-  ~FileMetadata();
-
-  base::File::Info file_info;
-};
+using FileMetadata = base::File::Info;
 
 class ASH_PUBLIC_EXPORT FileMetadataLoader {
  public:
