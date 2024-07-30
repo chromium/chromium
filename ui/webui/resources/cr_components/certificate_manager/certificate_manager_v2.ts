@@ -45,18 +45,10 @@ import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import type {CertificatePasswordDialogElement} from './certificate_password_dialog.js';
 import type {CertificateSubpageV2Element, SubpageCertificateList} from './certificate_subpage_v2.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
+import {Page} from './navigation_v2.js';
 
 interface PasswordResult {
   password: string|null;
-}
-
-export enum Page {
-  LOCAL_CERTS = 'localcerts',
-  CLIENT_CERTS = 'clientcerts',
-  CRS_CERTS = 'crscerts',
-  // Sub-pages
-  ADMIN_CERTS = 'admincerts',
-  PLATFORM_CERTS = 'platformcerts',
 }
 
 const CertificateManagerV2ElementBase = I18nMixin(PolymerElement);
@@ -76,6 +68,7 @@ export interface CertificateManagerV2Element {
     importOsCerts: CrToggleElement,
     importOsCertsManagedIcon: HTMLElement,
     viewOsImportedCerts: HTMLElement,
+    viewOsImportedClientCerts: HTMLElement,
     // <if expr="is_win or is_macosx">
     manageOsImportedCerts: HTMLElement,
     manageOsImportedClientCerts: HTMLElement,
@@ -91,6 +84,7 @@ export interface CertificateManagerV2Element {
     adminCertsInstalledLinkRow: HTMLElement,
     adminCertsSection: CertificateSubpageV2Element,
     platformCertsSection: CertificateSubpageV2Element,
+    platformClientCertsSection: CertificateSubpageV2Element,
     numSystemCerts: HTMLElement,
   };
 }
@@ -117,18 +111,21 @@ export class CertificateManagerV2Element extends
                   'certificateManagerV2TrustedCertsList'),
               certSource: CertificateSource.kEnterpriseTrustedCerts,
               hideExport: false,
+              showImport: false,
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2IntermediateCertsList'),
               certSource: CertificateSource.kEnterpriseIntermediateCerts,
               hideExport: false,
+              showImport: false,
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2DistrustedCertsList'),
               certSource: CertificateSource.kEnterpriseDistrustedCerts,
               hideExport: false,
+              showImport: false,
             },
           ];
         },
@@ -142,21 +139,29 @@ export class CertificateManagerV2Element extends
                   'certificateManagerV2TrustedCertsList'),
               certSource: CertificateSource.kPlatformUserTrustedCerts,
               hideExport: false,
+              showImport: false,
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2IntermediateCertsList'),
               certSource: CertificateSource.kPlatformUserIntermediateCerts,
               hideExport: false,
+              showImport: false,
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2DistrustedCertsList'),
               certSource: CertificateSource.kPlatformUserDistrustedCerts,
               hideExport: false,
+              showImport: false,
             },
           ];
         },
+      },
+
+      clientPlatformSubpageLists_: {
+        type: Array,
+        computed: 'computeClientPlatformSubpageLists_(showClientCertImport_)',
       },
 
       toastMessage_: String,
@@ -190,6 +195,11 @@ export class CertificateManagerV2Element extends
         type: Object,
         value: CertificateSource,
       },
+
+      pageEnum_: {
+        type: Object,
+        value: Page,
+      },
     };
   }
 
@@ -208,6 +218,7 @@ export class CertificateManagerV2Element extends
   private importOsCertsEnabledManaged_: boolean;
   private enterpriseSubpageLists_: SubpageCertificateList[];
   private platformSubpageLists_: SubpageCertificateList[];
+  private clientPlatformSubpageLists_: SubpageCertificateList[];
   // <if expr="not chromeos_ash">
   private showClientCertImport_: boolean = false;
   // </if>
@@ -286,6 +297,7 @@ export class CertificateManagerV2Element extends
     switch (this.selectedPage_) {
       case Page.ADMIN_CERTS:
       case Page.PLATFORM_CERTS:
+      case Page.PLATFORM_CLIENT_CERTS:
         this.$.toolbar.classList.add('toolbar-shadow');
         break;
       default:
@@ -304,6 +316,8 @@ export class CertificateManagerV2Element extends
       case Page.ADMIN_CERTS:
       case Page.PLATFORM_CERTS:
         return Page.LOCAL_CERTS;
+      case Page.PLATFORM_CLIENT_CERTS:
+        return Page.CLIENT_CERTS;
       default:
         return this.selectedPage_;
     }
@@ -315,18 +329,20 @@ export class CertificateManagerV2Element extends
     this.$.platformCertsSection.setInitialFocus();
   }
 
+  private onClientPlatformCertsLinkRowClick_(e: Event) {
+    e.preventDefault();
+    this.switchToPage_(Page.PLATFORM_CLIENT_CERTS);
+    this.$.platformClientCertsSection.setInitialFocus();
+  }
+
   private onAdminCertsInstalledLinkRowClick_(e: Event) {
     e.preventDefault();
     this.switchToPage_(Page.ADMIN_CERTS);
     this.$.adminCertsSection.setInitialFocus();
   }
 
-  // TODO(crbug.com/40928765): Make this work with multiple subpages, either by
-  // adding a page name to the event payload, or making multiple different
-  // navigateBack handlers (using the naming template
-  // on<OptionalContext><EventName>_).
-  private onNavigateBack_() {
-    this.switchToPage_(Page.LOCAL_CERTS);
+  private onNavigateBack_(e: CustomEvent<{target: Page}>) {
+    this.switchToPage_(e.detail.target);
     focusWithoutInk(this.$.localMenuItem);
   }
 
@@ -353,6 +369,18 @@ export class CertificateManagerV2Element extends
 
   private computeImportOsCertsManaged_(): boolean {
     return this.certManagementMetadata_.isIncludeSystemTrustStoreManaged;
+  }
+
+  private computeClientPlatformSubpageLists_(): SubpageCertificateList[] {
+    return [
+      {
+        headerText: loadTimeData.getString(
+            'certificateManagerV2ClientCertsFromPlatform'),
+        certSource: CertificateSource.kPlatformClientCert,
+        hideExport: true,
+        showImport: this.showClientCertImport_,
+      },
+    ];
   }
 
   // If true, show the Custom Certs section.

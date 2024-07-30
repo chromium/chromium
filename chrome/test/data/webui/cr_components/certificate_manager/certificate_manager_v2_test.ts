@@ -337,6 +337,35 @@ suite('CertificateManagerV2Test', () => {
         certManager.$.localCertSection.classList.contains('iron-selected'));
   });
 
+  test('show platform client certs then navigate back', async () => {
+    initializeElement();
+    // Go to client section.
+    certManager.$.clientMenuItem.click();
+    await microtasksFinished();
+    assertTrue(
+        certManager.$.clientCertSection.classList.contains('iron-selected'));
+    assertFalse(certManager.$.platformClientCertsSection.classList.contains(
+        'iron-selected'));
+
+    // Click into client platform certs section.
+    certManager.$.viewOsImportedClientCerts.click();
+    await microtasksFinished();
+    assertTrue(
+        certManager.$.platformClientCertsSection.classList.contains(
+            'iron-selected'),
+        'not visible after click');
+
+    // Go back to client certs.
+    certManager.$.platformClientCertsSection.$.backButton.click();
+    await microtasksFinished();
+    assertFalse(
+        certManager.$.platformClientCertsSection.classList.contains(
+            'iron-selected'),
+        'visible after click');
+    assertTrue(
+        certManager.$.clientCertSection.classList.contains('iron-selected'),
+        'main pane not visible');
+  });
 
   test('click local certs section', async () => {
     initializeElement();

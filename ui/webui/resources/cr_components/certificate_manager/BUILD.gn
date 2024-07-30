@@ -65,6 +65,7 @@ build_webui("build") {
       "certificate_info_dialog.ts",
       "certificate_password_dialog.html.ts",
       "certificate_password_dialog.ts",
+      "navigation_v2.ts",
     ]
 
     mojo_files_deps = [ ":mojom_ts__generator" ]

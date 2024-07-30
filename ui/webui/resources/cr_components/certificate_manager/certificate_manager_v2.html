@@ -55,7 +55,8 @@
   }
 
   #adminCertsSection,
-  #platformCertsSection {
+  #platformCertsSection,
+  #platformClientCertsSection {
     box-shadow: var(--cr-card-shadow);
     padding: 0 40px;
   }
@@ -128,23 +129,19 @@
       </if>
 
       <h3>[[i18n("certificateManagerV2Platform")]]</h3>
-      <!-- TODO(crbug.com/40928765): platform client certs list should be on a
-        sub-page -->
-      <certificate-list-v2
-          id="platformClientCerts"
-          cert-source="[[certificateSourceEnum_.kPlatformClientCert]]"
-          header-text="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
-          show-import="[[showClientCertImport_]]"
-          hide-export
-          on-import-result="onImportResult_"
-          on-hash-copied="onHashCopied_">
-      </certificate-list-v2>
-      <if expr="is_win or is_macosx">
-        <cr-link-row external id="manageOsImportedClientCerts"
-            label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
-            on-click="onManageCertsExternal_">
+
+      <div class="card">
+        <cr-link-row id="viewOsImportedClientCerts"
+            label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
+            on-click="onClientPlatformCertsLinkRowClick_">
         </cr-link-row>
-      </if>
+        <if expr="is_win or is_macosx">
+          <cr-link-row external id="manageOsImportedClientCerts"
+              label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
+              on-click="onManageCertsExternal_">
+          </cr-link-row>
+        </if>
+      </div>
     </div>
 
     <div id="localCertSection" class="cr-centered-card-container" path="localcerts">
@@ -222,6 +219,7 @@
     <certificate-subpage-v2 id="adminCertsSection" path="admincerts"
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2AdminCertsTitle')]]"
         subpage-cert-lists="[[enterpriseSubpageLists_]]">
     </certificate-subpage-v2>
@@ -229,8 +227,19 @@
     <certificate-subpage-v2 id="platformCertsSection" path="platformcerts"
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2PlatformCertsTitle')]]"
         subpage-cert-lists="[[platformSubpageLists_]]">
+    </certificate-subpage-v2>
+
+    <certificate-subpage-v2 id="platformClientCertsSection"
+        path="platformclientcerts"
+        class="cr-centered-card-container"
+        on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        navigate-back-target="[[pageEnum_.CLIENT_CERTS]]"
+        on-import-result="onImportResult_"
+        subpage-title="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
+        subpage-cert-lists="[[clientPlatformSubpageLists_]]">
     </certificate-subpage-v2>
   </iron-pages>
 </div>
