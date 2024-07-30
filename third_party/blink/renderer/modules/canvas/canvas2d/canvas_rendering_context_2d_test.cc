@@ -21,7 +21,6 @@
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_base.h"
