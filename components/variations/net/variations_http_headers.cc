@@ -381,7 +381,12 @@ bool HasVariationsHeader(const network::ResourceRequest& request) {
 
 bool GetVariationsHeader(const network::ResourceRequest& request,
                          std::string* out) {
-  return request.cors_exempt_headers.GetHeader(kClientDataHeader, out);
+  std::optional<std::string> header_value =
+      request.cors_exempt_headers.GetHeader(kClientDataHeader);
+  if (header_value) {
+    out->swap(header_value.value());
+  }
+  return header_value.has_value();
 }
 
 bool ShouldAppendVariationsHeaderForTesting(
