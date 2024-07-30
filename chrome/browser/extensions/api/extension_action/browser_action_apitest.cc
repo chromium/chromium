@@ -117,8 +117,9 @@ class BrowserActionApiTest : public ExtensionApiTest {
 
  protected:
   ExtensionActionTestHelper* GetBrowserActionsBar() {
-    if (!browser_action_test_util_)
+    if (!browser_action_test_util_) {
       browser_action_test_util_ = ExtensionActionTestHelper::Create(browser());
+    }
     return browser_action_test_util_.get();
   }
 

@@ -99,8 +99,9 @@ void GetFaviconForExtensionRequest(content::BrowserContext* browser_context,
 }
 
 bool ParseFaviconPath(const GURL& url, chrome::ParsedFaviconPath* parsed) {
-  if (!url.has_query())
+  if (!url.has_query()) {
     return false;
+  }
   return chrome::ParseFaviconPath("?" + url.query(),
                                   chrome::FaviconUrlFormat::kFavicon2, parsed);
 }

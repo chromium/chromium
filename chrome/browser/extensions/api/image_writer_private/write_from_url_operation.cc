@@ -146,8 +146,9 @@ void WriteFromUrlOperation::OnResponseStarted(
 void WriteFromUrlOperation::OnDataDownloaded(uint64_t current) {
   DCHECK(IsRunningInCorrectSequence());
 
-  if (IsCancelled())
+  if (IsCancelled()) {
     DestroySimpleURLLoader();
+  }
 
   int progress = (kProgressComplete * current) / total_response_bytes_;
 

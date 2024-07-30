@@ -201,8 +201,9 @@ ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceIdFunction::Run() {
   std::string client_id =
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
-  if (client_id.empty())
+  if (client_id.empty()) {
     return RespondNow(Error(enterprise_reporting::kDeviceIdNotFound));
+  }
   return RespondNow(WithArguments(client_id));
 }
 

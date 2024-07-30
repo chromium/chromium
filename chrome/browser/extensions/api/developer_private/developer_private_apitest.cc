@@ -57,8 +57,9 @@ class DeveloperPrivateApiTest : public ExtensionApiTest {
     }
     std::optional<api::developer_private::ExtensionInfo> info =
         api::developer_private::ExtensionInfo::FromValue(*result);
-    if (!info)
+    if (!info) {
       ADD_FAILURE() << "Problem creating ExtensionInfo from result data";
+    }
     return info;
   }
 };

@@ -73,8 +73,9 @@ class SetIconAPITest : public ExtensionApiTest {
 )");
     ExtensionTestMessageListener ready("ready");
     const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
-    if (!extension)
+    if (!extension) {
       return nullptr;
+    }
 
     // Wait for declarative rules to be set up.
     profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();

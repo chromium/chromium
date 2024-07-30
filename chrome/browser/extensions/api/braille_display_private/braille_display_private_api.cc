@@ -76,8 +76,9 @@ void BrailleDisplayPrivateAPI::OnBrailleDisplayStateChanged(
 
 void BrailleDisplayPrivateAPI::OnBrailleKeyEvent(const KeyEvent& key_event) {
   // Key events only go to extensions of the active profile.
-  if (!IsProfileActive())
+  if (!IsProfileActive()) {
     return;
+  }
   std::unique_ptr<Event> event(
       new Event(events::BRAILLE_DISPLAY_PRIVATE_ON_KEY_EVENT,
                 OnKeyEvent::kEventName, OnKeyEvent::Create(key_event)));
@@ -103,8 +104,9 @@ void BrailleDisplayPrivateAPI::SetEventDelegateForTest(
 void BrailleDisplayPrivateAPI::OnListenerAdded(
     const EventListenerInfo& details) {
   BrailleController* braille_controller = BrailleController::GetInstance();
-  if (!scoped_observation_.IsObservingSource(braille_controller))
+  if (!scoped_observation_.IsObservingSource(braille_controller)) {
     scoped_observation_.Observe(braille_controller);
+  }
 }
 
 void BrailleDisplayPrivateAPI::OnListenerRemoved(

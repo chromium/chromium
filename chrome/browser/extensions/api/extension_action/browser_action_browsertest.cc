@@ -104,8 +104,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BrowserActionDefaultPersistence) {
   // If this log becomes frequent, this test is losing its effectiveness, and
   // we need to find a more invasive way of ensuring the test's StateStore
   // initializes after extensions get their onStartup event.
-  if (ExtensionSystem::Get(profile())->state_store()->IsInitialized())
+  if (ExtensionSystem::Get(profile())->state_store()->IsInitialized()) {
     LOG(WARNING) << "State store already initialized; test guaranteed to pass.";
+  }
 
   // Wait for the StateStore to load, and fetch the defaults.
   WaitForStateStore(profile(), extension->id());

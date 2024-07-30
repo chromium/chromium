@@ -574,15 +574,14 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest, Test) {
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
 
-  if (safe_browsing_enabled) {
-    if (safe_browsing_enhanced_enabled)
-      EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kEnhanced,
-                info.safe_browsing_protection_level);
-    else
-      EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
-                info.safe_browsing_protection_level);
-  } else {
+  if (!safe_browsing_enabled) {
     EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kDisabled,
+              info.safe_browsing_protection_level);
+  } else if (safe_browsing_enhanced_enabled) {
+    EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kEnhanced,
+              info.safe_browsing_protection_level);
+  } else {
+    EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
               info.safe_browsing_protection_level);
   }
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),

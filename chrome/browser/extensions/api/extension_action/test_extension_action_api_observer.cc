@@ -38,8 +38,9 @@ void TestExtensionActionAPIObserver::OnExtensionActionUpdated(
     last_web_contents_ = web_contents;
     contents_to_observe_.erase(web_contents);
 
-    if (contents_to_observe_.empty())
+    if (contents_to_observe_.empty()) {
       run_loop_.QuitWhenIdle();
+    }
   }
 }
 

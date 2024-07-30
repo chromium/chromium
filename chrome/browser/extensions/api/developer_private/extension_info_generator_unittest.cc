@@ -95,8 +95,9 @@ const developer::ExtensionInfo* GetInfoFromList(
     const ExtensionInfoGenerator::ExtensionInfoList& list,
     const ExtensionId& id) {
   for (const auto& item : list) {
-    if (item.id == id)
+    if (item.id == id) {
       return &item;
+    }
   }
   return nullptr;
 }
@@ -269,8 +270,9 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
       base::Value* actual_value =
           actual_output_data.FindByDottedPath(field.first);
       EXPECT_TRUE(actual_value) << field.first + " is missing" + paths_details;
-      if (!actual_value)
+      if (!actual_value) {
         continue;
+      }
       if (*actual_value != expected_value) {
         base::JSONWriter::Write(expected_value, &expected_string);
         base::JSONWriter::Write(*actual_value, &actual_string);

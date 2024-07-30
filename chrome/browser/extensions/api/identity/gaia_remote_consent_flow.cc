@@ -141,8 +141,9 @@ void GaiaRemoteConsentFlow::GaiaRemoteConsentFlowFailed(Failure failure) {
 }
 
 void GaiaRemoteConsentFlow::DetachWebAuthFlow() {
-  if (!web_flow_)
+  if (!web_flow_) {
     return;
+  }
 
   web_flow_.release()->DetachDelegateAndDelete();
 }
