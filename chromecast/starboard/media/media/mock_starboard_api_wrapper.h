@@ -91,6 +91,10 @@ class MockStarboardApiWrapper : public StarboardApiWrapper {
               (void* drm_system),
               (override));
   MOCK_METHOD(void, DrmDestroySystem, (void* drm_system), (override));
+  MOCK_METHOD(StarboardMediaSupportType,
+              CanPlayMimeAndKeySystem,
+              (const char* mime, const char* key_system),
+              (override));
 };
 
 }  // namespace media

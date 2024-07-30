@@ -42,6 +42,9 @@ class StarboardVideoDecoder
   void InitializeInternal() override;
 
   SEQUENCE_CHECKER(sequence_checker_);
+  // Since MIME type is passed as a c-string to starboard, we need to ensure
+  // that the backing data does not go out of scope before starboard reads it.
+  std::string codec_mime_;
   std::optional<StarboardVideoSampleInfo> video_sample_info_;
   // If true, this decoder should report the resolution the next time PushBuffer
   // is called.

@@ -4,6 +4,8 @@
 
 #include "chromecast/starboard/media/media/starboard_video_decoder.h"
 
+#include <optional>
+
 #include "base/test/task_environment.h"
 #include "chromecast/media/base/cast_decoder_buffer_impl.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
@@ -519,6 +521,23 @@ TEST_F(StarboardVideoDecoderTest,
   // Pushing the buffer should trigger the call to OnVideoResolutionChanged.
   EXPECT_EQ(decoder.PushBuffer(buffer.get()),
             MediaPipelineBackend::BufferStatus::kBufferPending);
+}
+
+TEST_F(StarboardVideoDecoderTest, PopulatesMimeTypeForHEVCDolbyVision) {
+  VideoConfig config = GetBasicConfig();
+  config.codec = kCodecDolbyVisionHEVC;
+  config.profile = kDolbyVisionNonCompatible_BL_MD;
+  config.codec_profile_level = 6;
+
+  StarboardVideoDecoder decoder(starboard_.get());
+  decoder.Initialize(&fake_player_);
+  decoder.SetConfig(config);
+
+  const std::optional<StarboardVideoSampleInfo>& video_info =
+      decoder.GetVideoSampleInfo();
+
+  ASSERT_NE(video_info, std::nullopt);
+  EXPECT_THAT(video_info->mime, StrEq(R"-(video/mp4; codecs="dvhe.05.06")-"));
 }
 
 }  // namespace

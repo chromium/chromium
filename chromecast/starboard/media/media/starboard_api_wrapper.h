@@ -22,6 +22,13 @@
 namespace chromecast {
 namespace media {
 
+// Copy of SbMediaSupportType from starboard.
+enum StarboardMediaSupportType {
+  kStarboardMediaSupportTypeNotSupported,
+  kStarboardMediaSupportTypeMaybe,
+  kStarboardMediaSupportTypeProbably,
+};
+
 // Copy of SbMediaType from starboard.
 enum StarboardMediaType {
   kStarboardMediaTypeAudio,
@@ -491,6 +498,11 @@ class StarboardApiWrapper {
                                           int certificate_size) = 0;
   virtual bool DrmIsServerCertificateUpdatable(void* drm_system) = 0;
   virtual void DrmDestroySystem(void* drm_system) = 0;
+
+  // Version-agnostic functions for starboard/media.h.
+  virtual StarboardMediaSupportType CanPlayMimeAndKeySystem(
+      const char* mime,
+      const char* key_system) = 0;
 };
 
 // Returns a StarboardApiWrapper that calls into libcast_starboard_api.so. This
