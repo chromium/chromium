@@ -461,8 +461,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // Called on object hover.
   private setCursorToPointer() {
     // No dragging for objects, so no need to set body cursor style.
-    this.cursorOffsetX = 4;
-    this.cursorOffsetY = 8;
+    this.cursorOffsetX = 11;
+    this.cursorOffsetY = 17;
     this.style.setProperty(CURSOR_IMG_URL, 'url("lens.svg")');
   }
 
