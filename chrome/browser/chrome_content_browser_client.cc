@@ -7172,6 +7172,16 @@ bool ChromeContentBrowserClient::HandleWebUI(
                                  chrome::kChromeUIHelpHost);
   }
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2) &&
+      url->SchemeIs(content::kChromeUIScheme) &&
+      url->host() == chrome::kChromeUISettingsHost &&
+      url->path() == chrome::kChromeUICertificateRedirectPath) {
+    *url = GURL(chrome::kChromeUICertificateManagerDialogURL);
+    return true;
+  }
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* tracking_protection_settings =
@@ -7278,6 +7288,16 @@ bool ChromeContentBrowserClient::HandleWebUIReverse(
     return true;
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  // No need to actually reverse-rewrite the URL, but return true to update the
+  // displayed URL when rewriting chrome://settings/certificates to
+  // chrome://certificate-manager
+  if (url->SchemeIs(content::kChromeUIScheme) &&
+      url->host() == chrome::kChromeUICertificateManagerHost) {
+    return true;
+  }
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
   // No need to actually reverse-rewrite the URL, but return true to update the
   // displayed URL when rewriting chrome://help to chrome://settings/help.

@@ -73,6 +73,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "crypto/crypto_buildflags.h"
 #include "media/media_buildflags.h"
 #include "net/base/url_util.h"
 #include "net/ssl/ssl_info.h"
@@ -685,6 +686,11 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
   GURL chrome_settings(chrome::kChromeUISettingsURL);
   EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(&chrome_settings,
                                                              &profile_));
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  GURL chrome_certificate_manager(chrome::kChromeUICertificateManagerDialogURL);
+  EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(
+      &chrome_certificate_manager, &profile_));
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -769,6 +775,34 @@ TEST_F(ChromeContentBrowserClientTest, PreferenceRankVideoDeviceInfos) {
       &profile_with_prefs, infos);
   EXPECT_EQ(infos, expected_infos);
 }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
+#if BUILDFLAG(USE_NSS_CERTS)
+TEST_F(ChromeContentBrowserClientTest, RedirectCertManagerFeatureOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kEnableCertManagementUIV2);
+  TestChromeContentBrowserClient test_content_browser_client;
+  GURL settings_cert_url(chrome::kChromeUICertificateRedirectURL);
+  test_content_browser_client.HandleWebUI(&settings_cert_url, &profile_);
+  // No redirection, feature is off.
+  EXPECT_EQ(GURL(chrome::kChromeUICertificateRedirectURL), settings_cert_url);
+}
+#endif  // BUILDFLAG(USE_NSS_CERTS)
+
+TEST_F(ChromeContentBrowserClientTest, RedirectCertManagerFeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kEnableCertManagementUIV2);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  GURL settings_cert_url(chrome::kChromeUICertificateRedirectURL);
+  test_content_browser_client.HandleWebUI(&settings_cert_url, &profile_);
+  EXPECT_EQ(GURL(chrome::kChromeUICertificateManagerDialogURL),
+            settings_cert_url);
+}
+
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ChromeContentSettingsRedirectTest
