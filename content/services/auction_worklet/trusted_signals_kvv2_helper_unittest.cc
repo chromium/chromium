@@ -43,6 +43,7 @@ const char kHostName[] = "publisher.test";
 const int kExperimentGroupId = 12345;
 const char kTrustedBiddingSignalsSlotSizeParam[] = "slotSize=100,200";
 const size_t kFramingHeaderSize = 5;  // bytes
+const size_t kOhttpHeaderSize = 55;   // bytes
 const char kTrustedSignalsUrl[] = "https://url.test/";
 const char kOriginFooUrl[] = "https://foo.test/";
 const char kOriginBarUrl[] = "https://bar.test/";
@@ -105,7 +106,12 @@ std::vector<uint8_t> BuildResponseBody(const std::string& hex_string,
   base::HexStringToBytes(hex_string, &hex_bytes);
 
   std::vector<uint8_t> response_body;
-  response_body.resize(kFramingHeaderSize + hex_bytes.size());
+  size_t size_before_padding =
+      kOhttpHeaderSize + kFramingHeaderSize + hex_bytes.size();
+  size_t desired_size = absl::bit_ceil(size_before_padding);
+  size_t response_body_size = desired_size - kOhttpHeaderSize;
+  response_body.resize(response_body_size, 0x00);
+
   base::SpanWriter writer(
       base::as_writable_bytes(base::make_span(response_body)));
   writer.WriteU8BigEndian(compress_scheme);
@@ -215,6 +221,12 @@ TEST(TrustedSignalsKVv2RequestHelperTest,
 
   std::string post_body = helper.TakePostRequestBody();
   std::vector<uint8_t> body_bytes(post_body.begin(), post_body.end());
+
+  // Test if body_bytes size is padded.
+  size_t request_length = kOhttpHeaderSize + body_bytes.size();
+  // If a number is a power of 2, then the result of performing a bitwise AND
+  // operation between the number and the number minus 1 should be 0.
+  EXPECT_FALSE(request_length & (request_length - 1));
 
   // Use cbor.me to convert from
   // {
@@ -334,8 +346,22 @@ TEST(TrustedSignalsKVv2RequestHelperTest,
   // Prefix hex for `kExpectedBodyHex` which includes the compression format
   // code and the length.
   const std::string kExpectedPrefixHex = "000000025B";
+  // Padding zeros.
+  const std::string kPaddingString =
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "000000000000000000000000000000000000000000000000000000000000000000000000"
+      "00";
 
-  EXPECT_EQ(base::HexEncode(body_bytes), kExpectedPrefixHex + kExpectedBodyHex);
+  EXPECT_EQ(base::HexEncode(body_bytes),
+            kExpectedPrefixHex + kExpectedBodyHex + kPaddingString);
 }
 
 // TODO(crbug.com/337917489): When adding an identical IG, it should use the

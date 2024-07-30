@@ -18,6 +18,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
@@ -44,7 +45,9 @@ namespace {
 
 // Constants for POST request body.
 constexpr std::array<std::string_view, 2> kAcceptCompression = {"none", "gzip"};
-constexpr size_t kFramingHeaderSize = 5;  // bytes
+constexpr size_t kCompressionFormatSize = 1;  // bytes
+constexpr size_t kCborStringLengthSize = 4;   // bytes
+constexpr size_t kOhttpHeaderSize = 55;       // bytes
 constexpr char kTagInterestGroupName[] = "interestGroupNames";
 constexpr char kTagKey[] = "keys";
 
@@ -60,21 +63,32 @@ void AddPostRequestConstants(cbor::Value::MapValue& request_map_value) {
 }
 
 std::string CreateRequestBody(cbor::Value::MapValue request_map_value) {
-  cbor::Value message(std::move(request_map_value));
-  std::optional<std::vector<uint8_t>> maybe_msg = cbor::Writer::Write(message);
-  CHECK(maybe_msg.has_value());
+  cbor::Value cbor_value(request_map_value);
+  std::optional<std::vector<uint8_t>> maybe_cbor_bytes =
+      cbor::Writer::Write(cbor_value);
+  CHECK(maybe_cbor_bytes.has_value());
 
-  // TODO(crbug.com/337917489): Skip padding for now, and will add padding after
-  // end to end tests.
   std::string request_body;
-  request_body.resize(kFramingHeaderSize + maybe_msg->size());
+  size_t size_before_padding = kOhttpHeaderSize + kCompressionFormatSize +
+                               kCborStringLengthSize + maybe_cbor_bytes->size();
+  size_t desired_size = std::bit_ceil(size_before_padding);
+  size_t request_body_size = desired_size - kOhttpHeaderSize;
+  request_body.resize(request_body_size, 0x00);
+
   base::SpanWriter writer(
       base::as_writable_bytes(base::make_span(request_body)));
-  // First byte includes version and compression format. Always set first bytes
-  // to 0x00 because request body is not compressed.
+
+  // TODO(crbug.com/337917489): Add encryption here for compression scheme, CBOR
+  // string length and CBOR string later.
+  //
+  // Add framing header. First byte includes version and compression format.
+  // Always set first byte to 0x00 because request body is uncompressed.
   writer.WriteU8BigEndian(0x00);
-  writer.WriteU32BigEndian(base::checked_cast<int>(maybe_msg->size()));
-  writer.Write(base::as_bytes(base::make_span(*maybe_msg)));
+  writer.WriteU32BigEndian(
+      base::checked_cast<uint32_t>(maybe_cbor_bytes->size()));
+
+  // Add CBOR string.
+  writer.Write(base::as_bytes(base::make_span(*maybe_cbor_bytes)));
 
   return request_body;
 }
@@ -165,9 +179,68 @@ ParseCompressionGroup(
                                 ttl);
 }
 
-// Parse a CBOR ArrayValue to a map. `key_group_outputs` should be the
-// value of the `keyGroupOutput` field in the partition. Each entry of
-// the array is expected to have the following form:
+// Extract compression schema and cbor string from response body base on
+// `kCompressionFormatSize` and `kCborStringLengthSize`. Return ErrorInfo
+// in case of any failure.
+base::expected<
+    std::pair<auction_worklet::mojom::TrustedSignalsCompressionScheme,
+              std::vector<uint8_t>>,
+    TrustedSignalsKVv2ResponseParser::ErrorInfo>
+ExtractCompressionSchemaAndCborStringFromResponseBody(
+    const std::vector<uint8_t> response_body) {
+  base::span<const uint8_t> body_span =
+      base::as_bytes(base::make_span(response_body));
+
+  if (body_span.size() <= kCompressionFormatSize + kCborStringLengthSize) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Response shorter than framing header."));
+  }
+  base::SpanReader reader(body_span);
+
+  // TODO(crbug.com/337917489): Add decryption here for compression scheme, CBOR
+  // string length and CBOR string later.
+  //
+  // Get compression scheme.
+  auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme;
+  // The higher bits are reserved and may be non-zero.
+  uint8_t compression_format;
+  if (!reader.ReadU8BigEndian(compression_format)) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Failed to read compression format byte."));
+  }
+
+  // Only the first two LSBs are used for compression format in the whole byte.
+  compression_format &= 0x03;
+  if (compression_format == 0x00) {
+    compression_scheme =
+        auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone;
+  } else if (compression_format == 0x02) {
+    compression_scheme =
+        auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip;
+  } else {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Unsupported compression scheme."));
+  }
+
+  // Get CBOR bytes length.
+  uint32_t length;
+  if (!reader.ReadU32BigEndian(length)) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Failed to read CBOR string length."));
+  }
+
+  // Get CBOR string.
+  std::vector<uint8_t> cbor_bytes(
+      response_body.begin() + kCompressionFormatSize + kCborStringLengthSize,
+      response_body.begin() + kCompressionFormatSize + kCborStringLengthSize +
+          length);
+
+  return std::pair(compression_scheme, cbor_bytes);
+}
+
+// Parse a CBOR ArrayValue to a map. `key_group_outputs` should be the value of
+// the `keyGroupOutput` field in the partition. Each entry of the array is
+// expected to have the following form:
 //
 // {
 //   "tags": [ <tag> ],
@@ -564,32 +637,20 @@ CompressionGroupResult::~CompressionGroupResult() = default;
 TrustedSignalsKVv2ResponseParser::SignalsFetchResult
 TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
     std::vector<uint8_t> body_bytes) {
-  // Don't support padding or decryption for now.
-  // TODO(crbug.com/337917489): Add support for both.
-  if (body_bytes.size() <= kFramingHeaderSize) {
-    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-        "Response shorter than framing header."));
+  auto extract_result =
+      ExtractCompressionSchemaAndCborStringFromResponseBody(body_bytes);
+
+  if (!extract_result.has_value()) {
+    return base::unexpected(std::move(extract_result).error());
   }
 
-  // Get compression scheme.
-  auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme;
-  // The higher bits are reserved and may be non-zero.
-  uint8_t compression_format = body_bytes[0] & 0x3;
-  if (compression_format == 0x00) {
-    compression_scheme =
-        auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone;
-  } else if (compression_format == 0x02) {
-    compression_scheme =
-        auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip;
-  } else {
-    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
-        "Unsupported compression scheme."));
-  }
+  auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme =
+      extract_result->first;
+  std::vector<uint8_t> cbor_bytes = extract_result->second;
 
-  // Parse CBOR byte string.
+  // Parse CBOR bytes.
   TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap result_map;
-  std::optional<cbor::Value> body =
-      cbor::Reader::Read(base::span(body_bytes).subspan(kFramingHeaderSize));
+  std::optional<cbor::Value> body = cbor::Reader::Read(base::span(cbor_bytes));
 
   if (!body.has_value()) {
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
