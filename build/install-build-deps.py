@@ -398,8 +398,7 @@ def lib_list():
   elif package_exists("libffi6"):
     packages.append("libffi6")
 
-  # Workaround for dependency On Ubuntu 24.04 LTS (noble)
-  if distro_codename() == "noble":
+  if package_exists("libpng16-16t64"):
     packages.append("libpng16-16t64")
   elif package_exists("libpng16-16"):
     packages.append("libpng16-16")
@@ -422,12 +421,14 @@ def lib_list():
   if package_exists("libinput10"):
     packages.append("libinput10")
 
-  # Work around for dependency On Ubuntu 24.04 LTS (noble)
-  if distro_codename() == "noble":
+  if package_exists("libncurses6"):
     packages.append("libncurses6")
-    packages.append("libasound2t64")
   else:
     packages.append("libncurses5")
+
+  if package_exists("libasound2t64"):
+    packages.append("libasound2t64")
+  else:
     packages.append("libasound2")
 
   return packages
@@ -483,8 +484,7 @@ def lib32_list(options):
     pattern = re.compile(r"g\+\+-[0-9.]+-multilib")
     packages += re.findall(pattern, lines)
 
-  # Work around for 32-bit dependency On Ubuntu 24.04 LTS (noble)
-  if distro_codename() == "noble":
+  if package_exists("libncurses6:i386"):
     packages.append("libncurses6:i386")
   else:
     packages.append("libncurses5:i386")
@@ -699,12 +699,14 @@ def nacl_list(options):
   if package_exists("libtinfo5"):
     packages.append("libtinfo5")
 
-  # Work around for nacl dependency On Ubuntu 24.04 LTS (noble)
-  if distro_codename() == "noble":
+  if package_exists("libncurses6:i386"):
     packages.append("libncurses6:i386")
-    packages.append("lib32ncurses-dev")
   else:
     packages.append("libncurses5:i386")
+
+  if package_exists("lib32ncurses-dev"):
+    packages.append("lib32ncurses-dev")
+  else:
     packages.append("lib32ncurses5-dev")
 
   return packages
