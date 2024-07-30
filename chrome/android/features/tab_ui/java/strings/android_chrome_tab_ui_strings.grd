@@ -860,7 +860,7 @@
         }
       </message>
       <message name="IDS_ARCHIVE_SETTINGS_ALLOW_AUTODELETE_SUMMARY" desc="The summary for toggle to allow tabs to be deleted automatically.">
-        Inactive tabs will automatically be close. You can always find them in History.
+        Inactive tabs will automatically be closed. You can always find them in History.
       </message>
       <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA" desc="The string to show how many days until a tab is considered inactive.">
         {DAY_COUNT, plural,
