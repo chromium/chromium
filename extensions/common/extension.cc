@@ -69,6 +69,9 @@ constexpr char kKeyInfoEndMarker[] = "KEY-----";
 constexpr char kPublic[] = "PUBLIC";
 constexpr char kPrivate[] = "PRIVATE";
 
+// Bail out on larger inputs to prevent out-of-memory failures.
+constexpr int kMaxInputSizeBytes = 100 * 1024;
+
 bool ContainsReservedCharacters(const base::FilePath& path) {
   // We should disallow backslash '\\' as file path separator even on Windows,
   // because the backslash is not regarded as file path separator on Linux/Mac.
@@ -342,10 +345,7 @@ ExtensionResource Extension::GetResource(
 bool Extension::ParsePEMKeyBytes(const std::string& input,
                                  std::string* output) {
   DCHECK(output);
-  if (!output) {
-    return false;
-  }
-  if (input.length() == 0) {
+  if (!output || input.length() == 0 || input.length() > kMaxInputSizeBytes) {
     return false;
   }
 
