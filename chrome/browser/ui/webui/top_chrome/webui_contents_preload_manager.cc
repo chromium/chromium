@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
@@ -33,6 +34,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/models/menu_model.h"
+#include "url/url_constants.h"
 
 namespace {
 
@@ -110,13 +112,18 @@ content::WebUIController* GetWebUIController(
 }
 
 std::vector<GURL> GetAllPreloadableWebUIURLs() {
-  // Top 3 most used Top Chrome WebUIs.
-  // TODO(crbug.com/40168622): add more Top Chrome WebUIs.
-  static const base::NoDestructor<std::vector<GURL>> s_preloadable_webui_urls(
-      {GURL(chrome::kChromeUITabSearchURL),
-       GURL(chrome::kChromeUIHistoryClustersSidePanelURL),
-       GURL(chrome::kChromeUIBookmarksSidePanelURL)});
-  return *s_preloadable_webui_urls;
+  // Retrieves top-chrome WebUIs that enables IsPreloadable() in its WebUI
+  // config.
+  std::vector<GURL> preloadable_urls;
+  TopChromeWebUIConfig::ForEachConfig([&preloadable_urls](
+                                          TopChromeWebUIConfig* config) {
+    if (config->IsPreloadable()) {
+      preloadable_urls.emplace_back(base::StrCat(
+          {config->scheme(), url::kStandardSchemeSeparator, config->host()}));
+    }
+  });
+
+  return preloadable_urls;
 }
 
 }  // namespace

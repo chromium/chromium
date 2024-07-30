@@ -94,18 +94,17 @@ content::WebContents* WebUIContentsWrapper::Host::OpenURLFromTab(
   return nullptr;
 }
 
-WebUIContentsWrapper::WebUIContentsWrapper(
-    const GURL& webui_url,
-    content::BrowserContext* browser_context,
-    int task_manager_string_id,
-    bool webui_resizes_host,
-    bool esc_closes_ui,
-    bool supports_draggable_regions,
-    const std::string& webui_name)
+WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
+                                           Profile* profile,
+                                           int task_manager_string_id,
+                                           bool webui_resizes_host,
+                                           bool esc_closes_ui,
+                                           bool supports_draggable_regions,
+                                           const std::string& webui_name)
     : webui_resizes_host_(webui_resizes_host),
       esc_closes_ui_(esc_closes_ui),
       supports_draggable_regions_(supports_draggable_regions) {
-  RequestResult make_contents_result = Request(webui_url, browser_context);
+  RequestResult make_contents_result = Request(webui_url, profile);
   web_contents_ = std::move(make_contents_result.web_contents);
   is_ready_to_show_ = make_contents_result.is_ready_to_show;
 
@@ -127,6 +126,8 @@ WebUIContentsWrapper::WebUIContentsWrapper(
   if (supports_draggable_regions_) {
     EnableDraggableRegions(web_contents_.get());
   }
+
+  profile_observation_.Observe(profile);
 }
 
 WebUIContentsWrapper::~WebUIContentsWrapper() {
@@ -237,6 +238,11 @@ void WebUIContentsWrapper::PrimaryPageChanged(content::Page& page) {
 void WebUIContentsWrapper::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   CloseUI();
+}
+
+void WebUIContentsWrapper::OnProfileWillBeDestroyed(Profile* profile) {
+  web_contents_.reset();
+  profile_observation_.Reset();
 }
 
 void WebUIContentsWrapper::ShowUI() {

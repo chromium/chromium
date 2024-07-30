@@ -35,6 +35,8 @@ class TabSearchUIConfig : public DefaultTopChromeWebUIConfig<TabSearchUI> {
 
   // DefaultTopChromeWebUIConfig:
   bool ShouldAutoResizeHost() override;
+  bool IsPreloadable() override;
+  std::optional<int> GetCommandIdForTesting() override;
 };
 
 class TabSearchUI : public TopChromeWebUIController,

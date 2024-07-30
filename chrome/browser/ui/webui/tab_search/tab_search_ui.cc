@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
@@ -37,6 +38,14 @@ TabSearchUIConfig::TabSearchUIConfig()
 
 bool TabSearchUIConfig::ShouldAutoResizeHost() {
   return true;
+}
+
+bool TabSearchUIConfig::IsPreloadable() {
+  return true;
+}
+
+std::optional<int> TabSearchUIConfig::GetCommandIdForTesting() {
+  return IDC_TAB_SEARCH;
 }
 
 TabSearchUI::TabSearchUI(content::WebUI* web_ui)

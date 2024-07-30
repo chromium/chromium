@@ -40,9 +40,11 @@ class BookmarksSidePanelUI;
 class BookmarksSidePanelUIConfig
     : public DefaultTopChromeWebUIConfig<BookmarksSidePanelUI> {
  public:
-  BookmarksSidePanelUIConfig()
-      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                    chrome::kChromeUIBookmarksSidePanelHost) {}
+  BookmarksSidePanelUIConfig();
+
+  // DefaultTopChromeWebUIConfig:
+  bool IsPreloadable() override;
+  std::optional<int> GetCommandIdForTesting() override;
 };
 
 class BookmarksSidePanelUI

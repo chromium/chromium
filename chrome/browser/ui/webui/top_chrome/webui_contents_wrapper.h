@@ -9,10 +9,12 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui_name_variants.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -21,16 +23,13 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/models/menu_model.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 // WebUIContentsWrapper wraps a WebContents that hosts a top chrome WebUI.
 // This class notifies the Host when it should be shown or hidden via ShowUI()
 // and CloseUI() in addition to passing through resize events so the Host can
 // adjust bounds accordingly.
 class WebUIContentsWrapper : public content::WebContentsDelegate,
                              public content::WebContentsObserver,
+                             public ProfileObserver,
                              public TopChromeWebUIController::Embedder {
  public:
   class Host {
@@ -69,7 +68,7 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
   };
 
   WebUIContentsWrapper(const GURL& webui_url,
-                       content::BrowserContext* browser_context,
+                       Profile* profile,
                        int task_manager_string_id,
                        bool webui_resizes_host,
                        bool esc_closes_ui,
@@ -112,6 +111,9 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
   void PrimaryPageChanged(content::Page& page) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // TopChromeWebUIController::Embedder:
   void CloseUI() override;
@@ -157,6 +159,8 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
   std::optional<std::vector<blink::mojom::DraggableRegionPtr>>
       draggable_regions_;
 
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+
   base::WeakPtr<WebUIContentsWrapper::Host> host_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
@@ -171,19 +175,18 @@ class WebUIContentsWrapperT : public WebUIContentsWrapper {
   // TODO(tluk): Consider introducing init params to avoid further cluttering
   // constructor params.
   WebUIContentsWrapperT(const GURL& webui_url,
-                        content::BrowserContext* browser_context,
+                        Profile* profile,
                         int task_manager_string_id,
                         bool esc_closes_ui = true,
                         bool supports_draggable_regions = false)
-      : WebUIContentsWrapper(
-            webui_url,
-            browser_context,
-            task_manager_string_id,
-            TopChromeWebUIConfig::From(browser_context, webui_url)
-                ->ShouldAutoResizeHost(),
-            esc_closes_ui,
-            supports_draggable_regions,
-            T::GetWebUIName()),
+      : WebUIContentsWrapper(webui_url,
+                             profile,
+                             task_manager_string_id,
+                             TopChromeWebUIConfig::From(profile, webui_url)
+                                 ->ShouldAutoResizeHost(),
+                             esc_closes_ui,
+                             supports_draggable_regions,
+                             T::GetWebUIName()),
         webui_url_(webui_url) {
     static_assert(views_metrics::IsValidWebUIName("." + T::GetWebUIName()));
     if (is_ready_to_show()) {

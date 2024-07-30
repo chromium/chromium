@@ -55,13 +55,13 @@ class WebUIContentsWrapperT<TestWebUIController> final
     : public WebUIContentsWrapper {
  public:
   WebUIContentsWrapperT(const GURL& webui_url,
-                        content::BrowserContext* browser_context,
+                        Profile* profile,
                         int task_manager_string_id,
                         bool webui_resizes_host = true,
                         bool esc_closes_ui = true,
                         bool supports_draggable_regions = false)
       : WebUIContentsWrapper(webui_url,
-                             browser_context,
+                             profile,
                              task_manager_string_id,
                              webui_resizes_host,
                              esc_closes_ui,

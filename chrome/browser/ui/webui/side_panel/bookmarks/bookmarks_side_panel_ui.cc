@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/browser_features.h"
@@ -50,6 +51,18 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+
+BookmarksSidePanelUIConfig::BookmarksSidePanelUIConfig()
+    : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                  chrome::kChromeUIBookmarksSidePanelHost) {}
+
+bool BookmarksSidePanelUIConfig::IsPreloadable() {
+  return true;
+}
+
+std::optional<int> BookmarksSidePanelUIConfig::GetCommandIdForTesting() {
+  return IDC_SHOW_BOOKMARK_SIDE_PANEL;
+}
 
 BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui, true) {
