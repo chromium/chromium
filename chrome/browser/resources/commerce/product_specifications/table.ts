@@ -23,6 +23,7 @@ import type {TableColumn} from './app.js';
 import {DragAndDropManager} from './drag_and_drop_manager.js';
 import type {ProductSpecificationsDescriptionText} from './shopping_service.mojom-webui.js';
 import {getTemplate} from './table.html.js';
+import {WindowProxy} from './window_proxy.js';
 
 export interface TableElement {
   $: {
@@ -139,6 +140,10 @@ export class TableElement extends PolymerElement {
 
   private onOpenTabButtonClick_(e: DomRepeatEvent<TableColumn>&
                                 {model: {columnIndex: number}}) {
+    if (!WindowProxy.getInstance().onLine) {
+      this.dispatchEvent(new Event('unavailable-action-attempted'));
+      return;
+    }
     this.shoppingApi_.switchToOrOpenTab(
         {url: this.columns[e.model.columnIndex].selectedItem.url});
   }

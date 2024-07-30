@@ -111,7 +111,8 @@
         columns="[[tableColumns_]]"
         on-url-change="onUrlChange_"
         on-url-remove="onUrlRemove_"
-        on-url-order-update="onUrlOrderUpdate_">
+        on-url-order-update="onUrlOrderUpdate_"
+        on-unavailable-action-attempted="showOfflineToast_">
     </product-specifications-table>
     <new-column-selector id="newColumnSelector"
         excluded-urls="[[getTableUrls_(tableColumns_)]]"
@@ -138,3 +139,6 @@
       on-selected-option-changed="onFeedbackSelectedOptionChanged_">
   </cr-feedback-buttons>
 </div>
+<cr-toast id="offlineToast">
+  <div>$i18n{offlineMessage}</div>
+</cr-toast>

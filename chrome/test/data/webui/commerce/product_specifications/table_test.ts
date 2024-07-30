@@ -5,6 +5,7 @@
 import 'chrome://compare/table.js';
 
 import type {TableElement} from 'chrome://compare/table.js';
+import {WindowProxy} from 'chrome://compare/window_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
@@ -13,16 +14,19 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {$$, assertNotStyle, assertStyle} from './test_support.js';
+import {$$, assertNotStyle, assertStyle, installMock} from './test_support.js';
 
 suite('ProductSpecificationsTableTest', () => {
   let tableElement: TableElement;
+  let windowProxy: TestMock<WindowProxy>;
   const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
 
   setup(async () => {
     shoppingServiceApi.reset();
     BrowserProxyImpl.setInstance(shoppingServiceApi);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    windowProxy = installMock(WindowProxy);
+    windowProxy.setResultFor('onLine', true);
     tableElement = document.createElement('product-specifications-table');
     document.body.appendChild(tableElement);
   });
@@ -376,6 +380,45 @@ suite('ProductSpecificationsTableTest', () => {
     assertFalse(isVisible(openTabButton2));
   });
 
+  test(
+      'clicking `openTabButton` while offline fires ' +
+          '`unavailable-action-attempted` event',
+      async () => {
+        // Arrange
+        tableElement.columns = [
+          {
+            selectedItem: {
+              title: 'title',
+              url: 'https://example.com',
+              imageUrl: 'https://example.com/image',
+            },
+            productDetails: [],
+          },
+          {
+            selectedItem: {
+              title: 'title2',
+              url: 'https://example.com/2',
+              imageUrl: 'https://example.com/2/image',
+            },
+            productDetails: [],
+          },
+        ];
+        await waitAfterNextRender(tableElement);
+
+        // Act
+        windowProxy.setResultFor('onLine', false);
+        const openTabButton = $$<HTMLElement>(tableElement, '.open-tab-button');
+        assertTrue(!!openTabButton);
+        const eventPromise =
+            eventToPromise('unavailable-action-attempted', tableElement);
+        openTabButton.click();
+
+        // Assert
+        const event = await eventPromise;
+        assertTrue(!!event);
+        assertEquals(0, shoppingServiceApi.getCallCount('switchToOrOpenTab'));
+      });
+
   test('descriptions hidden if empty or N/A', async () => {
     // Arrange
     tableElement.columns = [
@@ -493,7 +536,7 @@ suite('ProductSpecificationsTableTest', () => {
     assertFalse(isVisible((details[1]!)));
   });
 
-  test('`grid-row` populates correctly ', async () => {
+  test('`grid-row` populates correctly', async () => {
     // Arrange
     tableElement.columns = [
       {
