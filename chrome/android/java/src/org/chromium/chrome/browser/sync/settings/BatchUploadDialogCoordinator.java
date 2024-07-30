@@ -102,40 +102,49 @@ final class BatchUploadDialogCoordinator {
         mDialogManager.showDialog(mModel, ModalDialogType.APP);
 
         mBookmarkSwitch =
-                updateModelTypeSwitch(
+                updateModelTypeSwitchAndSeparator(
                         context,
                         view,
                         ModelType.BOOKMARKS,
                         R.id.account_settings_bulk_upload_dialog_bookmarks,
+                        R.id.account_settings_bulk_upload_dialog_bookmarks_separator,
                         R.plurals.account_settings_bulk_upload_dialog_bookmarks,
                         localDataDescriptionsMap);
         mPasswordsSwitch =
-                updateModelTypeSwitch(
+                updateModelTypeSwitchAndSeparator(
                         context,
                         view,
                         ModelType.PASSWORDS,
                         R.id.account_settings_bulk_upload_dialog_passwords,
+                        R.id.account_settings_bulk_upload_dialog_passwords_separator,
                         R.plurals.account_settings_bulk_upload_dialog_passwords,
                         localDataDescriptionsMap);
         mReadingListSwitch =
-                updateModelTypeSwitch(
+                updateModelTypeSwitchAndSeparator(
                         context,
                         view,
                         ModelType.READING_LIST,
                         R.id.account_settings_bulk_upload_dialog_reading_list,
+                        R.id.account_settings_bulk_upload_dialog_reading_list_separator,
                         R.plurals.account_settings_bulk_upload_dialog_reading_list,
                         localDataDescriptionsMap);
     }
 
-    private MaterialSwitchWithTitleAndSummary updateModelTypeSwitch(
+    private MaterialSwitchWithTitleAndSummary updateModelTypeSwitchAndSeparator(
             Context context,
             View view,
             int modelType,
             @IdRes int switchViewId,
+            @IdRes int switchBottomSeparatorId,
             @PluralsRes int switchTextId,
             HashMap<Integer, LocalDataDescription> localDataDescriptionsMap) {
         LocalDataDescription typeLocalDataDescription = localDataDescriptionsMap.get(modelType);
-        if (typeLocalDataDescription != null && typeLocalDataDescription.itemCount() > 0) {
+        boolean shouldShowSwitch =
+                typeLocalDataDescription != null && typeLocalDataDescription.itemCount() > 0;
+        view.findViewById(switchBottomSeparatorId)
+                .setVisibility(shouldShowSwitch ? View.VISIBLE : View.GONE);
+
+        if (shouldShowSwitch) {
             MaterialSwitchWithTitleAndSummary typeSwitch =
                     (MaterialSwitchWithTitleAndSummary) view.findViewById(switchViewId);
             typeSwitch.setOnCheckedChangeListener(

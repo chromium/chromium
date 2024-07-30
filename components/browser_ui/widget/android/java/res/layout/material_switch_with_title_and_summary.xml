@@ -14,15 +14,17 @@ found in the LICENSE file.
             android:id="@+id/titleText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:focusable="false"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
 
         <org.chromium.ui.widget.TextViewWithLeading
             android:id="@+id/summaryText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:focusable="false"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
     </LinearLayout>
 
     <include layout="@layout/preference_switch"

@@ -8,7 +8,8 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/AlertDialogContent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:scrollbarStyle="outsideOverlay" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,28 +20,38 @@ found in the LICENSE file.
             android:id="@android:id/message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:text="@string/account_settings_bulk_upload_dialog_description"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 
         <org.chromium.components.browser_ui.widget.MaterialSwitchWithTitleAndSummary
             android:id="@+id/account_settings_bulk_upload_dialog_bookmarks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
             android:visibility="gone"/>
+
+        <View
+          android:id="@+id/account_settings_bulk_upload_dialog_bookmarks_separator"
+          style="@style/HorizontalDivider" />
 
         <org.chromium.components.browser_ui.widget.MaterialSwitchWithTitleAndSummary
             android:id="@+id/account_settings_bulk_upload_dialog_passwords"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
             android:visibility="gone"/>
+
+        <View
+          android:id="@+id/account_settings_bulk_upload_dialog_passwords_separator"
+          style="@style/HorizontalDivider" />
 
         <org.chromium.components.browser_ui.widget.MaterialSwitchWithTitleAndSummary
             android:id="@+id/account_settings_bulk_upload_dialog_reading_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
             android:visibility="gone"/>
+
+        <View
+          android:id="@+id/account_settings_bulk_upload_dialog_reading_list_separator"
+          style="@style/HorizontalDivider" />
     </LinearLayout>
 </ScrollView>
