@@ -381,7 +381,6 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
           .max_tokens = *input->max_tokens,
           .token_offset = input->token_offset.value_or(0),
           .max_output_tokens = input->max_output_tokens.value_or(0),
-          .score_ts_interval = -1,
           .execution_output_fn = &output_fn,
           .top_k = input->top_k.value_or(1),
           .temperature = input->temperature.value_or(0),
