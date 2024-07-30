@@ -308,10 +308,10 @@ jobs:
           merge-multiple: true
       - name: Generate HTML test report
         run: >
-          node tools/wpt-report-builder/builder.mjs
-            --bidi $(ls out/wptreport.*.json)
-            --interop $(ls out/wptreport-interop.*.json)
-            --out out/wptreport.html
+          node tools/wpt-report-builder/builder.mjs \
+            --bidi $(ls out/wptreport.*.json) \
+            --interop $(ls out/wptreport-interop.*.json) \
+            --out out/wptreport.html \
             --out-label-2023 out/wptreport-2023.html
       - name: Prepare Pages
         # TODO: Support merged wpt report as before
