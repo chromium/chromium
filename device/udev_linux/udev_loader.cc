@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
-#include "device/udev_linux/udev0_loader.h"
 #include "device/udev_linux/udev1_loader.h"
 
 namespace device {
@@ -40,11 +39,6 @@ UdevLoader* UdevLoader::Get() {
     return g_udev_loader;
   }
 
-  udev_loader = std::make_unique<Udev0Loader>();
-  if (udev_loader->Init()) {
-    g_udev_loader = udev_loader.release();
-    return g_udev_loader;
-  }
   CHECK(false);
   return nullptr;
 }

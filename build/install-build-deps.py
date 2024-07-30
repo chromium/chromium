@@ -237,6 +237,7 @@ def dev_list():
       "libssl-dev",
       "libsystemd-dev",
       "libudev-dev",
+      "libudev1",
       "libva-dev",
       "libwww-perl",
       "libxshmfence-dev",
@@ -277,11 +278,6 @@ def dev_list():
     packages.append("libjpeg-dev")
   else:
     packages.append("libjpeg62-dev")
-
-  if package_exists("libudev1"):
-    packages.append("libudev1")
-  else:
-    packages.append("libudev0")
 
   if package_exists("libbrlapi0.8"):
     packages.append("libbrlapi0.8")
@@ -668,6 +664,7 @@ def nacl_list(options):
       "libtinfo-dev",
       "libtinfo-dev:i386",
       "libtool",
+      "libudev1:i386",
       "libuuid1:i386",
       "libxcomposite1:i386",
       "libxcursor1:i386",
@@ -701,11 +698,6 @@ def nacl_list(options):
 
   if package_exists("libtinfo5"):
     packages.append("libtinfo5")
-
-  if package_exists("libudev1"):
-    packages.append("libudev1:i386")
-  else:
-    packages.append("libudev0:i386")
 
   # Work around for nacl dependency On Ubuntu 24.04 LTS (noble)
   if distro_codename() == "noble":

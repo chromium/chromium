@@ -10,8 +10,6 @@ if (use_udev) {
       "scoped_udev.h",
       "udev.cc",
       "udev.h",
-      "udev0_loader.cc",
-      "udev0_loader.h",
       "udev1_loader.cc",
       "udev1_loader.h",
       "udev_loader.cc",

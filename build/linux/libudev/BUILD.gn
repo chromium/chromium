@@ -39,16 +39,6 @@ libudev_functions = [
   "udev_unref",
 ]
 
-# This generates a target named "udev0_loader".
-generate_library_loader("udev0_loader") {
-  name = "LibUdev0Loader"
-  output_h = "libudev0.h"
-  output_cc = "libudev0_loader.cc"
-  header = "\"third_party/libudev/libudev0.h\""
-
-  functions = libudev_functions
-}
-
 # This generates a target named "udev1_loader".
 generate_library_loader("udev1_loader") {
   name = "LibUdev1Loader"
@@ -60,8 +50,5 @@ generate_library_loader("udev1_loader") {
 }
 
 group("libudev") {
-  public_deps = [
-    ":udev0_loader",
-    ":udev1_loader",
-  ]
+  public_deps = [ ":udev1_loader" ]
 }
