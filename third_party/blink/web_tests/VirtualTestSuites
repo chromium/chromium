@@ -625,7 +625,7 @@
     "bases": ["http/tests/wasm/caching"],
     "exclusive_tests": "ALL",
     "args": ["--js-flags=--wasm-tiering-budget=100 --allow-natives-syntax"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
 
   "==== Tests incompatible with the default WPT Origin Isolation start here ==VV",
