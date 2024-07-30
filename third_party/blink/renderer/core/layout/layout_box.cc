@@ -264,11 +264,10 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
       WritingMode mode = button_style.GetWritingMode();
       ConstraintSpaceBuilder builder(mode, button_style.GetWritingDirection(),
                                      /* is_new_fc */ true);
-      LayoutUnit max =
-          BlockNode(button_box)
-              .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,
-                                  builder.ToConstraintSpace())
-              .sizes.max_size;
+      LayoutUnit max = BlockNode(button_box)
+                           .ComputeMinMaxSizes(mode, SizeType::kIntrinsic,
+                                               builder.ToConstraintSpace())
+                           .sizes.max_size;
       default_label_width +=
           max + (kAfterButtonSpacing * box.StyleRef().EffectiveZoom());
     }

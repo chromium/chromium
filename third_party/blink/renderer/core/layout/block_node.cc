@@ -894,7 +894,7 @@ void BlockNode::StoreResultInLayoutBox(const LayoutResult* result,
 
 MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     WritingMode container_writing_mode,
-    const MinMaxSizesType type,
+    const SizeType type,
     const ConstraintSpace& constraint_space,
     const MinMaxSizesFloatInput float_input) const {
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
@@ -982,7 +982,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
   }
 
   const bool has_aspect_ratio = !Style().AspectRatio().IsAuto();
-  if (has_aspect_ratio && type == MinMaxSizesType::kContent) {
+  if (has_aspect_ratio && type == SizeType::kContent) {
     const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
     const BoxStrut border_padding =
         fragment_geometry.border + fragment_geometry.padding;

@@ -39,7 +39,7 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
 
     const MinMaxSizes sizes = ComputeMinMaxInlineSizes(
         constraint_space, node, container_builder_.BorderPadding(),
-        [&border_scrollbar_padding](MinMaxSizesType) -> MinMaxSizesResult {
+        [&border_scrollbar_padding](SizeType) -> MinMaxSizesResult {
           // If we've reached here we are inside the |ComputeMinMaxSizes| pass,
           // and also have something like "min-width: min-content". This is
           // cyclic. Just return the border/scrollbar/padding as our
@@ -477,7 +477,7 @@ FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
     if (subgrid_has_standalone_columns && sizing_subtree) {
       return CalculateInitialFragmentGeometry(
           space, node, /* break_token */ nullptr,
-          [&](MinMaxSizesType) -> MinMaxSizesResult {
+          [&](SizeType) -> MinMaxSizesResult {
             return node.ComputeSubgridMinMaxSizes(sizing_subtree, space);
           });
     }
@@ -487,7 +487,7 @@ FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
 
   const auto fragment_geometry = CalculateInitialFragmentGeometry(
       space, node, /* break_token */ nullptr,
-      [&needs_to_compute_min_max_sizes](MinMaxSizesType) -> MinMaxSizesResult {
+      [&needs_to_compute_min_max_sizes](SizeType) -> MinMaxSizesResult {
         // We can't call `ComputeMinMaxSizes` for a subgrid with an incomplete
         // grid sizing tree, as its intrinsic size relies on its subtree. If we
         // end up in this function, we need to use an intrinsic fragment
@@ -1137,7 +1137,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
     baseline_shim = track_baseline - baseline - extra_margin;
   };
 
-  auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
+  auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
     if (grid_item->IsSubgrid()) {
       return To<GridNode>(node).ComputeSubgridMinMaxSizes(
           sizing_subtree.SubgridSizingSubtree(*grid_item), space);

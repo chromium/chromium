@@ -677,7 +677,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     all_items_have_non_auto_cross_sizes &= !cross_axis_length.HasAuto();
 
     std::optional<MinMaxSizesResult> min_max_sizes;
-    auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
+    auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
       if (!min_max_sizes) {
         // We want the child's intrinsic inline sizes in its writing mode, so
         // pass child's writing mode as the first parameter, which is nominally
@@ -690,8 +690,16 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       return *min_max_sizes;
     };
 
+    auto InlineSizeFunc = [&]() -> LayoutUnit {
+      const ConstraintSpace child_space =
+          BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
+      return CalculateInitialFragmentGeometry(child_space, child,
+                                              /* break_token */ nullptr)
+          .border_box_size.inline_size;
+    };
+
     const LayoutResult* layout_result = nullptr;
-    auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
+    auto BlockSizeFunc = [&](SizeType type) -> LayoutUnit {
       if (!layout_result) {
         ConstraintSpace child_space =
             BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
@@ -702,19 +710,9 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         layout_result = child.Layout(child_space, /* break_token */ nullptr);
         DCHECK(layout_result);
       }
-      return layout_result->IntrinsicBlockSize();
-    };
-    auto InlineSizeFunc = [&]() -> LayoutUnit {
-      DCHECK(!is_main_axis_inline_axis);
-      const ConstraintSpace child_space =
-          BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
-      return CalculateInitialFragmentGeometry(child_space, child,
-                                              /* break_token */ nullptr)
-          .border_box_size.inline_size;
-    };
-    auto ContentBlockSizeFunc = [&]() -> LayoutUnit {
-      DCHECK(!is_main_axis_inline_axis);
-      if (child.HasAspectRatio() && !child.IsReplaced()) {
+
+      if (type == SizeType::kContent && child.HasAspectRatio() &&
+          !child.IsReplaced()) {
         const LayoutUnit inline_size = InlineSizeFunc();
         if (inline_size != kIndefiniteSize) {
           return BlockSizeFromAspectRatio(
@@ -730,9 +728,11 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
             child.GetAspectRatio(), inline_min_max,
             border_padding_in_child_writing_mode,
             child.Style().BoxSizingForAspectRatio());
-        return min_max.ClampSizeToMinAndMax(IntrinsicBlockSizeFunc());
+        return min_max.ClampSizeToMinAndMax(
+            layout_result->IntrinsicBlockSize());
       }
-      return IntrinsicBlockSizeFunc();
+
+      return layout_result->IntrinsicBlockSize();
     };
 
     MinMaxSizes min_max_sizes_in_main_axis_direction{main_axis_border_padding,
@@ -776,7 +776,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       if (is_main_axis_inline_axis) {
         const LayoutUnit inline_size = ResolveMainInlineLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            [&](MinMaxSizesType type) -> MinMaxSizesResult {
+            [&](SizeType type) -> MinMaxSizesResult {
               is_used_flex_basis_indefinite = true;
               return MinMaxSizesFunc(type);
             },
@@ -789,15 +789,15 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         // We weren't able to resolve the length (i.e. we were a unresolvable
         // %-age or similar), fallback to the max-content size.
         is_used_flex_basis_indefinite = true;
-        return MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.max_size;
+        return MinMaxSizesFunc(SizeType::kContent).sizes.max_size;
       }
 
-      return ResolveMainBlockLength(flex_basis_space, child_style,
-                                    border_padding_in_child_writing_mode,
-                                    used_flex_basis_length, auto_length, [&]() {
-                                      is_used_flex_basis_indefinite = true;
-                                      return ContentBlockSizeFunc();
-                                    });
+      return ResolveMainBlockLength(
+          flex_basis_space, child_style, border_padding_in_child_writing_mode,
+          used_flex_basis_length, auto_length, [&](SizeType type) {
+            is_used_flex_basis_indefinite = true;
+            return BlockSizeFunc(type);
+          });
     };
 
     const LayoutUnit flex_base_border_box = ([&]() -> LayoutUnit {
@@ -858,8 +858,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       const LayoutUnit content_size_suggestion = ([&]() -> LayoutUnit {
         const LayoutUnit intrinsic_size =
             is_main_axis_inline_axis
-                ? MinMaxSizesFunc(MinMaxSizesType::kIntrinsic).sizes.min_size
-                : IntrinsicBlockSizeFunc();
+                ? MinMaxSizesFunc(SizeType::kIntrinsic).sizes.min_size
+                : BlockSizeFunc(SizeType::kIntrinsic);
 
         // If appropriate clamp by the transferred min/max sizes.
         if (child.HasAspectRatio()) {
@@ -893,7 +893,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
                                          border_padding_in_child_writing_mode,
                                          specified_length_in_main_axis,
                                          /* auto_length */ nullptr,
-                                         IntrinsicBlockSizeFunc);
+                                         BlockSizeFunc);
 
         // Coerce an indefinite size to LayoutUnit::Max().
         return resolved_size == kIndefiniteSize ? LayoutUnit::Max()
@@ -918,10 +918,10 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     if (child.IsTable()) {
       if (is_main_axis_inline_axis) {
         min_max_sizes_in_main_axis_direction.Encompass(
-            MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.min_size);
+            MinMaxSizesFunc(SizeType::kIntrinsic).sizes.min_size);
       } else {
         min_max_sizes_in_main_axis_direction.Encompass(
-            IntrinsicBlockSizeFunc());
+            BlockSizeFunc(SizeType::kIntrinsic));
       }
     }
 
