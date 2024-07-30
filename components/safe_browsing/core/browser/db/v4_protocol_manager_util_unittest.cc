@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "net/http/http_request_headers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
@@ -106,9 +107,8 @@ TEST_F(V4ProtocolManagerUtilTest, TestGetRequestUrlAndUpdateHeaders) {
       "https://safebrowsing.googleapis.com/v4/someMethod?"
       "$req=request_base64&$ct=application/x-protobuf&key=test_key_param";
   EXPECT_EQ(expectedUrl, gurl.spec());
-  std::string header_value;
-  EXPECT_TRUE(headers.GetHeader("X-HTTP-Method-Override", &header_value));
-  EXPECT_EQ("POST", header_value);
+  EXPECT_THAT(headers.GetHeader("X-HTTP-Method-Override"),
+              testing::Optional(std::string("POST")));
 }
 
 // Tests that we generate the required host/path combinations for testing
