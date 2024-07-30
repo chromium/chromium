@@ -322,14 +322,7 @@ class TestServerURLLoaderFactory {
 
     // Expect that specified headers are accurate.
     for (const auto& kv : expected_headers) {
-      if (kv.second.has_value()) {
-        std::string actual_value;
-        EXPECT_THAT(request.headers.GetHeader(kv.first, &actual_value),
-                    Eq(true));
-        EXPECT_THAT(actual_value, Eq(*kv.second));
-      } else {
-        EXPECT_THAT(request.headers.HasHeader(kv.first), Eq(false));
-      }
+      EXPECT_THAT(request.headers.GetHeader(kv.first), kv.second);
     }
 
     // Extract request body.
