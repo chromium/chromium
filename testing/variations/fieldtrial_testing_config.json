@@ -17188,7 +17188,7 @@
             ],
             "experiments": [
                 {
-                    "name": "OnlyMouseDown_20240718",
+                    "name": "OnlyMouseDown_20240730",
                     "params": {
                         "prerender_bookmarkbar_on_mouse_hover_trigger": "false",
                         "prerender_bookmarkbar_on_mouse_pressed_trigger": "true"
