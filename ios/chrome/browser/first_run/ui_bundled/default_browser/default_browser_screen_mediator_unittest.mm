@@ -6,12 +6,11 @@
 
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
-#import "components/segmentation_platform/public/field_trial_register.h"
 #import "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
-#import "components/sync_device_info/fake_device_info_tracker.h"
+#import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_consumer.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_test_utils.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_consumer.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -22,88 +21,7 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace default_browser_screen {
-
-// Mock FieldTrialRegister for DeviceSwitcherResultDispatcher.
-class MockFieldTrialRegister
-    : public segmentation_platform::FieldTrialRegister {
- public:
-  MOCK_METHOD(void,
-              RegisterFieldTrial,
-              (std::string_view trial_name, std::string_view group_name));
-  MOCK_METHOD(void,
-              RegisterSubsegmentFieldTrialIfNeeded,
-              (std::string_view trial_name,
-               segmentation_platform::proto::SegmentId segment_id,
-               int subsegment_rank));
-};
-
-// Fake DeviceSwitcherResultDispatcher with overriden getter for
-// ClassificationResult.
-class FakeDeviceSwitcherResultDispatcher
-    : public segmentation_platform::DeviceSwitcherResultDispatcher {
- public:
-  FakeDeviceSwitcherResultDispatcher(
-      segmentation_platform::SegmentationPlatformService* segmentation_service,
-      syncer::DeviceInfoTracker* device_info_tracker,
-      PrefService* prefs,
-      segmentation_platform::FieldTrialRegister* field_trial_register)
-      : segmentation_platform::DeviceSwitcherResultDispatcher(
-            segmentation_service,
-            device_info_tracker,
-            prefs,
-            field_trial_register),
-        classification_result_(
-            segmentation_platform::PredictionStatus::kSucceeded) {}
-
-  ~FakeDeviceSwitcherResultDispatcher() override = default;
-
-  void WaitForClassificationResult(
-      base::TimeDelta timeout,
-      segmentation_platform::ClassificationResultCallback callback) override {
-    std::vector<std::string> ordered_labels;
-    if (segment_label_ ==
-        segmentation_platform::DefaultBrowserUserSegment::kDesktopUser) {
-      ordered_labels = {
-          segmentation_platform::DeviceSwitcherModel::kOtherLabel,
-          segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel,
-          segmentation_platform::DeviceSwitcherModel::kDesktopLabel,
-      };
-    } else if (segment_label_ ==
-               segmentation_platform::DefaultBrowserUserSegment::
-                   kAndroidSwitcher) {
-      ordered_labels = {
-          segmentation_platform::DeviceSwitcherModel::kOtherLabel,
-          segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel,
-      };
-    } else {
-      ordered_labels = {
-          segmentation_platform::DeviceSwitcherModel::kOtherLabel};
-    }
-
-    segmentation_platform::ClassificationResult modified_result(
-        classification_result_.status);
-    modified_result.ordered_labels = ordered_labels;
-
-    std::move(callback).Run(std::move(modified_result));
-  }
-
-  void SetSegmentLabel(segmentation_platform::DefaultBrowserUserSegment label) {
-    segment_label_ = label;
-  }
-
-  void SetPredictionStatus(segmentation_platform::PredictionStatus status) {
-    classification_result_.status = status;
-  }
-
- private:
-  segmentation_platform::ClassificationResult classification_result_;
-  segmentation_platform::DefaultBrowserUserSegment segment_label_;
-};
-
-}  // namespace default_browser_screen
-
-// Test class for DefaultBrowserScreenMediator
+// Test class for DefaultBrowserScreenMediator.
 class DefaultBrowserScreenMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
@@ -113,7 +31,7 @@ class DefaultBrowserScreenMediatorTest : public PlatformTest {
         prefs_->registry());
     device_info_tracker_ = std::make_unique<syncer::FakeDeviceInfoTracker>();
     device_switcher_result_dispatcher_ = std::make_unique<
-        default_browser_screen::FakeDeviceSwitcherResultDispatcher>(
+        segmentation_platform::test::FakeDeviceSwitcherResultDispatcher>(
         &segmentation_platform_service_, device_info_tracker_.get(),
         prefs_.get(), &field_trial_register_);
     consumer_mock_ =
@@ -144,9 +62,10 @@ class DefaultBrowserScreenMediatorTest : public PlatformTest {
   std::unique_ptr<syncer::FakeDeviceInfoTracker> device_info_tracker_;
   testing::NiceMock<segmentation_platform::MockSegmentationPlatformService>
       segmentation_platform_service_;
-  testing::NiceMock<default_browser_screen::MockFieldTrialRegister>
+  testing::NiceMock<segmentation_platform::MockFieldTrialRegister>
       field_trial_register_;
-  std::unique_ptr<default_browser_screen::FakeDeviceSwitcherResultDispatcher>
+  std::unique_ptr<
+      segmentation_platform::test::FakeDeviceSwitcherResultDispatcher>
       device_switcher_result_dispatcher_;
   DefaultBrowserScreenMediator* mediator_to_test_;
   id<DefaultBrowserScreenConsumer> consumer_mock_;
