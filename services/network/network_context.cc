@@ -2140,6 +2140,13 @@ void NetworkContext::PreconnectSockets(
   if (num_streams == 0)
     return;
 
+  // Preconnect is disallowed if network access is disabled for the nonce.
+  if (network_anonymization_key.GetNonce().has_value() &&
+      !IsNetworkForNonceAndUrlAllowed(
+          network_anonymization_key.GetNonce().value(), url)) {
+    return;
+  }
+
   std::string user_agent;
   if (url_request_context_->http_user_agent_settings()) {
     user_agent =

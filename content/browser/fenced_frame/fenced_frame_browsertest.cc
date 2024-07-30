@@ -60,6 +60,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/connection_tracker.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -8946,5 +8947,226 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "kIsolateFencedFramesEnabled"
                                              : "kIsolateFencedFramesDisabled";
                          });
+
+class FencedFramePreconnectBrowserTest : public FencedFrameMPArchBrowserTest {
+ public:
+  net::test_server::ConnectionTracker* connection_tracker() {
+    return connection_tracker_.get();
+  }
+
+ private:
+  void AdditionalSetup() override {
+    connection_tracker_ =
+        std::make_unique<net::test_server::ConnectionTracker>(https_server());
+  }
+
+  std::unique_ptr<net::test_server::ConnectionTracker> connection_tracker_;
+};
+
+// Verify preconnect is working in fenced frame.
+IN_PROC_BROWSER_TEST_F(FencedFramePreconnectBrowserTest, Preconnect) {
+  ASSERT_TRUE(https_server()->Start());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
+
+  // Reset connection counts after fenced frame has been set up.
+  connection_tracker()->ResetCounts();
+
+  // Navigate the fenced frame to a page with a link element that makes
+  // preconnect request.
+  TestFrameNavigationObserver observer(fenced_frame_rfh);
+  EXPECT_TRUE(ExecJs(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      JsReplace(
+          R"(document.querySelector('fencedframe').config
+                            = new FencedFrameConfig($1);)",
+          https_server()->GetURL("a.test", "/link_rel_preconnect.html"))));
+
+  observer.WaitForCommit();
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // There should be a total of 2 connections. 1 from navigation and 1 from
+  // preconnect.
+  connection_tracker()->WaitForAcceptedConnections(2u);
+  EXPECT_EQ(connection_tracker()->GetAcceptedSocketCount(), 2u);
+}
+
+// Verify preconnect is disabled after fenced frame untrusted network cutoff.
+IN_PROC_BROWSER_TEST_F(FencedFramePreconnectBrowserTest,
+                       NetworkCutoffDisablesPreconnect) {
+  ASSERT_TRUE(https_server()->Start());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
+
+  // Reset connection counts after fenced frame has been set up.
+  connection_tracker()->ResetCounts();
+
+  // Navigate the fenced frame. The loaded page disables untrusted network
+  // access, then adds a link element that makes preconnect request.
+  TestFrameNavigationObserver observer(fenced_frame_rfh);
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+             JsReplace(
+                 R"(document.querySelector('fencedframe').config
+                            = new FencedFrameConfig($1);)",
+                 https_server()->GetURL(
+                     "a.test", "/link_rel_preconnect_disable_network.html"))));
+
+  observer.WaitForCommit();
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // There should be only 1 connection from navigation. The preconnect request
+  // is cancelled because the untrusted network access is disabled.
+  connection_tracker()->WaitForAcceptedConnections(1u);
+  EXPECT_EQ(connection_tracker()->GetAcceptedSocketCount(), 1u);
+}
+
+// Verify preconnect triggered by link response header is working in fenced
+// frame.
+IN_PROC_BROWSER_TEST_F(FencedFramePreconnectBrowserTest,
+                       PreconnectFromLinkHeader) {
+  std::string relative_url = "/title1.html";
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      relative_url);
+
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate to a page that contains a fenced frame.
+  const GURL main_url = https_server()->GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(a.test{fenced})");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Get fenced frame render frame host.
+  std::vector<RenderFrameHost*> child_frames =
+      fenced_frame_test_helper().GetChildFencedFrameHosts(
+          shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_EQ(child_frames.size(), 1u);
+  RenderFrameHost* fenced_frame_rfh = child_frames[0];
+
+  GURL navigation_url = https_server()->GetURL("a.test", relative_url);
+
+  // Reset connection counts after fenced frame has been set up.
+  connection_tracker()->ResetCounts();
+
+  // Navigate the fenced frame.
+  TestFrameNavigationObserver observer(fenced_frame_rfh);
+
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+             JsReplace(
+                 R"(document.getElementsByTagName('fencedframe')[0].config =
+                         new FencedFrameConfig($1);)",
+                 navigation_url)));
+
+  GURL preconnect_url = https_server()->GetURL("b.test", "/title2.html");
+
+  // Send a response header with link preconnect field.
+  response.WaitForRequest();
+  response.Send(
+      base::StringPrintf("HTTP/1.1 200 OK\r\n"
+                         "Content-Type: text/html; charset=utf-8\r\n"
+                         "Supports-Loading-Mode: fenced-frame\r\n"
+                         "Link: <%s>; rel=preconnect\r\n"
+                         "\r\n",
+                         preconnect_url.spec().c_str()));
+  response.Done();
+
+  // Wait until navigation commits.
+  observer.WaitForCommit();
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // There should be a total of 2 connections. 1 from navigation and 1 from
+  // preconnect.
+  connection_tracker()->WaitForAcceptedConnections(2u);
+  EXPECT_EQ(connection_tracker()->GetAcceptedSocketCount(), 2u);
+}
+
+// Verify preconnect triggered by link response header is disabled after fenced
+// frame untrusted network cutoff.
+IN_PROC_BROWSER_TEST_F(FencedFramePreconnectBrowserTest,
+                       NetworkCutoffDisablesPreconnectFromLinkHeader) {
+  std::string relative_url = "/title1.html";
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      relative_url);
+
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate to a page that contains a fenced frame.
+  const GURL main_url = https_server()->GetURL(
+      "a.test",
+      "/cross_site_iframe_factory.html?a.test(a.test{fenced}(a.test))");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Get fenced frame render frame host.
+  std::vector<RenderFrameHost*> child_frames =
+      fenced_frame_test_helper().GetChildFencedFrameHosts(
+          shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_EQ(child_frames.size(), 1u);
+  RenderFrameHost* fenced_frame_rfh = child_frames[0];
+
+  // Get nested iframe render frame host.
+  RenderFrameHost* nested_iframe_rfh = ChildFrameAt(fenced_frame_rfh, 0);
+
+  // Reset connection counts after fenced frame has been set up.
+  connection_tracker()->ResetCounts();
+
+  // Disable fenced frame untrusted network access.
+  EXPECT_TRUE(ExecJs(fenced_frame_rfh, R"(
+                    (async () => {
+                      await window.fence.disableUntrustedNetwork();
+                    })();
+          )"));
+
+  GURL navigation_url = https_server()->GetURL("a.test", relative_url);
+
+  // Exempt `navigation_url` from fenced frame network revocation.
+  test::ExemptUrlsFromFencedFrameNetworkRevocation(fenced_frame_rfh,
+                                                   {navigation_url});
+
+  // Navigate the nested iframe. The navigation is allowed because the url has
+  // been exempted from network revocation.
+  TestFrameNavigationObserver observer(nested_iframe_rfh);
+
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_rfh,
+             JsReplace("document.getElementsByTagName('iframe')[0].src = $1;",
+                       navigation_url)));
+
+  GURL preconnect_url = https_server()->GetURL("b.test", "/title2.html");
+
+  // Send a response header with link preconnect field.
+  response.WaitForRequest();
+  response.Send(
+      base::StringPrintf("HTTP/1.1 200 OK\r\n"
+                         "Content-Type: text/html; charset=utf-8\r\n"
+                         "Supports-Loading-Mode: fenced-frame\r\n"
+                         "Link: <%s>; rel=preconnect\r\n"
+                         "\r\n",
+                         preconnect_url.spec().c_str()));
+  response.Done();
+
+  // Wait until navigation commits.
+  observer.WaitForCommit();
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // There should be only 1 connection from navigation. The preconnect request
+  // is cancelled because the untrusted network access is disabled.
+  connection_tracker()->WaitForAcceptedConnections(1u);
+  EXPECT_EQ(connection_tracker()->GetAcceptedSocketCount(), 1u);
+}
 
 }  // namespace content
