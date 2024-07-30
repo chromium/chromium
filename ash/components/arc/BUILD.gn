@@ -164,6 +164,7 @@ static_library("arc") {
     "//components/exo",
     "//components/guest_os",
     "//components/metrics",
+    "//components/onc",
     "//components/prefs",
     "//components/session_manager/core",
 
