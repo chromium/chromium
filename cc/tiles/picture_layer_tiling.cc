@@ -92,7 +92,6 @@ Tile* PictureLayerTiling::CreateTile(const Tile::CreateInfo& info) {
   }
 
   all_tiles_done_ = false;
-  client_->OnTilesAdded();
 
   std::unique_ptr<Tile> tile = client_->CreateTile(info);
   Tile* tile_ptr = tile.get();
@@ -164,7 +163,10 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
     tiles_[pending_iter->first] = std::move(pending_iter->second);
     pending_twin->tiles_.erase(pending_iter);
   }
-  all_tiles_done_ &= pending_twin->all_tiles_done_;
+  if (all_tiles_done_ && !pending_twin->all_tiles_done_) {
+    all_tiles_done_ = false;
+    client_->OnAllTilesDoneCleared();
+  }
 
   DCHECK(pending_twin->tiles_.empty());
   pending_twin->all_tiles_done_ = true;

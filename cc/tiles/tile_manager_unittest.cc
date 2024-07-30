@@ -1661,8 +1661,26 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterQueueAllUsesCorrectTileBounds) {
         intersecting_rect);     // Eventually rect.
     std::unique_ptr<TilingSetRasterQueueAll> queue(
         new TilingSetRasterQueueAll(tiling_set.get(), false, false));
+    EXPECT_TRUE(queue->IsEmpty());
+  }
+
+  // This is the behavior difference between FakePictureLayerTilingClient
+  // and the real PictureLayerTilingClient a.k.a. PictureLayerImpl.
+  // The FakePictureLayerTilingClient doesn't clear PictureLayerTilingSet's
+  // |all_tiles_done_| when AddTile() is called whereas PictureLayerImpl does.
+  tiling_set->set_all_tiles_done(false);
+
+  {
+    tiling->SetTilePriorityRectsForTesting(
+        non_intersecting_rect,  // Visible rect.
+        intersecting_rect,      // Skewport rect.
+        intersecting_rect,      // Soon rect.
+        intersecting_rect);     // Eventually rect.
+    std::unique_ptr<TilingSetRasterQueueAll> queue(
+        new TilingSetRasterQueueAll(tiling_set.get(), false, false));
     EXPECT_FALSE(queue->IsEmpty());
   }
+
   {
     tiling->SetTilePriorityRectsForTesting(
         non_intersecting_rect,  // Visible rect.

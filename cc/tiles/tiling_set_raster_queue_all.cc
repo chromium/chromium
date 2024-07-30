@@ -35,9 +35,10 @@ TilingSetRasterQueueAll::TilingSetRasterQueueAll(
       is_drawing_layer_(is_drawing_layer) {
   DCHECK(tiling_set_);
 
-  // Early out if the tiling set has no tilings.
-  if (!tiling_set_->num_tilings())
+  // Early out if the tiling set has no tiles needing raster.
+  if (tiling_set_->all_tiles_done()) {
     return;
+  }
 
   const PictureLayerTilingClient* client = tiling_set->client();
   WhichTree tree = tiling_set->tree();

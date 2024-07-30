@@ -942,8 +942,10 @@ void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile) {
   if (tile->draw_info().NeedsRaster()) {
     PictureLayerTiling* tiling =
         tilings_->FindTilingWithScaleKey(tile->contents_scale_key());
-    if (tiling)
+    if (tiling) {
       tiling->set_all_tiles_done(false);
+      tilings_->set_all_tiles_done(false);
+    }
   }
 }
 
@@ -987,6 +989,9 @@ Region PictureLayerImpl::GetInvalidationRegionForDebugging() {
 
 std::unique_ptr<Tile> PictureLayerImpl::CreateTile(
     const Tile::CreateInfo& info) {
+  SetNeedsPushProperties();
+  tilings_->set_all_tiles_done(false);
+
   int flags = 0;
 
   // We don't handle solid color single texture masks for backdrop filters,
@@ -1039,8 +1044,10 @@ bool PictureLayerImpl::IsDirectlyCompositedImage() const {
   return directly_composited_image_default_raster_scale_ > 0.f;
 }
 
-void PictureLayerImpl::OnTilesAdded() {
-  SetNeedsPushProperties();
+void PictureLayerImpl::OnAllTilesDoneCleared() {
+  // This is called when a PictureLayerTiling's |all_tiles_done_| is cleared.
+  // We need to clear the PictureLayerTilingSet's |all_tiles_done_|.
+  tilings_->set_all_tiles_done(false);
 }
 
 std::vector<const DrawImage*> PictureLayerImpl::GetDiscardableImagesInRect(
