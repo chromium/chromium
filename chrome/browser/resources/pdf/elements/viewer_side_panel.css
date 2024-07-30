@@ -6,6 +6,31 @@
  * #type=style-lit
  * #css_wrapper_metadata_end */
 
+:host {
+  --side-panel-border-color: rgb(94, 94, 94);
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  border-inline-start: 1px solid var(--side-panel-border-color);
+  padding-top: 8px;
+  width: 288px;
+}
+
+:host > div {
+  padding-inline: 16px;
+}
+
+#brush-selector {
+  border-bottom: 1px solid var(--side-panel-border-color);
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+#brush-selector cr-icon-button {
+  --cr-icon-button-size: 48px;
+  margin: 8px;
+}
+
 #colors {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
