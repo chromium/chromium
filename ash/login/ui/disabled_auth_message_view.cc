@@ -17,10 +17,12 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_manager.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -31,7 +33,6 @@ constexpr int kHorizontalBorderDp = 16;
 constexpr int kChildrenSpacingDp = 4;
 constexpr int kTimeWidthDp = 204;
 constexpr int kMultiprofileWidthDp = 304;
-constexpr int kHeightDp = 98;
 constexpr int kIconSizeDp = 24;
 constexpr int kTitleFontSizeDeltaDp = 3;
 constexpr int kContentsFontSizeDeltaDp = -1;
@@ -154,6 +155,7 @@ DisabledAuthMessageView::DisabledAuthMessageView() {
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(kVerticalBorderDp, kHorizontalBorderDp),
       kChildrenSpacingDp));
+  preferred_width_ = kTimeWidthDp;
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -195,7 +197,7 @@ void DisabledAuthMessageView::SetAuthDisabledMessage(
   LockScreenMessage message = GetLockScreenMessage(
       auth_disabled_data.reason, auth_disabled_data.auth_reenabled_time,
       auth_disabled_data.device_used_time, use_24hour_clock);
-  SetPreferredSize(gfx::Size(kTimeWidthDp, kHeightDp));
+  preferred_width_ = kTimeWidthDp;
   message_icon_->SetVisible(true);
   CHECK(!message.icon.IsEmpty());
   message_icon_->SetImage(message.icon);
@@ -208,7 +210,7 @@ void DisabledAuthMessageView::SetAuthDisabledMessage(
 void DisabledAuthMessageView::SetAuthDisabledMessage(
     const std::u16string& title,
     const std::u16string& content) {
-  SetPreferredSize(gfx::Size(kMultiprofileWidthDp, kHeightDp));
+  preferred_width_ = kMultiprofileWidthDp;
   message_icon_->SetVisible(false);
   message_title_->SetText(title);
   message_contents_->SetText(content);
@@ -216,6 +218,13 @@ void DisabledAuthMessageView::SetAuthDisabledMessage(
 
 void DisabledAuthMessageView::RequestFocus() {
   message_title_->RequestFocus();
+}
+
+gfx::Size DisabledAuthMessageView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  int height =
+      GetLayoutManager()->GetPreferredHeightForWidth(this, preferred_width_);
+  return gfx::Size(preferred_width_, height);
 }
 
 void DisabledAuthMessageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
