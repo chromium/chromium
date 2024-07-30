@@ -9,8 +9,6 @@
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_icon_image.h"
 
-class Profile;
-
 namespace extensions {
 class Extension;
 class ExtensionAction;
@@ -31,8 +29,7 @@ class ExtensionActionIconFactory : public extensions::IconImage::Observer {
   };
 
   // Observer should outlive this.
-  ExtensionActionIconFactory(Profile* profile,
-                             const extensions::Extension* extension,
+  ExtensionActionIconFactory(const extensions::Extension* extension,
                              extensions::ExtensionAction* action,
                              Observer* observer);
 
@@ -60,7 +57,6 @@ class ExtensionActionIconFactory : public extensions::IconImage::Observer {
   gfx::Image GetIcon(int tab_id);
 
  private:
-  raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<const extensions::ExtensionAction, DanglingUntriaged> action_;
   raw_ptr<Observer, DanglingUntriaged> observer_;
   const bool should_check_icons_;
