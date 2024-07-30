@@ -45,3 +45,24 @@ promise_test(async t => {
     assert_unreached();
   }
 }, 'disconnect() is idempotent');
+
+directory_test(async (t, root_dir) => {
+  const observer = new FileSystemObserver(() => {});
+
+  // Create a `FileSystemFileHandle` and delete its underlying file entry.
+  const file = await root_dir.getFileHandle(getUniqueName(), {create: true});
+  await file.remove();
+
+  await promise_rejects_dom(t, 'NotFoundError', observer.observe(file));
+}, 'observe() fails when file does not exist');
+
+directory_test(async (t, root_dir) => {
+  const observer = new FileSystemObserver(() => {});
+
+  // Create a `FileSystemDirectoryHandle` and delete its underlying file entry.
+  const dir =
+      await root_dir.getDirectoryHandle(getUniqueName(), {create: true});
+  await dir.remove();
+
+  await promise_rejects_dom(t, 'NotFoundError', observer.observe(dir));
+}, 'observe() fails when directory does not exist');
