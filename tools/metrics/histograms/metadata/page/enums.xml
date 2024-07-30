@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:AbandonReason) -->
 
-<!-- LINT.IfChange(NavigationMilestoneEnum) -->
+<!-- LINT.IfChange(NavigationMilestoneEnum2) -->
 
 <enum name="NavigationMilestoneEnum2">
   <int value="0" label="kNavigationStart"/>

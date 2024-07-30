@@ -69,6 +69,8 @@ chromium-metrics-reviews@google.com.
   <variant name="RenderProcessGone"/>
 </variants>
 
+<!-- LINT.IfChange(NavigationMilestone) -->
+
 <variants name="NavigationMilestone">
   <variant name="AFTEnd"/>
   <variant name="AFTStart"/>
@@ -89,6 +91,8 @@ chromium-metrics-reviews@google.com.
   <variant name="NonRedirectResponseStart"/>
   <variant name="ParseStart"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->
 
 <variants name="NonSRPSuffix">
   <variant name="" summary="the navigation never targeted non-SRP URL"/>

@@ -56,7 +56,7 @@ class AbandonedPageLoadMetricsObserver
     kAFTEnd = 17,
     kMaxValue = kAFTEnd,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationMilestoneEnum)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationMilestoneEnum2)
 
   // The different abandonment reasons that the tracked page load can encounter.
   // These values are persisted to logs. Entries should not be renumbered and
