@@ -877,19 +877,14 @@ class DnsTransactionTestBase : public testing::Test {
     EXPECT_FALSE(request->allow_credentials());
     EXPECT_EQ(SecureDnsPolicy::kBootstrap, request->secure_dns_policy());
 
-    std::string accept;
-    EXPECT_TRUE(request->extra_request_headers().GetHeader("Accept", &accept));
-    EXPECT_EQ(accept, "application/dns-message");
+    EXPECT_THAT(request->extra_request_headers().GetHeader("Accept"),
+                testing::Optional(std::string("application/dns-message")));
 
-    std::string language;
-    EXPECT_TRUE(request->extra_request_headers().GetHeader("Accept-Language",
-                                                           &language));
-    EXPECT_EQ(language, "*");
+    EXPECT_THAT(request->extra_request_headers().GetHeader("Accept-Language"),
+                testing::Optional(std::string("*")));
 
-    std::string user_agent;
-    EXPECT_TRUE(
-        request->extra_request_headers().GetHeader("User-Agent", &user_agent));
-    EXPECT_EQ(user_agent, "Chrome");
+    EXPECT_THAT(request->extra_request_headers().GetHeader("User-Agent"),
+                testing::Optional(std::string("Chrome")));
 
     SocketDataProvider* provider = socket_factory_->mock_data().GetNext();
 
