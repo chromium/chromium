@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_API_TASKS_TASKS_CLIENT_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_API_TASKS_TASKS_CLIENT_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_API_TASKS_TASKS_CLIENT_IMPL_H_
+#define CHROME_BROWSER_ASH_API_TASKS_TASKS_CLIENT_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -284,4 +284,4 @@ class TasksClientImpl : public TasksClient {
 
 }  // namespace ash::api
 
-#endif  // CHROME_BROWSER_UI_ASH_API_TASKS_TASKS_CLIENT_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_API_TASKS_TASKS_CLIENT_IMPL_H_
