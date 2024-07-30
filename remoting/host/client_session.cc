@@ -1367,19 +1367,7 @@ void ClientSession::UpdateFractionalFilterFallback() {
     const DisplayGeometry* geo =
         desktop_display_info_.GetDisplayInfo(selected_display_index_);
 
-#if BUILDFLAG(IS_CHROMEOS)
-    // The input-injector on ChromeOS currently uses DIPs, but the video-layout
-    // sizes are reported in pixels on this platform. Although the offset
-    // calculation below gives correct results, the fallback geometry needs to
-    // account for the DIPs/pixels scaling - see crbug.com/1507189 and also the
-    // ChromeOS-specific behavior in SetMouseClampingFilter().
-    DisplaySize size_converter =
-        DisplaySize::FromPixels(geo->width, geo->height, geo->dpi);
-    new_size = webrtc::DesktopSize(size_converter.WidthAsDips(),
-                                   size_converter.HeightAsDips());
-#else
     new_size = webrtc::DesktopSize(geo->width, geo->height);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   // The logic for input-injection offsets is dependent on the OS, and is
