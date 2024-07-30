@@ -113,11 +113,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
                 @Override
                 public void closeArchivedTabs(List<Tab> tabs) {
-                    int tabCount = tabs.size();
                     ArchivedTabsDialogCoordinator.this.closeArchivedTabs(tabs);
-                    RecordHistogram.recordCount1000Histogram(
-                            "Tabs.CloseArchivedTabsMenuItem.TabCount", tabCount);
-                    RecordUserAction.record("Tabs.CloseArchivedTabsMenuItem");
                 }
             };
 
@@ -275,7 +271,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.archived_tabs_dialog, mRootView, false);
         mView.findViewById(R.id.close_all_tabs_button)
-                .setOnClickListener(this::closeAllInactiveTabs);
+                .setOnClickListener(this::onCloseAllInactiveTabsButtonClicked);
         mActionConfirmationDialog = new ActionConfirmationDialog(mContext, mModalDialogManager);
     }
 
@@ -411,8 +407,40 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     }
 
     @VisibleForTesting
-    void closeAllInactiveTabs(View view) {
+    void onCloseAllInactiveTabsButtonClicked(View view) {
         int tabCount = mArchivedTabModel.getCount();
+        showCloseAllArchivedTabsConfirmation(
+                tabCount,
+                () -> {
+                    RecordHistogram.recordCount1000Histogram(
+                            "Tabs.CloseAllArchivedTabs.TabCount", tabCount);
+                    RecordUserAction.record("Tabs.CloseAllArchivedTabsMenuItem");
+                });
+    }
+
+    private void closeArchivedTabs(List<Tab> tabs) {
+        int tabCount = tabs.size();
+        Runnable metricsRunnable =
+                () -> {
+                    RecordHistogram.recordCount1000Histogram(
+                            "Tabs.CloseArchivedTabsMenuItem.TabCount", tabCount);
+                    RecordUserAction.record("Tabs.CloseArchivedTabsMenuItem");
+                };
+
+        if (tabCount == mArchivedTabModel.getTabCountSupplier().get()) {
+            showCloseAllArchivedTabsConfirmation(tabCount, metricsRunnable);
+        } else {
+            mArchivedTabModel.closeMultipleTabs(tabs, /* canUndo= */ true);
+            metricsRunnable.run();
+        }
+    }
+
+    /**
+     * Shows a confirmation dialog when the close operation cannot be undone.
+     *
+     * @param onConfirmRunnable A runnable which is run if the dialog is confirmed.
+     */
+    private void showCloseAllArchivedTabsConfirmation(int tabCount, Runnable onConfirmRunnable) {
         Function<Resources, String> titleResolver =
                 (res) -> {
                     return res.getQuantityString(
@@ -433,16 +461,12 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 /* supportStopShowing= */ false,
                 (isPositive, stopShowing) -> {
                     if (isPositive) {
-                        mArchivedTabModel.closeAllTabs(false);
-                        RecordHistogram.recordCount1000Histogram(
-                                "Tabs.CloseAllArchivedTabs.TabCount", tabCount);
-                        RecordUserAction.record("Tabs.CloseAllArchivedTabsMenuItem");
+                        mArchivedTabModel.closeMultipleTabs(
+                                TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel),
+                                /* canUndo= */ false);
+                        onConfirmRunnable.run();
                     }
                 });
-    }
-
-    private void closeArchivedTabs(List<Tab> tabs) {
-        mArchivedTabModel.closeMultipleTabs(tabs, /* canUndo= */ true);
     }
 
     private void restoreArchivedTabs(List<Tab> tabs) {

@@ -406,19 +406,36 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mArchivedTabModel.getCount());
         histogramExpectation.assertExpected();
         assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
+    }
+
+    @Test
+    @MediumTest
+    public void testSelectionModeMenuItem_CloseTabs_SelectAll() {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        addArchivedTab(new GURL("https://google.com"), "test 3");
+        showDialog(3);
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(3, mArchivedTabModel.getCount());
 
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
 
-        histogramExpectation =
+        HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Tabs.CloseArchivedTabsMenuItem.TabCount", 1);
+                        "Tabs.CloseArchivedTabsMenuItem.TabCount", 3);
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
-        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tab");
-        mRobot.resultRobot.verifyTabListEditorIsHidden();
+        mRobot.actionRobot.clickItemAtAdapterPosition(1);
+        mRobot.actionRobot.clickItemAtAdapterPosition(2);
+        mRobot.resultRobot.verifyToolbarSelectionText("3 tabs");
+        // Closing all the tabs through selection mode will display a confirmation dialog. This is
+        // done because the opteration cannot be undone.
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tabs");
+        onView(withText("Close all")).perform(click());
+
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
         histogramExpectation.assertExpected();
-        assertEquals(2, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
     }
 
     @Test
