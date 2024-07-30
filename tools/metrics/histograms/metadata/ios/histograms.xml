@@ -4167,7 +4167,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Start.Impression" enum="IOSNTPImpressionType"
-    expires_after="2024-11-24">
+    expires_after="2025-01-26">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -4586,7 +4586,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Variations.FirstRun.SeedApplicationStage"
-    enum="VariationsFirstRunSeedApplicationStage" expires_after="2024-11-26">
+    enum="VariationsFirstRunSeedApplicationStage" expires_after="2025-01-26">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>huitingyu@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
