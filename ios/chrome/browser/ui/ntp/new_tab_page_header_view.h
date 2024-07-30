@@ -93,6 +93,12 @@
 // Shows the buttons within the fakebox.
 - (void)showFakeboxButtons;
 
+// Shows account disc particle error badge.
+- (void)setIdentityDiscErrorBadge;
+
+// Removes account disc particle error badge.
+- (void)removeIdentityDiscErrorBadge;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_H_
