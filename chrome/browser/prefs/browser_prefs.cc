@@ -248,13 +248,6 @@
 #include "chrome/browser/screen_ai/pref_names.h"
 #endif
 
-#include "components/feed/buildflags.h"
-#if BUILDFLAG(ENABLE_FEED_V2)
-#include "components/feed/core/common/pref_names.h"        // nogncheck
-#include "components/feed/core/shared_prefs/pref_names.h"  // nogncheck
-#include "components/feed/core/v2/ios_shared_prefs.h"      // nogncheck
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
@@ -271,6 +264,9 @@
 #include "chrome/browser/readaloud/android/prefs.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
+#include "components/feed/core/common/pref_names.h"         // nogncheck
+#include "components/feed/core/shared_prefs/pref_names.h"   // nogncheck
+#include "components/feed/core/v2/ios_shared_prefs.h"       // nogncheck
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/query_tiles/tile_service_prefs.h"
@@ -1896,12 +1892,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ChromeRLZTrackerDelegate::RegisterProfilePrefs(registry);
 #endif
 
-#if BUILDFLAG(ENABLE_FEED_V2)
+#if BUILDFLAG(IS_ANDROID)
   feed::prefs::RegisterFeedSharedProfilePrefs(registry);
   feed::RegisterProfilePrefs(registry);
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(registry);
   KnownInterceptionDisclosureInfoBarDelegate::RegisterProfilePrefs(registry);
   MediaDrmOriginIdManager::RegisterProfilePrefs(registry);

@@ -5,14 +5,6 @@
 import("//build/buildflag_header.gni")
 import("//components/feed/features.gni")
 
-# This file is in a separate target so all targets in the build can refer to the
-# buildflag header to get the necessary preprocessor defines without bringing in
-# any of the feed targets.
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "ENABLE_FEED_V2=$enable_feed_v2" ]
-}
-
 static_library("feature_list") {
   sources = [
     "feed_feature_list.cc",
@@ -20,7 +12,6 @@ static_library("feature_list") {
   ]
 
   deps = [
-    ":buildflags",
     "//base",
     "//components/country_codes",
     "//components/signin/public/base",

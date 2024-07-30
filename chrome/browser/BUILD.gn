@@ -2173,7 +2173,6 @@ static_library("browser") {
     "//components/favicon/core:history_implementation",
     "//components/favicon_base",
     "//components/feature_engagement",
-    "//components/feed:buildflags",
     "//components/feed/core/common:feed_core_common",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/filename_generation",

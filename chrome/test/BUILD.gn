@@ -6785,7 +6785,6 @@ test("unit_tests") {
     "//components/enterprise/common/proto:legacy_tech_events_proto",
     "//components/favicon/core/test:test_support",
     "//components/feature_engagement/public",
-    "//components/feed:buildflags",
     "//components/feed/core/v2:feed_core_stubs",
     "//components/feed/core/v2:feed_core_v2",
     "//components/feed/core/v2:test_helpers",

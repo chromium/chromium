@@ -153,7 +153,6 @@ static_library("renderer") {
     "//components/dom_distiller/content/renderer",
     "//components/facilitated_payments/content/renderer",
     "//components/facilitated_payments/core/features",
-    "//components/feed:buildflags",
     "//components/feed:feature_list",
     "//components/feed/content/renderer:feed_renderer",
     "//components/google/core/common",

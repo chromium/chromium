@@ -87,7 +87,6 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
-#include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
@@ -177,6 +176,8 @@
 #include "chrome/renderer/wallet/boarding_pass_extractor.h"
 #include "components/facilitated_payments/content/renderer/facilitated_payments_agent.h"
 #include "components/facilitated_payments/core/features/features.h"
+#include "components/feed/content/renderer/rss_link_reader.h"
+#include "components/feed/feed_feature_list.h"
 #else
 #include "chrome/renderer/searchbox/searchbox.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
@@ -189,11 +190,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/renderer/render_frame_font_family_accessor.h"
-#endif
-
-#if BUILDFLAG(ENABLE_FEED_V2)
-#include "components/feed/content/renderer/rss_link_reader.h"
-#include "components/feed/feed_feature_list.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -761,7 +757,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
   new SpellCheckPanel(render_frame, registry, this);
 #endif  // BUILDFLAG(HAS_SPELLCHECK_PANEL)
 #endif
-#if BUILDFLAG(ENABLE_FEED_V2)
+#if BUILDFLAG(IS_ANDROID)
   if (render_frame->IsMainFrame() &&
       feed::IsWebFeedEnabledForLocale(country_codes::GetCurrentCountryCode())) {
     new feed::RssLinkReader(render_frame, registry);

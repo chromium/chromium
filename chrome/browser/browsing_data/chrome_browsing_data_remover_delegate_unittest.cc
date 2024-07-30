@@ -216,7 +216,6 @@
 #include "chrome/browser/android/webapps/webapp_registry.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
-#include "components/feed/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #else
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
