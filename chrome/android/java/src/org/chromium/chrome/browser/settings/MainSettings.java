@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.password_manager.settings.PasswordsPreference;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
@@ -279,6 +280,14 @@ public class MainSettings extends ChromeBaseSettingsFragment
             getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_HUB));
         } else {
             getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_CHECK));
+            findPreference(PREF_SAFETY_HUB)
+                    .setOnPreferenceClickListener(
+                            preference -> {
+                                SafetyHubMetricUtils.recordExternalInteractions(
+                                        SafetyHubMetricUtils.ExternalInteractions
+                                                .OPEN_FROM_SETTINGS_PAGE);
+                                return false;
+                            });
         }
     }
 
