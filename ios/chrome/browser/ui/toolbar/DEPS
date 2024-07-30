@@ -5,7 +5,7 @@ include_rules = [
   "+ios/chrome/browser/ui/fullscreen",
   "+ios/chrome/browser/location_bar/ui_bundled",
   "+ios/chrome/browser/ui/omnibox",
-  "+ios/chrome/browser/ui/orchestrator",
+  "+ios/chrome/browser/orchestrator/ui_bundled",
   "+ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h",
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
   "+ios/chrome/browser/ui/lens",

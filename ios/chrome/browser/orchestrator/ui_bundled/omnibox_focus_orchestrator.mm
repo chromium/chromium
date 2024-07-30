@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
+#import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/orchestrator/edit_view_animatee.h"
-#import "ios/chrome/browser/ui/orchestrator/location_bar_animatee.h"
-#import "ios/chrome/browser/ui/orchestrator/toolbar_animatee.h"
+#import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
+#import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_animatee.h"
+#import "ios/chrome/browser/orchestrator/ui_bundled/toolbar_animatee.h"
 #import "ios/chrome/common/material_timing.h"
 
 @interface OmniboxFocusOrchestrator ()

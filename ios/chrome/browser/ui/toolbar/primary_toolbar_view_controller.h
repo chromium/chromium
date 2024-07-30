@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_PRIMARY_TOOLBAR_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
-#import "ios/chrome/browser/ui/orchestrator/toolbar_animatee.h"
+#import "ios/chrome/browser/orchestrator/ui_bundled/toolbar_animatee.h"
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 
