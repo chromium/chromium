@@ -90,9 +90,9 @@ ts_library("ts_build") {
     "../definitions/runtime.d.ts",
     "../definitions/settings_private_mv2.d.ts",
     "../definitions/tabs.d.ts",
+    "../definitions/windows.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/windows.d.ts",
   ]
 
   in_files = ts_modules + js_modules

@@ -75,7 +75,7 @@ declare global {
           callback?: (window: Window) => void): void;
 
       export function getAll(
-          queryOptions?: QueryOptions,
+          queryOptionsOrCallback?: QueryOptions|((windows: Window[]) => void),
           callback?: (windows: Window[]) => void): void;
 
       export function create(
