@@ -159,7 +159,8 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
 
 std::u16string GetSearchFieldPlaceholderText() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT);
+  return l10n_util::GetStringUTF16(
+      IDS_PICKER_SEARCH_FIELD_NO_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT);
 #else
   return u"Placeholder";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

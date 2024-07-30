@@ -41,7 +41,8 @@ bool g_feature_tour_enabled = true;
 
 std::u16string GetHeadingText() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(IDS_PICKER_FEATURE_TOUR_HEADING_TEXT);
+  return l10n_util::GetStringUTF16(
+      IDS_PICKER_FEATURE_TOUR_WITH_EDITOR_HEADING_TEXT);
 #else
   return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -49,7 +50,8 @@ std::u16string GetHeadingText() {
 
 std::u16string GetBodyText() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(IDS_PICKER_FEATURE_TOUR_BODY_TEXT);
+  return l10n_util::GetStringUTF16(
+      IDS_PICKER_FEATURE_TOUR_WITH_EDITOR_BODY_TEXT);
 #else
   return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
