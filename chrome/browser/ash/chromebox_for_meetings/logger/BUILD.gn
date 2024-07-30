@@ -38,6 +38,7 @@ static_library("logger") {
   ]
 
   deps = [
+    "//chrome/browser/ash/settings",
     "//chromeos/ash/components/chromebox_for_meetings",
     "//components/reporting/proto:record_constants",
     "//crypto",
