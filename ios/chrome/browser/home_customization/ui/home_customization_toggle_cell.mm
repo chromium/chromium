@@ -141,11 +141,12 @@ const CGFloat kSpacingBetweenIconAndText = 24;
   _navigationImageView.hidden =
       ![HomeCustomizationHelper doesTypeHaveSubmenu:type];
 
-  if (enabled && [HomeCustomizationHelper doesTypeHaveSubmenu:type]) {
+  if ([HomeCustomizationHelper doesTypeHaveSubmenu:type]) {
     _tapRecognizer = [[UITapGestureRecognizer alloc]
         initWithTarget:self
                 action:@selector(navigateToSubmenu:)];
     [_navigableStackView addGestureRecognizer:_tapRecognizer];
+    _tapRecognizer.enabled = enabled;
   }
 
   self.accessibilityIdentifier =

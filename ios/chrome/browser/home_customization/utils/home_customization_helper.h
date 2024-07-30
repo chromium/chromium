@@ -44,6 +44,9 @@
 // Returns the text of the header for a given menu page.
 + (NSString*)headerTextForPage:(CustomizationMenuPage)page;
 
+// Returns the navigation bar's title for a given menu page.
++ (NSString*)navigationBarTitleForPage:(CustomizationMenuPage)page;
+
 // Returns `YES` if the given type supports navigation to a submenu.
 + (BOOL)doesTypeHaveSubmenu:(CustomizationToggleType)type;
 

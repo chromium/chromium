@@ -134,6 +134,20 @@
   }
 }
 
++ (NSString*)navigationBarTitleForPage:(CustomizationMenuPage)page {
+  switch (page) {
+    case CustomizationMenuPage::kMain:
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE);
+    case CustomizationMenuPage::kDiscover:
+      return @"(TODO) Discover Feed";
+    case CustomizationMenuPage::kMagicStack:
+      return @"(TODO) Cards";
+    case CustomizationMenuPage::kUnknown:
+      NOTREACHED_NORETURN();
+  }
+}
+
 + (BOOL)doesTypeHaveSubmenu:(CustomizationToggleType)type {
   return [HomeCustomizationHelper menuPageForToggleType:type] !=
          CustomizationMenuPage::kUnknown;

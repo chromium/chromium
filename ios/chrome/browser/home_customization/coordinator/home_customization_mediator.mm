@@ -8,6 +8,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_consumer.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
@@ -49,6 +50,13 @@
       CustomizationLinkType::kLearnMore,
   };
   [self.discoverPageConsumer populateDiscoverLinks:linksVector];
+}
+
+- (void)configureMagicStackPageData {
+  std::map<CustomizationToggleType, BOOL> toggleMap = {
+      // TODO(crbug.com/350990359): Populate data.
+  };
+  [self.magicStackPageConsumer populateToggles:toggleMap];
 }
 
 #pragma mark - Private

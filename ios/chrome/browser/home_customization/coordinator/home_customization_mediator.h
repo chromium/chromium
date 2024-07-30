@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 
 @protocol HomeCustomizationDiscoverConsumer;
+@protocol HomeCustomizationMagicStackConsumer;
 @protocol HomeCustomizationMainConsumer;
 @protocol HomeCustomizationNavigationDelegate;
 class PrefService;
@@ -30,6 +31,10 @@ class PrefService;
 @property(nonatomic, weak) id<HomeCustomizationDiscoverConsumer>
     discoverPageConsumer;
 
+// A consumer representing the Magic Stack page's view controller.
+@property(nonatomic, weak) id<HomeCustomizationMagicStackConsumer>
+    magicStackPageConsumer;
+
 // The delegate which handles navigations within the menu.
 @property(nonatomic, weak) id<HomeCustomizationNavigationDelegate>
     navigationDelegate;
@@ -39,6 +44,10 @@ class PrefService;
 
 // Sets the data for the Discover page's cells and sends it to the `consumer`.
 - (void)configureDiscoverPageData;
+
+// Sets the data for the Magic Stack page's cells and sends it to the
+// `consumer`.
+- (void)configureMagicStackPageData;
 
 @end
 

@@ -11,10 +11,13 @@
 typedef NSString CustomizationSection;
 
 // The section identifier for the main menu's visibility toggles.
-extern CustomizationSection* const kCustomizationSectionToggles;
+extern CustomizationSection* const kCustomizationSectionMainToggles;
 
 // The section identifier for the Discover submenu's links.
 extern CustomizationSection* const kCustomizationSectionDiscoverLinks;
+
+// The section identifier for the Magic Stack menu's visibility toggles.
+extern CustomizationSection* const kCustomizationSectionMagicStackToggles;
 
 // The identifier for the bottom sheet's initial detent.
 extern NSString* const kBottomSheetDetentIdentifier;

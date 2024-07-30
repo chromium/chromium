@@ -17,6 +17,7 @@
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -1656,8 +1657,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Check for a toggle cell for Shortcuts, Magic Stack and Discover, and ensure
@@ -1709,8 +1710,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
   [[EarlGrey
       selectElementWithMatcher:CustomizationToggle(
@@ -1778,8 +1779,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Tap the Most Visited cell which shouldn't prompt a navigation.
@@ -1788,8 +1789,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                      kCustomizationToggleMostVisitedNavigableIdentifier)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Disable Magic Stack which should disable navigation.
@@ -1802,8 +1803,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                      kCustomizationToggleMagicStackNavigableIdentifier)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Re-enable the Magic Stack switch and tap it to check for a navigation to
@@ -1816,7 +1817,10 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                  grey_accessibilityID(
                      kCustomizationToggleMagicStackNavigableIdentifier)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Magic Stack")]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID([HomeCustomizationHelper
+              navigationBarTitleForPage:CustomizationMenuPage::kMagicStack])]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -1842,8 +1846,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                                    kNTPCustomizationMenuButtonIdentifier)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(l10n_util::GetNSString(
-                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+                 grey_accessibilityID([HomeCustomizationHelper
+                     navigationBarTitleForPage:CustomizationMenuPage::kMain])]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Navigate to the Discover submenu.
@@ -1851,7 +1855,10 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       selectElementWithMatcher:
           grey_accessibilityID(kCustomizationToggleDiscoverNavigableIdentifier)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Discover")]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID([HomeCustomizationHelper
+              navigationBarTitleForPage:CustomizationMenuPage::kDiscover])]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that all 4 link cells are visible.

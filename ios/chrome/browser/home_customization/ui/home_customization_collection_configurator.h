@@ -9,20 +9,28 @@
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
+@protocol HomeCustomizationViewControllerProtocol;
+
 // Configures collection views within the Home customization menu.
 @interface HomeCustomizationCollectionConfigurator : NSObject
 
 // Initializes the configurator for a given `page` in the menu.
-- (instancetype)initWithPage:(CustomizationMenuPage)page
+- (instancetype)initWithViewController:
+    (UIViewController<HomeCustomizationViewControllerProtocol,
+                      UICollectionViewDelegate>*)viewController
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// The diffable data source for the collection view.
-@property(nonatomic, weak)
-    UICollectionViewDiffableDataSource* diffableDataSource;
+// Configures the collection view with a diffable data source on the view
+// controller.
+- (void)configureCollectionView;
 
-// Returns a collection view layout suited for the current page..
-- (UICollectionViewLayout*)collectionViewLayout;
+// Configures the navigation bar for view controller.
+- (void)configureNavigationBar;
+
+// Returns a section representing a vertical list of cells.
+- (NSCollectionLayoutSection*)verticalListSectionForLayoutEnvironment:
+    (id<NSCollectionLayoutEnvironment>)layoutEnvironment;
 
 @end
 

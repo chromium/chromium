@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
-CustomizationSection* const kCustomizationSectionToggles =
-    @"CustomizationSectionToggles";
+CustomizationSection* const kCustomizationSectionMainToggles =
+    @"CustomizationSectionMainToggles";
 
 CustomizationSection* const kCustomizationSectionDiscoverLinks =
     @"CustomizationSectionDiscoverLinks";
+
+CustomizationSection* const kCustomizationSectionMagicStackToggles =
+    @"CustomizationSectionMagicStackToggles";
 
 NSString* const kBottomSheetDetentIdentifier = @"BottomSheetDetentIdentifier";
 

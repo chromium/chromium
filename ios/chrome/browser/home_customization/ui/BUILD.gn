@@ -13,6 +13,7 @@ source_set("ui") {
     "home_customization_header_view.mm",
     "home_customization_link_cell.h",
     "home_customization_link_cell.mm",
+    "home_customization_magic_stack_consumer.h",
     "home_customization_magic_stack_view_controller.h",
     "home_customization_magic_stack_view_controller.mm",
     "home_customization_main_consumer.h",
@@ -21,6 +22,7 @@ source_set("ui") {
     "home_customization_mutator.h",
     "home_customization_toggle_cell.h",
     "home_customization_toggle_cell.mm",
+    "home_customization_view_controller_protocol.h",
   ]
   deps = [
     "//ios/chrome/app/strings:ios_strings",

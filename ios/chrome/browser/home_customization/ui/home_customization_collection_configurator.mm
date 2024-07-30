@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_view_controller_protocol.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
+
 namespace {
 
 // The dimensions of a cell in a vertical collection view section.
@@ -18,72 +21,56 @@ const CGFloat kSpacingBelowHeader = 16;
 
 }  // namespace
 
-@implementation HomeCustomizationCollectionConfigurator {
-  // The customization page for the collection view.
-  CustomizationMenuPage _page;
-}
+@interface HomeCustomizationCollectionConfigurator ()
 
-- (instancetype)initWithPage:(CustomizationMenuPage)page {
+// The view controller being configured.
+@property(nonatomic, weak)
+    UIViewController<HomeCustomizationViewControllerProtocol,
+                     UICollectionViewDelegate>* viewController;
+
+@end
+
+@implementation HomeCustomizationCollectionConfigurator
+
+- (instancetype)initWithViewController:
+    (UIViewController<HomeCustomizationViewControllerProtocol,
+                      UICollectionViewDelegate>*)viewController {
   self = [super init];
   if (self) {
-    _page = page;
+    _viewController = viewController;
   }
   return self;
 }
 
 #pragma mark - Public
 
-- (UICollectionViewLayout*)collectionViewLayout {
-  UICollectionViewCompositionalLayoutConfiguration* configuration =
-      [[UICollectionViewCompositionalLayoutConfiguration alloc] init];
-  __weak __typeof(self) weakSelf = self;
-  return [[UICollectionViewCompositionalLayout alloc]
-      initWithSectionProvider:^(
-          NSInteger sectionIndex,
-          id<NSCollectionLayoutEnvironment> layoutEnvironment) {
-        return [weakSelf sectionForIndex:sectionIndex
-                       layoutEnvironment:layoutEnvironment];
-      }
-                configuration:configuration];
+- (void)configureCollectionView {
+  UICollectionView* collectionView =
+      [[UICollectionView alloc] initWithFrame:CGRectZero
+                         collectionViewLayout:[self collectionViewLayout]];
+  collectionView.translatesAutoresizingMaskIntoConstraints = NO;
+  collectionView.delegate = _viewController;
+  _viewController.collectionView = collectionView;
+
+  UICollectionViewDiffableDataSource* diffableDataSource =
+      [self createDiffableDataSource];
+  _viewController.collectionView.dataSource = diffableDataSource;
+  _viewController.diffableDataSource = diffableDataSource;
 }
 
-#pragma mark - Private
-
-// Returns the section for a given `sectionIndex`.
-- (NSCollectionLayoutSection*)
-      sectionForIndex:(NSInteger)sectionIndex
-    layoutEnvironment:(id<NSCollectionLayoutEnvironment>)layoutEnvironment {
-  if ([self isVerticalListSection:sectionIndex]) {
-    return [self verticalListSectionForLayoutEnvironment:layoutEnvironment];
-  }
-  return nil;
+- (void)configureNavigationBar {
+  _viewController.title =
+      [HomeCustomizationHelper navigationBarTitleForPage:_viewController.page];
+  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                           target:_viewController
+                           action:@selector(dismissCustomizationMenu)];
+  dismissButton.accessibilityIdentifier = kNavigationBarDismissButtonIdentifier;
+  _viewController.navigationItem.rightBarButtonItem = dismissButton;
+  _viewController.navigationItem.backBarButtonItem.accessibilityIdentifier =
+      kNavigationBarBackButtonIdentifier;
 }
 
-// Whether the current page should display a header.
-- (BOOL)doesPageHaveHeader {
-  return _page == CustomizationMenuPage::kDiscover ||
-         _page == CustomizationMenuPage::kMagicStack;
-}
-
-// Whether the section at `sectionIndex` in the current diffable data source
-// snapshot is a vertical list.
-- (BOOL)isVerticalListSection:(NSInteger)sectionIndex {
-  if (_page == CustomizationMenuPage::kMain) {
-    return sectionIndex ==
-           [_diffableDataSource.snapshot
-               indexOfSectionIdentifier:kCustomizationSectionToggles];
-  }
-
-  if (_page == CustomizationMenuPage::kDiscover) {
-    return sectionIndex ==
-           [_diffableDataSource.snapshot
-               indexOfSectionIdentifier:kCustomizationSectionDiscoverLinks];
-  }
-
-  return NO;
-}
-
-// Returns a section representing a vertical list of cells.
 - (NSCollectionLayoutSection*)verticalListSectionForLayoutEnvironment:
     (id<NSCollectionLayoutEnvironment>)layoutEnvironment {
   NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
@@ -133,6 +120,54 @@ const CGFloat kSpacingBelowHeader = 16;
   }
 
   return section;
+}
+
+#pragma mark - Private
+
+// Returns a collection view layout suited for the current page.
+- (UICollectionViewLayout*)collectionViewLayout {
+  UICollectionViewCompositionalLayoutConfiguration* configuration =
+      [[UICollectionViewCompositionalLayoutConfiguration alloc] init];
+  __weak auto weakViewController = _viewController;
+  return [[UICollectionViewCompositionalLayout alloc]
+      initWithSectionProvider:^(
+          NSInteger sectionIndex,
+          id<NSCollectionLayoutEnvironment> layoutEnvironment) {
+        return [weakViewController sectionForIndex:sectionIndex
+                                 layoutEnvironment:layoutEnvironment];
+      }
+                configuration:configuration];
+}
+
+// Creates the diffable data source with a cell provider used to configure
+// each cell.
+- (UICollectionViewDiffableDataSource*)createDiffableDataSource {
+  __weak auto weakViewController = _viewController;
+  auto cellProvider =
+      ^UICollectionViewCell*(UICollectionView* collectionView,
+                             NSIndexPath* indexPath, NSNumber* itemIdentifier) {
+        return [weakViewController configuredCellForIndexPath:indexPath
+                                               itemIdentifier:itemIdentifier];
+      };
+  UICollectionViewDiffableDataSource* diffableDataSource =
+      [[UICollectionViewDiffableDataSource alloc]
+          initWithCollectionView:_viewController.collectionView
+                    cellProvider:cellProvider];
+  if ([self doesPageHaveHeader]) {
+    diffableDataSource.supplementaryViewProvider = ^UICollectionReusableView*(
+        UICollectionView* collectionView, NSString* elementKind,
+        NSIndexPath* indexPath) {
+      return [weakViewController configuredHeaderForIndexPath:indexPath];
+    };
+  }
+
+  return diffableDataSource;
+}
+
+// Whether the current page should display a header.
+- (BOOL)doesPageHaveHeader {
+  return _viewController.page == CustomizationMenuPage::kDiscover ||
+         _viewController.page == CustomizationMenuPage::kMagicStack;
 }
 
 @end

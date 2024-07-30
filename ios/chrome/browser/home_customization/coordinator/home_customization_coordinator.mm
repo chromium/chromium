@@ -57,9 +57,11 @@
 
   _mainViewController.mutator = _mediator;
   _discoverViewController.mutator = _mediator;
+  _magicStackViewController.mutator = _mediator;
 
   _mediator.mainPageConsumer = _mainViewController;
   _mediator.discoverPageConsumer = _discoverViewController;
+  _mediator.magicStackPageConsumer = _magicStackViewController;
   _mediator.navigationDelegate = self;
 
   [super start];
@@ -131,6 +133,7 @@
       [self.navigationController
           pushViewController:self.magicStackViewController
                     animated:YES];
+      [self.mediator configureMagicStackPageData];
       break;
     case CustomizationMenuPage::kDiscover:
       [self.navigationController pushViewController:self.discoverViewController

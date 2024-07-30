@@ -7,9 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_consumer.h"
+
+@protocol HomeCustomizationMutator;
+
 // The view controller representing the Magic Stack page within the Home
 // Customization menu.
-@interface HomeCustomizationMagicStackViewController : UIViewController
+@interface HomeCustomizationMagicStackViewController
+    : UIViewController <HomeCustomizationMagicStackConsumer>
+
+// Mutator for communicating with the HomeCustomizationMediator.
+@property(nonatomic, weak) id<HomeCustomizationMutator> mutator;
 
 @end
 
