@@ -30,7 +30,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "content/public/test/browser_test.h"
@@ -579,8 +578,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, SafeBrowsing_SetTrue) {
 // Tests the behavior of the ThirdPartyCookies preference API.
 // kCookieControlsMode should be set to kOff/kBlockThirdParty if
 // ThirdPartyCookiesAllowed is set to true/false by an extension.
-// kBlockAll3pcToggleEnabled should be set to true only if
-// ThirdPartyCookiesAllowed is false.
 IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
   ExtensionTestMessageListener listener_true("set to true",
                                              ReplyBehavior::kWillReply);
@@ -596,9 +593,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
       base::Value(static_cast<int>(
           content_settings::CookieControlsMode::kIncognitoOnly)),
       /* expected_controlled */ false);
-  VerifyPrefValueAndControlledState(prefs::kBlockAll3pcToggleEnabled,
-                                    base::Value(false),
-                                    /* expected_controlled */ false);
 
   const base::FilePath extension_path =
       test_data_dir_.AppendASCII("preference")
@@ -612,9 +606,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
       prefs::kCookieControlsMode,
       base::Value(static_cast<int>(content_settings::CookieControlsMode::kOff)),
       /* expected_controlled */ true);
-  VerifyPrefValueAndControlledState(prefs::kBlockAll3pcToggleEnabled,
-                                    base::Value(false),
-                                    /* expected_controlled */ false);
   listener_true.Reply("ok");
 
   // Step 2. of the test clears the value.
@@ -624,9 +615,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
       base::Value(static_cast<int>(
           content_settings::CookieControlsMode::kIncognitoOnly)),
       /* expected_controlled */ false);
-  VerifyPrefValueAndControlledState(prefs::kBlockAll3pcToggleEnabled,
-                                    base::Value(false),
-                                    /* expected_controlled */ false);
   listener_clear.Reply("ok");
 
   // Step 3. of the test sets the API to FALSE.
@@ -636,9 +624,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
       base::Value(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)),
       /* expected_controlled */ true);
-  VerifyPrefValueAndControlledState(prefs::kBlockAll3pcToggleEnabled,
-                                    base::Value(true),
-                                    /* expected_controlled */ true);
   listener_false.Reply("ok");
 
   // Step 4. of the test uninstalls the extension.
@@ -649,7 +634,4 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
       base::Value(static_cast<int>(
           content_settings::CookieControlsMode::kIncognitoOnly)),
       /* expected_controlled */ false);
-  VerifyPrefValueAndControlledState(prefs::kBlockAll3pcToggleEnabled,
-                                    base::Value(false),
-                                    /* expected_controlled */ false);
 }
