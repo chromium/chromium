@@ -42,6 +42,10 @@ WebContentsInteractionTestUtil::DeepQuery ApnDialogAdvancedSettingsButton() {
   return ApnDialog() + "cr-expand-button";
 }
 
+WebContentsInteractionTestUtil::DeepQuery ApnDialogAdvancedSettingsGroup() {
+  return ApnDialog() + "iron-collapse";
+}
+
 WebContentsInteractionTestUtil::DeepQuery ApnDialogAttachCheckbox() {
   return ApnDialog() + "cr-checkbox#apnAttachTypeCheckbox";
 }

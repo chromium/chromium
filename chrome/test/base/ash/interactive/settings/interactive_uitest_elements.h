@@ -32,6 +32,10 @@ WebContentsInteractionTestUtil::DeepQuery ApnDialog();
 // The "Advanced Settings" button in APN details dialog.
 WebContentsInteractionTestUtil::DeepQuery ApnDialogAdvancedSettingsButton();
 
+// The expandable group items under the "Advanced Settings" in APN details
+// dialog.
+WebContentsInteractionTestUtil::DeepQuery ApnDialogAdvancedSettingsGroup();
+
 // The "Attach" checkbox of APN types in APN details dialog.
 WebContentsInteractionTestUtil::DeepQuery ApnDialogAttachCheckbox();
 

@@ -34,6 +34,35 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
 
   const SimInfo& esim_info() const { return *esim_info_; }
 
+  void VerifyNoCustomApnsInShill() {
+    const base::Value::Dict* cellular_properties =
+        ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
+            esim_info().service_path());
+    ASSERT_TRUE(cellular_properties);
+    const base::Value::List* shill_custom_apns =
+        cellular_properties->FindList(shill::kCellularCustomApnListProperty);
+    ASSERT_TRUE(shill_custom_apns);
+    EXPECT_EQ(0u, shill_custom_apns->size());
+  }
+
+  void VerifyCustomApnCreatedInShill(const std::string& expected_apn_type) {
+    const base::Value::Dict* cellular_properties =
+        ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
+            esim_info().service_path());
+    ASSERT_TRUE(cellular_properties);
+    const base::Value::List* shill_custom_apns =
+        cellular_properties->FindList(shill::kCellularCustomApnListProperty);
+    ASSERT_TRUE(shill_custom_apns);
+    EXPECT_EQ(1u, shill_custom_apns->size());
+    const std::string* apn_name =
+        shill_custom_apns->front().GetDict().FindString(shill::kApnProperty);
+    EXPECT_EQ(kNewApnName, *apn_name);
+    const std::string* apn_type =
+        shill_custom_apns->front().GetDict().FindString(
+            shill::kApnTypesProperty);
+    EXPECT_EQ(expected_apn_type, *apn_type);
+  }
+
  private:
   std::unique_ptr<SimInfo> esim_info_;
 
@@ -94,17 +123,7 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, CreateDefaultCustomApn) {
 
       Log("Verify no custom APNs before start testing"),
 
-      Do([&]() {
-        const base::Value::Dict* cellular_properties =
-            ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
-                esim_info().service_path());
-        ASSERT_TRUE(cellular_properties);
-        const base::Value::List* shill_custom_apns =
-            cellular_properties->FindList(
-                shill::kCellularCustomApnListProperty);
-        ASSERT_TRUE(shill_custom_apns);
-        EXPECT_EQ(0u, shill_custom_apns->size());
-      }),
+      Do([&]() { VerifyNoCustomApnsInShill(); }),
 
       Log("Navigating to the internet page"),
 
@@ -129,12 +148,17 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, CreateDefaultCustomApn) {
       ClickElement(kOSSettingsId, settings::cellular::ApnDialogApnInput()),
       SendTextAsKeyEvents(kOSSettingsId, kNewApnName),
 
-      Log("Check APN type defaults to \'Default\'"),
+      Log("Expand advanced settings"),
 
       WaitForElementEnabled(
           kOSSettingsId, settings::cellular::ApnDialogAdvancedSettingsButton()),
       ClickElement(kOSSettingsId,
                    settings::cellular::ApnDialogAdvancedSettingsButton()),
+      WaitForElementOpened(
+          kOSSettingsId, settings::cellular::ApnDialogAdvancedSettingsGroup()),
+
+      Log("Check APN type defaults to 'Default'"),
+
       WaitForElementChecked(kOSSettingsId,
                             settings::cellular::ApnDialogDefaultCheckbox()),
 
@@ -158,24 +182,117 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, CreateDefaultCustomApn) {
 
       Log("Verify the custom APN saved in Shill"),
 
+      Do([&]() { VerifyCustomApnCreatedInShill(shill::kApnTypeDefault); }),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest,
+                       CreateDefaultAndAttachCustomApn) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
+
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Verify no custom APNs before start testing"),
+
+      Do([&]() { VerifyNoCustomApnsInShill(); }),
+
+      Log("Navigating to the internet page"),
+
+      NavigateToInternetDetailsPage(kOSSettingsId,
+                                    NetworkTypePattern::Cellular(),
+                                    esim_info().nickname()),
+
+      Log("Navigate to the APN revamp details page"),
+
+      NavigateToApnRevampDetailsPage(kOSSettingsId),
+
+      Log("Open add custom APN dialog"),
+
+      OpenAddCustomApnDetailsDialog(kOSSettingsId),
+
+      Log("Type in custom APN name in APN dialog"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::cellular::ApnDialogApnInput()),
+      WaitForElementEnabled(kOSSettingsId,
+                            settings::cellular::ApnDialogApnInput()),
+      ClickElement(kOSSettingsId, settings::cellular::ApnDialogApnInput()),
+      SendTextAsKeyEvents(kOSSettingsId, kNewApnName),
+
+      Log("Expand advanced settings"),
+
+      WaitForElementEnabled(
+          kOSSettingsId, settings::cellular::ApnDialogAdvancedSettingsButton()),
+      ClickElement(kOSSettingsId,
+                   settings::cellular::ApnDialogAdvancedSettingsButton()),
+      WaitForElementOpened(
+          kOSSettingsId, settings::cellular::ApnDialogAdvancedSettingsGroup()),
+
+      Log("Check APN type defaults to 'Default'"),
+
+      WaitForElementChecked(kOSSettingsId,
+                            settings::cellular::ApnDialogDefaultCheckbox()),
+
+      Log("Uncheck 'Default' type"),
+
+      ClickElement(kOSSettingsId,
+                   settings::cellular::ApnDialogDefaultCheckbox()),
+      WaitForElementUnchecked(kOSSettingsId,
+                              settings::cellular::ApnDialogDefaultCheckbox()),
+
+      Log("Check 'Attach' type"),
+
+      WaitForElementUnchecked(kOSSettingsId,
+                              settings::cellular::ApnDialogAttachCheckbox()),
+      ClickElement(kOSSettingsId,
+                   settings::cellular::ApnDialogAttachCheckbox()),
+      WaitForElementChecked(kOSSettingsId,
+                            settings::cellular::ApnDialogAttachCheckbox()),
+
+      Log("Check for the warning message"),
+
+      WaitForElementExists(
+          kOSSettingsId, settings::cellular::ApnDialogDefaultApnRequiredInfo()),
+
+      Log("Check for the 'Add' button disabled"),
+
+      WaitForElementDisabled(kOSSettingsId,
+                             settings::cellular::ApnDialogAddActionButton()),
+
+      Log("Re-check the 'Default' type"),
+
+      ClickElement(kOSSettingsId,
+                   settings::cellular::ApnDialogDefaultCheckbox()),
+      WaitForElementChecked(kOSSettingsId,
+                            settings::cellular::ApnDialogDefaultCheckbox()),
+
+      Log("Save the custom APN"),
+
+      WaitForElementEnabled(kOSSettingsId,
+                            settings::cellular::ApnDialogAddActionButton()),
+      ClickElement(kOSSettingsId,
+                   settings::cellular::ApnDialogAddActionButton()),
+
+      Log("Wait for the newly created custom APN appear at the top of the "
+          "list"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::cellular::ApnListFirstItem()),
+      WaitForElementTextContains(kOSSettingsId,
+                                 settings::cellular::ApnListFirstItemName(),
+                                 /*text=*/kNewApnName),
+
+      Log("Verify the custom APN saved in Shill"),
+
       Do([&]() {
-        const base::Value::Dict* cellular_properties =
-            ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
-                esim_info().service_path());
-        ASSERT_TRUE(cellular_properties);
-        const base::Value::List* shill_custom_apns =
-            cellular_properties->FindList(
-                shill::kCellularCustomApnListProperty);
-        ASSERT_TRUE(shill_custom_apns);
-        EXPECT_EQ(1u, shill_custom_apns->size());
-        const std::string* apn_name =
-            shill_custom_apns->front().GetDict().FindString(
-                shill::kApnProperty);
-        EXPECT_EQ(kNewApnName, *apn_name);
-        const std::string* apn_type =
-            shill_custom_apns->front().GetDict().FindString(
-                shill::kApnTypesProperty);
-        EXPECT_EQ(shill::kApnTypeDefault, *apn_type);
+        VerifyCustomApnCreatedInShill(base::StringPrintf(
+            "%s,%s", shill::kApnTypeDefault, shill::kApnTypeIA));
       }),
 
       Log("Test complete"));

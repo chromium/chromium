@@ -168,6 +168,18 @@ class InteractiveAshTest
       const ui::ElementIdentifier& element_id,
       WebContentsInteractionTestUtil::DeepQuery query);
 
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and be unchecked.
+  InteractiveTestApi::MultiStep WaitForElementUnchecked(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery query);
+
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and be opened.
+  InteractiveTestApi::MultiStep WaitForElementOpened(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery query);
+
   // Waits for an element identified by `query` to exist in the DOM of an
   // instrumented WebUI identified by `element_id` and be focused.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementFocused(
