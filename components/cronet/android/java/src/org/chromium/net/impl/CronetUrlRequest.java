@@ -7,6 +7,7 @@ package org.chromium.net.impl;
 import static java.lang.Math.max;
 
 import android.os.Build;
+import android.os.Process;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -24,6 +25,7 @@ import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.Idempotency;
 import org.chromium.net.InlineExecutionProhibitedException;
 import org.chromium.net.NetworkException;
+import org.chromium.net.QuicException;
 import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.RequestPriority;
 import org.chromium.net.UploadDataProvider;
@@ -1011,6 +1013,22 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
             totalLatency = Duration.ofSeconds(0);
         }
 
+        int networkInternalErrorCode = 0;
+        int quicNetworkErrorCode = 0;
+        @ConnectionCloseSource int source = ConnectionCloseSource.UNKNOWN;
+        CronetTrafficInfo.RequestFailureReason failureReason =
+                CronetTrafficInfo.RequestFailureReason.UNKNOWN;
+        if (mException instanceof NetworkException networkException) {
+            networkInternalErrorCode = networkException.getCronetInternalErrorCode();
+            failureReason = CronetTrafficInfo.RequestFailureReason.NETWORK;
+            if (mException instanceof QuicException quicException) {
+                quicNetworkErrorCode = quicException.getQuicDetailedErrorCode();
+                source = quicException.getConnectionCloseSource();
+            }
+        } else if (mException != null) {
+            failureReason = CronetTrafficInfo.RequestFailureReason.OTHER;
+        }
+
         return new CronetTrafficInfo(
                 requestHeaderSizeInBytes,
                 requestBodySizeInBytes,
@@ -1028,7 +1046,13 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 mReadCount,
                 mUploadDataStream == null ? 0 : mUploadDataStream.getReadCount(),
                 /* isBidiStream= */ false,
-                mFinalUserCallbackThrew);
+                mFinalUserCallbackThrew,
+                Process.myUid(),
+                networkInternalErrorCode,
+                quicNetworkErrorCode,
+                source,
+                failureReason,
+                mMetrics.getSocketReused());
     }
 
     // Maybe report metrics. This method should only be called on Callback's executor thread and
