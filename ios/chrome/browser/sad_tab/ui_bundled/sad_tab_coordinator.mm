@@ -6,6 +6,8 @@
 
 #import "base/metrics/histogram_macros.h"
 #import "components/ui_metrics/sadtab_metrics_types.h"
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
+#import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -14,8 +16,6 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/fullscreen/chrome_coordinator+fullscreen_disabling.h"
-#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
-#import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view_controller.h"
 #import "ios/chrome/browser/web/model/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"

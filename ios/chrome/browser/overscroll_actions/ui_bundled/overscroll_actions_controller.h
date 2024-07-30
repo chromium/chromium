@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_OVERSCROLL_ACTIONS_OVERSCROLL_ACTIONS_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_OVERSCROLL_ACTIONS_OVERSCROLL_ACTIONS_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_OVERSCROLL_ACTIONS_UI_BUNDLED_OVERSCROLL_ACTIONS_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_OVERSCROLL_ACTIONS_UI_BUNDLED_OVERSCROLL_ACTIONS_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_view.h"
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_view.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
 @protocol CRWWebViewProxy;
@@ -135,4 +135,4 @@ enum class OverscrollState {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_OVERSCROLL_ACTIONS_OVERSCROLL_ACTIONS_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_OVERSCROLL_ACTIONS_UI_BUNDLED_OVERSCROLL_ACTIONS_CONTROLLER_H_

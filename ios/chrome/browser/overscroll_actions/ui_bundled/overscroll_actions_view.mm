@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_view.h"
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_view.h"
 
 #import <QuartzCore/QuartzCore.h>
 

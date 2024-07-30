@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -21,8 +21,8 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
-#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_gesture_recognizer.h"
-#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_view.h"
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_gesture_recognizer.h"
+#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_view.h"
 #import "ios/chrome/browser/voice/ui_bundled/voice_search_notification_names.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
