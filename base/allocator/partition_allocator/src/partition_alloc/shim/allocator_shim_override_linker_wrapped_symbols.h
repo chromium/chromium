@@ -63,7 +63,7 @@ SHIM_ALWAYS_EXPORT size_t __wrap_malloc_usable_size(void* address) {
   return ShimGetSizeEstimate(address, nullptr);
 }
 
-const size_t kPathMaxSize = 8192;
+inline constexpr size_t kPathMaxSize = 8192;
 static_assert(kPathMaxSize >= PATH_MAX, "");
 
 extern char* __wrap_strdup(const char* str);
@@ -119,7 +119,7 @@ SHIM_ALWAYS_EXPORT char* __wrap_getcwd(char* buffer, size_t size) {
   if (!size) {
     size = kPathMaxSize;
   }
-  char local_buffer[size];
+  char local_buffer[kPathMaxSize];
   if (!__real_getcwd(local_buffer, size)) {
     return nullptr;
   }
