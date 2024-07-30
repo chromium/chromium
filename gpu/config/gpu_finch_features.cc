@@ -218,12 +218,6 @@ BASE_FEATURE(kAdjustGpuProcessPriority,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Fix to move cache key prefix generation from host to gpu service side in
-// order to avoid race in GpuInfo. crbug.com/1506660.
-BASE_FEATURE(kGenGpuDiskCacheKeyPrefixInGpuService,
-             "GenGpuDiskCacheKeyPrefixInGpuService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Grshader disk cache will be cleared on startup if any cache
 // entry prefix does not match with the current prefix. prefix is made up of
 // various parameters like chrome version, driver version etc.
