@@ -738,6 +738,13 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
 
   // Extension run with |activation_token| was already deactivated.
   if (!IsCurrentActivation(extension_id, activation_token)) {
+    if (!success) {
+      base::UmaHistogramEnumeration(
+          "Extensions.ServiceWorkerBackground."
+          "WorkerUnregistrationFailureStatus_"
+          "DeactivateExtension_NotCurrentActivation",
+          status);
+    }
     return;
   }
 

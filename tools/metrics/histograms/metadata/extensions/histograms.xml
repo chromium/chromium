@@ -144,7 +144,9 @@ This is emitted for two scenarios when a worker may be unregistered:
                to prepare for the updated version's worker to be registered."/>
   <variant name="_DeactivateExtension"
       summary="This metric is only emitted in the #2 (deactivate extension)
-               scenario."/>
+               scenario when the worker is the current worker activation.
+               This means the worker was not deactivated by the
+               ServiceWorkerTaskQueue when this was emitted."/>
 </variants>
 
 <variants name="VerifiedFileType">
@@ -4796,6 +4798,20 @@ This is emitted for two scenarios when a worker may be unregistered:
   <summary>
     Tracks whether background service worker registration succeeded or not. It
     is emitted whenever an extension is enabled (including updates).
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_DeactivateExtension_NotCurrentActivation"
+    enum="ServiceWorkerStatusCode" expires_after="2025-03-25">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Emitted at the same time as
+    Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_DeactivateExtension,
+    however it is for when the worker is not the current activation. Not the
+    current activation means the worker was deactivated in the
+    ServiceWorkerTaskQueue when this metric is emitted.
   </summary>
 </histogram>
 
