@@ -43,6 +43,9 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseRealBuffersForPageFlipTest);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSkiaOutputDeviceBufferQueue);
 #endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcLogCapturePipeline);
+#if BUILDFLAG(IS_WIN)
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSetPresentDuration);
+#endif  // BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewVulkanIntermediateBuffer);
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSurfaceLayerForVideoDefault);
@@ -117,6 +120,9 @@ VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();
 VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
+#if BUILDFLAG(IS_WIN)
+VIZ_COMMON_EXPORT bool ShouldUseSetPresentDuration();
+#endif  // BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT std::optional<int> ShouldDrawPredictedInkPoints();
 VIZ_COMMON_EXPORT std::string InkPredictor();
 VIZ_COMMON_EXPORT bool UseWebViewNewInvalidateHeuristic();
