@@ -217,23 +217,23 @@ void AppendEncodedContributionToCborArray(
   array.emplace_back(std::move(map));
 }
 
-// Returns a vector with a serialized CBOR map. See the AggregatableReport
-// documentation for more detail on the expected format. Returns an empty
-// vector in case of error.
-// Note that a vector is returned to match the `kExperimentalPoplar` case.
-std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
-    const AggregationServicePayloadContents& payload_contents) {
+// Returns a serialized CBOR map. See the `AggregatableReport` documentation for
+// more detail on the expected format. Returns `std::nullopt` if serialization
+// fails.
+std::optional<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
+    const AggregatableReportRequest& request) {
+  const AggregationServicePayloadContents& payload_contents =
+      request.payload_contents();
+
   cbor::Value::MapValue value;
   value.emplace(kOperationKey, kHistogramValue);
 
   cbor::Value::ArrayValue data;
-  base::ranges::for_each(
-      payload_contents.contributions,
-      [&](const blink::mojom::AggregatableReportHistogramContribution&
-              contribution) {
-        AppendEncodedContributionToCborArray(
-            data, contribution, payload_contents.filtering_id_max_bytes);
-      });
+  for (const blink::mojom::AggregatableReportHistogramContribution&
+           contribution : payload_contents.contributions) {
+    AppendEncodedContributionToCborArray(
+        data, contribution, payload_contents.filtering_id_max_bytes);
+  }
 
   // This property is enforced by `AggregatableReportRequest::Create()`.
   CHECK_GE(payload_contents.max_contributions_allowed,
@@ -251,14 +251,7 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
 
   value.emplace("data", std::move(data));
 
-  std::optional<std::vector<uint8_t>> unencrypted_payload =
-      cbor::Writer::Write(cbor::Value(std::move(value)));
-
-  if (!unencrypted_payload.has_value()) {
-    return {};
-  }
-
-  return {std::move(unencrypted_payload.value())};
+  return cbor::Writer::Write(cbor::Value(std::move(value)));
 }
 
 std::optional<AggregationServicePayloadContents>
@@ -902,19 +895,28 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
 
   switch (report_request.payload_contents().aggregation_mode) {
     case blink::mojom::AggregationServiceMode::kTeeBased: {
-      unencrypted_payloads = ConstructUnencryptedTeeBasedPayload(
-          report_request.payload_contents());
+      std::optional<std::vector<uint8_t>> payload =
+          ConstructUnencryptedTeeBasedPayload(report_request);
+      if (!payload.has_value()) {
+        return std::nullopt;
+      }
 
       MaybeVerifyPayloadLength(
           report_request.payload_contents().max_contributions_allowed,
-          /*payload_length=*/unencrypted_payloads[0].size(),
+          /*payload_length=*/payload->size(),
           report_request.payload_contents().filtering_id_max_bytes);
+
+      unencrypted_payloads.emplace_back(*std::move(payload));
       break;
     }
     case blink::mojom::AggregationServiceMode::kExperimentalPoplar: {
 #if BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
       unencrypted_payloads = ConstructUnencryptedExperimentalPoplarPayloads(
           report_request.payload_contents());
+
+      if (unencrypted_payloads.empty()) {
+        return std::nullopt;
+      }
       break;
 #else
       LOG(WARNING)
@@ -924,10 +926,7 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
 #endif  // BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
     }
   }
-
-  if (unencrypted_payloads.empty()) {
-    return std::nullopt;
-  }
+  CHECK(!unencrypted_payloads.empty());
 
   std::string encoded_shared_info =
       report_request.shared_info().SerializeAsJson();
