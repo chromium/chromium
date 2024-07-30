@@ -719,6 +719,9 @@ void FakeHermesEuiccClient::CreateCellularService(
                                    base::Value(false));
   service_test->SetServiceProperty(service_path, shill::kVisibleProperty,
                                    base::Value(true));
+  service_test->SetServiceProperty(service_path, shill::kAutoConnectProperty,
+                                   base::Value(true));
+
   // Add the default cellular APN. This is intended to simulate the
   // auto-detecting APN in Shill.
   auto apn_value =
