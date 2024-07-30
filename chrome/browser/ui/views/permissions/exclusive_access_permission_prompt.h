@@ -50,7 +50,7 @@ class ExclusiveAccessPermissionPrompt
   ExclusiveAccessPermissionPromptView* GetViewForTesting();
 
  private:
-  void ShowPrompt();
+  bool ShowPrompt();
   void ClosePrompt();
 
   views::UniqueWidgetPtr content_scrim_widget_;

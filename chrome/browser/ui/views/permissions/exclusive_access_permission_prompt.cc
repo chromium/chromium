@@ -16,14 +16,14 @@ ExclusiveAccessPermissionPrompt::ExclusiveAccessPermissionPrompt(
     permissions::PermissionPrompt::Delegate* delegate)
     : PermissionPromptDesktop(browser, web_contents, delegate),
       delegate_(delegate) {
-  ShowPrompt();
+  if (ShowPrompt()) {
+    LocationBarView* lbv = GetLocationBarView();
 
-  LocationBarView* lbv = GetLocationBarView();
-
-  // Before showing a chip make sure the LocationBar is in a valid state. That
-  // fixes a bug when a chip overlays the padlock icon.
-  lbv->InvalidateLayout();
-  lbv->GetChipController()->ShowPermissionChip(delegate->GetWeakPtr());
+    // Before showing a chip make sure the LocationBar is in a valid state. That
+    // fixes a bug when a chip overlays the padlock icon.
+    lbv->InvalidateLayout();
+    lbv->GetChipController()->ShowPermissionChip(delegate->GetWeakPtr());
+  }
 }
 
 ExclusiveAccessPermissionPrompt::~ExclusiveAccessPermissionPrompt() {
@@ -50,7 +50,7 @@ ExclusiveAccessPermissionPrompt::GetViewForTesting() {
       prompt_view_tracker_.view());
 }
 
-void ExclusiveAccessPermissionPrompt::ShowPrompt() {
+bool ExclusiveAccessPermissionPrompt::ShowPrompt() {
   raw_ptr<ExclusiveAccessPermissionPromptView> prompt_view =
       new ExclusiveAccessPermissionPromptView(browser(),
                                               GetPermissionPromptDelegate());
@@ -59,8 +59,16 @@ void ExclusiveAccessPermissionPrompt::ShowPrompt() {
       EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
           weak_factory_.GetWeakPtr(),
           web_contents()->GetColorProvider().GetColor(ui::kColorSysStateScrim));
+
+  // If the tab/native view is closed, the `content_scrim_widget_` may be
+  // nullptr. In this scenario, skip showing the prompt.
+  if (!content_scrim_widget_) {
+    return false;
+  }
   prompt_view->UpdateAnchor(content_scrim_widget_.get());
   prompt_view->Show();
+
+  return true;
 }
 
 void ExclusiveAccessPermissionPrompt::ClosePrompt() {

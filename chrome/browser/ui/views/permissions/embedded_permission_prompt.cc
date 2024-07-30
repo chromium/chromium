@@ -304,6 +304,11 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
             SkColorSetA(web_contents()->GetColorProvider().GetColor(
                             ui::kColorRefNeutral20),
                         0.8 * SK_AlphaOPAQUE));
+    // If the tab/native view is closed, the `content_scrim_widget_` may be
+    // nullptr. In this scenario, skip showing the prompt.
+    if (!content_scrim_widget_) {
+      return;
+    }
     prompt_view->UpdateAnchor(content_scrim_widget_.get());
     prompt_view->Show();
   }
