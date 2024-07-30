@@ -52,7 +52,11 @@ if (use_v8_context_snapshot) {
         "--output_file=$output_path",
       ]
 
-      deps = [ ":v8_context_snapshot_generator" ]
+      sources = [ "$root_out_dir/snapshot_blob.bin" ]
+      deps = [
+        ":v8_context_snapshot_generator",
+        "//v8:run_mksnapshot_default",
+      ]
 
       # TODO(sky): figure out why this doesn't work on android cross compile.
       # In the case of compiling for the snapshot `shlib_extension` is ".so"
