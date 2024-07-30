@@ -30,6 +30,9 @@ void AddDefaultAPIKeyToRequest(network::ResourceRequest& request,
 void AddAPIKeyToRequest(network::ResourceRequest& request,
                         const std::string& api_key);
 
+// Whether the request has an API key set.
+bool HasAPIKey(const network::ResourceRequest& request);
+
 }  // namespace google_apis
 
 #endif  // GOOGLE_APIS_COMMON_API_KEY_REQUEST_UTIL_H_

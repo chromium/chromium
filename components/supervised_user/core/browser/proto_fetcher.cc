@@ -30,8 +30,8 @@
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto/test.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "google_apis/google_api_keys.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_status_code.h"
 #include "proto_fetcher.h"
@@ -115,10 +115,7 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
         CreateAuthorizationHeader(access_token_info.value()));
   } else {
     CHECK(channel);
-    resource_request->headers.SetHeader(
-        "X-Goog-Api-Key", *channel == version_info::Channel::STABLE
-                              ? google_apis::GetAPIKey()
-                              : google_apis::GetNonStableAPIKey());
+    google_apis::AddDefaultAPIKeyToRequest(*resource_request, *channel);
   }
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =

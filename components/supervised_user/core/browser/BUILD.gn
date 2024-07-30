@@ -49,6 +49,7 @@ static_library("fetcher") {
     "//components/supervised_user/core/browser/proto:test_support",
     "//components/supervised_user/core/common",
     "//google_apis",
+    "//google_apis/common",
     "//net/traffic_annotation",
     "//url",
   ]
@@ -193,6 +194,7 @@ source_set("unit_tests") {
     "//components/supervised_user/test_support",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
+    "//google_apis/common",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

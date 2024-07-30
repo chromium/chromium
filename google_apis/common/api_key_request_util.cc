@@ -31,10 +31,13 @@ void AddAPIKeyToRequest(network::ResourceRequest& request,
     DLOG(FATAL) << "API key cannot be empty.";
     return;
   }
-  DLOG_ASSERT(!request.headers.HasHeader(kApiKeyHeaderName))
-      << "API key already present on the request.";
+  DLOG_ASSERT(!HasAPIKey(request)) << "API key already present on the request.";
 
   request.headers.SetHeader(kApiKeyHeaderName, api_key);
+}
+
+bool HasAPIKey(const network::ResourceRequest& request) {
+  return request.headers.HasHeader(kApiKeyHeaderName);
 }
 
 }  // namespace google_apis
