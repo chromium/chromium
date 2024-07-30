@@ -95,17 +95,6 @@ BASE_FEATURE(kCrosShortstand,
              "CrosShortstand",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// With this feature enabled, the shortcut app badge is painted in the UI
-// instead of being part of the shortcut app icon.
-
-// Enables the new UI for browser created shortcut backed by web app system
-// on Chrome OS.
-BASE_FEATURE(kCrosWebAppShortcutUiUpdate,
-             "CrosWebAppShortcutUiUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Enables denying file access to dlp protected files in MyFiles.
 BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
              "DataControlsFileAccessDefaultDeny",

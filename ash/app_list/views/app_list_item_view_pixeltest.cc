@@ -44,8 +44,7 @@ class AppListItemViewPixelTestBase : public AshTestBase {
                                bool use_rtl,
                                bool is_new_install,
                                bool has_notification,
-                               bool enable_promise_icons,
-                               bool enable_cros_web_app_shortcut_badge)
+                               bool enable_promise_icons)
       : use_drag_drop_refactor_(use_drag_drop_refactor),
         use_folder_icon_refresh_(use_folder_icon_refresh),
         use_tablet_mode_(use_tablet_mode),
@@ -53,9 +52,7 @@ class AppListItemViewPixelTestBase : public AshTestBase {
         use_rtl_(use_rtl),
         is_new_install_(is_new_install),
         has_notification_(has_notification),
-        enable_promise_icons_(enable_promise_icons),
-        enable_cros_web_app_shortcut_badge_(
-            enable_cros_web_app_shortcut_badge) {}
+        enable_promise_icons_(enable_promise_icons) {}
 
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -69,11 +66,7 @@ class AppListItemViewPixelTestBase : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
         {{app_list_features::kDragAndDropRefactor, use_drag_drop_refactor()},
-         {ash::features::kPromiseIcons, enable_promise_icons()},
-         {chromeos::features::kCrosWebAppShortcutUiUpdate,
-          enable_cros_web_app_shortcut_badge()},
-         {ash::features::kSeparateWebAppShortcutBadgeIcon,
-          enable_cros_web_app_shortcut_badge()}});
+         {ash::features::kPromiseIcons, enable_promise_icons()}});
 
     AshTestBase::SetUp();
 
@@ -167,9 +160,6 @@ class AppListItemViewPixelTestBase : public AshTestBase {
   bool is_new_install() const { return is_new_install_; }
   bool has_notification() const { return has_notification_; }
   bool enable_promise_icons() const { return enable_promise_icons_; }
-  bool enable_cros_web_app_shortcut_badge() const {
-    return enable_cros_web_app_shortcut_badge_;
-  }
 
  private:
   const bool use_drag_drop_refactor_;
@@ -180,7 +170,6 @@ class AppListItemViewPixelTestBase : public AshTestBase {
   const bool is_new_install_;
   const bool has_notification_;
   const bool enable_promise_icons_;
-  const bool enable_cros_web_app_shortcut_badge_;
 
   std::unique_ptr<DragDropControllerTestApi> drag_drop_controller_test_api_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -206,8 +195,7 @@ class AppListItemViewPixelTest
             /*use_rtl=*/std::get<4>(GetParam()),
             /*is_new_install=*/std::get<5>(GetParam()),
             /*has_notification=*/std::get<6>(GetParam()),
-            /*enable_promise_icons=*/false,
-            /*enable_cros_web_app_shortcut_badge=*/false) {}
+            /*enable_promise_icons=*/false) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -393,8 +381,7 @@ class AppListViewPromiseAppPixelTest
             /*use_rtl=*/std::get<2>(GetParam()),
             /*is_new_install=*/false,
             /*has_notification=*/false,
-            /*enable_promise_icons=*/true,
-            /*enable_cros_web_app_shortcut_badge=*/false) {}
+            /*enable_promise_icons=*/true) {}
 
   AppListItem* CreateAppListPromiseItem(const std::string& name) {
     return GetAppListTestHelper()->model()->CreateAndAddPromiseItem(name +
@@ -456,60 +443,6 @@ TEST_P(AppListViewPromiseAppPixelTest, PromiseAppInstalling) {
       base::JoinString({"promise_app_installing", GenerateScreenshotName()},
                        "."),
       /*revision_number=*/3, GetItemViewAt(0), GetItemViewAt(1)));
-}
-
-class AppListItemViewWebAppShortcutPixelTest
-    : public AppListItemViewPixelTestBase,
-      public testing::WithParamInterface<std::tuple</*use_tablet_mode=*/bool,
-                                                    /*use_dense_ui=*/bool,
-                                                    /*use_rtl=*/bool,
-                                                    /*is_new_install=*/bool>> {
- public:
-  AppListItemViewWebAppShortcutPixelTest()
-      : AppListItemViewPixelTestBase(
-            /*use_drag_drop_refactor=*/true,
-            /*use_folder_icon_refresh=*/true,
-            /*use_tablet_mode=*/std::get<0>(GetParam()),
-            /*use_dense_ui=*/std::get<1>(GetParam()),
-            /*use_rtl=*/std::get<2>(GetParam()),
-            /*is_new_install=*/std::get<3>(GetParam()),
-            /*has_notification=*/false,
-            /*enable_promise_icons=*/false,
-            /*enable_cros_web_app_shortcut_badge=*/true) {}
-
-  AppListItem* CreateWebAppShortcutItemWithHostBadge(const std::string& name) {
-    return GetAppListTestHelper()
-        ->model()
-        ->CreateAndAddWebAppShortcutItemWithHostBadge(name + "_id");
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppListItemViewWebAppShortcutPixelTest,
-                         testing::Combine(
-                             /*use_tablet_mode=*/testing::Bool(),
-                             /*use_dense_ui=*/testing::Bool(),
-                             /*use_rtl=*/testing::Bool(),
-                             /*is_new_install=*/testing::Bool()));
-
-TEST_P(AppListItemViewWebAppShortcutPixelTest,
-       WebAppShortcutIconEffectsExists) {
-  // Reset any configs set by previous tests so that
-  // ItemIconInFolderIconMargin() in app_list_config.cc is correctly
-  // initialized. Can be removed if folder icon refresh is set as default.
-  AppListConfigProvider::Get().ResetForTesting();
-  AppListItem* shortcut_item =
-      CreateWebAppShortcutItemWithHostBadge("TestWebAppShortcut");
-
-  ShowAppList();
-  AppListItemView* shortcut_item_view = GetItemViewAt(0);
-
-  EXPECT_FALSE(shortcut_item->GetHostBadgeIcon().isNull());
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      base::JoinString(
-          {"web_app_shortcut_icon_effects_exists", GenerateScreenshotName()},
-          "."),
-      /*revision_number=*/1, shortcut_item_view));
 }
 
 }  // namespace ash

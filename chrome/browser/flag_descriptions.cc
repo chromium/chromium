@@ -6249,12 +6249,6 @@ const char kCrosShortstandDescription[] =
     "is equivalent of turning on #cros-web-app-shortcut-ui-update and"
     "#separate-web-app-shortcut-badge-icon.";
 
-const char kCrosWebAppShortcutUiUpdateName[] =
-    "New ChromeOS Web app Shortcut UI";
-const char kCrosWebAppShortcutUiUpdateDescription[] =
-    "Enables new UI for shortcuts created from browser that backed by web app"
-    "system on ChromeOS.";
-
 const char kDeskButtonName[] = "Desk button in shelf";
 const char kDeskButtonDescription[] =
     "Show a desk button that provides quick access to the desk menu in the "
