@@ -324,6 +324,7 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kJavaScriptInterfaceRemoved:
     case PrerenderFinalStatus::kAllPrerenderingCanceled:
     case PrerenderFinalStatus::kWindowClosed:
+    case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
       NOTREACHED_NORETURN();
     case PrerenderFinalStatus::kSlowNetwork:
       return PreloadingEligibility::kSlowNetwork;
@@ -1711,9 +1712,9 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   } else {
     CHECK(prerender_new_tab_handle_by_frame_tree_node_id_.empty());
   }
-  CancelHosts(
-      cancelled_prerenders,
-      PrerenderCancellationReason(PrerenderFinalStatus::kTriggerDestroyed));
+  CancelHosts(cancelled_prerenders,
+              PrerenderCancellationReason(
+                  PrerenderFinalStatus::kOtherPrerenderedPageActivated));
   pending_prerenders_.clear();
 
   return host->frame_tree_node_id();

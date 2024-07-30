@@ -12285,6 +12285,7 @@ experimental domain Preload
       AllPrerenderingCanceled
       WindowClosed
       SlowNetwork
+      OtherPrerenderedPageActivated
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated

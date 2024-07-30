@@ -29821,6 +29821,7 @@ Called by update_net_error_codes.py.-->
   <int value="81" label="kCancelAllHosts"/>
   <int value="82" label="kWindowClosed"/>
   <int value="83" label="kSlowNetwork"/>
+  <int value="84" label="kOtherPrerenderedPageActivated"/>
 </enum>
 
 <enum name="PreviewsCoinFlipResult">

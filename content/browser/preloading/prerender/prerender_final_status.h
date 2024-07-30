@@ -164,8 +164,9 @@ enum class PrerenderFinalStatus {
   kWindowClosed = 82,
 
   kSlowNetwork = 83,
+  kOtherPrerenderedPageActivated = 84,
 
-  kMaxValue = kSlowNetwork,
+  kMaxValue = kOtherPrerenderedPageActivated,
 };
 // LINT.ThenChange()
 
