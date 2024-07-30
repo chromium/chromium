@@ -18,12 +18,12 @@ namespace blink {
 
 TEST(PageTest, CreateOrdinaryBrowsingContextGroup) {
   test::TaskEnvironment task_environment;
-  EmptyChromeClient client;
+  EmptyChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
   auto bcg_info = BrowsingContextGroupInfo::CreateUnique();
 
   Page* page =
-      Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler, bcg_info,
+      Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler, bcg_info,
                            /*color_provider_colors=*/nullptr);
 
   EXPECT_EQ(page->BrowsingContextGroupToken(),
@@ -33,10 +33,10 @@ TEST(PageTest, CreateOrdinaryBrowsingContextGroup) {
 
 TEST(PageTest, CreateNonOrdinaryBrowsingContextGroup) {
   test::TaskEnvironment task_environment;
-  EmptyChromeClient client;
+  EmptyChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
 
-  Page* page = Page::CreateNonOrdinary(client, *scheduler,
+  Page* page = Page::CreateNonOrdinary(*client, *scheduler,
                                        /*color_provider_colors=*/nullptr);
 
   EXPECT_FALSE(page->BrowsingContextGroupToken().is_empty());
@@ -47,11 +47,11 @@ TEST(PageTest, CreateNonOrdinaryBrowsingContextGroup) {
 
 TEST(PageTest, BrowsingContextGroupUpdate) {
   test::TaskEnvironment task_environment;
-  EmptyChromeClient client;
+  EmptyChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
   auto initial_bcg_info = BrowsingContextGroupInfo::CreateUnique();
 
-  Page* page = Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler,
+  Page* page = Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler,
                                     initial_bcg_info,
                                     /*color_provider_colors=*/nullptr);
 
@@ -75,13 +75,13 @@ TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
   scoped_feature_list.InitAndEnableFeature(
       features::kPausePagesPerBrowsingContextGroup);
 
-  EmptyChromeClient client;
+  EmptyChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
 
   auto group_a = BrowsingContextGroupInfo::CreateUnique();
 
   Page* page1 =
-      Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler, group_a,
+      Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler, group_a,
                            /*color_provider_colors=*/nullptr);
 
   auto pauser_for_group_a =
@@ -93,7 +93,7 @@ TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
   ASSERT_FALSE(page1->Paused());
 
   Page* page2 =
-      Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler, group_b,
+      Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler, group_b,
                            /*color_provider_colors=*/nullptr);
   ASSERT_FALSE(page2->Paused());
 
@@ -106,12 +106,12 @@ TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
 
 TEST(PageTest, CreateOrdinaryColorProviders) {
   test::TaskEnvironment task_environment;
-  EmptyChromeClient client;
+  EmptyChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
   auto bcg_info = BrowsingContextGroupInfo::CreateUnique();
   auto color_provider_colors = ColorProviderColorMaps::CreateDefault();
 
-  Page* page = Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler,
+  Page* page = Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler,
                                     bcg_info, &color_provider_colors);
 
   const ui::ColorProvider* light_color_provider =
@@ -135,10 +135,10 @@ TEST(PageTest, CreateOrdinaryColorProviders) {
 
 TEST(PageTest, CreateNonOrdinaryColorProviders) {
   test::TaskEnvironment task_environment;
-  EmptyChromeClient client;
+  EmptyChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
 
-  Page* page = Page::CreateNonOrdinary(client, *scheduler,
+  Page* page = Page::CreateNonOrdinary(*client, *scheduler,
                                        /*color_provider_colors=*/nullptr);
 
   const ui::ColorProvider* light_color_provider =

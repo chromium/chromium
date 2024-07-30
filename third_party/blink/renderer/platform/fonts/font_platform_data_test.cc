@@ -28,11 +28,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
+
 #include "base/test/task_environment.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -132,24 +135,26 @@ TEST_F(FontPlatformDataTest, GeometricPrecision) {
   sk_sp<SkTypeface> typeface = skia::DefaultTypeface();
   const std::string name("name");
   const auto create_font_platform_data = [&]() {
-    return FontPlatformData(typeface, name,
-                            /* text_size */ 10, /* synthetic_bold */ false,
-                            /* synthetic_italic */ false, kGeometricPrecision,
-                            {});
+    return MakeGarbageCollected<FontPlatformData>(
+        typeface, name,
+        /* text_size */ 10, /* synthetic_bold */ false,
+        /* synthetic_italic */ false, kGeometricPrecision,
+        ResolvedFontFeatures());
   };
 
   FontCache::SetDeviceScaleFactor(1.0f);
-  const FontPlatformData geometric_precision = create_font_platform_data();
+  const FontPlatformData* geometric_precision = create_font_platform_data();
   const WebFontRenderStyle& geometric_precision_style =
-      geometric_precision.GetFontRenderStyle();
+      geometric_precision->GetFontRenderStyle();
   EXPECT_EQ(geometric_precision_style.use_subpixel_positioning, true);
   EXPECT_EQ(geometric_precision_style.use_hinting, false);
 
   // DSF=1.5 means it's high resolution (use_subpixel_positioning) for both
   // Linux and ChromeOS. See |gfx GetFontRenderParams|.
   FontCache::SetDeviceScaleFactor(1.5f);
-  const FontPlatformData geometric_precision_high = create_font_platform_data();
-  EXPECT_EQ(geometric_precision, geometric_precision_high);
+  const FontPlatformData* geometric_precision_high =
+      create_font_platform_data();
+  EXPECT_EQ(*geometric_precision, *geometric_precision_high);
 
   FontCache::SetDeviceScaleFactor(saved_device_scale_factor);
 }

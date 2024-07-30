@@ -1,15 +1,14 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "components/ukm/test_ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/renderer/core/loader/interactive_detector.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "third_party/blink/renderer/core/loader/interactive_detector.h"
-
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -17,6 +16,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -616,19 +616,20 @@ TEST_F(InteractiveDetectorTest, FirstInputDelayForClickOnMobile) {
   auto* detector = GetDetector();
   base::TimeTicks t0 = Now();
   // Pointerdown
-  Event pointerdown(event_type_names::kPointerdown, MessageEvent::Bubbles::kYes,
-                    MessageEvent::Cancelable::kYes,
-                    MessageEvent::ComposedMode::kComposed, t0);
-  pointerdown.SetTrusted(true);
-  detector->HandleForInputDelay(pointerdown, t0, t0 + base::Milliseconds(17));
+  Event* pointerdown = MakeGarbageCollected<Event>(
+      event_type_names::kPointerdown, MessageEvent::Bubbles::kYes,
+      MessageEvent::Cancelable::kYes, MessageEvent::ComposedMode::kComposed,
+      t0);
+  pointerdown->SetTrusted(true);
+  detector->HandleForInputDelay(*pointerdown, t0, t0 + base::Milliseconds(17));
   EXPECT_FALSE(detector->GetFirstInputDelay().has_value());
   // Pointerup
-  Event pointerup(event_type_names::kPointerup, MessageEvent::Bubbles::kYes,
-                  MessageEvent::Cancelable::kYes,
-                  MessageEvent::ComposedMode::kComposed,
-                  t0 + base::Milliseconds(20));
-  pointerup.SetTrusted(true);
-  detector->HandleForInputDelay(pointerup, t0 + base::Milliseconds(20),
+  Event* pointerup = MakeGarbageCollected<Event>(
+      event_type_names::kPointerup, MessageEvent::Bubbles::kYes,
+      MessageEvent::Cancelable::kYes, MessageEvent::ComposedMode::kComposed,
+      t0 + base::Milliseconds(20));
+  pointerup->SetTrusted(true);
+  detector->HandleForInputDelay(*pointerup, t0 + base::Milliseconds(20),
                                 t0 + base::Milliseconds(50));
   EXPECT_TRUE(detector->GetFirstInputDelay().has_value());
   EXPECT_EQ(detector->GetFirstInputDelay().value(), base::Milliseconds(17));
@@ -640,26 +641,28 @@ TEST_F(InteractiveDetectorTest,
   auto* detector = GetDetector();
   base::TimeTicks t0 = Now();
   // Pointerdown
-  Event pointerdown(event_type_names::kPointerdown, MessageEvent::Bubbles::kYes,
-                    MessageEvent::Cancelable::kYes,
-                    MessageEvent::ComposedMode::kComposed, t0);
-  pointerdown.SetTrusted(true);
-  detector->HandleForInputDelay(pointerdown, t0, t0 + base::Milliseconds(17));
+  Event* pointerdown = MakeGarbageCollected<Event>(
+      event_type_names::kPointerdown, MessageEvent::Bubbles::kYes,
+      MessageEvent::Cancelable::kYes, MessageEvent::ComposedMode::kComposed,
+      t0);
+  pointerdown->SetTrusted(true);
+  detector->HandleForInputDelay(*pointerdown, t0, t0 + base::Milliseconds(17));
   EXPECT_FALSE(detector->GetFirstInputDelay().has_value());
   // Mousedown
-  Event mousedown(event_type_names::kMousedown, MessageEvent::Bubbles::kYes,
-                  MessageEvent::Cancelable::kYes,
-                  MessageEvent::ComposedMode::kComposed, t0);
-  mousedown.SetTrusted(true);
-  detector->HandleForInputDelay(mousedown, t0, t0 + base::Milliseconds(13));
+  Event* mousedown = MakeGarbageCollected<Event>(
+      event_type_names::kMousedown, MessageEvent::Bubbles::kYes,
+      MessageEvent::Cancelable::kYes, MessageEvent::ComposedMode::kComposed,
+      t0);
+  mousedown->SetTrusted(true);
+  detector->HandleForInputDelay(*mousedown, t0, t0 + base::Milliseconds(13));
   EXPECT_FALSE(detector->GetFirstInputDelay().has_value());
   // Pointerup
-  Event pointerup(event_type_names::kPointerup, MessageEvent::Bubbles::kYes,
-                  MessageEvent::Cancelable::kYes,
-                  MessageEvent::ComposedMode::kComposed,
-                  t0 + base::Milliseconds(20));
-  pointerup.SetTrusted(true);
-  detector->HandleForInputDelay(pointerup, t0 + base::Milliseconds(20),
+  Event* pointerup = MakeGarbageCollected<Event>(
+      event_type_names::kPointerup, MessageEvent::Bubbles::kYes,
+      MessageEvent::Cancelable::kYes, MessageEvent::ComposedMode::kComposed,
+      t0 + base::Milliseconds(20));
+  pointerup->SetTrusted(true);
+  detector->HandleForInputDelay(*pointerup, t0 + base::Milliseconds(20),
                                 t0 + base::Milliseconds(50));
   EXPECT_TRUE(detector->GetFirstInputDelay().has_value());
   EXPECT_EQ(detector->GetFirstInputDelay().value(), base::Milliseconds(17));

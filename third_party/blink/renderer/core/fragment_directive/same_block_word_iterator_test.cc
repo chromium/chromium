@@ -7,8 +7,10 @@
 #include <gtest/gtest.h>
 
 #include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/core/fragment_directive/same_block_word_iterator.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -20,7 +22,7 @@ class SameBlockWordIteratorTest : public SimTest {
   }
 };
 
-// Basic case for forward iterator.
+// Basic case for forward iterator->
 TEST_F(SameBlockWordIteratorTest, GetNextWord) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -31,18 +33,20 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord) {
   )HTML");
   Node* node =
       GetDocument().getElementById(AtomicString("first"))->firstChild();
-  ForwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 0));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First", iterator.TextFromStart());
+  ForwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<ForwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 0));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First paragraph text", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First paragraph text", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First paragraph text", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First paragraph text", iterator->TextFromStart());
 }
 
 // Check the case when following text contains collapsible space.
@@ -58,15 +62,17 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_ExtraSpace) {
   )HTML");
   Node* node =
       GetDocument().getElementById(AtomicString("first"))->firstChild();
-  ForwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 6));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph", iterator.TextFromStart());
+  ForwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<ForwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 6));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph text", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph text", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph text", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph text", iterator->TextFromStart());
 }
 
 // Check the case when there is a commented block which should be skipped.
@@ -86,15 +92,17 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_WithComment) {
     <p>new block</p>
   )HTML");
   Node* node = GetDocument().getElementById(AtomicString("span"))->firstChild();
-  BackwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 9));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph", iterator.TextFromStart());
+  BackwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<BackwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 9));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First paragraph", iterator->TextFromStart());
 }
 
 // Check the case when following text contains non-block tag(e.g. <b>).
@@ -107,21 +115,23 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_NestedTextNode) {
   )HTML");
   Node* node =
       GetDocument().getElementById(AtomicString("first"))->firstChild();
-  ForwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 5));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("bold", iterator.TextFromStart());
+  ForwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<ForwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 5));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("bold", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("bold text", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("bold text", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("bold text paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("bold text paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("bold text paragraph text", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("bold text paragraph text", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("bold text paragraph text", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("bold text paragraph text", iterator->TextFromStart());
 }
 
 // Check the case when following text is interrupted by a nested block.
@@ -134,12 +144,14 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_NestedBlock) {
   )HTML");
   Node* node =
       GetDocument().getElementById(AtomicString("first"))->firstChild();
-  ForwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 5));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph", iterator.TextFromStart());
+  ForwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<ForwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 5));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph", iterator->TextFromStart());
 }
 
 // Check the case when following text includes non-block element but is
@@ -153,12 +165,14 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_NestedBlockInNestedText) {
   )HTML");
   Node* node =
       GetDocument().getElementById(AtomicString("first"))->firstChild();
-  ForwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 5));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("bold", iterator.TextFromStart());
+  ForwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<ForwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 5));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("bold", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("bold", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("bold", iterator->TextFromStart());
 }
 
 // Check the case when following text includes invisible block.
@@ -171,18 +185,20 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_NestedInvisibleBlock) {
   )HTML");
   Node* node =
       GetDocument().getElementById(AtomicString("first"))->firstChild();
-  ForwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 5));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph", iterator.TextFromStart());
+  ForwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<ForwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 5));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph text", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph text", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph text", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph text", iterator->TextFromStart());
 }
 
-// Basic case for backward iterator.
+// Basic case for backward iterator->
 TEST_F(SameBlockWordIteratorTest, GetPreviousWord) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -194,15 +210,17 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord) {
   Node* node =
       GetDocument().getElementById(AtomicString("first"))->firstChild();
 
-  BackwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 16));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph", iterator.TextFromStart());
+  BackwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<BackwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 16));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First paragraph", iterator->TextFromStart());
 }
 
 // Check the case when available text has extra space.
@@ -218,15 +236,17 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord_ExtraSpace) {
   )HTML");
   Node* node =
       GetDocument().getElementById(AtomicString("first"))->firstChild();
-  BackwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 25));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph", iterator.TextFromStart());
+  BackwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<BackwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 25));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First paragraph", iterator->TextFromStart());
 }
 
 // Check the case when there is a commented block which should be skipped.
@@ -246,15 +266,17 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord_WithComment) {
     <p>new block</p>
   )HTML");
   Node* node = GetDocument().getElementById(AtomicString("span"))->firstChild();
-  BackwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 9));
-  iterator.AdvanceNextWord();
-  iterator.TextFromStart();
+  BackwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<BackwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 9));
+  iterator->AdvanceNextWord();
+  iterator->TextFromStart();
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First paragraph", iterator->TextFromStart());
 }
 
 // Check the case when available text contains non-block tag(e.g. <b>).
@@ -266,21 +288,23 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord_NestedTextNode) {
     <p id='first'>First <b>bold text</b> paragraph text</p>
   )HTML");
   Node* node = GetDocument().getElementById(AtomicString("first"))->lastChild();
-  BackwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 11));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph", iterator.TextFromStart());
+  BackwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<BackwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 11));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("text paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("text paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("bold text paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("bold text paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First bold text paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First bold text paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First bold text paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First bold text paragraph", iterator->TextFromStart());
 }
 
 // Check the case when available text is interrupted by a nested block.
@@ -292,12 +316,14 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord_NestedBlock) {
     <div id='first'>First <div id='div'>div</div> paragraph text</div>
   )HTML");
   Node* node = GetDocument().getElementById(AtomicString("div"))->nextSibling();
-  BackwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 11));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph", iterator.TextFromStart());
+  BackwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<BackwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 11));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph", iterator->TextFromStart());
 }
 
 // Check the case when available text includes non-block element but is
@@ -310,15 +336,17 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord_NestedBlockInNestedText) {
     <div id='first'>First <b><div id='div'>div</div>bold</b> paragraph text</div>
   )HTML");
   Node* node = GetDocument().getElementById(AtomicString("first"))->lastChild();
-  BackwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 11));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("paragraph", iterator.TextFromStart());
+  BackwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<BackwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 11));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("bold paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("bold paragraph", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("bold paragraph", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("bold paragraph", iterator->TextFromStart());
 }
 
 // Check the case when available text includes invisible block.
@@ -330,12 +358,14 @@ TEST_F(SameBlockWordIteratorTest, GetPreviousWord_NestedInvisibleBlock) {
     <div id='first'>First <div id='div' style='display:none'>invisible</div> paragraph text</div>
   )HTML");
   Node* node = GetDocument().getElementById(AtomicString("div"))->nextSibling();
-  BackwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 0));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First", iterator.TextFromStart());
+  BackwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<BackwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 0));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First", iterator->TextFromStart());
 
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("First", iterator.TextFromStart());
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("First", iterator->TextFromStart());
 }
 
 // Check the case when given start position is in a middle of a word.
@@ -349,9 +379,11 @@ TEST_F(SameBlockWordIteratorTest, GetNextWord_HalfWord) {
   )HTML");
   Node* node =
       GetDocument().getElementById(AtomicString("first"))->firstChild();
-  ForwardSameBlockWordIterator iterator(PositionInFlatTree(*node, 2));
-  iterator.AdvanceNextWord();
-  EXPECT_EQ("rst", iterator.TextFromStart());
+  ForwardSameBlockWordIterator* iterator =
+      MakeGarbageCollected<ForwardSameBlockWordIterator>(
+          PositionInFlatTree(*node, 2));
+  iterator->AdvanceNextWord();
+  EXPECT_EQ("rst", iterator->TextFromStart());
 }
 
 }  // namespace blink

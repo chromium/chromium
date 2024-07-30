@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_test_helpers.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_test_helpers.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -46,9 +47,9 @@ TEST_F(CustomElementDefinitionTest, upgrade_clearsReactionQueueOnFailure) {
     reactions.EnqueueToCurrentQueue(
         stack, element,
         *MakeGarbageCollected<TestReaction>(std::move(commands)));
-    ConstructorFails definition(
+    ConstructorFails* definition = MakeGarbageCollected<ConstructorFails>(
         CustomElementDescriptor(AtomicString("a-a"), AtomicString("a-a")));
-    definition.Upgrade(element);
+    definition->Upgrade(element);
   }
   EXPECT_EQ(CustomElementState::kFailed, element.GetCustomElementState())
       << "failing to construct should have set the 'failed' element state";
@@ -68,9 +69,9 @@ TEST_F(CustomElementDefinitionTest,
       "upgrade failure should clear the reaction queue"));
   reset_reaction_stack.Stack().EnqueueToBackupQueue(
       element, *MakeGarbageCollected<TestReaction>(std::move(commands)));
-  ConstructorFails definition(
+  ConstructorFails* definition = MakeGarbageCollected<ConstructorFails>(
       CustomElementDescriptor(AtomicString("a-a"), AtomicString("a-a")));
-  definition.Upgrade(element);
+  definition->Upgrade(element);
   EXPECT_EQ(CustomElementState::kFailed, element.GetCustomElementState())
       << "failing to construct should have set the 'failed' element state";
 }

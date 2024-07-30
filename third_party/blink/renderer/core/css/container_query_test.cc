@@ -353,8 +353,8 @@ TEST_F(ContainerQueryTest, RuleCopy) {
   EXPECT_NE(container, copy);
 
   // The rules should be copied.
-  auto rules = container->ChildRules();
-  auto rules_copy = copy->ChildRules();
+  auto& rules = container->ChildRules();
+  auto& rules_copy = copy->ChildRules();
   ASSERT_EQ(1u, rules.size());
   ASSERT_EQ(1u, rules_copy.size());
   EXPECT_NE(rules[0], rules_copy[0]);

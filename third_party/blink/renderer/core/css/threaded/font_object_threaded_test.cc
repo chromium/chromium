@@ -118,12 +118,12 @@ TSAN_TEST(FontObjectThreadedTest, WordShaperTest) {
 
     Font font = Font(font_description);
     ASSERT_TRUE(font.CanShapeWordByWord());
-    ShapeCache cache;
+    ShapeCache* cache = MakeGarbageCollected<ShapeCache>();
 
     TextRun text_run(reinterpret_cast<const LChar*>("ABC DEF."), 8);
 
     const ShapeResult* result = nullptr;
-    CachingWordShapeIterator iter(&cache, text_run, &font);
+    CachingWordShapeIterator iter(cache, text_run, &font);
 
     ASSERT_TRUE(iter.Next(&result));
     EXPECT_EQ(0u, result->StartIndex());

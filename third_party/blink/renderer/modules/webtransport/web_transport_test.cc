@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -661,10 +662,11 @@ TEST_F(WebTransportTest, CloseAfterConnection) {
   ScriptPromiseTester closed_tester(
       scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
 
-  WebTransportCloseInfo close_info;
-  close_info.setCloseCode(42);
-  close_info.setReason("because");
-  web_transport->close(&close_info);
+  WebTransportCloseInfo* close_info =
+      MakeGarbageCollected<WebTransportCloseInfo>();
+  close_info->setCloseCode(42);
+  close_info->setReason("because");
+  web_transport->close(close_info);
 
   test::RunPendingTasks();
 
@@ -711,9 +713,10 @@ TEST_F(WebTransportTest, CloseWithReasonOnly) {
   ScriptPromiseTester closed_tester(
       scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
 
-  WebTransportCloseInfo close_info;
-  close_info.setReason("because");
-  web_transport->close(&close_info);
+  WebTransportCloseInfo* close_info =
+      MakeGarbageCollected<WebTransportCloseInfo>();
+  close_info->setReason("because");
+  web_transport->close(close_info);
 
   test::RunPendingTasks();
 }

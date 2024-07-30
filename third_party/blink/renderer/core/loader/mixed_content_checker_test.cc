@@ -315,12 +315,13 @@ TEST(MixedContentCheckerTest,
   ResourceRequest request;
   request.SetUrl(KURL("https://example.test"));
   request.SetRequestContext(mojom::blink::RequestContextType::AUDIO);
-  TestFetchClientSettingsObject settings;
+  TestFetchClientSettingsObject* settings =
+      MakeGarbageCollected<TestFetchClientSettingsObject>();
   // Used to get a non-null document.
   DummyPageHolder holder;
 
   MixedContentChecker::UpgradeInsecureRequest(
-      request, &settings, holder.GetDocument().GetExecutionContext(),
+      request, settings, holder.GetDocument().GetExecutionContext(),
       mojom::RequestContextFrameType::kTopLevel, nullptr);
 
   EXPECT_FALSE(request.IsAutomaticUpgrade());
@@ -332,12 +333,13 @@ TEST(MixedContentCheckerTest, AutoupgradedMixedContentHasUpgradeIfInsecureSet) {
   ResourceRequest request;
   request.SetUrl(KURL("http://example.test"));
   request.SetRequestContext(mojom::blink::RequestContextType::AUDIO);
-  TestFetchClientSettingsObject settings;
+  TestFetchClientSettingsObject* settings =
+      MakeGarbageCollected<TestFetchClientSettingsObject>();
   // Used to get a non-null document.
   DummyPageHolder holder;
 
   MixedContentChecker::UpgradeInsecureRequest(
-      request, &settings, holder.GetDocument().GetExecutionContext(),
+      request, settings, holder.GetDocument().GetExecutionContext(),
       mojom::RequestContextFrameType::kTopLevel, nullptr);
 
   EXPECT_TRUE(request.IsAutomaticUpgrade());
@@ -350,12 +352,13 @@ TEST(MixedContentCheckerTest,
   ResourceRequest request;
   request.SetUrl(KURL("http://127.0.0.1/"));
   request.SetRequestContext(mojom::blink::RequestContextType::AUDIO);
-  TestFetchClientSettingsObject settings;
+  TestFetchClientSettingsObject* settings =
+      MakeGarbageCollected<TestFetchClientSettingsObject>();
   // Used to get a non-null document.
   DummyPageHolder holder;
 
   MixedContentChecker::UpgradeInsecureRequest(
-      request, &settings, holder.GetDocument().GetExecutionContext(),
+      request, settings, holder.GetDocument().GetExecutionContext(),
       mojom::RequestContextFrameType::kTopLevel, nullptr);
 
   EXPECT_FALSE(request.IsAutomaticUpgrade());
@@ -368,12 +371,13 @@ TEST(MixedContentCheckerTest,
   ResourceRequest request;
   request.SetUrl(KURL("http://8.8.8.8/"));
   request.SetRequestContext(mojom::blink::RequestContextType::AUDIO);
-  TestFetchClientSettingsObject settings;
+  TestFetchClientSettingsObject* settings =
+      MakeGarbageCollected<TestFetchClientSettingsObject>();
   // Used to get a non-null document.
   DummyPageHolder holder;
 
   MixedContentChecker::UpgradeInsecureRequest(
-      request, &settings, holder.GetDocument().GetExecutionContext(),
+      request, settings, holder.GetDocument().GetExecutionContext(),
       mojom::RequestContextFrameType::kTopLevel, nullptr);
 
   EXPECT_FALSE(request.IsAutomaticUpgrade());

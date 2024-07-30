@@ -1447,7 +1447,7 @@ TEST(CSSParserImplTest, ParseSupportsBlinkFeature) {
   StyleRuleSupports* supports_rule = DynamicTo<StyleRuleSupports>(rule);
   ASSERT_TRUE(supports_rule->ConditionIsSupported());
 
-  StyleRuleBase::ChildRuleVector child_rules = supports_rule->ChildRules();
+  StyleRuleBase::ChildRuleVector& child_rules = supports_rule->ChildRules();
   ASSERT_EQ(child_rules.size(), 2u);
   ASSERT_EQ(String("div"),
             To<StyleRule>(child_rules[0].Get())->SelectorsText());
@@ -1489,7 +1489,7 @@ TEST(CSSParserImplTest, ParseSupportsBlinkFeatureDisabledFeature) {
   StyleRuleSupports* supports_rule = DynamicTo<StyleRuleSupports>(rule);
   ASSERT_FALSE(supports_rule->ConditionIsSupported());
 
-  StyleRuleBase::ChildRuleVector child_rules = supports_rule->ChildRules();
+  StyleRuleBase::ChildRuleVector& child_rules = supports_rule->ChildRules();
   ASSERT_EQ(child_rules.size(), 2u);
   ASSERT_EQ(String("div"),
             To<StyleRule>(child_rules[0].Get())->SelectorsText());
