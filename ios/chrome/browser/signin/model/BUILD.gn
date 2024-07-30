@@ -14,6 +14,8 @@ source_set("model") {
     "account_consistency_browser_agent.mm",
     "account_consistency_service_factory.h",
     "account_consistency_service_factory.mm",
+    "account_investigator_factory.h",
+    "account_investigator_factory.mm",
     "account_reconcilor_factory.cc",
     "account_reconcilor_factory.h",
     "authentication_service.h",
