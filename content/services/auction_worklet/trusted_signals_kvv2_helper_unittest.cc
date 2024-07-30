@@ -4,6 +4,8 @@
 
 #include "content/services/auction_worklet/trusted_signals_kvv2_helper.h"
 
+#include <vector>
+
 #if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
 #else
@@ -28,6 +30,7 @@
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "v8-context.h"
@@ -35,13 +38,134 @@
 namespace auction_worklet {
 
 namespace {
+
 const char kHostName[] = "publisher.test";
 const int kExperimentGroupId = 12345;
 const char kTrustedBiddingSignalsSlotSizeParam[] = "slotSize=100,200";
+const size_t kFramingHeaderSize = 5;  // bytes
 const char kTrustedSignalsUrl[] = "https://url.test/";
 const char kOriginFooUrl[] = "https://foo.test/";
 const char kOriginBarUrl[] = "https://bar.test/";
+
+void ExpectCompressionGroupMapEquals(
+    const TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap& map1,
+    const TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap& map2) {
+  ASSERT_EQ(map1.size(), map2.size()) << "Maps have different sizes";
+
+  for (const auto& [key, value] : map1) {
+    auto it = map2.find(key);
+    ASSERT_NE(it, map2.end())
+        << "Missing key in compression group map2: " << key;
+
+    // Compare each field in CompressionGroup.
+    EXPECT_EQ(value.compression_scheme, it->second.compression_scheme);
+    EXPECT_EQ(value.content, it->second.content);
+    EXPECT_EQ(value.ttl, it->second.ttl);
+  }
+}
+
+// Check trusted bidding signals' priority vector and bidding signals in json
+// format with given interest group names and bididng keys.
+void CheckBiddingResult(
+    AuctionV8Helper* v8_helper,
+    TrustedSignals::Result* result,
+    const std::vector<std::string>& interest_group_names,
+    const std::vector<std::string>& keys,
+    const std::map<std::string, TrustedSignals::Result::PriorityVector>&
+        priority_vector_map,
+    const std::string& bidding_signals,
+    std::optional<uint32_t> data_version) {
+  for (const auto& name : interest_group_names) {
+    std::optional<TrustedSignals::Result::PriorityVector>
+        maybe_priority_vector = result->GetPerGroupData(name)->priority_vector;
+    ASSERT_TRUE(maybe_priority_vector);
+    EXPECT_EQ(priority_vector_map.at(name), *maybe_priority_vector);
+  }
+
+  v8::Isolate* isolate = v8_helper->isolate();
+  v8::Local<v8::Context> context = v8::Context::New(isolate);
+  v8::Context::Scope context_scope(context);
+  v8::Local<v8::Value> value =
+      result->GetBiddingSignals(v8_helper, context, keys);
+  std::string bidding_signals_json;
+  if (v8_helper->ExtractJson(context, value, &bidding_signals_json) !=
+      AuctionV8Helper::Result::kSuccess) {
+    bidding_signals_json = "JSON extraction failed.";
+  }
+  EXPECT_EQ(bidding_signals, bidding_signals_json);
+  EXPECT_EQ(data_version, result->GetDataVersion());
+}
+
+// Build a response body in string format with a hex string, a given compression
+// scheme format byte, and the length of the hex string after it is converted to
+// bytes.
+std::vector<uint8_t> BuildResponseBody(const std::string& hex_string,
+                                       uint8_t compress_scheme = 0x00) {
+  std::vector<uint8_t> hex_bytes;
+  base::HexStringToBytes(hex_string, &hex_bytes);
+
+  std::vector<uint8_t> response_body;
+  response_body.resize(kFramingHeaderSize + hex_bytes.size());
+  base::SpanWriter writer(
+      base::as_writable_bytes(base::make_span(response_body)));
+  writer.WriteU8BigEndian(compress_scheme);
+  writer.WriteU32BigEndian(hex_bytes.size());
+  writer.Write(base::as_bytes(base::make_span(hex_bytes)));
+
+  return response_body;
+}
+
+std::string GetErrorMessageFromParseResponseToSignalsFetchResult(
+    std::string& hex,
+    uint8_t compress_scheme = 0x00) {
+  base::expected<std::map<int, CompressionGroupResult>,
+                 auction_worklet::TrustedSignalsKVv2ResponseParser::ErrorInfo>
+      result =
+          TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
+              BuildResponseBody(hex, compress_scheme));
+  EXPECT_FALSE(result.has_value());
+
+  return std::move(result.error().error_msg);
+}
+
+std::string GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+    scoped_refptr<AuctionV8Helper> v8_helper,
+    const std::optional<std::set<std::string>>& interest_group_names,
+    const std::optional<std::set<std::string>>& keys,
+    const TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap&
+        compression_group_result_map,
+    std::optional<uint32_t> data_version) {
+  base::expected<
+      std::map<TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex,
+               scoped_refptr<TrustedSignals::Result>>,
+      TrustedSignalsKVv2ResponseParser::ErrorInfo>
+      result = TrustedSignalsKVv2ResponseParser::
+          ParseBiddingSignalsFetchResultToResultMap(
+              v8_helper.get(), interest_group_names, keys,
+              compression_group_result_map, data_version);
+  EXPECT_FALSE(result.has_value());
+
+  return std::move(result.error().error_msg);
+}
+
 }  // namespace
+
+class TrustedSignalsKVv2ResponseParserTest : public testing::Test {
+ public:
+  explicit TrustedSignalsKVv2ResponseParserTest() {
+    helper_ = AuctionV8Helper::Create(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    base::RunLoop().RunUntilIdle();
+    v8_scope_ =
+        std::make_unique<AuctionV8Helper::FullIsolateScope>(helper_.get());
+  }
+  ~TrustedSignalsKVv2ResponseParserTest() override = default;
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  scoped_refptr<AuctionV8Helper> helper_;
+  std::unique_ptr<AuctionV8Helper::FullIsolateScope> v8_scope_;
+};
 
 TEST(TrustedSignalsKVv2RequestHelperTest,
      TrustedBiddingSignalsRequestEncoding) {
@@ -300,6 +424,953 @@ TEST(TrustedSignalsKVv2RequestHelperTest, TrustedBiddingSignalsIsolationIndex) {
           std::string("groupH"), std::set<std::string>{"key"},
           url::Origin::Create(GURL(kOriginBarUrl)),
           blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode));
+}
+
+// Test trusted bidding signals response parsing with gzip compressed cbor
+// bytes.
+TEST_F(TrustedSignalsKVv2ResponseParserTest,
+       TrustedBiddingSignalsResponseParsing) {
+  // User cbor.me to convert from
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": [
+  //           "interestGroupNames"
+  //         ],
+  //         "keyValues": {
+  //           "groupA": {
+  //             "value": "{\"priorityVector\":{\"signalA\":1}}"
+  //           },
+  //           "groupB": {
+  //             "value": "{\"priorityVector\":{\"signalB\":1}}"
+  //           }
+  //         }
+  //       },
+  //       {
+  //         "tags": [
+  //           "keys"
+  //         ],
+  //         "keyValues": {
+  //           "keyA": {
+  //             "value": "\"valueForA\""
+  //           },
+  //           "keyB": {
+  //             "value": "[\"value1ForB\",\"value2ForB\"]"
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     "id": 1,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": [
+  //           "interestGroupNames"
+  //         ],
+  //         "keyValues": {
+  //           "groupC": {
+  //             "value": "{\"priorityVector\":{\"signalC\":1}}"
+  //           }
+  //         }
+  //       },
+  //       {
+  //         "tags": [
+  //           "keys"
+  //         ],
+  //         "keyValues": {
+  //           "keyC": {
+  //             "value": "\"valueForC\""
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ]
+  const std::string kCompressionGroup0Hex =
+      "82A2626964006F6B657947726F75704F75747075747382A264746167738172696E746572"
+      "65737447726F75704E616D6573696B657956616C756573A26667726F757041A16576616C"
+      "756578207B227072696F72697479566563746F72223A7B227369676E616C41223A317D7D"
+      "6667726F757042A16576616C756578207B227072696F72697479566563746F72223A7B22"
+      "7369676E616C42223A317D7DA2647461677381646B657973696B657956616C756573A264"
+      "6B657941A16576616C75656B2276616C7565466F724122646B657942A16576616C756578"
+      "1B5B2276616C756531466F7242222C2276616C756532466F7242225DA2626964016F6B65"
+      "7947726F75704F75747075747382A264746167738172696E74657265737447726F75704E"
+      "616D6573696B657956616C756573A16667726F757043A16576616C756578207B22707269"
+      "6F72697479566563746F72223A7B227369676E616C43223A317D7DA2647461677381646B"
+      "657973696B657956616C756573A1646B657943A16576616C75656B2276616C7565466F72"
+      "4322";
+  std::vector<uint8_t> compression_group0_bytes;
+  std::string compression_group0_string;
+  base::HexStringToBytes(kCompressionGroup0Hex, &compression_group0_bytes);
+  base::HexStringToString(kCompressionGroup0Hex, &compression_group0_string);
+  std::string compressed_group0_string;
+  compression::GzipCompress(compression_group0_bytes,
+                            &compressed_group0_string);
+  std::vector<uint8_t> compressed_group0_bytes(compressed_group0_string.begin(),
+                                               compressed_group0_string.end());
+
+  // User cbor.me to convert from
+  // [
+  //   {
+  //     "id": 2,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": [
+  //           "interestGroupNames"
+  //         ],
+  //         "keyValues": {
+  //           "groupD": {
+  //             "value": "{\"priorityVector\":{\"signalD\":1}}"
+  //           }
+  //         }
+  //       },
+  //       {
+  //         "tags": [
+  //           "keys"
+  //         ],
+  //         "keyValues": {
+  //           "keyD": {
+  //             "value": "\"valueForD\""
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ]
+  const std::string kCompressionGroup1Hex =
+      "81A2626964026F6B657947726F75704F75747075747382A264746167738172696E746572"
+      "65737447726F75704E616D6573696B657956616C756573A16667726F757044A16576616C"
+      "756578207B227072696F72697479566563746F72223A7B227369676E616C44223A317D7D"
+      "A2647461677381646B657973696B657956616C756573A1646B657944A16576616C75656B"
+      "2276616C7565466F724422";
+  std::vector<uint8_t> compression_group1_bytes;
+  std::string compression_group1_string;
+  base::HexStringToBytes(kCompressionGroup1Hex, &compression_group1_bytes);
+  base::HexStringToString(kCompressionGroup1Hex, &compression_group1_string);
+  std::string compressed_group1_string;
+  compression::GzipCompress(compression_group1_bytes,
+                            &compressed_group1_string);
+  std::vector<uint8_t> compressed_group1_bytes(compressed_group1_string.begin(),
+                                               compressed_group1_string.end());
+
+  // Construct a CBOR body:
+  // {
+  //   "compressionGroups": [
+  //     {
+  //       "compressionGroupId": 0,
+  //       "ttlMs": 100,
+  //       "content": compression_group0_bytes
+  //     },
+  //     {
+  //       "compressionGroupId": 1,
+  //       "ttlMs": 200,
+  //       "content": compression_group1_bytes
+  //     }
+  //   ]
+  // }
+  cbor::Value::MapValue compression_group0;
+  compression_group0.try_emplace(cbor::Value("compressionGroupId"),
+                                 cbor::Value(0));
+  compression_group0.try_emplace(cbor::Value("ttlMs"), cbor::Value(100));
+  compression_group0.try_emplace(
+      cbor::Value("content"), cbor::Value(std::move(compressed_group0_bytes)));
+
+  cbor::Value::MapValue compression_group1;
+  compression_group1.try_emplace(cbor::Value("compressionGroupId"),
+                                 cbor::Value(1));
+  compression_group1.try_emplace(cbor::Value("ttlMs"), cbor::Value(200));
+  compression_group1.try_emplace(
+      cbor::Value("content"), cbor::Value(std::move(compressed_group1_bytes)));
+
+  cbor::Value::ArrayValue compression_groups;
+  compression_groups.emplace_back(std::move(compression_group0));
+  compression_groups.emplace_back(std::move(compression_group1));
+
+  cbor::Value::MapValue body_map;
+  body_map.try_emplace(cbor::Value("compressionGroups"),
+                       cbor::Value(std::move(compression_groups)));
+
+  cbor::Value body_value(std::move(body_map));
+  std::optional<std::vector<uint8_t>> maybe_body_bytes =
+      cbor::Writer::Write(body_value);
+  EXPECT_TRUE(maybe_body_bytes.has_value());
+
+  // Set compression format to 0x02 which means gzip.
+  std::vector<uint8_t> response_body = BuildResponseBody(
+      base::HexEncode(std::move(maybe_body_bytes).value()), 0x02);
+
+  // Check SignalsFetchResult.
+  TrustedSignalsKVv2ResponseParser::SignalsFetchResult maybe_fetch_result =
+      TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
+          response_body);
+  EXPECT_TRUE(maybe_fetch_result.has_value());
+  TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap fetch_result =
+      std::move(maybe_fetch_result).value();
+
+  CompressionGroupResult group0 = CompressionGroupResult(
+      auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+      compressed_group0_string, base::Milliseconds(100));
+  CompressionGroupResult group1 = CompressionGroupResult(
+      auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
+      compressed_group1_string, base::Milliseconds(200));
+  TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap
+      expected_fetch_result;
+  expected_fetch_result.emplace(0, std::move(group0));
+  expected_fetch_result.emplace(1, std::move(group1));
+  ExpectCompressionGroupMapEquals(expected_fetch_result, fetch_result);
+
+  // Check TrustedSignalsResultMap.
+  const std::set<std::string> kInterestGroupNames = {"groupA", "groupB",
+                                                     "groupC", "groupD"};
+  const std::set<std::string> kKeys = {"keyA", "keyB", "keyC", "keyD"};
+  std::optional<uint32_t> data_version = 1;
+
+  TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap maybe_result_map =
+      TrustedSignalsKVv2ResponseParser::
+          ParseBiddingSignalsFetchResultToResultMap(helper_.get(),
+                                                    kInterestGroupNames, kKeys,
+                                                    fetch_result, data_version);
+  EXPECT_TRUE(maybe_result_map.has_value());
+  TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMap result_map =
+      maybe_result_map.value();
+  EXPECT_EQ(result_map->size(), 3u);
+
+  std::vector<std::string> expect_names = {"groupA", "groupB"};
+  std::vector<std::string> expect_keys = {"keyA", "keyB"};
+  std::map<std::string, TrustedSignals::Result::PriorityVector>
+      priority_vector_map{
+          {"groupA", TrustedSignals::Result::PriorityVector{{"signalA", 1}}},
+          {"groupB", TrustedSignals::Result::PriorityVector{{"signalB", 1}}}};
+  std::string expected_bidding_signals =
+      R"({"keyA":"valueForA","keyB":["value1ForB","value2ForB"]})";
+  CheckBiddingResult(
+      helper_.get(),
+      result_map
+          ->at(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(0, 0))
+          .get(),
+      expect_names, expect_keys, priority_vector_map, expected_bidding_signals,
+      data_version);
+
+  expect_names = {"groupC"};
+  expect_keys = {"keyC"};
+  priority_vector_map = {
+      {"groupC", TrustedSignals::Result::PriorityVector{{"signalC", 1}}}};
+  expected_bidding_signals = R"({"keyC":"valueForC"})";
+  CheckBiddingResult(
+      helper_.get(),
+      result_map
+          ->at(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(0, 1))
+          .get(),
+      expect_names, expect_keys, priority_vector_map, expected_bidding_signals,
+      data_version);
+
+  expect_names = {"groupD"};
+  expect_keys = {"keyD"};
+  priority_vector_map = {
+      {"groupD", TrustedSignals::Result::PriorityVector{{"signalD", 1}}}};
+  expected_bidding_signals = R"({"keyD":"valueForD"})";
+  CheckBiddingResult(
+      helper_.get(),
+      result_map
+          ->at(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(1, 2))
+          .get(),
+      expect_names, expect_keys, priority_vector_map, expected_bidding_signals,
+      data_version);
+}
+
+TEST_F(TrustedSignalsKVv2ResponseParserTest, SignalsFetchResultParseFailure) {
+  std::string hex_string;
+
+  // Response shorter than framing header with 4 bytes hex string.
+  EXPECT_EQ("Response shorter than framing header.",
+            TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
+                {0xA, 0xA, 0xA, 0xA})
+                .error()
+                .error_msg);
+
+  // Unsupported compression scheme.
+  hex_string = "AA";
+  EXPECT_EQ(
+      "Unsupported compression scheme.",
+      GetErrorMessageFromParseResponseToSignalsFetchResult(hex_string, 0x01));
+
+  // Failed to parse response body as CBOR
+  // Random 20 bytes hex string.
+  hex_string = "666f421a72ed47aade0c63826288d5d1bbf2dc2a";
+  EXPECT_EQ("Failed to parse response body as CBOR.",
+            GetErrorMessageFromParseResponseToSignalsFetchResult(hex_string));
+
+  // Response body is not type of Map
+  // CBOR: [1]
+  hex_string = "8101";
+  EXPECT_EQ("Response body is not type of Map.",
+            GetErrorMessageFromParseResponseToSignalsFetchResult(hex_string));
+
+  // Failed to find compression groups in response
+  // CBOR:
+  // {
+  //   "something": "none"
+  // }
+  hex_string = "A169736F6D657468696E67646E6F6E65";
+  EXPECT_EQ("Failed to find compression groups in response.",
+            GetErrorMessageFromParseResponseToSignalsFetchResult(hex_string));
+
+  // Compression groups is not type of Array
+  // CBOR:
+  // {
+  //   "compressionGroups": 0
+  // }
+  hex_string = "A171636F6D7072657373696F6E47726F75707300";
+  EXPECT_EQ("Compression groups is not type of Array.",
+            GetErrorMessageFromParseResponseToSignalsFetchResult(hex_string));
+
+  // Compression group id is already in used
+  const std::string kContentHex = "A0";
+  std::vector<uint8_t> content_bytes;
+  base::HexStringToBytes(kContentHex, &content_bytes);
+
+  // Construct a CBOR body:
+  // {
+  //   "compressionGroups": [
+  //     {
+  //       "ttlMs": 100,
+  //       "content": content_bytes,
+  //       "compressionGroupId": 0
+  //     },
+  //     {
+  //       "ttlMs": 100,
+  //       "content": content_bytes,
+  //       "compressionGroupId": 0
+  //     }
+  //   ]
+  // }
+  cbor::Value::MapValue compression_group0;
+  compression_group0.try_emplace(cbor::Value("compressionGroupId"),
+                                 cbor::Value(0));
+  compression_group0.try_emplace(cbor::Value("ttlMs"), cbor::Value(100));
+  compression_group0.try_emplace(cbor::Value("content"),
+                                 cbor::Value(std::move(content_bytes)));
+
+  cbor::Value::MapValue compression_group1;
+  compression_group1.try_emplace(cbor::Value("compressionGroupId"),
+                                 cbor::Value(0));
+  compression_group1.try_emplace(cbor::Value("ttlMs"), cbor::Value(200));
+  compression_group1.try_emplace(cbor::Value("content"),
+                                 cbor::Value(std::move(content_bytes)));
+
+  cbor::Value::ArrayValue compression_groups;
+  compression_groups.emplace_back(std::move(compression_group0));
+  compression_groups.emplace_back(std::move(compression_group1));
+
+  cbor::Value::MapValue body_map;
+  body_map.try_emplace(cbor::Value("compressionGroups"),
+                       cbor::Value(std::move(compression_groups)));
+
+  cbor::Value body_value(std::move(body_map));
+  std::optional<std::vector<uint8_t>> maybe_body_bytes =
+      cbor::Writer::Write(body_value);
+  EXPECT_TRUE(maybe_body_bytes.has_value());
+
+  std::vector<uint8_t> response_body = BuildResponseBody(
+      base::HexEncode(std::move(maybe_body_bytes).value()), 0x00);
+  EXPECT_EQ("Compression group id \"0\" is already in used.",
+            TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
+                response_body)
+                .error()
+                .error_msg);
+
+  // Compression group is not type of Map
+  // CBOR:
+  // {
+  //   "compressionGroups": [0]
+  // }
+  hex_string = "A171636F6D7072657373696F6E47726F7570738100";
+  EXPECT_EQ("Compression group is not type of Map.",
+            GetErrorMessageFromParseResponseToSignalsFetchResult(hex_string));
+
+  // Key "compressionGroupId" is missing in compressionGroups map
+  // CBOR:
+  // {
+  //   "compressionGroups": [
+  //     {
+  //       "ttlMs": 100,
+  //       "content": "content"
+  //     }
+  //   ]
+  // }
+  hex_string =
+      "A171636F6D7072657373696F6E47726F75707381A26574746C4D73186467636F6E74656E"
+      "7467636F6E74656E74";
+  EXPECT_EQ("Key \"compressionGroupId\" is missing in compressionGroups map.",
+            GetErrorMessageFromParseResponseToSignalsFetchResult(hex_string));
+
+  // Key "content" is missing in compressionGroups map
+  // CBOR:
+  // {
+  //   "compressionGroups": [
+  //     {
+  //       "ttlMs": 100,
+  //       "compressionGroupId": 0
+  //     }
+  //   ]
+  // }
+  hex_string =
+      "A171636F6D7072657373696F6E47726F75707381A26574746C4D73186472636F6D707265"
+      "7373696F6E47726F7570496400";
+  EXPECT_EQ("Key \"content\" is missing in compressionGroups map.",
+            GetErrorMessageFromParseResponseToSignalsFetchResult(hex_string));
+
+  // Compression group id is not type of Integer
+  // CBOR:
+  // {
+  //   "compressionGroups": [
+  //     {
+  //       "ttlMs": 100,
+  //       "content": "content",
+  //       "compressionGroupId": "1"
+  //     }
+  //   ]
+  // }
+  hex_string =
+      "A171636F6D7072657373696F6E47726F75707381A36574746C4D73186467636F6E74656E"
+      "7467636F6E74656E7472636F6D7072657373696F6E47726F757049646131";
+  EXPECT_EQ("Compression group id is not type of Integer.",
+            GetErrorMessageFromParseResponseToSignalsFetchResult(hex_string));
+
+  // Compression group id is out of range for int.
+  // CBOR:
+  // {
+  //   "compressionGroups": [
+  //     {
+  //       "ttlMs": 100,
+  //       "content": "content",
+  //       "compressionGroupId": 2147483648
+  //     }
+  //   ]
+  // }
+  hex_string =
+      "A171636F6D7072657373696F6E47726F75707381A36574746C4D73186467636F6E74656E"
+      "7467636F6E74656E7472636F6D7072657373696F6E47726F757049641A80000000";
+  EXPECT_EQ("Compression group id is out of range for int.",
+            GetErrorMessageFromParseResponseToSignalsFetchResult(hex_string));
+
+  // Compression group ttl is not type of Integer
+  // CBOR:
+  // {
+  //   "compressionGroups": [
+  //     {
+  //       "ttlMs": "100",
+  //       "content": "content",
+  //       "compressionGroupId": 1
+  //     }
+  //   ]
+  // }
+  hex_string =
+      "A171636F6D7072657373696F6E47726F75707381A36574746C4D736331303067636F6E74"
+      "656E7467636F6E74656E7472636F6D7072657373696F6E47726F7570496401";
+  EXPECT_EQ("Compression group ttl is not type of Integer.",
+            GetErrorMessageFromParseResponseToSignalsFetchResult(hex_string));
+
+  // Compression group content is not type of Byte String
+  // CBOR:
+  // {
+  //   "compressionGroups": [
+  //     {
+  //       "ttlMs": 100,
+  //       "content": "content",
+  //       "compressionGroupId": 1
+  //     }
+  //   ]
+  // }
+  hex_string =
+      "A171636F6D7072657373696F6E47726F75707381A36574746C4D73186467636F6E74656E"
+      "7467636F6E74656E7472636F6D7072657373696F6E47726F7570496401";
+  EXPECT_EQ("Compression group content is not type of Byte String.",
+            GetErrorMessageFromParseResponseToSignalsFetchResult(hex_string));
+}
+
+TEST_F(TrustedSignalsKVv2ResponseParserTest,
+       SignalsFetchResultMapParseFailure) {
+  // Construct a CompressionGroupResultMap with the following hardcoded values.
+  std::optional<uint32_t> data_version = 1;
+  std::string hex_string;
+  TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap result_map;
+  CompressionGroupResult compression_group_result;
+  result_map.emplace(0, std::move(compression_group_result));
+  const std::set<std::string> kInterestGroupNames = {"groupA"};
+  const std::set<std::string> kBiddingKeys = {"keyA"};
+
+  // Failed to decompress content string with Gzip
+  result_map[0].compression_scheme =
+      auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip;
+  // []
+  hex_string = "80";
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Failed to decompress content string with Gzip.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Set compression scheme to kNone for the rest of test cases.
+  result_map[0].compression_scheme =
+      auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone;
+
+  // Failed to parse content to CBOR
+  // Random 20 bytes hex string.
+  hex_string = "666f421a72ed47aade0c63826288d5d1bbf2dc2a";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Failed to parse content to CBOR.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Content is not type of Array
+  // "1"
+  hex_string = "6131";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Content is not type of Array.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Partition is not type of Map
+  // [1]
+  hex_string = "8101";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Partition is not type of Map.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Key "id" is missing in partition map
+  // [
+  //   {
+  //     "keyGroupOutputs": []
+  //   }
+  // ]
+  hex_string = "81A16F6B657947726F75704F75747075747380";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Key \"id\" is missing in partition map.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Key "keyGroupOutputs" is missing in partition map
+  // [
+  //   {
+  //     "id": 0
+  //   }
+  // ]
+  hex_string = "81A162696400";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Key \"keyGroupOutputs\" is missing in partition map.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Partition id is not type of Integer
+  // [
+  //   {
+  //     "id": "0",
+  //     "keyGroupOutputs": []
+  //   }
+  // ]
+  hex_string = "81A262696461306F6B657947726F75704F75747075747380";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Partition id is not type of Integer.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Partition id is out of range for int
+  // [
+  //   {
+  //     "id": 2147483648,
+  //     "keyGroupOutputs": []
+  //   }
+  // ]
+  hex_string = "81A26269641A800000006F6B657947726F75704F75747075747380";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Partition id is out of range for int.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Partition key group outputs is not type of Array
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": 100
+  //   }
+  // ]
+  hex_string = "81A2626964006F6B657947726F75704F7574707574731864";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Partition key group outputs is not type of Array.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // KeyGroupOutput value is not type of Map
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [100]
+  //   }
+  // ]
+  hex_string = "81A2626964006F6B657947726F75704F757470757473811864";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("KeyGroupOutput value is not type of Map.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Key "tags" is missing in keyGroupOutputs map
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "keyValues": {
+  //           "groupD": {
+  //             "value": "{\"priorityVector\":{\"signalD\":1}}"
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ]
+  hex_string =
+      "81A2626964006F6B657947726F75704F75747075747381A1696B657956616C756573A166"
+      "67726F757044A16576616C756578207B227072696F72697479566563746F72223A7B2273"
+      "69676E616C44223A317D7D";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Key \"tags\" is missing in keyGroupOutputs map.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Key "keyValues" is missing in keyGroupOutputs map
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": [
+  //           "interestGroupNames"
+  //         ]
+  //       }
+  //     ]
+  //   }
+  // ]
+  hex_string =
+      "81A2626964006F6B657947726F75704F75747075747381A164746167738172696E746572"
+      "65737447726F75704E616D6573";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Key \"keyValues\" is missing in keyGroupOutputs map.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Tags value in keyGroupOutputs map is not type of Array
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": "interestGroupNames",
+  //         "keyValues": {
+  //           "groupD": {
+  //             "value": "{\"priorityVector\":{\"signalD\":1}}"
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ]
+  hex_string =
+      "81A2626964006F6B657947726F75704F75747075747381A2647461677372696E74657265"
+      "737447726F75704E616D6573696B657956616C756573A16667726F757044A16576616C75"
+      "6578207B227072696F72697479566563746F72223A7B227369676E616C44223A317D7D";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Tags value in keyGroupOutputs map is not type of Array.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Tags array must only have one tag
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": ["tag1","tag2"],
+  //         "keyValues": {
+  //           "groupD": {
+  //             "value": "{\"priorityVector\":{\"signalD\":1}}"
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ]
+  hex_string =
+      "81A2626964006F6B657947726F75704F75747075747381A2647461677382647461673164"
+      "74616732696B657956616C756573A16667726F757044A16576616C756578207B22707269"
+      "6F72697479566563746F72223A7B227369676E616C44223A317D7D";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Tags array must only have one tag.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Tag value in tags array of keyGroupOutputs map is not type of String
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": [100],
+  //         "keyValues": {
+  //           "groupD": {
+  //             "value": "{\"priorityVector\":{\"signalD\":1}}"
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ]
+  hex_string =
+      "81A2626964006F6B657947726F75704F75747075747381A26474616773811864696B"
+      "6579"
+      "56616C756573A16667726F757044A16576616C756578207B227072696F7269747956"
+      "6563"
+      "746F72223A7B227369676E616C44223A317D7D";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ(
+      "Tag value in tags array of keyGroupOutputs map is not type of String.",
+      GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+          helper_, kInterestGroupNames, kBiddingKeys, result_map,
+          data_version));
+
+  // Duplicate tag detected in keyGroupOutputs
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": ["interestGroupNames"],
+  //         "keyValues": {
+  //           "groupD": {
+  //             "value": "{\"priorityVector\":{\"signalA\":1}}"
+  //           }
+  //         }
+  //       },
+  //       {
+  //         "tags": ["interestGroupNames"],
+  //         "keyValues": {
+  //           "groupD": {
+  //             "value": "{\"priorityVector\":{\"signalB\":1}}"
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ]
+  hex_string =
+      "81A2626964006F6B657947726F75704F75747075747382A264746167738172696E746572"
+      "65737447726F75704E616D6573696B657956616C756573A16667726F757044A16576616C"
+      "756578207B227072696F72697479566563746F72223A7B227369676E616C41223A317D7D"
+      "A264746167738172696E74657265737447726F75704E616D6573696B657956616C756573"
+      "A16667726F757044A16576616C756578207B227072696F72697479566563746F72223A7B"
+      "227369676E616C42223A317D7D";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Duplicate tag \"interestGroupNames\" detected in keyGroupOutputs.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // KeyValue value in keyGroupOutputs map is not type of Map
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": [
+  //           "interestGroupNames"
+  //         ],
+  //         "keyValues": 100
+  //       }
+  //     ]
+  //   }
+  // ]
+  hex_string =
+      "81A2626964006F6B657947726F75704F75747075747381A264746167738172696E746572"
+      "65737447726F75704E616D6573696B657956616C7565731864";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("KeyValue value in keyGroupOutputs map is not type of Map.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Value is not type of Map
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": [
+  //           "interestGroupNames"
+  //         ],
+  //         "keyValues": {
+  //           "groupA": 100
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ]
+  hex_string =
+      "81A2626964006F6B657947726F75704F75747075747381A264746167738172696E746572"
+      "65737447726F75704E616D6573696B657956616C756573A16667726F7570411864";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Value of \"groupA\" is not type of Map.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Failed to find key "value" in the map
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": [
+  //           "interestGroupNames"
+  //         ],
+  //         "keyValues": {
+  //           "groupA": {
+  //             "val": ""
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ]
+  hex_string =
+      "81A2626964006F6B657947726F75704F75747075747381A264746167738172696E746572"
+      "65737447726F75704E616D6573696B657956616C756573A16667726F757041A16376616C"
+      "60";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Failed to find key \"value\" in the map.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Failed to read value of key "value" as type String
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": [
+  //           "interestGroupNames"
+  //         ],
+  //         "keyValues": {
+  //           "groupA": {
+  //             "value": 100
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ]
+  hex_string =
+      "81A2626964006F6B657947726F75704F75747075747381A264746167738172696E746572"
+      "65737447726F75704E616D6573696B657956616C756573A16667726F757041A16576616C"
+      "75651864";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Failed to read value of key \"value\" as type String.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Failed to create V8 value from key group output data
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": [
+  //           "interestGroupNames"
+  //         ],
+  //         "keyValues": {
+  //           "groupA": {
+  //             "value": "signal:"
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ]
+  hex_string =
+      "81A2626964006F6B657947726F75704F75747075747381A264746167738172696E746572"
+      "65737447726F75704E616D6573696B657956616C756573A16667726F757041A16576616C"
+      "7565677369676E616C3A";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Failed to create V8 value from key group output data.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
+
+  // Failed to parse key-value string to JSON
+  // [
+  //   {
+  //     "id": 0,
+  //     "keyGroupOutputs": [
+  //       {
+  //         "tags": [
+  //           "keys"
+  //         ],
+  //         "keyValues": {
+  //           "keyA": {
+  //             "value": "100:"
+  //           }
+  //         }
+  //       }
+  //     ]
+  //   }
+  // ]
+  hex_string =
+      "81A2626964006F6B657947726F75704F75747075747381A2647461677381646B65797369"
+      "6B657956616C756573A1646B657941A16576616C7565643130303A";
+  result_map[0].content.clear();
+  base::HexStringToString(hex_string, &result_map[0].content);
+  EXPECT_EQ("Failed to parse key-value string to JSON.",
+            GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
+                helper_, kInterestGroupNames, kBiddingKeys, result_map,
+                data_version));
 }
 
 }  // namespace auction_worklet

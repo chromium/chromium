@@ -11,6 +11,7 @@ include_rules = [
   "+third_party/blink/public/common/mime_util",
   "+third_party/blink/public/mojom",
   "+third_party/inspector_protocol/crdtp",
+  "+third_party/zlib/google/compression_utils.h",
   "+v8",
 ]
 
