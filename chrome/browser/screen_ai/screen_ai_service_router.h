@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -55,6 +56,11 @@ class ScreenAIServiceRouter : public KeyedService,
   // Returns true if the connection for `service` is bound.
   bool IsConnectionBoundForTesting(Service service);
 
+  // Returns true if sandboxed process is running.
+  bool IsProcessRunningForTesting();
+
+  void ShutDownIfNoClientsForTesting() { ShutDownIfNoClients(); }
+
  private:
   friend class ScreenAIServiceRouterFactory;
 
@@ -74,6 +80,9 @@ class ScreenAIServiceRouter : public KeyedService,
   // Launches the service if it's not already launched.
   void LaunchIfNotRunning();
 
+  // Triggers service shutdown if no clients are connected.
+  void ShutDownIfNoClients();
+
   // True if service is already initialized, false if it is disabled, and
   // nullopt if not known.
   std::optional<bool> GetServiceState(Service service);
@@ -88,6 +97,8 @@ class ScreenAIServiceRouter : public KeyedService,
 
   // Calls back all pendnding service state requests.
   void CallPendingStatusRequests(Service service, bool successful);
+
+  std::unique_ptr<base::RepeatingTimer> idle_checking_timer_;
 
   // Returns the list of services that have a pending status request.
   std::set<Service> GetAllPendingStatusServices();

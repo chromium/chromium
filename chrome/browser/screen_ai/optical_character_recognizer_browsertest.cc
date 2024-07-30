@@ -11,7 +11,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -61,6 +64,23 @@ void WaitForStatus(scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr,
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WaitForStatus, ocr, std::move(callback),
+                     remaining_tries - 1),
+      base::Milliseconds(200));
+}
+
+void WaitForDisconnecting(screen_ai::ScreenAIServiceRouter* router,
+                          base::OnceCallback<void()> callback,
+                          int remaining_tries) {
+  if (!router->IsProcessRunningForTesting() || !remaining_tries) {
+    std::move(callback).Run();
+    return;
+  }
+  router->ShutDownIfNoClientsForTesting();
+
+  // Wait more...
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&WaitForDisconnecting, router, std::move(callback),
                      remaining_tries - 1),
       base::Milliseconds(200));
 }
@@ -329,6 +349,53 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Medium", 0);
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Large", 0);
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.XLarge", 0);
+}
+
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
+                       PerformOCR_AfterServiceRevive) {
+  if (!IsOcrAvailable()) {
+    GTEST_SKIP() << "This test is only available when service is available";
+  }
+
+  screen_ai::ScreenAIServiceRouter* router =
+      ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile());
+
+  // Init OCR once and verify service availability.
+  {
+    base::test::TestFuture<bool> init_future;
+    scoped_refptr<OpticalCharacterRecognizer> ocr =
+        OpticalCharacterRecognizer::CreateWithStatusCallback(
+            browser()->profile(), mojom::OcrClientType::kTest,
+            init_future.GetCallback());
+    ASSERT_TRUE(init_future.Wait());
+    ASSERT_TRUE(init_future.Get<bool>());
+
+    ASSERT_TRUE(router->IsProcessRunningForTesting());
+  }
+
+  // Trigger service shut down and wait for disconnecting.
+  base::test::TestFuture<void> future;
+  WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/10);
+  ASSERT_TRUE(future.Wait());
+  ASSERT_FALSE(router->IsProcessRunningForTesting());
+
+  // Init OCR again.
+  base::test::TestFuture<bool> init_future;
+  scoped_refptr<OpticalCharacterRecognizer> ocr =
+      OpticalCharacterRecognizer::CreateWithStatusCallback(
+          browser()->profile(), mojom::OcrClientType::kTest,
+          init_future.GetCallback());
+  ASSERT_TRUE(init_future.Wait());
+  ASSERT_TRUE(init_future.Get<bool>());
+  ASSERT_TRUE(router->IsProcessRunningForTesting());
+
+  // Perform OCR.
+  SkBitmap bitmap = LoadImageFromTestFile(
+      base::FilePath(FILE_PATH_LITERAL("ocr/just_one_letter.png")));
+  base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
+  ocr->PerformOCR(bitmap, perform_future.GetCallback());
+  ASSERT_TRUE(perform_future.Wait());
+  ASSERT_FALSE(perform_future.Get<mojom::VisualAnnotationPtr>()->lines.empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
