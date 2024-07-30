@@ -7,11 +7,12 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "url/gurl.h"
 
 namespace ash {
 
-PickerWebPasteTarget::PickerWebPasteTarget(base::OnceClosure do_paste)
-    : do_paste(std::move(do_paste)) {}
+PickerWebPasteTarget::PickerWebPasteTarget(GURL url, base::OnceClosure do_paste)
+    : url(std::move(url)), do_paste(std::move(do_paste)) {}
 
 PickerWebPasteTarget::PickerWebPasteTarget(PickerWebPasteTarget&&) = default;
 PickerWebPasteTarget& PickerWebPasteTarget::operator=(PickerWebPasteTarget&&) =

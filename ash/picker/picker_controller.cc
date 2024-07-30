@@ -171,12 +171,14 @@ InsertionContent GetInsertionContentForResult(
             return data;
           },
           [](const PickerSearchResult::BrowsingHistoryData& data)
-              -> ReturnType { return PickerLinkMedia(data.url); },
+              -> ReturnType {
+            return PickerLinkMedia(data.url, base::UTF16ToUTF8(data.title));
+          },
           [](const PickerSearchResult::LocalFileData& data) -> ReturnType {
             return PickerLocalFileMedia(data.file_path);
           },
           [](const PickerSearchResult::DriveFileData& data) -> ReturnType {
-            return PickerLinkMedia(data.url);
+            return PickerLinkMedia(data.url, base::UTF16ToUTF8(data.title));
           },
           [](const PickerSearchResult::CategoryData& data) -> ReturnType {
             return std::monostate();

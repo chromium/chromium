@@ -83,7 +83,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_text = u"hello",
         },
         TestCase{
-            .media_to_insert = PickerLinkMedia(GURL("http://foo.com")),
+            .media_to_insert = PickerLinkMedia(GURL("http://foo.com"), "foo"),
             .expected_text = u"http://foo.com/",
         }));
 

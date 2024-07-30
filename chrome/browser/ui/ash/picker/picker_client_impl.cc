@@ -427,6 +427,7 @@ std::optional<ash::PickerWebPasteTarget> PickerClientImpl::GetWebPasteTarget() {
     }
 
     return std::make_optional<ash::PickerWebPasteTarget>(
+        focused_web_contents->GetLastCommittedURL(),
         // SAFETY: Callers must call this synchronously as per the
         // documentation, so this `base::Unretained` is safe.
         base::BindOnce(&content::WebContents::Paste,

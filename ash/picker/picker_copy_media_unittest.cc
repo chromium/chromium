@@ -24,10 +24,11 @@ TEST_F(PickerCopyMediaTest, CopiesText) {
 }
 
 TEST_F(PickerCopyMediaTest, CopiesLinks) {
-  CopyMediaToClipboard(PickerLinkMedia(GURL("https://foo.com")));
+  CopyMediaToClipboard(PickerLinkMedia(GURL("https://foo.com"), "Foo"));
 
   EXPECT_EQ(ReadTextFromClipboard(ui::Clipboard::GetForCurrentThread()),
             u"https://foo.com/");
+  // NB: Intentionally does not use the title, "Foo", for maximum compatibility.
   EXPECT_EQ(ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
             u"<a href=\"https://foo.com/\">https://foo.com/</a>");
 }
@@ -47,7 +48,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     PickerCopyMediaToastTest,
     ::testing::Values(PickerTextMedia(u"hello"),
-                      PickerLinkMedia(GURL("https://foo.com")),
+                      PickerLinkMedia(GURL("https://foo.com"), "Foo"),
                       PickerLocalFileMedia(base::FilePath("/foo.txt"))));
 
 TEST_P(PickerCopyMediaToastTest, ShowsToastAfterCopyingLink) {

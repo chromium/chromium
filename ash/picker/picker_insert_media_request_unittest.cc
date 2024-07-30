@@ -170,7 +170,7 @@ const TestCaseCallback kTextTestCases[] = {
         /*expected_text=*/u"hello")
         .ToCallback(),
     BasicTestCase(
-        /*media_to_insert=*/PickerLinkMedia(GURL("http://foo.com")),
+        /*media_to_insert=*/PickerLinkMedia(GURL("http://foo.com"), "Foo"),
         /*expected_text=*/u"http://foo.com/")
         .ToCallback(),
 };

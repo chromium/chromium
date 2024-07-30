@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -14,13 +15,15 @@ namespace ash {
 // containing information about the `content::WebContents` used for determining
 // what contents to paste.
 struct ASH_PUBLIC_EXPORT PickerWebPasteTarget {
-  explicit PickerWebPasteTarget(base::OnceClosure do_paste);
+  explicit PickerWebPasteTarget(GURL url, base::OnceClosure do_paste);
   PickerWebPasteTarget(const PickerWebPasteTarget&) = delete;
   PickerWebPasteTarget& operator=(const PickerWebPasteTarget&) = delete;
   PickerWebPasteTarget(PickerWebPasteTarget&&);
   PickerWebPasteTarget& operator=(PickerWebPasteTarget&&);
   ~PickerWebPasteTarget();
 
+  // The last committed URL of the `content::WebContents`.
+  GURL url;
   // Call this to paste the current clipboard contents into the
   // `content::WebContents` associated with this struct.
   base::OnceClosure do_paste;

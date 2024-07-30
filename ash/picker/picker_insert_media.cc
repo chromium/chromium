@@ -67,6 +67,12 @@ std::optional<GURL> ConvertToDataUrl(std::string_view media_type,
       {"data:", media_type, ";base64,", base::Base64Encode(*data)}));
 }
 
+bool ShouldUseLinkTitle(const GURL& url_of_target) {
+  // TODO: b/337064111 - Determine allowlist for inserting link title.
+  return url_of_target.DomainIs("google.com") &&
+         !url_of_target.DomainIs("docs.google.com");
+}
+
 void InsertMediaToInputFieldNoClipboard(
     PickerRichMedia media,
     ui::TextInputClient& client,
@@ -143,11 +149,15 @@ void InsertMediaToInputField(PickerRichMedia media,
         get_web_paste_target.is_null() ? std::nullopt
                                        : std::move(get_web_paste_target).Run();
     base::OnceClosure do_paste;
+    PickerClipboardDataOptions clipboard_data_options;
     if (web_paste_target.has_value()) {
       do_paste = std::move(web_paste_target->do_paste);
+      clipboard_data_options.links_should_use_title =
+          ShouldUseLinkTitle(web_paste_target->url);
     }
     InsertClipboardData(
-        ClipboardDataFromMedia(media), std::move(do_paste),
+        ClipboardDataFromMedia(media, clipboard_data_options),
+        std::move(do_paste),
         base::BindOnce(
             [](PickerRichMedia media, base::WeakPtr<ui::TextInputClient> client,
                OnInsertMediaCompleteCallback callback, bool success) {

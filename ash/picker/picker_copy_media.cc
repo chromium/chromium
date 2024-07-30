@@ -31,21 +31,22 @@ constexpr char kPickerCopyToClipboardToastId[] = "picker_copy_to_clipboard";
 }  // namespace
 
 std::unique_ptr<ui::ClipboardData> ClipboardDataFromMedia(
-    const PickerRichMedia& media) {
+    const PickerRichMedia& media,
+    const PickerClipboardDataOptions& options) {
   auto data = std::make_unique<ui::ClipboardData>();
   std::visit(base::Overloaded{
                  [&data](const PickerTextMedia& media) {
                    data->set_text(base::UTF16ToUTF8(media.text));
                  },
-                 [&data](const PickerLinkMedia& media) {
-                   // TODO: b/337064111 - Add a URL title for domains that
-                   // support inserting links in contenteditable fields.
+                 [&data, &options](const PickerLinkMedia& media) {
                    std::string escaped_spec =
                        base::EscapeForHTML(media.url.spec());
+                   std::string title = options.links_should_use_title
+                                           ? media.title
+                                           : escaped_spec;
                    data->set_text(media.url.spec());
-                   data->set_markup_data(
-                       base::StrCat({"<a href=\"", escaped_spec, "\">",
-                                     escaped_spec, "</a>"}));
+                   data->set_markup_data(base::StrCat(
+                       {"<a href=\"", escaped_spec, "\">", title, "</a>"}));
                  },
                  [&data](const PickerLocalFileMedia& media) {
                    data->set_filenames(
@@ -58,7 +59,8 @@ std::unique_ptr<ui::ClipboardData> ClipboardDataFromMedia(
 
 void CopyMediaToClipboard(const PickerRichMedia& media) {
   CHECK_DEREF(ui::ClipboardNonBacked::GetForCurrentThread())
-      .WriteClipboardData(ClipboardDataFromMedia(media));
+      .WriteClipboardData(ClipboardDataFromMedia(
+          media, PickerClipboardDataOptions{.links_should_use_title = false}));
 
   // Show a toast to inform the user about the copy.
   // TODO: b/322928125 - Use dedicated toast catalog name.

@@ -24,8 +24,9 @@ struct ASH_EXPORT PickerTextMedia {
 
 struct ASH_EXPORT PickerLinkMedia {
   GURL url;
+  std::string title;
 
-  explicit PickerLinkMedia(GURL url);
+  explicit PickerLinkMedia(GURL url, std::string title);
 };
 
 struct ASH_EXPORT PickerLocalFileMedia {

@@ -16,8 +16,13 @@ class ClipboardData;
 
 namespace ash {
 
+struct ASH_EXPORT PickerClipboardDataOptions {
+  bool links_should_use_title = false;
+};
+
 ASH_EXPORT std::unique_ptr<ui::ClipboardData> ClipboardDataFromMedia(
-    const PickerRichMedia& media);
+    const PickerRichMedia& media,
+    const PickerClipboardDataOptions& options);
 
 // Copies rich media into the clipboard.
 ASH_EXPORT void CopyMediaToClipboard(const PickerRichMedia& media);
