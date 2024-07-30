@@ -58,7 +58,7 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
-#include "chrome/services/system_signals/linux/linux_system_signals_service.h"
+#include "chrome/services/system_signals/linux/linux_system_signals_service.h"  // nogncheck
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -80,13 +80,13 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/services/removable_storage_writer/public/mojom/removable_storage_writer.mojom.h"
-#include "chrome/services/removable_storage_writer/removable_storage_writer.h"
+#include "chrome/services/removable_storage_writer/public/mojom/removable_storage_writer.mojom.h"  // nogncheck
+#include "chrome/services/removable_storage_writer/removable_storage_writer.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_ANDROID)
 #include "chrome/services/media_gallery_util/media_parser_factory.h"
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \

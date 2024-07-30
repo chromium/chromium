@@ -4505,11 +4505,13 @@ static_library("browser") {
       "//components/commerce/core:public",
       "//components/commerce/core/mojom:mojo_bindings",
       "//components/constrained_window",
+      "//components/drive:drive",
       "//components/endpoint_fetcher:endpoint_fetcher",
       "//components/enterprise/buildflags",
       "//components/feedback",
       "//components/feedback/content:factory",
       "//components/feedback/redaction_tool",
+      "//components/guest_view/browser:browser",
       "//components/headless/clipboard",
       "//components/headless/policy",
       "//components/image_fetcher/core",
@@ -8555,7 +8557,10 @@ static_library("browser_public_dependencies") {
   } else {
     public_deps += [
       "//components/commerce/core:coupon_db_content_proto",
+      "//components/value_store:value_store",
       "//extensions/buildflags",
+      "//google_apis/calendar:calendar",
+      "//google_apis/common:common",
     ]
   }
   if (is_chromeos_ash) {
