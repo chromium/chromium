@@ -654,7 +654,9 @@ public class SelectionPopupControllerTest {
         // Device is not provisioned.
         Settings.Global.putInt(mContentResolver, Settings.Global.DEVICE_PROVISIONED, 0);
 
-        assertNull(SmartSelectionClient.create(mController.getResultCallback(), mWebContents));
+        assertNull(
+                SmartSelectionClient.fromWebContents(
+                        mController.getResultCallback(), mWebContents));
     }
 
     @Test
@@ -664,7 +666,9 @@ public class SelectionPopupControllerTest {
         // Incognito.
         when(mWebContents.isIncognito()).thenReturn(true);
 
-        assertNull(SmartSelectionClient.create(mController.getResultCallback(), mWebContents));
+        assertNull(
+                SmartSelectionClient.fromWebContents(
+                        mController.getResultCallback(), mWebContents));
     }
 
     @Test

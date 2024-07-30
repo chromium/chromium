@@ -144,6 +144,6 @@ public interface SelectionClient {
     public static SelectionClient createSmartSelectionClient(WebContents webContents) {
         SelectionClient.ResultCallback callback =
                 SelectionPopupController.fromWebContents(webContents).getResultCallback();
-        return SmartSelectionClient.create(callback, webContents);
+        return SmartSelectionClient.fromWebContents(callback, webContents);
     }
 }
