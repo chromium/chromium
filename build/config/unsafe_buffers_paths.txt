@@ -131,9 +131,11 @@
 -third_party/
 +third_party/blink/
 -tools/
--ui/
-+ui/gfx/
-+ui/views/
+-ui/base/clipboard/
+-ui/base/ime/ash/
+-ui/display/manager/
+-ui/events/ash/
+-ui/ozone/
 +ui/ozone/platform/wayland
 -url/third_party
 -v8/
