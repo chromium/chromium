@@ -563,7 +563,7 @@ TEST(CommandLineTest, Move) {
       "bbbbbbbbb",
       "c",
   };
-  static constexpr CommandLine::StringPieceType kArgs[] = {
+  static constexpr CommandLine::StringViewType kArgs[] = {
       FILE_PATH_LITERAL("beebop"),
       FILE_PATH_LITERAL("alouie"),
   };
@@ -766,7 +766,7 @@ class MergeDuplicateFoosSemicolon : public DuplicateSwitchHandler {
   ~MergeDuplicateFoosSemicolon() override;
 
   void ResolveDuplicate(std::string_view key,
-                        CommandLine::StringPieceType new_value,
+                        CommandLine::StringViewType new_value,
                         CommandLine::StringType& out_value) override;
 };
 
@@ -774,7 +774,7 @@ MergeDuplicateFoosSemicolon::~MergeDuplicateFoosSemicolon() = default;
 
 void MergeDuplicateFoosSemicolon::ResolveDuplicate(
     std::string_view key,
-    CommandLine::StringPieceType new_value,
+    CommandLine::StringViewType new_value,
     CommandLine::StringType& out_value) {
   if (key != "mergeable-foo") {
     out_value = CommandLine::StringType(new_value);
