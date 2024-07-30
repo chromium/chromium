@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/auth/cryptohome_pin_engine.h"
+#include "chrome/browser/ash/auth/cryptohome_pin_engine.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_op.h"
