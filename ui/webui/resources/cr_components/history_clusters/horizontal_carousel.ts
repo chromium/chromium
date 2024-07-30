@@ -24,9 +24,9 @@ declare global {
 
 export interface HorizontalCarouselElement {
   $: {
-    carouselBackButton: HTMLElement,
+    backButton: HTMLElement,
     carouselContainer: HTMLElement,
-    carouselForwardButton: HTMLElement,
+    forwardButton: HTMLElement,
   };
 }
 
