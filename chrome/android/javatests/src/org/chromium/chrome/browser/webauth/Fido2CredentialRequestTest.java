@@ -21,12 +21,12 @@ import android.util.Log;
 import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -40,6 +40,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -51,6 +52,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
@@ -76,7 +78,6 @@ import org.chromium.components.webauthn.Fido2ApiCallHelper;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
 import org.chromium.components.webauthn.FidoIntentSender;
-import org.chromium.components.webauthn.GmsCoreUtils;
 import org.chromium.components.webauthn.GpmBrowserOptionsHelper;
 import org.chromium.components.webauthn.InternalAuthenticator;
 import org.chromium.components.webauthn.InternalAuthenticatorJni;
@@ -93,6 +94,7 @@ import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -101,6 +103,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /** Unit tests for {@link Fido2CredentialRequestTest}. */
 @RunWith(ParameterizedRunner.class)
@@ -112,6 +115,7 @@ import java.util.List;
     "ignore-certificate-errors",
 })
 @Batch(Batch.PER_CLASS)
+@Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_19W13)
 public class Fido2CredentialRequestTest {
     private static final String TAG = "Fido2CredentialRequestTest";
 
@@ -457,10 +461,26 @@ public class Fido2CredentialRequestTest {
         }
     }
 
+    private static final String FIDO_OVERRIDE_COMMAND =
+            "am broadcast -a com.google.android.gms.phenotype.FLAG_OVERRIDE --es package"
+                    + " com.google.android.gms.fido --es user * --esa flags"
+                    + " Fido2ApiKnownBrowsers__fingerprints --esa values"
+                    + " %s --esa types"
+                    + " string --ez commit true --user 0 com.google.android.gms";
+
     @Before
     public void setUp() throws Exception {
-        Assume.assumeTrue(GmsCoreUtils.isWebauthnSupported());
         mContext = ContextUtils.getApplicationContext();
+
+        String fingerprints =
+                PackageUtils.getCertificateSHA256FingerprintForPackage(mContext.getPackageName())
+                        .stream()
+                        .map(s -> s.replaceAll(":", ""))
+                        .collect(Collectors.joining(","));
+        InstrumentationRegistry.getInstrumentation()
+                .getUiAutomation()
+                .executeShellCommand(String.format(FIDO_OVERRIDE_COMMAND, fingerprints));
+
         mIntentSender = new MockIntentSender();
         mTestServer = sActivityTestRule.getTestServer();
         mCallback = Fido2ApiTestHelper.getAuthenticatorCallback();
@@ -2294,9 +2314,8 @@ public class Fido2CredentialRequestTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
             message = "crbug.com/347310677")
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_23W12)
     public void testGetAssertion_conditionalUiHybrid_success() {
-        Assume.assumeTrue(GmsCoreUtils.isHybridClientApiSupported());
-
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         FeatureList.setTestValues(testValues);
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
