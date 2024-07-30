@@ -151,19 +151,20 @@ suite('cr-focus-row-mixin-test', function() {
     assertFalse(focused);
   });
 
-  test('when focus-override is defined, returned element gains focus', () => {
-    const lastButton = document.createElement('button');
-    lastButton.setAttribute('focus-type', 'fake-btn-three');
-    testElement.lastFocused = lastButton;
+  test(
+      'when focus-override is defined, returned element gains focus',
+      async () => {
+        const lastButton = document.createElement('button');
+        lastButton.setAttribute('focus-type', 'fake-btn-three');
+        testElement.lastFocused = lastButton;
 
-    const wait = eventToPromise('focus', testElement);
-    testElement.dispatchEvent(new CustomEvent('focus'));
-    return wait.then(() => {
-      const button = getDeepActiveElement();
-      assertTrue(!!button);
-      assertEquals('fake button three', button.textContent!.trim());
-    });
-  });
+        const whenFocus = eventToPromise('focus', testElement);
+        testElement.dispatchEvent(new CustomEvent('focus'));
+        await whenFocus;
+        const button = getDeepActiveElement();
+        assertTrue(!!button);
+        assertEquals('fake button three', button.textContent!.trim());
+      });
 
   test('when shift+tab pressed on first control, focus on container', () => {
     const first = testElement.$.control;

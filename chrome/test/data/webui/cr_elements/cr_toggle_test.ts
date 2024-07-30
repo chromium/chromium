@@ -108,62 +108,47 @@ suite('cr-toggle', function() {
 
   // Test that the control is toggled when the user taps on it (no movement
   // between pointerdown and pointerup).
-  test('ToggleByPointerTap', function() {
+  test('ToggleByPointerTap', async function() {
     let whenChanged = eventToPromise('change', toggle);
     triggerPointerDownMoveUpTapSequence(0 /* no pointermove */);
-    return whenChanged
-        .then(function() {
-          assertChecked();
-          whenChanged = eventToPromise('change', toggle);
-          triggerPointerDownMoveUpTapSequence(0 /* no pointermove */);
-          return whenChanged;
-        })
-        .then(function() {
-          assertNotChecked();
-        });
+    await whenChanged;
+    assertChecked();
+    whenChanged = eventToPromise('change', toggle);
+    triggerPointerDownMoveUpTapSequence(0 /* no pointermove */);
+    await whenChanged;
+    assertNotChecked();
   });
 
   // Test that the control is toggled if the user moves the pointer by a
   // MOVE_THRESHOLD_PX pixels accidentally (shaky hands) in any direction.
-  test('ToggleByShakyPointerTap', function() {
+  test('ToggleByShakyPointerTap', async function() {
     let whenChanged = eventToPromise('change', toggle);
     triggerPointerDownMoveUpTapSequence(1 /* right */, MOVE_THRESHOLD_PX - 1);
-    return whenChanged
-        .then(function() {
-          assertChecked();
-          whenChanged = eventToPromise('change', toggle);
-          triggerPointerDownMoveUpTapSequence(
-              1 /* right */, MOVE_THRESHOLD_PX - 1);
-          return whenChanged;
-        })
-        .then(function() {
-          assertNotChecked();
-        });
+    await whenChanged;
+    assertChecked();
+    whenChanged = eventToPromise('change', toggle);
+    triggerPointerDownMoveUpTapSequence(1 /* right */, MOVE_THRESHOLD_PX - 1);
+    await whenChanged;
+    assertNotChecked();
   });
 
   // Test that the control is toggled when the user moves the pointer while
   // holding down.
-  test('ToggleByPointerMove', function() {
+  test('ToggleByPointerMove', async function() {
     let whenChanged = eventToPromise('change', toggle);
     triggerPointerDownMoveUpTapSequence(1 /* right */, MOVE_THRESHOLD_PX);
-    return whenChanged
-        .then(function() {
-          assertChecked();
-          whenChanged = eventToPromise('change', toggle);
-          triggerPointerDownMoveUpTapSequence(-1 /* left */, MOVE_THRESHOLD_PX);
-          return whenChanged;
-        })
-        .then(function() {
-          assertNotChecked();
-          whenChanged = eventToPromise('change', toggle);
+    await whenChanged;
+    assertChecked();
+    whenChanged = eventToPromise('change', toggle);
+    triggerPointerDownMoveUpTapSequence(-1 /* left */, MOVE_THRESHOLD_PX);
+    await whenChanged;
+    assertNotChecked();
+    whenChanged = eventToPromise('change', toggle);
 
-          // Test simple tapping after having dragged.
-          triggerPointerDownMoveUpTapSequence(0 /* no pointermove */);
-          return whenChanged;
-        })
-        .then(function() {
-          assertChecked();
-        });
+    // Test simple tapping after having dragged.
+    triggerPointerDownMoveUpTapSequence(0 /* no pointermove */);
+    await whenChanged;
+    assertChecked();
   });
 
   // Test that the control is toggled when the user presses the 'Enter' or

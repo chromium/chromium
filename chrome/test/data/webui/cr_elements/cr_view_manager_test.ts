@@ -12,13 +12,6 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 
-/** @fileoverview Suite of tests for cr-view-manager. */
-/** @enum {string} */
-enum TestNames {
-  VISIBILITY = 'visibility',
-  EVENT_FIRING = 'event firing',
-}
-
 let viewManager: CrViewManagerElement;
 let parent: HTMLElement;
 
@@ -41,7 +34,7 @@ suite(suiteName, function() {
     viewManager = document.body.querySelector('#viewManager')!;
   });
 
-  test(TestNames.VISIBILITY, function() {
+  test('visibility', async function() {
     function assertViewVisible(id: string, expectIsVisible: boolean) {
       assertEquals(
           expectIsVisible,
@@ -52,22 +45,18 @@ suite(suiteName, function() {
     assertViewVisible('viewTwo', false);
     assertViewVisible('viewThree', false);
 
-    return viewManager.switchView('viewOne')
-        .then(() => {
-          assertViewVisible('viewOne', true);
-          assertViewVisible('viewTwo', false);
-          assertViewVisible('viewThree', false);
+    await viewManager.switchView('viewOne');
+    assertViewVisible('viewOne', true);
+    assertViewVisible('viewTwo', false);
+    assertViewVisible('viewThree', false);
 
-          return viewManager.switchView('viewThree');
-        })
-        .then(() => {
-          assertViewVisible('viewOne', false);
-          assertViewVisible('viewTwo', false);
-          assertViewVisible('viewThree', true);
-        });
+    await viewManager.switchView('viewThree');
+    assertViewVisible('viewOne', false);
+    assertViewVisible('viewTwo', false);
+    assertViewVisible('viewThree', true);
   });
 
-  test(TestNames.EVENT_FIRING, function() {
+  test('event firing', async function() {
     const viewOne = viewManager.querySelector('#viewOne')!;
 
     let fired = new Set();
@@ -108,21 +97,17 @@ suite(suiteName, function() {
     // view-exit-finish is waiting on the animation.
     verifyEventFiredAndBubbled('view-exit-finish', false);
 
-    return exitPromises
-        .then(() => {
-          verifyEventFiredAndBubbled('view-exit-finish', true);
+    await exitPromises;
+    verifyEventFiredAndBubbled('view-exit-finish', true);
 
-          fired = new Set();
-          bubbled = new Set();
+    fired = new Set();
+    bubbled = new Set();
 
-          // Switching back has an animation this time.
-          const enterPromises = viewManager.switchView('viewOne');
-          verifyEventFiredAndBubbled('view-enter-start', true);
-          verifyEventFiredAndBubbled('view-enter-finish', false);
-          return enterPromises;
-        })
-        .then(() => {
-          verifyEventFiredAndBubbled('view-enter-finish', true);
-        });
+    // Switching back has an animation this time.
+    const enterPromises = viewManager.switchView('viewOne');
+    verifyEventFiredAndBubbled('view-enter-start', true);
+    verifyEventFiredAndBubbled('view-enter-finish', false);
+    await enterPromises;
+    verifyEventFiredAndBubbled('view-enter-finish', true);
   });
 });
