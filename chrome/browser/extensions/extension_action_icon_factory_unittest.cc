@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_action_icon_factory.h"
+#include "extensions/browser/extension_action_icon_factory.h"
 
 #include <memory>
 #include <utility>

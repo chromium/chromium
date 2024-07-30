@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_action_icon_factory.h"
+#include "extensions/browser/extension_action_icon_factory.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "extensions/browser/extension_action.h"
@@ -12,9 +12,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
-using extensions::Extension;
-using extensions::IconImage;
-
+namespace extensions {
 namespace {
 
 bool g_allow_invisible_icons = true;
@@ -28,19 +26,19 @@ void ExtensionActionIconFactory::SetAllowInvisibleIconsForTest(bool value) {
 
 ExtensionActionIconFactory::ExtensionActionIconFactory(
     const Extension* extension,
-    extensions::ExtensionAction* action,
+    ExtensionAction* action,
     Observer* observer)
     : action_(action),
       observer_(observer),
       should_check_icons_(extension->location() !=
-                          extensions::mojom::ManifestLocation::kUnpacked) {
+                          mojom::ManifestLocation::kUnpacked) {
   if (action->default_icon_image())
     icon_image_observation_.Observe(action->default_icon_image());
 }
 
 ExtensionActionIconFactory::~ExtensionActionIconFactory() {}
 
-// extensions::IconImage::Observer overrides.
+// IconImage::Observer overrides.
 void ExtensionActionIconFactory::OnExtensionIconImageChanged(IconImage* image) {
   if (observer_)
     observer_->OnIconUpdated();
@@ -68,7 +66,7 @@ gfx::Image ExtensionActionIconFactory::GetIcon(int tab_id) {
     if (should_check_icons_) {
       const SkBitmap* const bitmap = icon.ToSkBitmap();
       const bool is_sufficiently_visible =
-          extensions::image_util::IsIconSufficientlyVisible(*bitmap);
+          image_util::IsIconSufficientlyVisible(*bitmap);
       UMA_HISTOGRAM_BOOLEAN("Extensions.ManifestIconSetIconWasVisibleForPacked",
                             is_sufficiently_visible);
       if (!is_sufficiently_visible && !g_allow_invisible_icons) {
@@ -80,3 +78,5 @@ gfx::Image ExtensionActionIconFactory::GetIcon(int tab_id) {
 
   return cached_default_icon_image_;
 }
+
+}  // namespace extensions

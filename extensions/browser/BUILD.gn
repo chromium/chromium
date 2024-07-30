@@ -299,6 +299,8 @@ source_set("browser_sources") {
     "events/lazy_event_dispatcher.h",
     "extension_action.cc",
     "extension_action.h",
+    "extension_action_icon_factory.cc",
+    "extension_action_icon_factory.h",
     "extension_action_manager.cc",
     "extension_action_manager.h",
     "extension_api_frame_id_map.cc",
