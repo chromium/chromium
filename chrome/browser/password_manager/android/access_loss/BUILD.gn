@@ -1,12 +1,35 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  resources_package = "org.chromium.chrome.browser.access_loss"
+
   sources = [ "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsCoordinator.java" ]
 
   deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/password_manager/android:java_resources",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
 
   srcjar_deps = [ "//chrome/browser/password_manager/android:java_enum_srcjar" ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package =
+      "org.chromium.chrome.browser.touch_to_fill.password_generation"
+
+  sources = [ "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsCoordinatorTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/junit",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
 }

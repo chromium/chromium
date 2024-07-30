@@ -31,6 +31,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsCoordinator;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
@@ -164,8 +165,11 @@ public class PasswordManagerHelper {
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         PrefService prefService = UserPrefs.get(mProfile);
 
-        if (getAccessLossWarningType(prefService) != PasswordAccessLossWarningType.NONE) {
-            // TODO(b/353284087): Show the password access loss dialog here.
+        @PasswordAccessLossWarningType int warningType = getAccessLossWarningType(prefService);
+        if (warningType != PasswordAccessLossWarningType.NONE) {
+            new PasswordAccessLossDialogSettingsCoordinator()
+                    .showPasswordAccessLossDialog(
+                            context, modalDialogManagerSupplier.get(), warningType);
             return;
         }
 

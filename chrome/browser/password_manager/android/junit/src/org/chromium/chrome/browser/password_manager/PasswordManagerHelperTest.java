@@ -53,8 +53,11 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
+import org.chromium.chrome.browser.access_loss.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
@@ -1859,6 +1862,115 @@ public class PasswordManagerHelperTest {
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(false);
 
         assertFalse(PasswordManagerHelper.canUseAccountSettings());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+    public void testPasswordAccessLossDialogNoGmsCore() {
+        when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
+                .thenReturn(PasswordAccessLossWarningType.NO_GMS_CORE);
+
+        mPasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false,
+                TEST_NO_EMAIL_ADDRESS);
+
+        PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
+        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
+        assertEquals(
+                context.getString(R.string.access_loss_no_gms_title),
+                dialogModel.get(ModalDialogProperties.TITLE));
+        assertEquals(
+                context.getString(R.string.access_loss_no_gms_desc),
+                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+        assertEquals(
+                context.getString(R.string.access_loss_no_gms_positive_button_text),
+                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        assertEquals(
+                context.getString(R.string.close),
+                dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+    public void testPasswordAccessLossDialogNoUpm() {
+        when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
+                .thenReturn(PasswordAccessLossWarningType.NO_UPM);
+
+        mPasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false,
+                TEST_NO_EMAIL_ADDRESS);
+
+        PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
+        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
+        assertEquals(
+                context.getString(R.string.access_loss_update_gms_title),
+                dialogModel.get(ModalDialogProperties.TITLE));
+        assertEquals(
+                context.getString(R.string.access_loss_update_gms_desc),
+                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+        assertEquals(
+                context.getString(R.string.password_manager_outdated_gms_positive_button),
+                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        assertEquals(
+                context.getString(R.string.password_manager_outdated_gms_negative_button),
+                dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+    public void testPasswordAccessLossDialogNewGmsMigrationFailed() {
+        when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
+                .thenReturn(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
+
+        mPasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false,
+                TEST_NO_EMAIL_ADDRESS);
+
+        PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
+        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
+        assertEquals(
+                context.getString(R.string.access_loss_fix_problem_title),
+                dialogModel.get(ModalDialogProperties.TITLE));
+        assertEquals(
+                context.getString(R.string.access_loss_fix_problem_desc),
+                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+        assertEquals(
+                context.getString(R.string.access_loss_fix_problem_positive_button_text),
+                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        assertEquals(
+                context.getString(R.string.password_manager_outdated_gms_negative_button),
+                dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+    public void testPasswordAccessLossDialogNotDisplayed() {
+        when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
+                .thenReturn(PasswordAccessLossWarningType.NONE);
+        chooseToSyncPasswords();
+        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
+
+        mPasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false,
+                TEST_NO_EMAIL_ADDRESS);
+
+        assertNull(mModalDialogManager.getCurrentDialogForTest());
     }
 
     private void chooseToSyncPasswords() {
