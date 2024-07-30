@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_ACCESSIBILITY_PENGUIN_PENGUIN_CLIENT_H_
 #define COMPONENTS_ACCESSIBILITY_PENGUIN_PENGUIN_CLIENT_H_
 
-#include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 
@@ -25,7 +25,7 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
-namespace a11y {
+namespace penguin {
 
 // Use this callback to get only the main text from the API call.
 using PenguinCompactResponseCallback =
@@ -39,69 +39,62 @@ using PenguinFullResponseCallback =
                             int32_t net_error_code,
                             const std::string& main_content)>;
 
-// Use this callbacks to get the main text continuously from a Penguin API call.
-using PenguinStreamingResponseCallback =
-    base::RepeatingCallback<void(const std::string&)>;
-
 class PenguinClient {
  public:
-  static std::unique_ptr<PenguinClient> Create(content::BrowserContext* context,
-                                               bool penguin_variation);
+  static PenguinClient* Create(content::BrowserContext* context);
 
   explicit PenguinClient(content::BrowserContext* context);
 
-  virtual ~PenguinClient();
+  ~PenguinClient();
   PenguinClient(const PenguinClient& client) = delete;
   PenguinClient& operator=(const PenguinClient& client) = delete;
 
-  virtual void PerformAPICall(const std::string& image_data,
-                              const std::string& text_input,
-                              PenguinCompactResponseCallback callback);
-  virtual void PerformAPICall(const std::string& image_data,
-                              const std::string& text_input,
-                              PenguinFullResponseCallback callback);
+  void PerformAPICall(const std::string& image_data,
+                      const std::string& text_input,
+                      PenguinCompactResponseCallback callback);
+  void PerformAPICall(const std::string& image_data,
+                      const std::string& text_input,
+                      PenguinFullResponseCallback callback);
 
-  virtual void PerformAPICall(content::WebContents* web_contents,
-                              const std::string& text_input,
-                              PenguinCompactResponseCallback callback);
-  virtual void PerformAPICall(content::WebContents* web_contents,
-                              const std::string& text_input,
-                              PenguinFullResponseCallback callback);
+  void PerformAPICall(content::WebContents* web_contents,
+                      const std::string& text_input,
+                      PenguinCompactResponseCallback callback);
+  void PerformAPICall(content::WebContents* web_contents,
+                      const std::string& text_input,
+                      PenguinFullResponseCallback callback);
 
-  virtual void PerformAPICall(content::WebContents* web_contents,
-                              const std::string& text_input,
-                              PenguinCompactResponseCallback callback,
-                              const gfx::Rect& source_rect);
-  virtual void PerformAPICall(content::WebContents* web_contents,
-                              const std::string& text_input,
-                              PenguinFullResponseCallback callback,
-                              const gfx::Rect& source_rect);
+  void PerformAPICall(content::WebContents* web_contents,
+                      const std::string& text_input,
+                      PenguinCompactResponseCallback callback,
+                      const gfx::Rect& source_rect);
+  void PerformAPICall(content::WebContents* web_contents,
+                      const std::string& text_input,
+                      PenguinFullResponseCallback callback,
+                      const gfx::Rect& source_rect);
 
-  virtual void PerformAPICall(const std::string& text_input,
-                              PenguinCompactResponseCallback callback);
-  virtual void PerformAPICall(const std::string& text_input,
-                              PenguinFullResponseCallback callback);
-  virtual void PerformAPICall(const std::string& text_input,
-                              PenguinStreamingResponseCallback callback);
+  void PerformAPICall(const std::string& text_input,
+                      PenguinCompactResponseCallback callback);
+  void PerformAPICall(const std::string& text_input,
+                      PenguinFullResponseCallback callback);
 
 #if BUILDFLAG(IS_ANDROID)
   // Android equivalent methods that are called through JNI (cannot be
   // overloaded).
-  virtual void PerformAPICall_var1(
+  void PerformAPICall_var1(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_image_data,
       const base::android::JavaParamRef<jstring>& j_text_input,
       const base::android::JavaParamRef<jobject>& j_callback,
       jboolean j_include_full_response);
 
-  virtual void PerformAPICall_var2(
+  void PerformAPICall_var2(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_web_contents,
       const base::android::JavaParamRef<jstring>& j_text_input,
       const base::android::JavaParamRef<jobject>& j_callback,
       jboolean j_include_full_response);
 
-  virtual void PerformAPICall_var3(
+  void PerformAPICall_var3(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_web_contents,
       const base::android::JavaParamRef<jstring>& j_text_input,
@@ -109,7 +102,7 @@ class PenguinClient {
       const base::android::JavaParamRef<jobject>& j_source_rect,
       jboolean j_include_full_response);
 
-  virtual void PerformAPICall_var4(
+  void PerformAPICall_var4(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_text_input,
       const base::android::JavaParamRef<jobject>& j_callback,
@@ -117,6 +110,6 @@ class PenguinClient {
 #endif
 };
 
-}  // namespace a11y
+}  // namespace penguin
 
 #endif  // COMPONENTS_ACCESSIBILITY_PENGUIN_PENGUIN_CLIENT_H_

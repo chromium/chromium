@@ -14,7 +14,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
 /** Java-side hook for {@link penguin_client.cc}. */
-@JNINamespace("a11y")
+@JNINamespace("penguin")
 public class PenguinClient {
 
     public PenguinClient(BrowserContextHandle browserContext) {}
