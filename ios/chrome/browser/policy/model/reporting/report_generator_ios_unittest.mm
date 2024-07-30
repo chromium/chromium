@@ -103,6 +103,10 @@ class ReportGeneratorIOSTest : public PlatformTest {
     return browser_state_->GetStatePath();
   }
 
+  const std::string& GetBrowserStateName() {
+    return browser_state_->GetBrowserStateName();
+  }
+
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -155,11 +159,10 @@ TEST_F(ReportGeneratorIOSTest, GenerateBasicReport) {
   EXPECT_NE(std::string(), browser_report.executable_path());
 
   // Verify the profile report
-  const base::FilePath browser_state_path = GetBrowserStatePath();
   EXPECT_EQ(1, browser_report.chrome_user_profile_infos_size());
   auto profile_info = browser_report.chrome_user_profile_infos(0);
-  EXPECT_EQ(browser_state_path.AsUTF8Unsafe(), profile_info.id());
-  EXPECT_EQ(browser_state_path.BaseName().AsUTF8Unsafe(), profile_info.name());
+  EXPECT_EQ(GetBrowserStatePath().AsUTF8Unsafe(), profile_info.id());
+  EXPECT_EQ(GetBrowserStateName(), profile_info.name());
   EXPECT_TRUE(profile_info.has_is_detail_available());
   EXPECT_TRUE(profile_info.is_detail_available());
   EXPECT_EQ(2, profile_info.chrome_policies_size());
