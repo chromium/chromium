@@ -89,6 +89,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
     // to |guid|. If no such service exists, returns the empty string.
     virtual std::string FindServiceMatchingGUID(const std::string& guid) = 0;
 
+    // Returns the first service path for the service which has the name
+    // property set  to |name|. If no such service exists, returns the empty
+    // string.
+    virtual std::string FindServiceMatchingName(const std::string& name) = 0;
+
     // Returns the service path for a service which is similar to the service
     // described by |template_service_properties|. For Wifi, this means that
     // security and mode match. Returns the empty string if no similar service

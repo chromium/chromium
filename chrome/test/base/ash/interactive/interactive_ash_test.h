@@ -91,15 +91,20 @@ class InteractiveAshTest
   NavigateToBluetoothDeviceDetailsPage(const ui::ElementIdentifier& element_id,
                                        const std::string& device_name);
 
-  // This function expects the Settings to already be open and on the detailed
-  // page of a cellular network.
+  // This function expects the Settings app to already be open and on the
+  // detailed page of a cellular network.
   ui::test::internal::InteractiveTestPrivate::MultiStep
   NavigateToApnRevampDetailsPage(const ui::ElementIdentifier& element_id);
 
-  // This function expects the Settings to already be open and on the APN
+  // This function expects the Settings app to already be open and on the APN
   // subpage.
   ui::test::internal::InteractiveTestPrivate::MultiStep
   OpenAddCustomApnDetailsDialog(const ui::ElementIdentifier& element_id);
+
+  // Open up the "Add built-in VPN" dialog. This function expects the Settings
+  // app to already be open.
+  ui::test::internal::InteractiveTestPrivate::MultiStep OpenAddBuiltInVpnDialog(
+      const ui::ElementIdentifier& element_id);
 
   // Opens the Quick Settings bubble.
   ui::test::internal::InteractiveTestPrivate::MultiStep OpenQuickSettings();
@@ -212,6 +217,10 @@ class InteractiveAshTest
       const ui::ElementIdentifier& element_id,
       WebContentsInteractionTestUtil::DeepQuery element,
       const std::string& attribute);
+
+  InteractiveTestApi::MultiStep WaitForElementDisplayNone(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery element);
 
   // Waits for a toggle element identified by `query` to both exist in the DOM
   // of an instrumented WebUI identified by `element_id` and to be toggled .

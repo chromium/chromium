@@ -241,6 +241,17 @@ InteractiveAshTest::OpenAddCustomApnDetailsDialog(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::OpenAddBuiltInVpnDialog(
+    const ui::ElementIdentifier& element_id) {
+  return Steps(
+      WaitForElementEnabled(element_id,
+                            ash::settings::AddConnectionsExpandButton()),
+      ClickElement(element_id, ash::settings::AddConnectionsExpandButton()),
+      WaitForElementEnabled(element_id, ash::settings::AddBuiltInVpnRow()),
+      ClickElement(element_id, ash::settings::AddBuiltInVpnRow()));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::NavigateQuickSettingsToHotspotPage() {
   return NavigateQuickSettingsToPage(
       ash::kHotspotFeatureTileDrillInArrowElementId);
@@ -265,6 +276,13 @@ InteractiveAshTest::NavigateToInternetDetailsPage(
         "network-list-item",
         "div#divText",
     }});
+  } else if (network_pattern.MatchesPattern(ash::NetworkTypePattern::VPN())) {
+    internet_summary_row = ash::settings::vpn::VpnSummaryItem();
+    network_list = ash::settings::vpn::VpnNetworksList();
+    network_list_item_title = WebContentsInteractionTestUtil::DeepQuery({
+        "network-list-item",
+        "div#divText",
+    });
   } else {
     // Unsupported Network pattern.
     NOTREACHED_NORETURN();
@@ -488,6 +506,21 @@ InteractiveAshTest::WaitForElementHasAttribute(
   state_change.type = StateChange::Type::kExistsAndConditionTrue;
   state_change.test_function = base::StringPrintf(
       "(el) => { return el.hasAttribute('%s'); }", attribute.c_str());
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementDisplayNone(
+    const ui::ElementIdentifier& element_id,
+    WebContentsInteractionTestUtil::DeepQuery element) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementHasAttribute);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.event = kElementHasAttribute;
+  state_change.where = element;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.test_function =
+      base::StringPrintf("(el) => { return el.style.display === 'none'; }");
   return WaitForStateChange(element_id, state_change);
 }
 

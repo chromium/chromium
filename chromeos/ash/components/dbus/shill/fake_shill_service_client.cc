@@ -679,14 +679,24 @@ bool FakeShillServiceClient::ClearConfiguredServiceProperties(
 
 std::string FakeShillServiceClient::FindServiceMatchingGUID(
     const std::string& guid) {
-  for (const auto service_pair : stub_services_) {
-    const auto& service_path = service_pair.first;
-    const auto& service_properties = service_pair.second;
-
+  for (const auto [service_path, service_properties] : stub_services_) {
     const std::string* service_guid =
         service_properties.GetDict().FindString(shill::kGuidProperty);
     if (service_guid && *service_guid == guid)
       return service_path;
+  }
+
+  return std::string();
+}
+
+std::string FakeShillServiceClient::FindServiceMatchingName(
+    const std::string& name) {
+  for (const auto [service_path, service_properties] : stub_services_) {
+    const std::string* service_name =
+        service_properties.GetDict().FindString(shill::kNameProperty);
+    if (service_name && *service_name == name) {
+      return service_path;
+    }
   }
 
   return std::string();

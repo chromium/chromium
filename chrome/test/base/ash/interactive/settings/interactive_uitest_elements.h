@@ -21,6 +21,34 @@ WebContentsInteractionTestUtil::DeepQuery InternetSettingsSubpageTitle();
 // The network state shown on a settings subpage.
 WebContentsInteractionTestUtil::DeepQuery SettingsSubpageNetworkState();
 
+// The network state shown on a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpagePropertyList();
+
+// The "Configure" button shown on a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpageConfigureButton();
+
+// The "Forget" button shown on a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery SettingsSubpageForgetButton();
+
+// The "Connect" / "Disconnect" button shown on a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery
+SettingsSubpageConnectDisconnectButton();
+
+// The "Add connection" expand button shown on a settings subpage.
+WebContentsInteractionTestUtil::DeepQuery AddConnectionsExpandButton();
+
+// The "Add Wi-Fi" row in the expansion of "Add connection".
+WebContentsInteractionTestUtil::DeepQuery AddWiFiRow();
+
+// The "Add built-in VPN" row in the expansion of "Add connection".
+WebContentsInteractionTestUtil::DeepQuery AddBuiltInVpnRow();
+
+// The network config dialog.
+WebContentsInteractionTestUtil::DeepQuery InternetConfigDialog();
+
+// The title of the network config dialog.
+WebContentsInteractionTestUtil::DeepQuery InternetConfigDialogTitle();
+
 namespace cellular {
 
 // The "add eSIM" button on the cellular page.
@@ -208,8 +236,53 @@ WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem();
 }  // namespace wifi
 
 namespace vpn {
+
+// The Service name input in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogServiceNameInput();
+
+// The provider select button in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogProviderTypeSelect();
+
+// The provider type option under the dropdown menu in the "Join VPN network"
+// dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogProviderTypeOptions();
+
+// The VPN host name input in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogHostnameInput();
+
+// The OpenVPN user name input in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogOpenVpnUsernameInput();
+
+// The OpenVPN password input in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogOpenVpnPasswordInput();
+
+// The OpenVPN OTP input in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogOpenVpnOtpInput();
+
+// The save credentails toggle in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogSaveCredentialsToggle();
+
+// The "Connect" button in the "Join VPN network" dialog.
+WebContentsInteractionTestUtil::DeepQuery JoinVpnDialogConnectButton();
+
+// The network list under the VPN subpage.
+WebContentsInteractionTestUtil::DeepQuery VpnNetworksList();
+
+// The first VPN item in built-in VPN list.
+WebContentsInteractionTestUtil::DeepQuery VpnNetworksListFirstItem();
+
+// The VPN provider type in the VPN subpage.
+WebContentsInteractionTestUtil::DeepQuery VpnSubpageProviderType();
+
+// The VPN host name input in the VPN subpage.
+WebContentsInteractionTestUtil::DeepQuery VpnSubpageHostnameInput();
+
+// The VPN username input in the VPN subpage.
+WebContentsInteractionTestUtil::DeepQuery VpnSubpageUsernameInput();
+
 // The vpn "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery VpnSummaryItem();
+
 }  // namespace vpn
 
 namespace bluetooth {
