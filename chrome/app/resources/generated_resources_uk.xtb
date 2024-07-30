@@ -533,7 +533,7 @@
 <translation id="139300021892314943">Обмежити коло користувачів, які можуть входити в систему</translation>
 <translation id="1393283411312835250">Сонце та хмари</translation>
 <translation id="1395730723686586365">Засіб оновлення запущено</translation>
-<translation id="1395832189806039783">Виділити елемент, вибраний через клавіатуру</translation>
+<translation id="1395832189806039783">Виділяти елемент, вибраний за допомогою клавіатури</translation>
 <translation id="1396120028054416908">Назад до папки "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="1396139853388185343">Не вдалося налаштувати принтер</translation>
 <translation id="1397500194120344683">Немає пристроїв, які відповідають вимогам. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -9055,7 +9055,7 @@
 <translation id="7716781361494605745">URL-адреса політики Центру сертифікації Netscape</translation>
 <translation id="7717014941119698257">Завантаження: <ph name="STATUS" /></translation>
 <translation id="771721654176725387">Дані веб-перегляду буде видалено з цього пристрою назавжди. Щоб відновити їх, увімкніть синхронізацію облікового запису</translation>
-<translation id="7717845620320228976">Перевірка наявності оновлень</translation>
+<translation id="7717845620320228976">Перевірити наявність оновлень</translation>
 <translation id="7718490543420739837">Екранна клавіатура, диктування, кнопковий доступ тощо</translation>
 <translation id="7719367874908701697">Масштабування сторінки</translation>
 <translation id="7719588063158526969">Назва пристрою задовга</translation>
@@ -9867,7 +9867,7 @@
 <translation id="8291942417224950075">Для особистого використання</translation>
 <translation id="8293206222192510085">Додати закладку</translation>
 <translation id="8294431847097064396">Джерело</translation>
-<translation id="8294476140219241086">Упорядкування вкладок</translation>
+<translation id="8294476140219241086">Менеджер вкладок</translation>
 <translation id="8294895455164415895">Відкрити налаштування, щоб дозволити Chrome пропонувати групи вкладок</translation>
 <translation id="8295449579927246485">Миттєвий переклад</translation>
 <translation id="8295450130892483256">Установіть Microsoft 365</translation>

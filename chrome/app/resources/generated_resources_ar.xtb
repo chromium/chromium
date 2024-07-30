@@ -1200,7 +1200,7 @@
 <translation id="1859294693760125695">لم أعد مهتمًّا</translation>
 <translation id="1859339856433307593">هناك كلمة مرور لهذا الحساب (<ph name="USER_EMAIL" />) محفوظة حاليًا في "<ph name="BRAND" />".</translation>
 <translation id="1861262398884155592">هذا المجلد فارغ</translation>
-<translation id="1862311223300693744">‏هل لديك شبكة افتراضية خاصة (VPN) أو خادم وكيل أو جدار حماية أو برنامج NAS مثبت؟</translation>
+<translation id="1862311223300693744">‏هل لديك شبكة VPN أو خادم وكيل أو جدار حماية أو برنامج NAS مثبت؟</translation>
 <translation id="1863182668524159459">لم يتم العثور على منافذ تسلسلية</translation>
 <translation id="1864111464094315414">تسجيل الدخول</translation>
 <translation id="1864400682872660285">أكثر برودة</translation>
@@ -2465,7 +2465,7 @@
 <translation id="2757338480560142065">يُرجى التأكّد من أنّ كلمة المرور التي تريد حفظها تطابِق كلمة مرور <ph name="WEBSITE" />.</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> لم يتم عرض نتائج بحث عن "<ph name="SEARCH_QUERY" />".</translation>
 <translation id="2762441749940182211">تم حظر استخدام الكاميرا</translation>
-<translation id="2764786626780673772">‏تفاصيل الشبكة الافتراضية الخاصة (VPN)</translation>
+<translation id="2764786626780673772">‏تفاصيل شبكة VPN</translation>
 <translation id="2764920001292228569">يُرجى إدخال اسم للملف الشخصي.</translation>
 <translation id="2765100602267695013">يُرجى التواصل مع مقدِّم خدمة الجوّال.</translation>
 <translation id="2765217105034171413">صغير</translation>
@@ -2821,7 +2821,7 @@
 <translation id="3017079585324758401">الخلفية</translation>
 <translation id="3019023222666709803">أداة رسم الأسهم</translation>
 <translation id="3019285239893817657">زر صفحة فرعية</translation>
-<translation id="3019595674945299805">‏خدمة الشبكة الافتراضية الخاصة (VPN)</translation>
+<translation id="3019595674945299805">‏خدمة شبكة VPN</translation>
 <translation id="3020183492814296499">الاختصارات</translation>
 <translation id="3020990233660977256">الرقم التسلسلي: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">أثناء التشغيل على البطارية</translation>
@@ -2994,7 +2994,7 @@
 <translation id="3158770568048368350">قد يتسبّب هذا الإجراء في انقطاع اتصال شبكة الجوّال لفترة وجيزة.</translation>
 <translation id="3159493096109238499">بيج</translation>
 <translation id="3159978855457658359">تعديل اسم الجهاز</translation>
-<translation id="3160928651883997588">‏الإعدادات المفضّلة للشبكة الافتراضية الخاصة (VPN)</translation>
+<translation id="3160928651883997588">‏الإعدادات المفضّلة لشبكة VPN (VPN)</translation>
 <translation id="3161522574479303604">كل اللغات</translation>
 <translation id="3162766632262775911">‏يُسمح دائمًا للمواقع الإلكترونية باستخدام مُحسِّن V8</translation>
 <translation id="3162853326462195145">حساب المؤسسة التعليمية</translation>
@@ -3270,7 +3270,7 @@
 <translation id="3382073616108123819">عفوا! تعذّر النظام في تحديد معرفات هذا الجهاز.</translation>
 <translation id="3382200254148930874">جارٍ إيقاف الإشراف...</translation>
 <translation id="3382737653173267704">عرض العائلة</translation>
-<translation id="338323348408199233">‏حظر الزيارات بدون شبكة افتراضية خاصة (VPN)</translation>
+<translation id="338323348408199233">‏حظر الزيارات بدون شبكة VPN</translation>
 <translation id="3384362484379805487">تتم مشاركة ملفات اللغات مع المستخدمين لتوفير مساحة على القرص.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">‏يتيح الإعداد "دقة الموقع الجغرافي" تزويد التطبيقات والخدمات ببيانات موقعك الجغرافي بشكل أكثر دقة. ولإجراء ذلك، تعالج Google بشكل دوري معلومات أدوات الاستشعار والإشارات اللاسلكية التي يرسلها جهازك لجمع بيانات المواقع الجغرافية للإشارات اللاسلكية. وتُستخدَم هذه المعلومات بدون الكشف عن هويتك لتحسين دقة الموقع الجغرافي والخدمات المستنِدة إليه، وتحسين خدمات Google وتقديمها وصيانتها بشكل عام استنادًا إلى المصالح المشروعة للجهات الخارجية وGoogle من أجل تلبية احتياجات المستخدمين.</translation>
@@ -8252,7 +8252,7 @@
 <translation id="7118268675952955085">لقطة شاشة</translation>
 <translation id="711840821796638741">عرض الإشارات المرجعية المدارة</translation>
 <translation id="711985611146095797">‏تتيح لك هذه الصفحة إدارة حساباتك على Google التي تم تسجيل الدخول إليها. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
-<translation id="7120762240626567834">‏سيتم حظر متصفِّح Chrome وزيارات Android حتى يتم الاتصال بشبكة افتراضية خاصة (VPN)</translation>
+<translation id="7120762240626567834">‏سيتم حظر متصفِّح Chrome وزيارات Android حتى يتم الاتصال بشبكة VPN</translation>
 <translation id="7121438501124788993">وضع مطوِّر البرامج</translation>
 <translation id="7121728544325372695">الشرطات الذكية</translation>
 <translation id="7122605570852873914">تسجيل الخروج على أي حال</translation>
@@ -8541,7 +8541,7 @@
 <translation id="7356696499551368971">ستتم إزالة الأذونات المحدَّدة.</translation>
 <translation id="7356908624372060336">سجلّات الشبكة</translation>
 <translation id="7357271391997763660">هل تريد بدء التحقّق من كلمات المرور؟</translation>
-<translation id="735745346212279324">تم قطع اتصال الشبكة الافتراضية الخاصة</translation>
+<translation id="735745346212279324">‏تم قطع اتصال شبكة VPN</translation>
 <translation id="7358324924540718595">تم إخفاء الذكريات لهذا اليوم.</translation>
 <translation id="7358338787722390626">‏إغلاق صفحة "بحث Google" في اللوحة الجانبية</translation>
 <translation id="735994578317267253">‏استخدام التطبيقات والإعدادات وغيرها الكثير على أي جهاز يعمل بنظام التشغيل Chrome</translation>
