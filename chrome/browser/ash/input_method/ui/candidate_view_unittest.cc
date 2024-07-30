@@ -198,7 +198,7 @@ TEST_F(CandidateViewTest, SetEntryNotifiesAccessibilityEvent) {
   EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kTextChanged));
 }
 
-TEST_F(CandidateViewTest, GetAccessibleNodeData) {
+TEST_F(CandidateViewTest, AccessibilityAttributes) {
   CandidateView* view = GetCandidateAt(1);
 
   ui::CandidateWindow::Entry entry;
@@ -214,6 +214,15 @@ TEST_F(CandidateViewTest, GetAccessibleNodeData) {
             data.GetStringAttribute(ax::mojom::StringAttribute::kName));
   EXPECT_EQ(static_cast<int>(ax::mojom::DefaultActionVerb::kPress),
             data.GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+  EXPECT_EQ(0, data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+  EXPECT_EQ(0, data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+
+  view->SetPositionData(1, 3);
+  data = ui::AXNodeData();
+  static_cast<views::View*>(view)->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(2, data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+  EXPECT_EQ(3, data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
 }
 
 }  // namespace ime
