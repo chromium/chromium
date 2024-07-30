@@ -237,6 +237,7 @@ blink_core_sources_dom = [
   "scriptable_document_parser.h",
   "scripted_animation_controller.cc",
   "scripted_animation_controller.h",
+  "scroll_marker_group_pseudo_element.h",
   "shadow_root.cc",
   "shadow_root.h",
   "shadow_including_tree_order_traversal.h",

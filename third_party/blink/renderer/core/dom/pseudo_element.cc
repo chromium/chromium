@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -91,11 +92,12 @@ PseudoElement* PseudoElement::Create(Element* parent,
     DCHECK(transition);
     return transition->CreatePseudoElement(parent, pseudo_id,
                                            view_transition_name);
+  } else if (ResolvePseudoIdAlias(pseudo_id) == kPseudoIdScrollMarkerGroup) {
+    return MakeGarbageCollected<ScrollMarkerGroupPseudoElement>(parent,
+                                                                pseudo_id);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
          pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker ||
-         pseudo_id == kPseudoIdScrollMarkerGroupBefore ||
-         pseudo_id == kPseudoIdScrollMarkerGroupAfter ||
          pseudo_id == kPseudoIdScrollMarker);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
                                              view_transition_name);
@@ -345,8 +347,13 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     }
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdScrollMarker:
       break;
+    case kPseudoIdScrollMarker: {
+      CHECK(context.parent->IsScrollMarkerGroup());
+      To<ScrollMarkerGroupPseudoElement>(context.parent->GetNode())
+          ->AddToFocusGroup(*this);
+      break;
+    }
     default: {
       context.counters_context.LeaveElement(*this);
       return;

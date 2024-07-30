@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -1588,6 +1589,8 @@ void BlockNode::HandleScrollMarkerGroup() const {
   context.parent = group_node.GetLayoutBox();
   DCHECK(context.parent);
 
+  To<ScrollMarkerGroupPseudoElement>(group_node.GetLayoutBox()->GetNode())
+      ->ClearFocusGroup();
   AttachScrollMarkers(*box_, context);
 
   DCHECK(GetDocument().GetStyleEngine().InScrollMarkersAttachment());
