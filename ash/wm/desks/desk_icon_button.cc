@@ -133,22 +133,6 @@ bool DeskIconButton::IsPointOnButton(const gfx::Point& screen_location) const {
   return hit_test_bounds.Contains(screen_location);
 }
 
-gfx::Size DeskIconButton::CalculatePreferredSize(
-    const views::SizeBounds& available_size) const {
-  if (state_ == State::kZero) {
-    return gfx::Size(kZeroStateButtonWidth, kZeroStateButtonHeight);
-  }
-
-  gfx::Rect desk_preview_bounds = DeskMiniView::GetDeskPreviewBounds(
-      GetWidget()->GetNativeWindow()->GetRootWindow());
-  if (state_ == State::kExpanded) {
-    return gfx::Size(kExpandedStateButtonWidth, desk_preview_bounds.height());
-  }
-
-  DCHECK_EQ(state_, State::kActive);
-  return gfx::Size(desk_preview_bounds.width(), desk_preview_bounds.height());
-}
-
 void DeskIconButton::UpdateFocusState() {
   auto get_focus_color = [this]() -> std::optional<ui::ColorId> {
     if (HasFocus()) {
@@ -175,6 +159,32 @@ void DeskIconButton::UpdateFocusState() {
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(new_focus_color_id);
   focus_ring->SchedulePaint();
+}
+
+void DeskIconButton::OnFocus() {
+  UpdateFocusState();
+  DeskButtonBase::OnFocus();
+}
+
+void DeskIconButton::OnBlur() {
+  UpdateFocusState();
+  DeskButtonBase::OnBlur();
+}
+
+gfx::Size DeskIconButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  if (state_ == State::kZero) {
+    return gfx::Size(kZeroStateButtonWidth, kZeroStateButtonHeight);
+  }
+
+  gfx::Rect desk_preview_bounds = DeskMiniView::GetDeskPreviewBounds(
+      GetWidget()->GetNativeWindow()->GetRootWindow());
+  if (state_ == State::kExpanded) {
+    return gfx::Size(kExpandedStateButtonWidth, desk_preview_bounds.height());
+  }
+
+  DCHECK_EQ(state_, State::kActive);
+  return gfx::Size(desk_preview_bounds.width(), desk_preview_bounds.height());
 }
 
 void DeskIconButton::OnThemeChanged() {

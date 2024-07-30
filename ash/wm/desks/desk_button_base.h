@@ -30,18 +30,10 @@ class DeskButtonBase : public views::LabelButton {
 
   // views::LabelButton:
   void OnFocus() override;
-  void OnBlur() override;
 
  protected:
-  // TODO(sammiequon): See if we can remove this and the `OnFocus()` and
-  // `OnBlur()` overrides.
-  virtual void UpdateFocusState();
-
   // Owned by the views hierarchy.
   const raw_ptr<DeskBarViewBase> bar_view_;
-
- private:
-  base::RepeatingClosure pressed_callback_;
 };
 
 }  // namespace ash

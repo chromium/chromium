@@ -5,7 +5,6 @@
 #include "ash/wm/desks/desk_button_base.h"
 
 #include "ash/wm/desks/desk_bar_view_base.h"
-#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/wm_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -13,7 +12,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -27,9 +25,7 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
                                bool set_text,
                                DeskBarViewBase* bar_view,
                                base::RepeatingClosure pressed_callback)
-    : LabelButton(pressed_callback),
-      bar_view_(bar_view),
-      pressed_callback_(pressed_callback) {
+    : LabelButton(pressed_callback), bar_view_(bar_view) {
   DCHECK(!text.empty());
   if (set_text) {
     SetText(text);
@@ -59,17 +55,8 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
 DeskButtonBase::~DeskButtonBase() = default;
 
 void DeskButtonBase::OnFocus() {
-  UpdateFocusState();
+  bar_view_->ScrollToShowViewIfNecessary(this);
   View::OnFocus();
-}
-
-void DeskButtonBase::OnBlur() {
-  UpdateFocusState();
-  View::OnBlur();
-}
-
-void DeskButtonBase::UpdateFocusState() {
-  views::FocusRing::Get(this)->SchedulePaint();
 }
 
 BEGIN_METADATA(DeskButtonBase)
