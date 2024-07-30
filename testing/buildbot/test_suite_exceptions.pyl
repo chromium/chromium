@@ -2124,6 +2124,11 @@
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
       },
+      'win11-arm64-dbg-tests': {
+        'swarming': {
+          'shards': 16,
+        },
+      },
     },
   },
   'content_shell_crash_test': {
