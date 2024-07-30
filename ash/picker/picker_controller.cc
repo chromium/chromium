@@ -615,6 +615,11 @@ bool PickerController::IsGifsEnabled() {
   return model_->IsGifsEnabled(client_->GetPrefs());
 }
 
+PickerModeType PickerController::GetMode() {
+  CHECK(model_);
+  return model_->GetMode();
+}
+
 void PickerController::OnViewIsDeleting(views::View* view) {
   view_observation_.Reset();
 

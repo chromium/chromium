@@ -75,6 +75,10 @@
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace ash {
 namespace {
 
@@ -138,6 +142,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     PickerActionType action_type = PickerActionType::kInsert;
     std::vector<PickerSearchResult> emoji_results;
     std::vector<std::string> suggested_emojis;
+    PickerModeType mode = PickerModeType::kNoSelection;
   };
 
   FakePickerViewDelegate() = default;
@@ -218,6 +223,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   }
 
   bool IsGifsEnabled() override { return true; }
+  PickerModeType GetMode() override { return options_.mode; }
 
   std::optional<PickerSearchResult> last_inserted_result() const {
     return last_inserted_result_;
@@ -323,6 +329,55 @@ TEST_F(PickerViewTest, ShowsZeroStateView) {
   EXPECT_THAT(view->search_results_view_for_testing(),
               Property(&views::View::GetVisible, false));
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(PickerViewTest, SearchPlaceholderMatchesUnfocusedMode) {
+  FakePickerViewDelegate delegate({
+      .mode = PickerModeType::kUnfocused,
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  EXPECT_EQ(picker_view->search_field_view_for_testing()
+                .textfield_for_testing()
+                .GetPlaceholderText(),
+            l10n_util::GetStringUTF16(
+                IDS_PICKER_SEARCH_FIELD_UNFOCUSED_PLACEHOLDER_TEXT));
+}
+
+TEST_F(PickerViewTest, SearchPlaceholderMatchesNoSelectionMode) {
+  FakePickerViewDelegate delegate({
+      .mode = PickerModeType::kNoSelection,
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  EXPECT_EQ(
+      picker_view->search_field_view_for_testing()
+          .textfield_for_testing()
+          .GetPlaceholderText(),
+      l10n_util::GetStringUTF16(
+          IDS_PICKER_SEARCH_FIELD_NO_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT));
+}
+
+TEST_F(PickerViewTest, SearchPlaceholderMatchesHasSelectionMode) {
+  FakePickerViewDelegate delegate({
+      .mode = PickerModeType::kHasSelection,
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  EXPECT_EQ(
+      picker_view->search_field_view_for_testing()
+          .textfield_for_testing()
+          .GetPlaceholderText(),
+      l10n_util::GetStringUTF16(
+          IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT));
+}
+#endif
 
 TEST_F(PickerViewTest, NonEmptySearchFieldContentsSwitchesToSearchResultsView) {
   FakePickerViewDelegate delegate;

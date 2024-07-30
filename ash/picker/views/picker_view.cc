@@ -15,6 +15,7 @@
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_emoji_bar_view.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
@@ -157,10 +158,21 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
   }
 }
 
-std::u16string GetSearchFieldPlaceholderText() {
+std::u16string GetSearchFieldPlaceholderText(PickerModeType mode) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(
-      IDS_PICKER_SEARCH_FIELD_NO_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT);
+  switch (mode) {
+    case PickerModeType::kUnfocused:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_SEARCH_FIELD_UNFOCUSED_PLACEHOLDER_TEXT);
+    case PickerModeType::kNoSelection:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_SEARCH_FIELD_NO_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT);
+    case PickerModeType::kHasSelection:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT);
+    default:
+      NOTREACHED_NORETURN();
+  }
 #else
   return u"Placeholder";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -651,7 +663,8 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
               base::BindRepeating(&PickerView::OnSearchBackButtonPressed,
                                   base::Unretained(this)),
               &key_event_handler_, &performance_metrics_))
-          .SetPlaceholderText(GetSearchFieldPlaceholderText())
+          .SetPlaceholderText(
+              GetSearchFieldPlaceholderText(delegate_->GetMode()))
           .Build());
   main_container_view_->AddContentsView(layout_type);
 
@@ -735,7 +748,8 @@ void PickerView::SetPseudoFocusedView(views::View* view) {
 }
 
 void PickerView::OnSearchBackButtonPressed() {
-  search_field_view_->SetPlaceholderText(GetSearchFieldPlaceholderText());
+  search_field_view_->SetPlaceholderText(
+      GetSearchFieldPlaceholderText(delegate_->GetMode()));
   search_field_view_->SetBackButtonVisible(false);
   selected_category_ = std::nullopt;
   StartSearchWithNewQuery(u"");

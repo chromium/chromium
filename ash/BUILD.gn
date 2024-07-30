@@ -4667,6 +4667,10 @@ test("ash_unittests") {
       "ambient/resources/ambient_animation_static_resources_impl_unittest.cc",
     ]
   }
+
+  if (is_chrome_branded) {
+    deps += [ "//chromeos/ash/resources/internal/strings" ]
+  }
 }
 
 test("ash_pixeltests") {
