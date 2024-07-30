@@ -23,18 +23,18 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
-import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
-import org.chromium.net.test.util.TestWebServer;
+import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.ServerCertificate;
 
 /**
  * Tests for CookieManager/Chromium startup ordering weirdness.
  *
- * This tests various cases around ordering of calls to CookieManager at startup, and thus is
+ * <p>This tests various cases around ordering of calls to CookieManager at startup, and thus is
  * separate from the normal CookieManager tests so it can control call ordering carefully.
  */
 @RunWith(Parameterized.class)
@@ -98,10 +98,11 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
     @CommandLineFlags.Add("disable-partitioned-cookies")
     public void testStartup() throws Throwable {
         ThreadUtils.setWillOverrideUiThread();
-        TestWebServer webServer = TestWebServer.start();
+        EmbeddedTestServer webServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getContext(), ServerCertificate.CERT_OK);
         try {
-            String path = "/cookie_test.html";
-            String url = webServer.setResponse(path, CommonResources.ABOUT_HTML, null);
+            String url = webServer.getURL("/android_webview/test/data/hello_world.html");
 
             // Verify that we can use AwCookieManager successfully before having started Chromium.
             AwCookieManager cookieManager = new AwCookieManager();
@@ -131,7 +132,7 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
             // Mojo store.
             Assert.assertEquals("partitioned_cookie=123; count=42", cookieManager.getCookie(url));
         } finally {
-            webServer.shutdown();
+            webServer.stopAndDestroyServer();
         }
     }
 

@@ -26,9 +26,7 @@ declare_args() {
 #   apk_name: Desired apk name.
 template("base_webview_instrumentation_apk") {
   android_apk(target_name) {
-    # TODO(crbug.com/40137544): Fix tests that break when this is increased.
-    # In particular, this means test that use mocks.
-    target_sdk_version = 24
+    target_sdk_version = 34
     apk_name = invoker.apk_name
     deps = [
              "//android_webview:android_webview_java",
@@ -212,7 +210,9 @@ template("base_webview_instrumentation_test_apk") {
     } else if (webview_instrumentation_tests_process_mode == "both") {
       # The default is to run both modes if `--webview-process-mode` is not set.
     } else {
-      assert(false, "Invalid webview_instrumentation_tests_process_mode value. Choose one of (single|multiple|both).")
+      assert(
+          false,
+          "Invalid webview_instrumentation_tests_process_mode value. Choose one of (single|multiple|both).")
     }
   }
 }

@@ -120,6 +120,7 @@ public class AwSettingsTest {
             mContext = containerView.getContext();
             mContentViewClient = contentViewClient;
             mAwSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
+            mAwSettings.setAllowFileAccess(true);
             if (requiresJsEnabled) {
                 mAwSettings.setJavaScriptEnabled(true);
             }
@@ -2244,6 +2245,7 @@ public class AwSettingsTest {
         final AwContents awContents = testContainerView.getAwContents();
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         settings.setJavaScriptEnabled(true);
+        settings.setAllowFileAccess(true);
         settings.setAllowUniversalAccessFromFileURLs(false);
         settings.setAllowFileAccessFromFileURLs(false);
         mActivityTestRule.loadUrlSync(
@@ -2772,6 +2774,7 @@ public class AwSettingsTest {
         final AwContents awContents = testContainer.getAwContents();
         final AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         awSettings.setJavaScriptEnabled(true);
+        awSettings.setAllowFileAccess(true);
         ImagePageGenerator generator = new ImagePageGenerator(0, false);
 
         String fileName = null;
