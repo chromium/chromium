@@ -52,6 +52,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewPreloadClasses,
     &features::kWebViewDoNotSendAccessibilityEventsOnGSU,
     &features::kWebViewHyperlinkContextMenu,
+    &base::features::kPostGetMyMemoryStateToBackground,
 };
 
 // static

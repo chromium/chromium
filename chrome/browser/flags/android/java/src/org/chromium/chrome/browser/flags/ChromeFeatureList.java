@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.flags;
 
+import org.chromium.base.BaseFeatures;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.base.MutableFlagWithSafeDefault;
@@ -541,6 +542,8 @@ public abstract class ChromeFeatureList {
     public static final String WEB_FEED_SORT = "WebFeedSort";
     public static final String WEB_OTP_CROSS_DEVICE_SIMPLE_STRING = "WebOtpCrossDeviceSimpleString";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
+    public static final String POST_GET_MEMORY_PRESSURE_TO_BACKGROUND =
+            BaseFeatures.POST_GET_MY_MEMORY_STATE_TO_BACKGROUND;
 
     /* Alphabetical: */
     public static final CachedFlag sAccountReauthenticationRecentTimeWindow =
@@ -646,6 +649,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sOptimizationGuidePushNotifications =
             newCachedFlag(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
     public static final CachedFlag sPaintPreviewDemo = newCachedFlag(PAINT_PREVIEW_DEMO, false);
+    public static final CachedFlag sPostGetMyMemoryStateToBackground =
+            newCachedFlag(POST_GET_MEMORY_PRESSURE_TO_BACKGROUND, false);
     public static final CachedFlag sPrefetchBrowserInitiatedTriggers =
             newCachedFlag(PREFETCH_BROWSER_INITIATED_TRIGGERS, false);
     public static final CachedFlag sQueryTiles = newCachedFlag(QUERY_TILES, false);
@@ -767,6 +772,7 @@ public abstract class ChromeFeatureList {
                     sPrivacyGuidePreloadAndroid,
                     sOptimizationGuidePushNotifications,
                     sPaintPreviewDemo,
+                    sPostGetMyMemoryStateToBackground,
                     sPrefetchBrowserInitiatedTriggers,
                     sQueryTiles,
                     sRedirectExplicitCTAIntentsToExistingActivity,

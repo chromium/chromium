@@ -107,6 +107,10 @@ BASE_FEATURE(kCollectAndroidFrameTimelineMetrics,
 BASE_FEATURE(kPostPowerMonitorBroadcastReceiverInitToBackground,
              "PostPowerMonitorBroadcastReceiverInitToBackground",
              FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, getMyMemoryState IPC will be posted to background.
+BASE_FEATURE(kPostGetMyMemoryStateToBackground,
+             "PostGetMyMemoryStateToBackground",
+             FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void Init(EmitThreadControllerProfilerMetadata

@@ -896,6 +896,9 @@ public final class ProductionSupportedFlagList {
                 "If enabled, it posts PowerMonitor broadcast receiver init to a background"
                         + " thread."),
         Flag.baseFeature(
+                BaseFeatures.POST_GET_MY_MEMORY_STATE_TO_BACKGROUND,
+                "If enabled, getMyMemoryState IPC will be posted to background."),
+        Flag.baseFeature(
                 BlinkFeatures.REGISTER_JS_SOURCE_LOCATION_BLOCKING_BF_CACHE,
                 "Starts capturing bfcache blocking details"),
         Flag.baseFeature(

@@ -388,6 +388,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &webapps::features::kWebApkInstallFailureNotification,
     &network::features::kPrivateStateTokens,
     &switches::kPersistentSearchEngineChoiceImport,
+    &base::features::kPostGetMyMemoryStateToBackground,
 };
 
 // static
