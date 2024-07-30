@@ -7,7 +7,7 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {SeaPenInputQueryElement, SeaPenRouterElement, SeaPenSuggestionsElement, setSeaPenThumbnailsAction} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import {CrTextareaElement} from 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -110,7 +110,7 @@ suite('SeaPenInputQueryElementTest', function() {
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);
     const inputElement =
-        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput');
     assertTrue(!!inputElement, 'textInput should exist');
 
@@ -150,7 +150,7 @@ suite('SeaPenInputQueryElementTest', function() {
     await waitAfterNextRender(seaPenInputQueryElement);
 
     const inputElement =
-        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput');
     assertTrue(!!inputElement, 'textInput should exist');
 
@@ -200,7 +200,7 @@ suite('SeaPenInputQueryElementTest', function() {
     initElement(SeaPenRouterElement, {basePath: '/base'});
     await waitAfterNextRender(seaPenInputQueryElement);
     const inputElement =
-        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput');
     assertTrue(!!inputElement, 'textInput should exist');
     inputElement.value = 'Love looks not with the eyes, but with the mind';
@@ -221,7 +221,7 @@ suite('SeaPenInputQueryElementTest', function() {
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);
     const inputElement =
-        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput');
     assertTrue(!!inputElement, 'textInput should exist');
 
@@ -238,8 +238,8 @@ suite('SeaPenInputQueryElementTest', function() {
         seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
         await waitAfterNextRender(seaPenInputQueryElement);
         const inputElement =
-            seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
-                '#queryInput');
+            seaPenInputQueryElement.shadowRoot
+                ?.querySelector<CrTextareaElement>('#queryInput');
         assertTrue(!!inputElement, 'textInput should exist');
         // Set input text.
         inputElement.value = 'Uneasy lies the head that wears the crown.';
@@ -258,7 +258,7 @@ suite('SeaPenInputQueryElementTest', function() {
     await waitAfterNextRender(seaPenInputQueryElement);
 
     const inputElement =
-        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput');
     assertTrue(!!inputElement, 'textInput should exist');
 
@@ -287,7 +287,7 @@ suite('SeaPenInputQueryElementTest', function() {
     await waitAfterNextRender(seaPenInputQueryElement);
     const textValue = '  ';
     const inputElement =
-        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput');
     assertTrue(!!inputElement, 'textInput should exist');
     inputElement.value = textValue;
@@ -315,7 +315,7 @@ suite('SeaPenInputQueryElementTest', function() {
     await waitAfterNextRender(seaPenInputQueryElement);
     const textValue = 'Brevity is the soul of wit';
     const inputElement =
-        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput');
     assertTrue(!!inputElement, 'textInput should exist');
     inputElement.value = textValue;
@@ -345,7 +345,7 @@ suite('SeaPenInputQueryElementTest', function() {
     await waitAfterNextRender(seaPenInputQueryElement);
     const textValue = '  ';
     const inputElement =
-        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput')!;
     inputElement.value = textValue;
     await waitAfterNextRender(seaPenInputQueryElement);
@@ -375,7 +375,7 @@ suite('SeaPenInputQueryElementTest', function() {
     await waitAfterNextRender(seaPenInputQueryElement);
     const textValue = '  ';
     const inputElement =
-        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput')!;
     inputElement.value = textValue;
     await waitAfterNextRender(seaPenInputQueryElement);
@@ -428,7 +428,7 @@ suite('SeaPenInputQueryElementTest', function() {
     await waitAfterNextRender(seaPenInputQueryElement);
     const textValue = '  ';
     const inputElement =
-        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput')!;
     inputElement.value = textValue;
     await waitAfterNextRender(seaPenInputQueryElement);
@@ -469,7 +469,7 @@ suite('SeaPenInputQueryElementTest', function() {
     await waitAfterNextRender(seaPenInputQueryElement);
     const textValue = '  ';
     const inputElement =
-        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput')!;
     inputElement.value = textValue;
     await waitAfterNextRender(seaPenInputQueryElement);
@@ -517,7 +517,7 @@ suite('SeaPenInputQueryElementTest', function() {
     await waitAfterNextRender(seaPenInputQueryElement);
 
     const inputElement =
-        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput');
     assertTrue(!!inputElement?.value, 'input should show text');
   });
