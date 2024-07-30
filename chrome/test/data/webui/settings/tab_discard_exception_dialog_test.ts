@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement} from 'chrome://settings/settings.js';
 import {convertDateToWindowsEpoch, ExceptionAddDialogTabs, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
@@ -262,13 +262,14 @@ suite('TabDiscardExceptionsDialog', function() {
     const tab = tabs[tabId];
     assertTrue(!!tab);
     tab.click();
-    return dialog.$.tabs.updateComplete;
+    return microtasksFinished();
   }
 
   test('testExceptionTabbedAddDialogSwitchTabs', async function() {
     performanceBrowserProxy.setCurrentOpenSites([VALID_RULE]);
     dialog = await setupTabbedAddDialog();
     flush();
+    await microtasksFinished();
 
     const checkbox = getRulesListEntry(dialog, 0);
     checkbox.click();

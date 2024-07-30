@@ -27,7 +27,7 @@
         on-close="closeDialog_">
       <div slot="title">[[title_]]</div>
       <div slot="body">
-        <iron-pages attr-for-selected="id" selected="[[shown_]]"
+        <cr-page-selector attr-for-selected="id" selected="[[shown_]]"
             on-iron-select="onIronSelect_">
           <div id="initial">
             <p>$i18n{securityKeysTouchToContinue}</p>
@@ -111,7 +111,7 @@
           <div id="reinsert">
             <p>$i18n{securityKeysPINSoftLock}</p>
           </div>
-        </iron-pages>
+        </cr-page-selector>
       </div>
 
       <div slot="button-container">

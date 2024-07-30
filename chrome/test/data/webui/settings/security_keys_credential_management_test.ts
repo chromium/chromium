@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {CrIconButtonElement, SecurityKeysCredentialBrowserProxy, SettingsSecurityKeysCredentialManagementDialogElement} from 'chrome://settings/lazy_load.js';
 import {CredentialManagementDialogPage, SecurityKeysCredentialBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertShown} from './security_keys_test_util.js';
 import {TestSecurityKeysBrowserProxy} from './test_security_keys_browser_proxy.js';
@@ -98,10 +98,13 @@ suite('SecurityKeysCredentialManagement', function() {
       minPinLength: currentMinPinLength,
       supportsUpdateUserInformation: true,
     });
+    await microtasksFinished();
+    assertShown(allDivs, dialog, 'pinPrompt');
 
     const error = 'foo bar baz';
     webUIListenerCallback(
         'security-keys-credential-management-finished', error);
+    await microtasksFinished();
     assertShown(allDivs, dialog, 'pinError');
     assertTrue(dialog.$.error.textContent!.trim().includes(error));
   });
@@ -118,11 +121,14 @@ suite('SecurityKeysCredentialManagement', function() {
       minPinLength: currentMinPinLength,
       supportsUpdateUserInformation: true,
     });
+    await microtasksFinished();
+    assertShown(allDivs, dialog, 'pinPrompt');
 
     const error = 'foo bar baz';
     webUIListenerCallback(
         'security-keys-credential-management-finished', error,
         true /* requiresPINChange */);
+    await microtasksFinished();
     assertShown(allDivs, dialog, 'pinError');
     assertFalse(dialog.$.confirmButton.hidden);
     assertFalse(dialog.$.confirmButton.disabled);
@@ -266,17 +272,16 @@ suite('SecurityKeysCredentialManagement', function() {
     assertEquals(editButtons.length, 3);
     editButtons.forEach(button => assertFalse(button.hidden));
     editButtons[0]!.click();
+    await microtasksFinished();
     assertShown(allDivs, dialog, 'edit');
     dialog.$.displayNameInput.value = 'Bobby Example';
     dialog.$.userNameInput.value = 'bobby@example.com';
-    await Promise.all([
-      dialog.$.displayNameInput.updateComplete,
-      dialog.$.userNameInput.updateComplete,
-    ]);
+    await microtasksFinished();
     dialog.$.confirmButton.click();
     credentials[0]!.userDisplayName = 'Bobby Example';
     credentials[0]!.userName = 'bobby@example.com';
     updateUserInformationResolver.resolve({success: true, message: 'updated'});
+    await microtasksFinished();
     assertShown(allDivs, dialog, 'credentials');
     assertDeepEquals(dialog.$.credentialList.items, credentials);
 
@@ -286,6 +291,7 @@ suite('SecurityKeysCredentialManagement', function() {
         Array.from(dialog.$.credentialList.querySelectorAll('.delete-button'));
     assertEquals(deleteButtons.length, 3);
     deleteButtons[0]!.click();
+    await microtasksFinished();
     assertShown(allDivs, dialog, 'confirm');
     dialog.$.confirmButton.click();
     const credentialIds = await browserProxy.whenCalled('deleteCredentials');

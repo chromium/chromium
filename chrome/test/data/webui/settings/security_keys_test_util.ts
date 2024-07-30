@@ -10,7 +10,7 @@ export function assertShown(
 
   const allShown = allDivs.filter(id => {
     return dialog.shadowRoot!.querySelector(`#${id}`)!.classList.contains(
-        'iron-selected');
+        'selected');
   });
   assertEquals(1, allShown.length);
   assertEquals(expectedId, allShown[0]);
