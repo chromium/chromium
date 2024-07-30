@@ -1926,8 +1926,11 @@ class CorsInjectingUrlLoader : public blink::URLLoaderThrottle {
   // blink::URLLoaderThrottle:
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override {
-    if (!request->cors_exempt_headers.GetHeader(kCorsHeaderName,
-                                                last_cors_header_value_)) {
+    if (std::optional<std::string> header =
+            request->cors_exempt_headers.GetHeader(kCorsHeaderName);
+        header) {
+      last_cors_header_value_->swap(*header);
+    } else {
       last_cors_header_value_->clear();
     }
   }
