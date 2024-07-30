@@ -217,10 +217,16 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
 #if BUILDFLAG(ENABLE_REPORTING)
   // Store values for later use in NEL report generation.
   request_method_ = request_->method;
-  request_->extra_headers.GetHeader(HttpRequestHeaders::kReferer,
-                                    &request_referrer_);
-  request_->extra_headers.GetHeader(HttpRequestHeaders::kUserAgent,
-                                    &request_user_agent_);
+  if (std::optional<std::string> header =
+          request_->extra_headers.GetHeader(HttpRequestHeaders::kReferer);
+      header) {
+    request_referrer_.swap(header.value());
+  }
+  if (std::optional<std::string> header =
+          request_->extra_headers.GetHeader(HttpRequestHeaders::kUserAgent);
+      header) {
+    request_user_agent_.swap(header.value());
+  }
   request_reporting_upload_depth_ = request_->reporting_upload_depth;
   start_timeticks_ = base::TimeTicks::Now();
 #endif  // BUILDFLAG(ENABLE_REPORTING)
@@ -2054,12 +2060,13 @@ bool HttpNetworkTransaction::ContentEncodingsValid() const {
   HttpResponseHeaders* headers = GetResponseHeaders();
   DCHECK(headers);
 
-  std::string accept_encoding;
-  request_headers_.GetHeader(HttpRequestHeaders::kAcceptEncoding,
-                             &accept_encoding);
   std::set<std::string> allowed_encodings;
-  if (!HttpUtil::ParseAcceptEncoding(accept_encoding, &allowed_encodings))
+  if (!HttpUtil::ParseAcceptEncoding(
+          request_headers_.GetHeader(HttpRequestHeaders::kAcceptEncoding)
+              .value_or(std::string()),
+          &allowed_encodings)) {
     return false;
+  }
 
   std::string content_encoding;
   headers->GetNormalizedHeader("Content-Encoding", &content_encoding);

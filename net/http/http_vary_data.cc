@@ -93,11 +93,8 @@ std::string HttpVaryData::GetRequestValue(
   // point.  Most notably, we do not have access to an Authorization header if
   // one will be added to the request.
 
-  std::string result;
-  if (request_info.extra_headers.GetHeader(request_header, &result))
-    return result;
-
-  return std::string();
+  return request_info.extra_headers.GetHeader(request_header)
+      .value_or(std::string());
 }
 
 // static

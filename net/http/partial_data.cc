@@ -36,16 +36,19 @@ PartialData::PartialData() = default;
 PartialData::~PartialData() = default;
 
 bool PartialData::Init(const HttpRequestHeaders& headers) {
-  std::string range_header;
-  if (!headers.GetHeader(HttpRequestHeaders::kRange, &range_header)) {
+  std::optional<std::string> range_header =
+      headers.GetHeader(HttpRequestHeaders::kRange);
+  if (!range_header) {
     range_requested_ = false;
     return false;
   }
   range_requested_ = true;
 
   std::vector<HttpByteRange> ranges;
-  if (!HttpUtil::ParseRangeHeader(range_header, &ranges) || ranges.size() != 1)
+  if (!HttpUtil::ParseRangeHeader(range_header.value(), &ranges) ||
+      ranges.size() != 1) {
     return false;
+  }
 
   // We can handle this range request.
   byte_range_ = ranges[0];
