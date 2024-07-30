@@ -722,13 +722,7 @@ static BorderImageLength ToBorderImageLength(const StyleResolverState& state,
                                              const CSSValue& value) {
   if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
     if (primitive_value->IsNumber()) {
-      if (auto* numeric_value =
-              DynamicTo<CSSNumericLiteralValue>(primitive_value)) {
-        return numeric_value->GetDoubleValue();
-      }
-      CHECK(primitive_value->IsMathFunctionValue());
-      return To<CSSMathFunctionValue>(primitive_value)
-          ->ComputeNumber(state.CssToLengthConversionData());
+      return primitive_value->ComputeNumber(state.CssToLengthConversionData());
     }
   }
   return StyleBuilderConverter::ConvertLengthOrAuto(state, value);
