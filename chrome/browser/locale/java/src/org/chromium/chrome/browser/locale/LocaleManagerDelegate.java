@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogCoordinator;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
-import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoState;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.SogouPromoDialog;
@@ -223,26 +222,14 @@ public class LocaleManagerDelegate {
                 break;
             case SearchEnginePromoType.SHOW_EXISTING:
             case SearchEnginePromoType.SHOW_NEW:
-                if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SEARCH_ENGINE_PROMO_DIALOG_REWRITE)) {
-                    dialogPresenter =
-                            () ->
-                                    new DefaultSearchEngineDialogCoordinator(
-                                                    activity,
-                                                    mSearchEngineHelperDelegate,
-                                                    shouldShow,
-                                                    finalizeInternalCallback)
-                                            .show();
-                } else {
-                    dialogPresenter =
-                            () ->
-                                    new DefaultSearchEnginePromoDialog(
-                                                    activity,
-                                                    mSearchEngineHelperDelegate,
-                                                    shouldShow,
-                                                    finalizeInternalCallback)
-                                            .show();
-                }
+                dialogPresenter =
+                        () ->
+                                new DefaultSearchEngineDialogCoordinator(
+                                                activity,
+                                                mSearchEngineHelperDelegate,
+                                                shouldShow,
+                                                finalizeInternalCallback)
+                                        .show();
                 break;
             case SearchEnginePromoType.SHOW_WAFFLE:
                 assert ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_ENGINE_CHOICE);

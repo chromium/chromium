@@ -53,7 +53,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import java.util.Arrays;
 import java.util.List;
 
-/** Integration tests for the {@link DefaultSearchEnginePromoDialog}. */
+/** Integration tests for the {@link DefaultSearchEngineDialogCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)

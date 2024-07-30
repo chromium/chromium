@@ -87,10 +87,6 @@ extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount{
 BASE_FEATURE(kSearchEngineChoice,
              "SearchEngineChoice",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSearchEnginePromoDialogRewrite,
-             "SearchEnginePromoDialogRewrite",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

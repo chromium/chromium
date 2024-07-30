@@ -373,7 +373,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kSearchEngineChoice,
     &switches::kPersistentSearchEngineChoiceImport,
-    &switches::kSearchEnginePromoDialogRewrite,
     &switches::kSeedAccountsRevamp,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
     &syncer::kEnableBatchUploadFromSettings,

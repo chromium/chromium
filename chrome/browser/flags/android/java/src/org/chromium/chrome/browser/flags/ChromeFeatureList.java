@@ -452,8 +452,6 @@ public abstract class ChromeFeatureList {
     public static final String SHARE_CUSTOM_ACTIONS_IN_CCT = "ShareCustomActionsInCCT";
     public static final String PERSISTENT_SEARCH_ENGINE_CHOICE_IMPORT =
             "PersistentSearchEngineChoiceImport";
-    public static final String SEARCH_ENGINE_PROMO_DIALOG_REWRITE =
-            "SearchEnginePromoDialogRewrite";
     public static final String SEARCH_RESUMPTION_MODULE_ANDROID = "SearchResumptionModuleAndroid";
     public static final String SEED_ACCOUNTS_REVAMP = "SeedAccountsRevamp";
     public static final String SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER =

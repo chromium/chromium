@@ -94,10 +94,6 @@ extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount;
 // TODO(b/316859558): Not used for shipping purposes, remove this feature.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEngineChoice);
-
-// Rewrites DefaultSearchEnginePromoDialog into MVC pattern.
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kSearchEnginePromoDialogRewrite);
 #endif
 
 // Kill switch to revert the fix of using assistedQueryStats for prefetch source
