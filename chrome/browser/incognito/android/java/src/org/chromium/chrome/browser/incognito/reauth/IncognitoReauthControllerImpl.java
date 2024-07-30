@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
 import java.util.ArrayList;
@@ -98,15 +98,6 @@ public class IncognitoReauthControllerImpl
                 @Override
                 public void didBecomeEmpty() {
                     mIncognitoReauthPending = false;
-                }
-            };
-
-    // An observer to handle cases for Incognito tabs restore cases.
-    private final TabModelSelectorObserver mTabModelSelectorObserver =
-            new TabModelSelectorObserver() {
-                @Override
-                public void onTabStateInitialized() {
-                    onTabStateInitializedForReauth();
                 }
             };
 
@@ -247,17 +238,14 @@ public class IncognitoReauthControllerImpl
 
         mTabModelSelector.setIncognitoReauthDialogDelegate(this);
         mTabModelSelector.addIncognitoTabModelObserver(mIncognitoTabModelObserver);
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
         mActivityLifecycleDispatcher.register(this);
         ApplicationStatus.registerTaskVisibilityListener(this);
 
-        if (mTabModelSelector.isTabStateInitialized()) {
-            // It may happen that the tab state was initialized before the
-            // |mTabModelSelectorObserver| was added which explicitly takes care of restore case.
-            // Therefore, we need another restore check here for such a case.
-            onTabStateInitializedForReauth();
-        }
+        TabModelUtils.runOnTabStateInitialized(
+                mTabModelSelector,
+                mCallbackController.makeCancelable(
+                        unusedTabModelSelector -> onTabStateInitializedForReauth()));
     }
 
     /**
@@ -271,7 +259,6 @@ public class IncognitoReauthControllerImpl
         mActivityLifecycleDispatcher.unregister(this);
         mTabModelSelector.setIncognitoReauthDialogDelegate(null);
         mTabModelSelector.removeIncognitoTabModelObserver(mIncognitoTabModelObserver);
-        mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         mProfileObservableSupplier.removeObserver(mProfileSupplierCallback);
         mCallbackController.destroy();
         mIncognitoReauthCoordinatorFactory.destroy();

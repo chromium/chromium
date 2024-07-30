@@ -362,6 +362,7 @@ public abstract class TabModelSelectorBase
 
     @Override
     public void destroy() {
+        for (TabModelSelectorObserver listener : mObservers) listener.onDestroyed();
         mTabModelSupplier.removeObserver(mIncognitoReauthDialogDelegateCallback);
         mTabModelFilterProvider.destroy();
 

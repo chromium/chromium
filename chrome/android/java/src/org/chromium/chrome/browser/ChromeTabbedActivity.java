@@ -663,11 +663,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             TabModelUtils.runOnTabStateInitialized(
                     mTabModelSelector,
-                    (tabModelSelector) -> {
-                        assert tabModelSelector != null;
-                        mTabGroupVisualDataManager =
-                                new TabGroupVisualDataManager(tabModelSelector);
-                    });
+                    mCallbackController.makeCancelable(
+                            (tabModelSelector) -> {
+                                assert tabModelSelector != null;
+                                mTabGroupVisualDataManager =
+                                        new TabGroupVisualDataManager(tabModelSelector);
+                            }));
 
             // For saving non-incognito tab closures for Recent Tabs.
             mHistoricalTabModelObserver =
@@ -2130,13 +2131,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             TabModelUtils.runOnTabStateInitialized(
                     getTabModelSelectorSupplier().get(),
-                    (tabModelSelectorReturn) -> {
-                        TabGroupColorUtils.assignTabGroupColorsIfApplicable(
-                                (TabGroupModelFilter)
-                                        tabModelSelectorReturn
-                                                .getTabModelFilterProvider()
-                                                .getCurrentTabModelFilter());
-                    });
+                    mCallbackController.makeCancelable(
+                            (tabModelSelectorReturn) -> {
+                                TabGroupColorUtils.assignTabGroupColorsIfApplicable(
+                                        (TabGroupModelFilter)
+                                                tabModelSelectorReturn
+                                                        .getTabModelFilterProvider()
+                                                        .getCurrentTabModelFilter());
+                            }));
         } else {
             new BackgroundOnlyAsyncTask<Void>() {
                 @Override
@@ -3576,16 +3578,18 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // TODO(haileywang): Close the tab grid dialog when showing tab switcher from this path.
             TabModelUtils.runOnTabStateInitialized(
                     getTabModelSelectorSupplier().get(),
-                    (tabModelSelectorReturn) -> {
-                        if (!isInOverviewMode()) {
-                            showOverview();
-                        }
-                        if (mTabSwitcherSupplier.hasValue()) {
-                            // TODO(b/332961197): Add the actual invitation id obtained from url
-                            // intent.
-                            mTabSwitcherSupplier.get().openInvitationModal("");
-                        }
-                    });
+                    mCallbackController.makeCancelable(
+                            (tabModelSelectorReturn) -> {
+                                if (!isInOverviewMode()) {
+                                    showOverview();
+                                }
+                                if (mTabSwitcherSupplier.hasValue()) {
+                                    // TODO(b/332961197): Add the actual invitation id obtained from
+                                    // url
+                                    // intent.
+                                    mTabSwitcherSupplier.get().openInvitationModal("");
+                                }
+                            }));
         }
     }
 }

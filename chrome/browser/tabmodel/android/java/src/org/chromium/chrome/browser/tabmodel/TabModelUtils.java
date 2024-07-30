@@ -217,6 +217,11 @@ public class TabModelUtils {
                             tabModelSelector.removeObserver(this);
                             callback.onResult(tabModelSelector);
                         }
+
+                        @Override
+                        public void onDestroyed() {
+                            tabModelSelector.removeObserver(this);
+                        }
                     };
 
             tabModelSelector.addObserver(observer);

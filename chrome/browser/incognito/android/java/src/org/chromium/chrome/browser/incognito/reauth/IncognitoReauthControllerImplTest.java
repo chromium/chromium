@@ -171,8 +171,6 @@ public class IncognitoReauthControllerImplTest {
 
         verify(mActivityLifecycleDispatcherMock, times(1)).unregister(any());
         verify(mTabModelSelectorMock, times(1))
-                .removeObserver(mTabModelSelectorObserverCaptor.capture());
-        verify(mTabModelSelectorMock, times(1))
                 .removeIncognitoTabModelObserver(mIncognitoTabModelObserverCaptor.capture());
     }
 

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -70,6 +71,7 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
     private TabGroupSyncRemoteObserver mRemoteObserver;
     private StartupHelper mStartupHelper;
     private boolean mSyncBackendInitialized;
+    private CallbackController mCallbackController = new CallbackController();
 
     private final TabGroupSyncService.Observer mSyncInitObserver =
             new TabGroupSyncService.Observer() {
@@ -126,11 +128,13 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
                 new RemoteTabGroupMutationHelper(mTabGroupModelFilter, mTabGroupSyncService);
 
         TabModelUtils.runOnTabStateInitialized(
-                tabModelSelector, selector -> onTabStateInitialized());
+                tabModelSelector,
+                mCallbackController.makeCancelable(selector -> onTabStateInitialized()));
     }
 
     /** Called when the activity is getting destroyed. */
     public void destroy() {
+        mCallbackController.destroy();
         if (mLocalObserver != null) mLocalObserver.destroy();
         if (mRemoteObserver != null) mRemoteObserver.destroy();
     }

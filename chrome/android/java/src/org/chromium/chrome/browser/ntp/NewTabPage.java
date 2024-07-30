@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TimeUtils;
@@ -83,7 +84,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
@@ -185,6 +185,8 @@ public class NewTabPage
 
     @Nullable private SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
     private SmoothTransitionDelegate mSmoothTransitionDelegate;
+
+    private CallbackController mCallbackController = new CallbackController();
 
     @Override
     public void onControlsOffsetChanged(
@@ -495,18 +497,10 @@ public class NewTabPage
         // It is possible that the NewTabPage is created when the Tab model hasn't been initialized.
         // For example, the user changes theme when a NTP is showing, which leads to the recreation
         // of the ChromeTabbedActivity and showing the NTP as the last visited Tab.
-        if (mTabModelSelector.isTabStateInitialized()) {
-            mayCreateSearchResumptionModule(profile);
-        } else {
-            mTabModelSelector.addObserver(
-                    new TabModelSelectorObserver() {
-                        @Override
-                        public void onTabStateInitialized() {
-                            mayCreateSearchResumptionModule(profile);
-                            mTabModelSelector.removeObserver(this);
-                        }
-                    });
-        }
+        TabModelUtils.runOnTabStateInitialized(
+                mTabModelSelector,
+                mCallbackController.makeCancelable(
+                        unusedTabModelSelector -> mayCreateSearchResumptionModule(profile)));
 
         getView()
                 .addOnAttachStateChangeListener(
@@ -965,6 +959,8 @@ public class NewTabPage
         assert !ViewCompat.isAttachedToWindow(getView())
                 : "Destroy called before removed from window";
         if (mIsLoaded && !mTab.isHidden()) recordNtpHidden();
+
+        mCallbackController.destroy();
 
         mNewTabPageManager.onDestroy();
         mTileGroupDelegate.destroy();

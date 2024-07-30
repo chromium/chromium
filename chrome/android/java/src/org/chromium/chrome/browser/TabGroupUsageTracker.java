@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -19,6 +20,7 @@ public class TabGroupUsageTracker implements PauseResumeWithNativeObserver, Dest
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TabModelSelector mTabModelSelector;
     private final Supplier<Boolean> mIsWarmOnResumeSupplier;
+    private CallbackController mCallbackController = new CallbackController();
 
     /**
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the activity.
@@ -41,7 +43,9 @@ public class TabGroupUsageTracker implements PauseResumeWithNativeObserver, Dest
 
         mTabModelSelector = tabModelSelector;
         TabModelUtils.runOnTabStateInitialized(
-                tabModelSelector, unusedTabModelSelector -> recordTabGroupCount());
+                tabModelSelector,
+                mCallbackController.makeCancelable(
+                        unusedTabModelSelector -> recordTabGroupCount()));
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         activityLifecycleDispatcher.register(this);
@@ -49,6 +53,7 @@ public class TabGroupUsageTracker implements PauseResumeWithNativeObserver, Dest
 
     @Override
     public void onDestroy() {
+        mCallbackController.destroy();
         mActivityLifecycleDispatcher.unregister(this);
     }
 
