@@ -166,6 +166,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/net",
+    "//chrome/browser/ash/policy/affiliation:test_support",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",

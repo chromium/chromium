@@ -1355,10 +1355,6 @@ copy("mojo_service_manager_policy") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "policy/affiliation/affiliation_mixin.cc",
-    "policy/affiliation/affiliation_mixin.h",
-    "policy/affiliation/affiliation_test_helper.cc",
-    "policy/affiliation/affiliation_test_helper.h",
     "policy/test_support/embedded_policy_test_server_mixin.cc",
     "policy/test_support/embedded_policy_test_server_mixin.h",
     "policy/test_support/policy_test_server_constants.h",
