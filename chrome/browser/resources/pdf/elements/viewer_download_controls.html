@@ -1,29 +1,14 @@
-<style include="pdf-shared">
-  :host {
-    display: contents;
-  }
-
-  cr-action-menu::part(dialog) {
-    position: fixed;
-    top: 48px;
-  }
-
-  :host([menu-open_]) #download {
-    background-color: var(--active-button-bg);
-    border-radius: 50%;
-  }
-</style>
 <cr-icon-button id="download" iron-icon="cr:file-download"
-    on-click="onDownloadClick_" aria-label="$i18n{tooltipDownload}"
-    aria-haspopup$="[[downloadHasPopup_]]"
+    @click="${this.onDownloadClick_}" aria-label="$i18n{tooltipDownload}"
+    aria-haspopup="${this.downloadHasPopup_()}"
     title="$i18n{tooltipDownload}"></cr-icon-button>
-<cr-action-menu id="menu" on-open-changed="onOpenChanged_">
+<cr-action-menu id="menu" @open-changed="${this.onOpenChanged_}">
   <button id="download-edited" class="dropdown-item"
-      on-click="onDownloadEditedClick_">
+      @click="${this.onDownloadEditedClick_}">
     $i18n{downloadEdited}
   </button>
   <button id="download-original" class="dropdown-item"
-      on-click="onDownloadOriginalClick_">
+      @click="${this.onDownloadOriginalClick_}">
     $i18n{downloadOriginal}
   </button>
 </cr-action-menu>

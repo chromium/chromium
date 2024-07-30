@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This import is necessary for html_to_wrapper to detect this is a Polymer
+// element.
+import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import './elements/viewer_error_dialog.js';
 // <if expr="enable_ink">
 import './elements/viewer_ink_host.js';

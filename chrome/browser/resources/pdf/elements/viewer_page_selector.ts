@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared_vars.css.js';
-
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {ChangePageOrigin} from './viewer_bookmark.js';
-import {getTemplate} from './viewer_page_selector.html.js';
+import {getCss} from './viewer_page_selector.css.js';
+import {getHtml} from './viewer_page_selector.html.js';
 
 export interface ViewerPageSelectorElement {
   $: {
@@ -15,19 +15,23 @@ export interface ViewerPageSelectorElement {
   };
 }
 
-export class ViewerPageSelectorElement extends PolymerElement {
+export class ViewerPageSelectorElement extends CrLitElement {
   static get is() {
     return 'viewer-page-selector';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /** The number of pages the document contains. */
-      docLength: {type: Number, value: 1, observer: 'docLengthChanged_'},
+      docLength: {type: Number},
 
       /**
        * The current page being viewed (1-based). A change to pageNo is mirrored
@@ -35,15 +39,21 @@ export class ViewerPageSelectorElement extends PolymerElement {
        * mirrored back until pageNoCommitted() is called and change-page is
        * fired.
        */
-      pageNo: {
-        type: Number,
-        value: 1,
-      },
+      pageNo: {type: Number},
     };
   }
 
-  docLength: number;
-  pageNo: number;
+  docLength: number = 1;
+  pageNo: number = 1;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('docLength')) {
+      const numDigits = this.docLength.toString().length;
+      this.style.setProperty('--page-length-digits', `${numDigits}`);
+    }
+  }
 
   pageNoCommitted() {
     const page = parseInt(this.$.pageSelector.value, 10);
@@ -59,11 +69,6 @@ export class ViewerPageSelectorElement extends PolymerElement {
     this.$.pageSelector.blur();
   }
 
-  private docLengthChanged_() {
-    const numDigits = this.docLength.toString().length;
-    this.style.setProperty('--page-length-digits', `${numDigits}`);
-  }
-
   select() {
     this.$.pageSelector.select();
   }
@@ -74,7 +79,7 @@ export class ViewerPageSelectorElement extends PolymerElement {
   }
 
   /** Immediately remove any non-digit characters. */
-  private onInput_() {
+  protected onInput_() {
     this.$.pageSelector.value = this.$.pageSelector.value.replace(/[^\d]/, '');
   }
 }

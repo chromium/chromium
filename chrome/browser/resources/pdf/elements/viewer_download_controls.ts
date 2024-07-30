@@ -4,19 +4,19 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import './icons.html.js';
-import './pdf_shared.css.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {SaveRequestType} from '../constants.js';
 
-import {getTemplate} from './viewer_download_controls.html.js';
+import {getCss} from './viewer_download_controls.css.js';
+import {getHtml} from './viewer_download_controls.html.js';
 
 export interface ViewerDownloadControlsElement {
   $: {
@@ -25,59 +25,55 @@ export interface ViewerDownloadControlsElement {
   };
 }
 
-export class ViewerDownloadControlsElement extends PolymerElement {
+export class ViewerDownloadControlsElement extends CrLitElement {
   static get is() {
     return 'viewer-download-controls';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      hasEdits: Boolean,
-
-      hasEnteredAnnotationMode: Boolean,
-
+      hasEdits: {type: Boolean},
+      hasEnteredAnnotationMode: {type: Boolean},
       // <if expr="enable_pdf_ink2">
-      hasInk2Edits: Boolean,
+      hasInk2Edits: {type: Boolean},
       // </if>
-
-      isFormFieldFocused: {
-        type: Boolean,
-        observer: 'onFormFieldFocusedChanged_',
-      },
-
-      downloadHasPopup_: {
-        type: String,
-        // <if expr="enable_pdf_ink2">
-        computed: 'computeDownloadHasPopup_(hasEdits,' +
-            'hasEnteredAnnotationMode, hasInk2Edits)',
-        // </if>
-        // <if expr="not enable_pdf_ink2">
-        computed: 'computeDownloadHasPopup_(hasEdits,' +
-            'hasEnteredAnnotationMode)',
-        // </if>
-      },
+      isFormFieldFocused: {type: Boolean},
 
       menuOpen_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        reflect: true,
       },
     };
   }
 
-  hasEdits: boolean;
-  hasEnteredAnnotationMode: boolean;
+  hasEdits: boolean = false;
+  hasEnteredAnnotationMode: boolean = false;
   // <if expr="enable_pdf_ink2">
-  hasInk2Edits: boolean;
+  hasInk2Edits: boolean = false;
   // </if>
-  isFormFieldFocused: boolean;
-  private downloadHasPopup_: string;
-  private menuOpen_: boolean;
+  isFormFieldFocused: boolean = false;
+  private menuOpen_: boolean = false;
   private waitForFormFocusChange_: PromiseResolver<boolean>|null = null;
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('isFormFieldFocused') &&
+        this.waitForFormFocusChange_ !== null) {
+      // Resolving the promise in updated(), since this can trigger
+      // showDownloadMenu_() which accesses the element's DOM.
+      this.waitForFormFocusChange_.resolve(this.hasEdits);
+      this.waitForFormFocusChange_ = null;
+    }
+  }
 
   isMenuOpen(): boolean {
     return this.menuOpen_;
@@ -87,7 +83,7 @@ export class ViewerDownloadControlsElement extends PolymerElement {
     this.$.menu.close();
   }
 
-  private onOpenChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onOpenChanged_(e: CustomEvent<{value: boolean}>) {
     this.menuOpen_ = e.detail.value;
   }
 
@@ -103,7 +99,7 @@ export class ViewerDownloadControlsElement extends PolymerElement {
   /**
    * @return The value for the aria-haspopup attribute for the download button.
    */
-  private computeDownloadHasPopup_(): string {
+  protected downloadHasPopup_(): string {
     return this.hasEditsToSave_() ? 'menu' : 'false';
   }
 
@@ -116,7 +112,7 @@ export class ViewerDownloadControlsElement extends PolymerElement {
         'download-menu-shown-for-testing', {bubbles: true, composed: true}));
   }
 
-  private onDownloadClick_() {
+  protected onDownloadClick_() {
     this.waitForEdits_().then(hasEdits => {
       if (hasEdits) {
         this.showDownloadMenu_();
@@ -141,26 +137,17 @@ export class ViewerDownloadControlsElement extends PolymerElement {
     return this.waitForFormFocusChange_.promise;
   }
 
-  private onFormFieldFocusedChanged_() {
-    if (!this.waitForFormFocusChange_) {
-      return;
-    }
-
-    this.waitForFormFocusChange_.resolve(this.hasEdits);
-    this.waitForFormFocusChange_ = null;
-  }
-
   private dispatchSaveEvent_(type: SaveRequestType) {
     this.dispatchEvent(
         new CustomEvent('save', {detail: type, bubbles: true, composed: true}));
   }
 
-  private onDownloadOriginalClick_() {
+  protected onDownloadOriginalClick_() {
     this.dispatchSaveEvent_(SaveRequestType.ORIGINAL);
     this.$.menu.close();
   }
 
-  private onDownloadEditedClick_() {
+  protected onDownloadEditedClick_() {
     this.dispatchSaveEvent_(
         this.hasEnteredAnnotationMode ? SaveRequestType.ANNOTATION :
                                         SaveRequestType.EDITED);
