@@ -912,6 +912,51 @@ TEST_F(PickerViewTest, ShowsNoResultsWithNoIllustration) {
             l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT));
 }
 
+TEST_F(PickerViewTest, NoMainResultsAndNoEmojisIsAnnounced) {
+  base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue(std::move(callback));
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  future.Take().Run({});
+
+  EXPECT_EQ(picker_view->search_results_view_for_testing().GetAccessibleName(),
+            u"No results found.");
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
+}
+
+TEST_F(PickerViewTest, NoMainResultsAndSomeEmojisIsAnnounced) {
+  base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kExpressions},
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue(std::move(callback));
+          }),
+      .emoji_results = {PickerSearchResult::Emoji(u"😊"),
+                        PickerSearchResult::Symbol(u"♬")},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  future.Take().Run({});
+
+  EXPECT_EQ(picker_view->search_results_view_for_testing().GetAccessibleName(),
+            u"2 emojis. No other results.");
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
+}
+
 TEST_F(PickerViewTest, DoesNotClearResultsBeforeTimeout) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({

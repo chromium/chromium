@@ -501,9 +501,13 @@ void PickerView::StopSearch() {
 }
 
 void PickerView::PublishEmojiResults(std::vector<PickerSearchResult> results) {
-  if (emoji_bar_view_ != nullptr) {
-    emoji_bar_view_->SetSearchResults(std::move(results));
+  if (emoji_bar_view_ == nullptr) {
+    return;
   }
+
+  emoji_bar_view_->SetSearchResults(std::move(results));
+  search_results_view_->SetNumEmojiResultsForA11y(
+      emoji_bar_view_->GetNumItems());
 }
 
 void PickerView::OnClearResultsTimerFired() {

@@ -79,6 +79,9 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // Returns the index of `inserted_result` in the search result list.
   int GetIndex(const PickerSearchResult& inserted_result);
 
+  // Sets the number of emoji results for accessibility.
+  void SetNumEmojiResultsForA11y(size_t num_emoji_results);
+
   PickerSectionListView* section_list_view_for_testing() {
     return section_list_view_;
   }
@@ -112,6 +115,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
                              const ui::Event& event);
 
   void StopLoadingAnimation();
+  void AnnounceNoResultsFound();
 
   raw_ptr<PickerSearchResultsViewDelegate> delegate_;
 
@@ -133,6 +137,10 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   raw_ptr<PickerSkeletonLoaderView> skeleton_loader_view_ = nullptr;
 
   PickerPreviewBubbleController preview_controller_;
+
+  // Number of emoji search results displayed by the emoji bar. Used for
+  // accessibility announcements.
+  int num_emoji_results_displayed_ = 0;
 };
 
 }  // namespace ash

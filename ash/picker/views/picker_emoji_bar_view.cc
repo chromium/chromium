@@ -301,6 +301,10 @@ void PickerEmojiBarView::SetSearchResults(
   }
 }
 
+size_t PickerEmojiBarView::GetNumItems() const {
+  return item_row_->children().size();
+}
+
 void PickerEmojiBarView::SelectSearchResult(const PickerSearchResult& result) {
   delegate_->SelectSearchResult(result);
 }

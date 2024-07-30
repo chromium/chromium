@@ -4,6 +4,8 @@
 
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/views/mock_picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_emoji_bar_view.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
@@ -13,6 +15,7 @@
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_search_bar_textfield.h"
 #include "ash/picker/views/picker_search_field_view.h"
+#include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
@@ -616,6 +619,47 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.ExpectSpeechPattern("surprise emoticon");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       StoppingSearchAnnouncesEmojiResults) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  ash::MockPickerSearchResultsViewDelegate mock_delegate;
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSearchResultsView>(
+          &mock_delegate, /*picker_width=*/1000, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr));
+
+  sm_.Call([view]() {
+    view->SetNumEmojiResultsForA11y(5);
+    view->SearchStopped(/*illustration=*/{}, /*description=*/u"");
+  });
+  sm_.ExpectSpeechPattern("5 emojis. No other results.");
+  sm_.ExpectSpeechPattern("Status");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       StoppingSearchAnnouncesNoResults) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  ash::MockPickerSearchResultsViewDelegate mock_delegate;
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSearchResultsView>(
+          &mock_delegate, /*picker_width=*/1000, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr));
+
+  sm_.Call([view]() {
+    view->SearchStopped(/*illustration=*/{}, /*description=*/u"");
+  });
+  sm_.ExpectSpeechPattern("No results found.");
+  sm_.ExpectSpeechPattern("Status");
   sm_.Replay();
 }
 

@@ -34,7 +34,9 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -508,6 +510,43 @@ TEST_F(PickerSearchResultsViewTest, AppendResultsDuringLoadingAppendsResults) {
 
   EXPECT_FALSE(view.skeleton_loader_view_for_testing().GetVisible());
   EXPECT_THAT(view.section_views_for_testing(), SizeIs(1));
+}
+
+TEST_F(PickerSearchResultsViewTest,
+       StoppingSearchWithNoEmojisTriggersLiveRegionChange) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  MockPickerSearchResultsViewDelegate mock_delegate;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          &mock_delegate, kPickerWidth, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr));
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  EXPECT_TRUE(view->SearchStopped(/*illustration=*/{}, u""));
+
+  EXPECT_EQ(view->GetAccessibleName(), u"No results found.");
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
+}
+
+TEST_F(PickerSearchResultsViewTest,
+       StoppingSearchWithEmojisTriggersLiveRegionChange) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  MockPickerSearchResultsViewDelegate mock_delegate;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          &mock_delegate, kPickerWidth, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr));
+  view->SetNumEmojiResultsForA11y(5);
+
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  EXPECT_TRUE(view->SearchStopped(/*illustration=*/{}, u""));
+
+  EXPECT_EQ(view->GetAccessibleName(), u"5 emojis. No other results.");
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
 }
 
 struct PickerSearchResultTestCase {
