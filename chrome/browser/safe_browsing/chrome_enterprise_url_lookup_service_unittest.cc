@@ -295,11 +295,9 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
                   request_proto.population().profile_management_status());
         EXPECT_TRUE(request_proto.population().is_under_advanced_protection());
 
-        std::string header_value;
-        bool found_header = request.headers.GetHeader(
-            net::HttpRequestHeaders::kAuthorization, &header_value);
-        EXPECT_TRUE(found_header);
-        EXPECT_EQ(header_value, "Bearer access_token_string");
+        EXPECT_THAT(
+            request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization),
+            testing::Optional(std::string("Bearer access_token_string")));
 
         request_validated = true;
       }));
