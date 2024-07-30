@@ -12,6 +12,29 @@
     Share with this device?
   </message>
 
+  <!-- Quick Share v2 visibility section of settings subpage -->
+  <message name="IDS_QUICK_SHARE_V2_VISIBILITY_SECTION_TITLE" desc="Title of Quick Share visibility section shown when the Quick Share v2 flag is enabled.">
+    Who can share with you
+  </message>
+  <message name="IDS_QUICK_SHARE_V2_VISIBILITY_SECTION_SUBTITLE_ON_DISABLED" desc="Subtitle of Quick Share visibility section shown when the Quick Share v2 flag is enabled and Quick Share is disabled.">
+    No one can share with you until you make yourself visible
+  </message>
+  <message name="IDS_QUICK_SHARE_V2_VISIBILITY_YOUR_DEVICES_SUBLABEL" desc="Your devices visibility radio button sublabel.">
+    Only devices signed into <ph name="USER_EMAIL">$1<ex>example@gmail.com</ex></ph>
+  </message>
+  <message name="IDS_QUICK_SHARE_V2_VISIBILITY_CONTACTS_SUBLABEL" desc="Contacts visibility radio button sublabel.">
+    Only your contacts with a Google Account. <ph name="LINK_BEGIN">&lt;a&gt;</ph>View contacts<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_QUICK_SHARE_V2_VISIBILITY_EVERYONE_LABEL" desc="Everyone visibility radio button label.">
+    Everyone
+  </message>
+  <message name="IDS_QUICK_SHARE_V2_VISIBILITY_EVERYONE_SUBLABEL" desc="Everyone visibility radio button sublabel.">
+    Anyone nearby
+  </message>
+  <message name="IDS_QUICK_SHARE_V2_VISIBILITY_ONLY_FOR_TEN_MINUTES_LABEL" desc="Only for ten minutes checkbox label.">
+    Only for 10 minutes
+  </message>
+
   <!-- Contact visibility component -->
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_DOWNLOAD_FAILED" desc="Message shown when downloading contacts failed when trying to load contacts to show the user a list of who they will be able to share with.">
       Unable to download contact list. Please check your network connection, or <ph name="LINK_BEGIN">&lt;a&gt;</ph>try again<ph name="LINK_END">&lt;/a&gt;</ph>.

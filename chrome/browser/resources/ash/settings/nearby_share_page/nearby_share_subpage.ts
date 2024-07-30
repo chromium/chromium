@@ -166,6 +166,11 @@ export class SettingsNearbyShareSubpageElement extends
         type: String,
         value: 'Everyone',
       },
+
+      yourDevicesSublabel_: {
+        type: String,
+        computed: 'getYourDevicesVisibilitySublabel_(profileLabel_)',
+      },
     };
   }
 
@@ -193,6 +198,7 @@ export class SettingsNearbyShareSubpageElement extends
   private showReceiveDialog_: boolean;
   private showVisibilityDialog_: boolean;
   private yourDevicesLabel_: string;
+  private yourDevicesSublabel_: string;
   private contactsLabel_: string;
   private everyoneLabel_: string;
 
@@ -591,6 +597,12 @@ export class SettingsNearbyShareSubpageElement extends
         this.set('settings.visibility', Visibility.kYourDevices);
         this.selectedVisibilityLabel_ = this.yourDevicesLabel_;
     }
+  }
+
+  private getYourDevicesVisibilitySublabel_(): TrustedHTML {
+    return this.i18nAdvanced(
+        'quickShareV2VisibilityYourDevicesSublabel',
+        {substitutions: [this.profileLabel_]});
   }
 }
 

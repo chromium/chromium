@@ -116,10 +116,10 @@
     <div id="visibilityBoxTitle" class="settings-box two-line">
       <div class="start">
         <div>
-          Who can share with you
+          $i18n{quickShareV2VisibilitySectionTitle}
         </div>
         <div class="secondary" hidden="[[isDeviceVisible_]]">
-          No one can share with you until you make yourself visible
+          $i18n{quickShareV2VisibilitySectionSubtitleOnDisabled}
         </div>
       </div>
       <cr-toggle
@@ -136,30 +136,35 @@
         id="yourDevicesVisibility"
         class="list-item"
         name="[[yourDevicesLabel_]]"
-        label="[[yourDevicesLabel_]]">
-          <div class="secondary">Only devices signed into test@gmail.com</div>
+        label="$i18n{nearbyShareContactVisibilityYourDevices}">
+          <div class="secondary">[[yourDevicesSublabel_]]</div>
       </cr-radio-button>
       <cr-radio-button
         id="contactsVisibility"
         class="list-item"
         name="[[contactsLabel_]]"
-        label="[[contactsLabel_]]">
-        <div class="secondary">Only your contacts with a Google account. View contacts.</div>
+        label="$i18n{nearbyShareContactVisiblityContactsButton}">
+        <div class="secondary">
+          <localized-link
+            localized-string="$i18n{quickShareV2VisibilityContactsSublabel}"
+            link-url="[[manageContactsUrl_]]">
+          </localized-link>
+        </div>
       </cr-radio-button>
       <cr-radio-button
         id="everyoneVisibility"
         class="list-item"
         name="[[everyoneLabel_]]"
-        label="[[everyoneLabel_]]">
-        <div class="secondary">Anyone nearby</div>
+        label="$i18n{quickShareV2VisibilityEveryoneLabel}">
+        <div class="secondary">$i18n{quickShareV2VisibilityEveryoneSublabel}</div>
       </cr-radio-button>
       <!--'style' attribute aligns start of checkbox with start of above radio button label by padding radio butto size (16px) + button-label spacing.-->
       <cr-checkbox
         class="list-item"
         style="padding-inline-start: calc(16px + var(--cr-radio-button-label-spacing, 20px));" 
-        checked="[[isEveryoneModeOnlyForTenMinutes_]]"
-        disabled="[[!isEveryoneModeSelected_(selectedVisibilityLabel_)]]">
-        Only for 10 minutes
+        checked="{{isEveryoneVisibilityOnlyForTenMinutes_}}"
+        disabled="[[!isEveryoneVisibilitySelected_(selectedVisibilityLabel_)]]">
+        $i18n{quickShareV2VisibilityOnlyForTenMinutesLabel}
       </cr-checkbox>
     </cr-radio-group>
   </template>
