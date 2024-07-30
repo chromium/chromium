@@ -152,8 +152,8 @@ promise_test(async t => {
   assert_not_equals(window.location.hostname, iframeHost(iframe));
   assert_not_equals(window.location.hostname, iframeHost(parallelFrame));
 
-  fetch_tests_from_window(iframe.contentWindow);
-  fetch_tests_from_window(parallelFrame.contentWindow);
+  await fetch_tests_from_window(iframe.contentWindow);
+  await fetch_tests_from_window(parallelFrame.contentWindow);
 }, "Partitioned cookies are not sent in parallel embedded same-site to cross-site redirects");
 
 </script>

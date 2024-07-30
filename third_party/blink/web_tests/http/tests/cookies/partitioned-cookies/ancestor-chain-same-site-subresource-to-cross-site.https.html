@@ -45,7 +45,7 @@ promise_test(async () => {
   iframe.src = redirectUrl;
   await new Promise(r => iframe.onload = r);
 
-  fetch_tests_from_window(iframe.contentWindow);
+  await fetch_tests_from_window(iframe.contentWindow);
 
   // Confirm that the iframe is cross-site to the top-level site.
   iframeUrl = new URL(iframe.src);
