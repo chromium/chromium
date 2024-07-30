@@ -1396,6 +1396,21 @@
             ]
         }
     ],
+    "AudioSelectionImprovement": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AudioSelectionImprovement"
+                    ]
+                }
+            ]
+        }
+    ],
     "AuthenticateUsingUserConsentVerifierApi": [
         {
             "platforms": [
