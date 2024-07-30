@@ -114,6 +114,7 @@ static_library("crostini") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/crostini_installer",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
     "//chrome/common",
     "//chrome/common:chrome_features",
@@ -151,6 +152,7 @@ static_library("crostini") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/crostini/ansible",
     "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ui/webui/ash/crostini_installer",
   ]
 }
 

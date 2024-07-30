@@ -47,6 +47,7 @@ static_library("autotest_private") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash/crostini_installer",
     "//chrome/common",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/session_manager",
