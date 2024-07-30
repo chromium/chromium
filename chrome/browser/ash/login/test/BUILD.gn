@@ -139,6 +139,7 @@ static_library("test_support") {
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/login/osauth",

@@ -535,6 +535,8 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/ash",
       "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/settings",
+      "//chrome/browser/ash/settings:test_support",
       "//chromeos/ash/components/system",
     ]
   }

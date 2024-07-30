@@ -92,6 +92,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash",
     "//chrome/test:test_support",

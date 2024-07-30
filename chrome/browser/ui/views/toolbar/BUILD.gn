@@ -165,6 +165,7 @@ source_set("toolbar") {
     deps += [
       "//ash/constants",
       "//chrome/browser/ash/ownership",
+      "//chrome/browser/ash/settings",
     ]
   }
 }

@@ -171,6 +171,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/remote_commands:test_support",
     "//chrome/browser/ash/policy/scheduled_task_handler",
     "//chrome/browser/ash/policy/scheduled_task_handler/test:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/system",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/support_tool:support_tool_proto",

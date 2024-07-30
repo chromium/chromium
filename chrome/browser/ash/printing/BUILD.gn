@@ -212,6 +212,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/printing/enterprise",
     "//chrome/browser/ash/printing/oauth2",
     "//chrome/browser/ash/printing/oauth2:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
     "//chromeos/ash/components/dbus/printscanmgr",
     "//third_party/libipp",
   ]

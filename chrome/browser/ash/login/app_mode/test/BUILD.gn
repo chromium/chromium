@@ -68,6 +68,7 @@ static_library("test_support") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/ui",
     "//chromeos/ash/components/standalone_browser",

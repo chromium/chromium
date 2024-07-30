@@ -81,6 +81,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/net/network_diagnostics",
     "//chrome/browser/ash/policy/reporting/metrics_reporting",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/chromeos",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/debug_daemon",

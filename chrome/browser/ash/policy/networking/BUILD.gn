@@ -16,6 +16,7 @@ static_library("networking") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/network",

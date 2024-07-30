@@ -65,6 +65,8 @@ source_set("unit_tests") {
     ":managed_printer_proto",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/printing",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
   ]
 }
 

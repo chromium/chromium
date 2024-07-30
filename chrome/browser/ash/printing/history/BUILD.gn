@@ -68,6 +68,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/printing:test_support",
+    "//chrome/browser/ash/settings:test_support",
     "//components/reporting/client:test_support",
   ]
 }

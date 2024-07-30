@@ -1302,6 +1302,7 @@ source_set("extensions") {
       "//chrome/browser/ash/printing",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/remote_apps",
+      "//chrome/browser/ash/settings",
       "//chrome/browser/ash/system_logs",
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/devtools",

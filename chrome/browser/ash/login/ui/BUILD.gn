@@ -105,6 +105,7 @@ static_library("ui") {
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",

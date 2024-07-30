@@ -348,6 +348,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/input_method/japanese:unit_tests",
     "//chrome/browser/ash/input_method/ui",
     "//chrome/browser/ash/input_method/ui:unit_tests",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/keyboard:ash_test_support",

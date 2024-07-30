@@ -60,6 +60,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chromeos/ash/components/cryptohome",

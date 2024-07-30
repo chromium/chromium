@@ -20,6 +20,7 @@ static_library("off_hours") {
     "//base",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/settings",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/policy",
@@ -28,7 +29,10 @@ static_library("off_hours") {
     "//components/user_manager",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/settings",
+  ]
 }
 
 source_set("unit_tests") {
@@ -45,6 +49,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/settings:test_support",
     "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/policy",
     "//components/policy/proto",

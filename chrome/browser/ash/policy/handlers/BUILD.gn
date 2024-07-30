@@ -70,6 +70,7 @@ static_library("handlers") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/web_applications",
@@ -118,6 +119,7 @@ static_library("handlers") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/skyvault",
+    "//chrome/browser/ash/settings",
   ]
 }
 
@@ -183,6 +185,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/policy/handlers:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/shelf",

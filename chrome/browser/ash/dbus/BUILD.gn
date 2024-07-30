@@ -92,6 +92,7 @@ static_library("dbus") {
     "//chrome/browser/ash/power/ml",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/chromeos",
     "//chrome/browser/profiles:profile",
     "//chrome/common:chrome_features",
