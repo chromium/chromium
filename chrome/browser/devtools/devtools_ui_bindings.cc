@@ -1536,6 +1536,8 @@ base::Value::Dict DevToolsUIBindings::GetSyncInformationForProfile(
 void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   base::Value::Dict response_dict;
 
+  AidaClient::BlockedReason blocked_reason = AidaClient::CanUseAida(profile_);
+
   base::Value::Dict console_insights_dict;
   console_insights_dict.Set(
       "enabled",
@@ -1546,7 +1548,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       "aidaTemperature", features::kDevToolsConsoleInsightsTemperature.Get());
   console_insights_dict.Set("optIn",
                             features::kDevToolsConsoleInsightsOptIn.Get());
-  AidaClient::BlockedReason blocked_reason = AidaClient::CanUseAida(profile_);
   console_insights_dict.Set("blocked", blocked_reason.blocked);
   console_insights_dict.Set("blockedByAge", blocked_reason.blocked_by_age);
   console_insights_dict.Set("blockedByEnterprisePolicy",
@@ -1568,6 +1569,10 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       "aidaModelId", features::kDevToolsFreestylerDogfoodModelId.Get());
   freestyler_dogfood_dict.Set(
       "aidaTemperature", features::kDevToolsFreestylerDogfoodTemperature.Get());
+  freestyler_dogfood_dict.Set("blockedByAge", blocked_reason.blocked_by_age);
+  freestyler_dogfood_dict.Set("blockedByEnterprisePolicy",
+                              blocked_reason.blocked_by_enterprise_policy);
+  freestyler_dogfood_dict.Set("blockedByGeo", blocked_reason.blocked_by_geo);
   response_dict.Set("devToolsFreestylerDogfood",
                     std::move(freestyler_dogfood_dict));
 
