@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -51,6 +52,7 @@
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_service.h"
@@ -435,6 +437,13 @@ void PickerController::InsertResultOnNextFocus(
             insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
                 input_method, media, kInsertMediaTimeout,
                 base::BindOnce(
+                    [](base::WeakPtr<PickerController> weak_controller) {
+                      return weak_controller
+                                 ? weak_controller->GetWebPasteTarget()
+                                 : std::nullopt;
+                    },
+                    weak_ptr_factory_.GetWeakPtr()),
+                base::BindOnce(
                     [](const PickerRichMedia& media,
                        PickerInsertMediaRequest::Result result) {
                       // Fallback to copying to the clipboard on failure.
@@ -700,6 +709,10 @@ void PickerController::OnFeatureTourCompleted(
 
 void PickerController::ShowWidgetPostFeatureTour() {
   ShowWidget(base::TimeTicks::Now());
+}
+
+std::optional<PickerWebPasteTarget> PickerController::GetWebPasteTarget() {
+  return client_ ? client_->GetWebPasteTarget() : std::nullopt;
 }
 
 }  // namespace ash

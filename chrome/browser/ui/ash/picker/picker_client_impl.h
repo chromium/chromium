@@ -14,6 +14,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_client.h"
+#include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
@@ -79,6 +80,7 @@ class PickerClientImpl
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;
   PrefService* GetPrefs() override;
+  std::optional<ash::PickerWebPasteTarget> GetWebPasteTarget() override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;

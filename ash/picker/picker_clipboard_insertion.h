@@ -18,6 +18,7 @@ namespace ash {
 
 ASH_EXPORT void InsertClipboardData(
     std::unique_ptr<ui::ClipboardData> data,
+    base::OnceClosure do_web_paste,
     base::OnceCallback<void(bool)> done_callback);
 }
 

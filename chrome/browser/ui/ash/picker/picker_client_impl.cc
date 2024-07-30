@@ -15,6 +15,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
@@ -50,10 +51,17 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -378,6 +386,54 @@ void PickerClientImpl::FetchFileThumbnail(const base::FilePath& path,
 
 PrefService* PickerClientImpl::GetPrefs() {
   return profile_ == nullptr ? nullptr : profile_->GetPrefs();
+}
+
+// Forked from `ClipboardHistoryControllerDelegateImpl::Paste`.
+std::optional<ash::PickerWebPasteTarget> PickerClientImpl::GetWebPasteTarget() {
+  std::unique_ptr<content::RenderWidgetHostIterator> widgets =
+      content::RenderWidgetHost::GetRenderWidgetHosts();
+  while (content::RenderWidgetHost* rwh = widgets->GetNextHost()) {
+    content::RenderViewHost* rvh = content::RenderViewHost::From(rwh);
+    if (rvh == nullptr) {
+      continue;
+    }
+
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderViewHost(rvh);
+    if (web_contents == nullptr) {
+      continue;
+    }
+    if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost() != rvh) {
+      continue;
+    }
+
+    content::RenderFrameHost* focused_frame = web_contents->GetFocusedFrame();
+    if (focused_frame == nullptr) {
+      continue;
+    }
+
+    content::WebContents* focused_web_contents =
+        content::WebContents::FromRenderFrameHost(focused_frame);
+    if (focused_web_contents == nullptr) {
+      continue;
+    }
+
+    gfx::NativeView window = focused_web_contents->GetContentNativeView();
+    if (window == nullptr) {
+      continue;
+    }
+    if (!window->HasFocus()) {
+      continue;
+    }
+
+    return std::make_optional<ash::PickerWebPasteTarget>(
+        // SAFETY: Callers must call this synchronously as per the
+        // documentation, so this `base::Unretained` is safe.
+        base::BindOnce(&content::WebContents::Paste,
+                       base::Unretained(focused_web_contents)));
+  }
+
+  return std::nullopt;
 }
 
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {

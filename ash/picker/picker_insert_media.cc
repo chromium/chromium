@@ -4,6 +4,7 @@
 
 #include "ash/picker/picker_insert_media.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <variant>
@@ -11,6 +12,7 @@
 #include "ash/picker/picker_clipboard_insertion.h"
 #include "ash/picker/picker_copy_media.h"
 #include "ash/picker/picker_rich_media.h"
+#include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -133,11 +135,19 @@ bool InputFieldSupportsInsertingMedia(const PickerRichMedia& media,
 
 void InsertMediaToInputField(PickerRichMedia media,
                              ui::TextInputClient& client,
+                             WebPasteTargetCallback get_web_paste_target,
                              OnInsertMediaCompleteCallback callback) {
   if (std::holds_alternative<PickerLinkMedia>(media) &&
       client.GetTextInputType() == ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE) {
+    std::optional<PickerWebPasteTarget> web_paste_target =
+        get_web_paste_target.is_null() ? std::nullopt
+                                       : std::move(get_web_paste_target).Run();
+    base::OnceClosure do_paste;
+    if (web_paste_target.has_value()) {
+      do_paste = std::move(web_paste_target->do_paste);
+    }
     InsertClipboardData(
-        ClipboardDataFromMedia(media),
+        ClipboardDataFromMedia(media), std::move(do_paste),
         base::BindOnce(
             [](PickerRichMedia media, base::WeakPtr<ui::TextInputClient> client,
                OnInsertMediaCompleteCallback callback, bool success) {

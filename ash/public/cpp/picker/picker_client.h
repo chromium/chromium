@@ -14,6 +14,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "url/gurl.h"
@@ -76,6 +77,9 @@ class ASH_PUBLIC_EXPORT PickerClient {
                                   FetchFileThumbnailCallback callback) = 0;
 
   virtual PrefService* GetPrefs() = 0;
+  // SAFETY: The returned `do_paste` MUST be called synchronously. Calling it
+  // after a delay, such as in a different task, may result in use-after-frees.
+  virtual std::optional<PickerWebPasteTarget> GetWebPasteTarget() = 0;
 
  protected:
   PickerClient();

@@ -4,8 +4,13 @@
 
 #include "ash/picker/picker_insert_media_request.h"
 
+#include <optional>
+#include <utility>
+
 #include "ash/picker/picker_insert_media.h"
 #include "ash/picker/picker_rich_media.h"
+#include "ash/public/cpp/picker/picker_web_paste_target.h"
+#include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/ime/input_method.h"
@@ -34,8 +39,11 @@ PickerInsertMediaRequest::PickerInsertMediaRequest(
     ui::InputMethod* input_method,
     const PickerRichMedia& media_to_insert,
     const base::TimeDelta insert_timeout,
+    base::OnceCallback<std::optional<PickerWebPasteTarget>()>
+        get_web_paste_target,
     OnCompleteCallback on_complete_callback)
     : media_to_insert_(media_to_insert),
+      get_web_paste_target_(std::move(get_web_paste_target)),
       on_complete_callback_(on_complete_callback.is_null()
                                 ? base::DoNothing()
                                 : std::move(on_complete_callback)) {
@@ -70,7 +78,7 @@ void PickerInsertMediaRequest::OnTextInputStateChanged(
   observation_.Reset();
 
   InsertMediaToInputField(*std::exchange(media_to_insert_, std::nullopt),
-                          *mutable_client,
+                          *mutable_client, std::move(get_web_paste_target_),
                           base::BindOnce(&ConvertInsertMediaResult)
                               .Then(std::move(on_complete_callback_)));
 }

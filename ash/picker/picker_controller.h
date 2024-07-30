@@ -6,6 +6,7 @@
 #define ASH_PICKER_PICKER_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "ash/picker/picker_asset_fetcher_impl_delegate.h"
 #include "ash/picker/views/picker_feature_tour.h"
 #include "ash/picker/views/picker_view_delegate.h"
+#include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -133,6 +135,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void OnFeatureTourCompleted(bool had_focus_before_feature_tour);
   void ShowWidgetPostFeatureTour();
   void CloseCapsLockStateView();
+
+  std::optional<PickerWebPasteTarget> GetWebPasteTarget();
 
   PickerFeatureTour feature_tour_;
   std::unique_ptr<PickerModel> model_;

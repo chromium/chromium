@@ -98,6 +98,7 @@ std::unique_ptr<ui::ClipboardData> ReplaceClipboard(
 // Forked from `PasteClipboardHistoryItem`.
 void InsertClipboardDataImpl(aura::Window* intended_window,
                              std::unique_ptr<ui::ClipboardData> data,
+                             base::OnceClosure do_web_paste,
                              base::OnceCallback<void(bool)> done_callback) {
   if (intended_window != window_util::GetActiveWindow()) {
     std::move(done_callback).Run(false);
@@ -107,22 +108,25 @@ void InsertClipboardDataImpl(aura::Window* intended_window,
   std::unique_ptr<ui::ClipboardData> replaced_data =
       ReplaceClipboard(std::move(data));
 
-  // TODO: b/351050139 - Use a direct paste into web contents if possible,
-  // instead of always using "synthetic paste".
-  aura::WindowTreeHost* host = intended_window->GetHost();
-  CHECK(host);
+  if (!do_web_paste.is_null()) {
+    std::move(do_web_paste).Run();
+  } else {
+    // "Synthetic paste" using key events.
+    aura::WindowTreeHost* host = intended_window->GetHost();
+    CHECK(host);
 
-  ui::KeyEvent ctrl_press = SyntheticCtrl(ui::EventType::kKeyPressed);
-  host->DeliverEventToSink(&ctrl_press);
+    ui::KeyEvent ctrl_press = SyntheticCtrl(ui::EventType::kKeyPressed);
+    host->DeliverEventToSink(&ctrl_press);
 
-  ui::KeyEvent v_press = SyntheticCtrlV(ui::EventType::kKeyPressed);
-  host->DeliverEventToSink(&v_press);
+    ui::KeyEvent v_press = SyntheticCtrlV(ui::EventType::kKeyPressed);
+    host->DeliverEventToSink(&v_press);
 
-  ui::KeyEvent v_release = SyntheticCtrlV(ui::EventType::kKeyReleased);
-  host->DeliverEventToSink(&v_release);
+    ui::KeyEvent v_release = SyntheticCtrlV(ui::EventType::kKeyReleased);
+    host->DeliverEventToSink(&v_release);
 
-  ui::KeyEvent ctrl_release = SyntheticCtrl(ui::EventType::kKeyReleased);
-  host->DeliverEventToSink(&ctrl_release);
+    ui::KeyEvent ctrl_release = SyntheticCtrl(ui::EventType::kKeyReleased);
+    host->DeliverEventToSink(&ctrl_release);
+  }
 
   if (!replaced_data) {
     // No was on the clipboard.
@@ -149,12 +153,23 @@ void InsertClipboardDataImpl(aura::Window* intended_window,
 
 // Forked from `ClipboardHistoryControllerImpl::MaybePastePostTask`.
 void InsertClipboardData(std::unique_ptr<ui::ClipboardData> data,
+                         base::OnceClosure do_web_paste,
                          base::OnceCallback<void(bool)> done_callback) {
   if (aura::Window* active_window = window_util::GetActiveWindow()) {
-    // Paste asynchronously to ensure ARC windows handle paste events correctly.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&InsertClipboardDataImpl, active_window,
-                                  std::move(data), std::move(done_callback)));
+    if (!do_web_paste.is_null()) {
+      // `do_web_paste` needs to be called synchronously. If it is non-null,
+      // we are guaranteed to not be pasting into an ARC window.
+      InsertClipboardDataImpl(active_window, std::move(data),
+                              std::move(do_web_paste),
+                              std::move(done_callback));
+    } else {
+      // Paste asynchronously to ensure ARC windows handle paste events
+      // correctly.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&InsertClipboardDataImpl, active_window,
+                                    std::move(data), std::move(do_web_paste),
+                                    std::move(done_callback)));
+    }
   } else {
     std::move(done_callback).Run(false);
   }
