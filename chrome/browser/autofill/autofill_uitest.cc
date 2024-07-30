@@ -150,7 +150,7 @@ void AutofillUiTest::SetUpOnMainThread() {
   test_api(test_api(*GetBrowserAutofillManager()).form_filler())
       .set_limit_before_refill(base::Hours(1));
   autofill_driver_factory_observation_.Observe(
-      client->GetAutofillDriverFactory());
+      &client->GetAutofillDriverFactory());
 
   // Wait for Personal Data Manager to be fully loaded to prevent that
   // spurious notifications deceive the tests.

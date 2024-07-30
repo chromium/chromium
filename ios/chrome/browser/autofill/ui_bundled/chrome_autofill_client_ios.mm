@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/check_deref.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
@@ -23,6 +24,7 @@
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -112,6 +114,10 @@ scoped_refptr<network::SharedURLLoaderFactory>
 ChromeAutofillClientIOS::GetURLLoaderFactory() {
   return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
       web_state_->GetBrowserState()->GetURLLoaderFactory());
+}
+
+AutofillDriverFactory& ChromeAutofillClientIOS::GetAutofillDriverFactory() {
+  return CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
 }
 
 AutofillCrowdsourcingManager*

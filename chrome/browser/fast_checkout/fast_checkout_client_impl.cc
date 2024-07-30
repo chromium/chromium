@@ -152,7 +152,7 @@ FastCheckoutClientImpl::FastCheckoutClientImpl(
           }),
           base::Seconds(1)) {
   driver_factory_observation_.Observe(
-      autofill_client_->GetAutofillDriverFactory());
+      &autofill_client_->GetAutofillDriverFactory());
 }
 
 FastCheckoutClientImpl::~FastCheckoutClientImpl() = default;

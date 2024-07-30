@@ -47,7 +47,7 @@ class TestAutofillDriverInjectorBase {
 // driver, for example with
 //   NavigateAndCommit(GURL("about:blank"))
 // or force-create the driver manually with
-//   client->GetAutofillDriverFactory()->DriverForFrame(rfh).
+//   client->GetAutofillDriverFactory().DriverForFrame(rfh).
 //
 // The driver's AutofillManager is a fresh BrowserAutofillManager.
 //
@@ -120,7 +120,7 @@ class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
       if (!client) {
         return;
       }
-      factory_ = client->GetAutofillDriverFactory();
+      factory_ = &client->GetAutofillDriverFactory();
       // The injectors' observers should come first so that production-code
       // observers affect the injected objects.
       test_api(*factory_).AddObserverAtIndex(this, 0);

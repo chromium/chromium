@@ -27,6 +27,30 @@ namespace autofill {
 
 class ScopedAutofillManagersObservation;
 
+void ContentAutofillDriverFactory::Observer::OnAutofillDriverFactoryDestroyed(
+    AutofillDriverFactory& factory) {
+  OnContentAutofillDriverFactoryDestroyed(
+      static_cast<ContentAutofillDriverFactory&>(factory));
+}
+
+void ContentAutofillDriverFactory::Observer::OnAutofillDriverCreated(
+    AutofillDriverFactory& factory,
+    AutofillDriver& driver) {
+  OnContentAutofillDriverCreated(
+      static_cast<ContentAutofillDriverFactory&>(factory),
+      static_cast<ContentAutofillDriver&>(driver));
+}
+
+void ContentAutofillDriverFactory::Observer::OnAutofillDriverStateChanged(
+    AutofillDriverFactory& factory,
+    AutofillDriver& driver,
+    LifecycleState old_state,
+    LifecycleState new_state) {
+  OnContentAutofillDriverStateChanged(
+      static_cast<ContentAutofillDriverFactory&>(factory),
+      static_cast<ContentAutofillDriver&>(driver), old_state, new_state);
+}
+
 // static
 ContentAutofillDriverFactory* ContentAutofillDriverFactory::FromWebContents(
     content::WebContents* contents) {
@@ -35,7 +59,7 @@ ContentAutofillDriverFactory* ContentAutofillDriverFactory::FromWebContents(
   if (!client) {
     return nullptr;
   }
-  return client->GetAutofillDriverFactory();
+  return &client->GetAutofillDriverFactory();
 }
 
 // static
@@ -65,25 +89,11 @@ ContentAutofillDriverFactory::ContentAutofillDriverFactory(
     : content::WebContentsObserver(web_contents), client_(*client) {}
 
 ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
-  for (Observer& observer : observers_) {
-    observer.OnContentAutofillDriverFactoryDestroyed(*this);
+  for (auto& observer : observers()) {
+    observer.OnAutofillDriverFactoryDestroyed(*this);
   }
   base::UmaHistogramCounts1000("Autofill.NumberOfDriversPerFactory",
                                max_drivers_);
-}
-
-void ContentAutofillDriverFactory::SetLifecycleStateAndNotifyObservers(
-    ContentAutofillDriver& driver,
-    const LifecycleState new_state) {
-  const LifecycleState old_state = driver.GetLifecycleState();
-  driver.SetLifecycleState(new_state,
-                           [&]() {
-                             for (Observer& observer : observers_) {
-                               observer.OnContentAutofillDriverStateChanged(
-                                   *this, driver, old_state, new_state);
-                             }
-                           },
-                           {});
 }
 
 ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
@@ -114,8 +124,8 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     if (render_frame_host->IsRenderFrameLive()) {
       driver = std::make_unique<ContentAutofillDriver>(render_frame_host, this);
       DCHECK_EQ(driver->GetLifecycleState(), LifecycleState::kInactive);
-      for (Observer& observer : observers_) {
-        observer.OnContentAutofillDriverCreated(*this, *driver);
+      for (auto& observer : observers()) {
+        observer.OnAutofillDriverCreated(*this, *driver);
       }
       // TODO: crbug.com/342132628 - `driver->IsActive()` is guaranteed once
       // prerendered CADs are deferred.
@@ -226,7 +236,7 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
   }
 
   SetLifecycleStateAndNotifyObservers(*driver, LifecycleState::kPendingReset);
-  driver->Reset({});
+  driver->Reset(/*pass_key=*/{});
   // TODO: crbug.com/342132628 - `driver->IsActive()` is guaranteed once
   // prerendered CADs are deferred.
   SetLifecycleStateAndNotifyObservers(

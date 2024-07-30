@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/check_deref.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
@@ -16,6 +17,7 @@
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/security_state/ios/security_state_utils.h"
@@ -90,6 +92,10 @@ scoped_refptr<network::SharedURLLoaderFactory>
 WebViewAutofillClientIOS::GetURLLoaderFactory() {
   return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
       web_state_->GetBrowserState()->GetURLLoaderFactory());
+}
+
+AutofillDriverFactory& WebViewAutofillClientIOS::GetAutofillDriverFactory() {
+  return CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
 }
 
 AutofillCrowdsourcingManager*

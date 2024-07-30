@@ -175,7 +175,7 @@ AutofillManager::~AutofillManager() {
 void AutofillManager::OnAutofillDriverLifecycleStateChanged(
     LifecycleState old_state,
     LifecycleState new_state,
-    base::PassKey<AutofillDriver>) {
+    base::PassKey<AutofillDriverFactory>) {
   DCHECK_NE(new_state, old_state);
   DCHECK_EQ(new_state, driver().GetLifecycleState());
   NotifyObservers(&Observer::OnAutofillManagerStateChanged, old_state,

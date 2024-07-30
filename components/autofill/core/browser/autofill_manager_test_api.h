@@ -17,6 +17,10 @@ class AutofillManagerTestApi {
   explicit AutofillManagerTestApi(AutofillManager* manager)
       : manager_(*manager) {}
 
+  const base::ObserverList<AutofillManager::Observer>& observers() {
+    return manager_->observers_;
+  }
+
   void Reset() { manager_->Reset(); }
 
   void OnLoadedServerPredictions(

@@ -4,6 +4,7 @@
 
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 
+#import "base/check_deref.h"
 #import "base/containers/contains.h"
 #import "base/containers/to_vector.h"
 #import "base/memory/ptr_util.h"
@@ -88,15 +89,26 @@ AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
     }
   }
 
-  // This must be called as last statement of the constructor because according
-  // to the contract it mustn't be called during construction.
-  SetLifecycleState(LifecycleState::kActive, []() {}, {});
+  // TODO: crbug.com/355907668 - Move to AutofillDriverIOSFactory.
+  auto& factory =
+      CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
+  for (auto& observer : factory.observers(/*pass_key=*/{})) {
+    observer.OnAutofillDriverCreated(factory, *this);
+  }
+  // This must be called as last statement of the constructor because
+  // according to the contract it mustn't be called during construction.
+  factory.SetLifecycleStateAndNotifyObservers(*this, LifecycleState::kActive,
+                                              /*pass_key=*/{});
 }
 
 AutofillDriverIOS::~AutofillDriverIOS() {
-  // This must be called as first statement of the destructor because according
-  // to the contract it mustn't be called during destruction.
-  SetLifecycleState(LifecycleState::kPendingDeletion, []() {}, {});
+  // TODO: crbug.com/355907668 - Move to AutofillDriverIOSFactory.
+  auto& factory =
+      CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
+  // This must be called as first statement of the destructor because
+  // according to the contract it mustn't be called during destruction.
+  factory.SetLifecycleStateAndNotifyObservers(
+      *this, LifecycleState::kPendingDeletion, /*pass_key=*/{});
   Unregister();
 }
 

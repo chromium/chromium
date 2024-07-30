@@ -45,7 +45,7 @@ class TestAutofillManagerInjectorBase {
 // driver, for example with
 //   NavigateAndCommit(GURL("about:blank"))
 // or force-create the driver manually with
-//   client->GetAutofillDriverFactory()->DriverForFrame(rfh).
+//   client->GetAutofillDriverFactory().DriverForFrame(rfh).
 //
 // To prevent hard-to-find bugs, only one TestAutofillManagerInjector may be
 // alive at a time. It must not be created before a TestAutofillClientInjector.
@@ -125,7 +125,7 @@ class TestAutofillManagerInjector : public TestAutofillManagerInjectorBase {
       if (!client) {
         return;
       }
-      factory_ = client->GetAutofillDriverFactory();
+      factory_ = &client->GetAutofillDriverFactory();
       // The injectors' observers should come first so that production-code
       // observers affect the injected objects.
       // The AutofillManager injector should come right after the

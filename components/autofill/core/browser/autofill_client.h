@@ -75,6 +75,7 @@ class AutofillAblationStudy;
 class AutofillComposeDelegate;
 class AutofillCrowdsourcingManager;
 class AutofillDriver;
+class AutofillDriverFactory;
 class AutofillMlPredictionModelHandler;
 class AutofillOptimizationGuide;
 class AutofillSuggestionDelegate;
@@ -293,6 +294,9 @@ class AutofillClient {
   // Returns the URL loader factory associated with this driver.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
+
+  // Returns the AutofillDriverFactory.
+  virtual AutofillDriverFactory& GetAutofillDriverFactory() = 0;
 
   // Returns the AutofillCrowdsourcingManager for communication with the
   // Autofill server.

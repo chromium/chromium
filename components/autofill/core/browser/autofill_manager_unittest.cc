@@ -311,15 +311,15 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // Reset the manager, the observers should stick around.
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kInactive, kPendingReset));
-  test_api(manager().driver()).SetLifecycleState(kPendingReset);
+  test_api(*driver_).SetLifecycleStateAndNotifyObservers(kPendingReset);
   test_api(manager()).Reset();
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kPendingReset, kActive));
-  test_api(manager().driver()).SetLifecycleState(kActive);
+  test_api(*driver_).SetLifecycleStateAndNotifyObservers(kActive);
 
-  // If the lifecycle does not change, SetLifecycleState() does not fire an
-  // event.
-  test_api(manager().driver()).SetLifecycleState(kActive);
+  // If the lifecycle does not change, SetLifecycleStateAndNotifyObservers()
+  // does not fire an event.
+  test_api(*driver_).SetLifecycleStateAndNotifyObservers(kActive);
 
   EXPECT_CALL(observer, OnBeforeFormsSeen(m, ElementsAre(f, g)));
   manager().OnFormsSeen(forms, /*removed_forms=*/{test::MakeFormGlobalId()});
@@ -386,7 +386,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kActive, kPendingDeletion))
       .WillOnce(Invoke([&] { observation.Reset(); }));
-  test_api(manager().driver()).SetLifecycleState(kPendingDeletion);
+  test_api(*driver_).SetLifecycleStateAndNotifyObservers(kPendingDeletion);
   driver_.reset();
 }
 

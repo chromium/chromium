@@ -8,7 +8,9 @@
 #import <string>
 
 #import "base/memory/raw_ptr.h"
+#import "base/types/pass_key.h"
 #import "components/autofill/core/browser/autofill_client.h"
+#import "components/autofill/core/browser/autofill_driver_factory.h"
 #import "components/autofill/core/browser/autofill_driver_router.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -25,14 +27,32 @@ class AutofillDriverIOS;
 // This factory will keep the parameters needed to create an AutofillDriverIOS.
 // These parameters only depend on the web_state, so there is one
 // AutofillDriverIOSFactory per WebState.
-class AutofillDriverIOSFactory
-    : public web::WebStateUserData<AutofillDriverIOSFactory> {
+// TODO: crbug.com/355907668 - Introduce AutofillClientIOS and move ownership to
+// that class.
+class AutofillDriverIOSFactory final
+    : public AutofillDriverFactory,
+      public web::WebStateUserData<AutofillDriverIOSFactory> {
  public:
   ~AutofillDriverIOSFactory() override;
 
   // Returns the AutofillDriverIOS for `web_frame`. Creates the driver if
   // necessary.
   AutofillDriverIOS* DriverForFrame(web::WebFrame* web_frame);
+
+  // TODO: crbug.com/354043640 - Eliminate.
+  void SetLifecycleStateAndNotifyObservers(
+      AutofillDriver& driver,
+      LifecycleState new_state,
+      base::PassKey<AutofillDriverIOS> pass_key) {
+    AutofillDriverFactory::SetLifecycleStateAndNotifyObservers(driver,
+                                                               new_state);
+  }
+
+  // TODO: crbug.com/354043640 - Eliminate.
+  const base::ObserverList<Observer>& observers(
+      base::PassKey<AutofillDriverIOS> pass_key) {
+    return AutofillDriverFactory::observers();
+  }
 
  private:
   friend class web::WebStateUserData<AutofillDriverIOSFactory>;

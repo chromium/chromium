@@ -15,18 +15,4 @@ AutofillDriver::~AutofillDriver() {
            base::NotFatalUntil::M130);
 }
 
-void AutofillDriver::SetLifecycleState(
-    const LifecycleState new_state,
-    base::FunctionRef<void()> notify_observers_callback,
-    AutofillDriverFactoryPassKey) {
-  const LifecycleState old_state = lifecycle_state_;
-  if (old_state == new_state) {
-    return;
-  }
-  lifecycle_state_ = new_state;
-  notify_observers_callback();
-  GetAutofillManager().OnAutofillDriverLifecycleStateChanged(old_state,
-                                                             new_state, {});
-}
-
 }  // namespace autofill

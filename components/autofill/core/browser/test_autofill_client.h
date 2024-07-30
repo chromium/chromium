@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -604,6 +605,11 @@ class TestAutofillClientTemplate : public T {
 class TestAutofillClient : public TestAutofillClientTemplate<AutofillClient> {
  public:
   using TestAutofillClientTemplate<AutofillClient>::TestAutofillClientTemplate;
+
+  AutofillDriverFactory& GetAutofillDriverFactory() override;
+
+ private:
+  AutofillDriverFactory autofill_driver_factory_;
 };
 
 }  // namespace autofill

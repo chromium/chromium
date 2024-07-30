@@ -205,9 +205,10 @@ class AutofillManager
   ~AutofillManager() override;
 
   // Notifies `Observer`s and calls Reset() if applicable.
-  void OnAutofillDriverLifecycleStateChanged(LifecycleState old_state,
-                                             LifecycleState new_state,
-                                             base::PassKey<AutofillDriver>);
+  void OnAutofillDriverLifecycleStateChanged(
+      LifecycleState old_state,
+      LifecycleState new_state,
+      base::PassKey<AutofillDriverFactory> pass_key);
 
   AutofillClient& client() { return driver_->GetAutofillClient(); }
   const AutofillClient& client() const { return driver_->GetAutofillClient(); }

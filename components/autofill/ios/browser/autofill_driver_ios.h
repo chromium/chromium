@@ -69,6 +69,8 @@ class AutofillDriverRouter;
 // AutofillDriverIOS is final because its constructor and destructor calls
 // AutofillManager::SetLifecycleState(), which must be called at the very
 // end/beginning of con-/destruction.
+//
+// TODO: crbug.com/355907668 - Move ownership to AutofillDriverIOSFactory.
 class AutofillDriverIOS final
     : public AutofillDriver,
       public AutofillManager::Observer,
@@ -131,12 +133,6 @@ class AutofillDriverIOS final
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
 
-  void set_autofill_manager_for_testing(
-      std::unique_ptr<BrowserAutofillManager> manager) {
-    manager_ = std::move(manager);
-    manager_observation_.Observe(manager_.get());
-  }
-
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field_id,
       mojom::AutofillSuggestionAvailability suggestion_availability) override;
@@ -183,7 +179,8 @@ class AutofillDriverIOS final
   void Unregister();
 
  private:
-  friend AutofillDriverIOSFactory;
+  friend class AutofillDriverIOSFactory;
+  friend class AutofillDriverIOSTestApi;
 
   // Represents the last form or formless field where the user entered data.
   struct LastInteractedForm {

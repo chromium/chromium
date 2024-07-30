@@ -704,8 +704,8 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
   auto autofill_driver = std::make_unique<autofill::ContentAutofillDriver>(
       web_contents()->GetPrimaryMainFrame(),
-      autofill::ContentAutofillClient::FromWebContents(web_contents())
-          ->GetAutofillDriverFactory());
+      &autofill::ContentAutofillClient::FromWebContents(web_contents())
+           ->GetAutofillDriverFactory());
   autofill::BrowserAutofillManager& autofill_manager =
       static_cast<autofill::BrowserAutofillManager&>(
           autofill_driver->GetAutofillManager());

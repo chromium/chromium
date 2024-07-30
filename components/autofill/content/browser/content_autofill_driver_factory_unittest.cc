@@ -71,7 +71,7 @@ class ContentAutofillDriverFactoryTest
   }
 
   ContentAutofillDriverFactory& factory() {
-    return *client()->GetAutofillDriverFactory();
+    return client()->GetAutofillDriverFactory();
   }
 
   void NavigateMainFrame(std::string_view url) {

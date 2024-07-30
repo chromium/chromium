@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
+#include "components/autofill/core/browser/autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_driver_router.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -30,14 +31,12 @@ class ScopedAutofillManagersObservation;
 // Manages lifetime of ContentAutofillDriver. Owned by ContentAutofillClient,
 // therefore one Factory per WebContents. Creates one Driver per
 // RenderFrameHost.
-class ContentAutofillDriverFactory : public content::WebContentsObserver {
+class ContentAutofillDriverFactory : public AutofillDriverFactory,
+                                     public content::WebContentsObserver {
  public:
-  // Observer of ContentAutofillDriverFactory events.
-  //
-  // Using this observer is preferable over registering a WebContentsObserver
-  // and calling ContentAutofillDriverFactory::DriverForFrame() in the
-  // WebContentsObserver events.
-  class Observer : public base::CheckedObserver {
+  // A variant of AutofillDriverFactory::Observer with AutofillDriver[Factory]
+  // narrowed to ContentAutofillDriver[Factory].
+  class Observer : public AutofillDriverFactory::Observer {
    public:
     // Called during destruction of the ContentAutofillDriverFactory. It can,
     // e.g., be used to reset `ScopedObservation`s observing `this`.
@@ -61,6 +60,15 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
         ContentAutofillDriver& driver,
         AutofillDriver::LifecycleState old_state,
         AutofillDriver::LifecycleState new_state) {}
+
+    // AutofillDriverFactory::Observer:
+    void OnAutofillDriverFactoryDestroyed(AutofillDriverFactory& factory) final;
+    void OnAutofillDriverCreated(AutofillDriverFactory& factory,
+                                 AutofillDriver& driver) final;
+    void OnAutofillDriverStateChanged(AutofillDriverFactory& factory,
+                                      AutofillDriver& driver,
+                                      LifecycleState old_state,
+                                      LifecycleState new_state) final;
   };
 
   static ContentAutofillDriverFactory* FromWebContents(
@@ -90,12 +98,6 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
 
   AutofillDriverRouter& router() { return router_; }
 
-  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
-
-  void RemoveObserver(Observer* observer) {
-    observers_.RemoveObserver(observer);
-  }
-
   size_t num_drivers() const { return driver_map_.size(); }
 
   // Returns raw pointers to all drivers that the factory currently owns.
@@ -118,9 +120,6 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
   ContentAutofillDriver* DriverForFrame(
       content::RenderFrameHost* render_frame_host);
 
-  void SetLifecycleStateAndNotifyObservers(ContentAutofillDriver& driver,
-                                           LifecycleState new_state);
-
   // The owning AutofillClient.
   const raw_ref<ContentAutofillClient> client_;
 
@@ -135,8 +134,6 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
   base::flat_map<content::RenderFrameHost*,
                  std::unique_ptr<ContentAutofillDriver>>
       driver_map_;
-
-  base::ObserverList<Observer> observers_;
 
   // The maximum number of coexisting drivers over the lifetime of this factory.
   // TODO: crbug.com/342132628 - Remove the counter and the metric.

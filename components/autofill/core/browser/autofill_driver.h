@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/aliases.h"
@@ -23,6 +24,7 @@ namespace autofill {
 
 class FormStructure;
 class AutofillClient;
+class AutofillDriverFactory;
 class AutofillManager;
 
 // AutofillDriver is Autofill's lowest-level abstraction of a frame that is
@@ -100,38 +102,24 @@ class AutofillDriver {
     kPendingDeletion,
   };
 
-  class AutofillDriverFactoryPassKey {
-   private:
-    friend class AutofillDriverIOS;
-    friend class AutofillDriverTestApi;
-    // The ContentAutofillDriverFactory, not the ContentAutofillDriver, calls
-    // SetLifecycleState(), because:
-    // - kActive is reached *after*
-    //   ContentAutofillDriverFactory::Observer::OnContentAutofillDriverCreated().
-    // - kPendingDeletion is reached *before* the beginning of
-    //   ~ContentAutofillDriver().
-    friend class ContentAutofillDriverFactory;
-    friend class ContentAutofillDriverTestApi;
-    AutofillDriverFactoryPassKey() = default;
-  };
-
   virtual ~AutofillDriver();
 
   // The current state of the driver. See LifecycleState for details.
   LifecycleState GetLifecycleState() const { return lifecycle_state_; }
 
-  // Transitions GetLifecycleState() to `new_state`, runs `callback`, and then
-  // notifies the AutofillManager about that change (i.e., calls
-  // AutofillManager::OnAutofillDriverLifecycleStateChanged()).
+  // Sets the new lifecycle state.
   //
-  // State changes must not happen during construction or destruction of the
-  // AutofillDriver.
-  //
-  // TODO: crbug.com/354043640 - Replace `callback` with a list of
-  // AutofillDriverFactory::Observers to notify.
+  // AutofillDriverFactory (not AutofillDriver) manages the lifecycle because it
+  // is easiest for the factory to coordinate the different phases:
+  // - construct the driver,
+  // - set lifecycle state change,
+  // - notify observers,
+  // - destruct the driver.
   void SetLifecycleState(LifecycleState new_state,
-                         base::FunctionRef<void()> notify_observers_callback,
-                         AutofillDriverFactoryPassKey);
+                         base::PassKey<AutofillDriverFactory> pass_key) {
+    DCHECK_NE(lifecycle_state_, new_state);
+    lifecycle_state_ = new_state;
+  }
 
   // Returns the uniquely identifying frame token.
   virtual LocalFrameToken GetFrameToken() const = 0;

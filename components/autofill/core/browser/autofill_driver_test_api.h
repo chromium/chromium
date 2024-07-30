@@ -6,7 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DRIVER_TEST_API_H_
 
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/autofill_driver_factory.h"
+#include "components/autofill/core/browser/autofill_driver_factory_test_api.h"
 
 namespace autofill {
 
@@ -16,15 +19,16 @@ class AutofillDriverTestApi {
   explicit AutofillDriverTestApi(AutofillDriver* driver) : driver_(*driver) {}
 
   void SetLifecycleState(AutofillDriver::LifecycleState lifecycle_state) {
-    driver_->SetLifecycleState(lifecycle_state, []() {}, {});
-  }
-
-  void SetLifecycleStateWithoutNotifications(
-      AutofillDriver::LifecycleState lifecycle_state) {
     driver_->lifecycle_state_ = lifecycle_state;
   }
 
- private:
+  void SetLifecycleStateAndNotifyObservers(
+      AutofillDriver::LifecycleState new_state) {
+    test_api(driver_->GetAutofillClient().GetAutofillDriverFactory())
+        .SetLifecycleStateAndNotifyObservers(*driver_, new_state);
+  }
+
+ protected:
   raw_ref<AutofillDriver> driver_;
 };
 

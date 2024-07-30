@@ -18,7 +18,11 @@ AutofillDriverIOSFactory::AutofillDriverIOSFactory(
       bridge_(bridge),
       app_locale_(app_locale) {}
 
-AutofillDriverIOSFactory::~AutofillDriverIOSFactory() = default;
+AutofillDriverIOSFactory::~AutofillDriverIOSFactory() {
+  for (auto& observer : AutofillDriverFactory::observers()) {
+    observer.OnAutofillDriverFactoryDestroyed(*this);
+  }
+}
 
 AutofillDriverIOS* AutofillDriverIOSFactory::DriverForFrame(
     web::WebFrame* web_frame) {
