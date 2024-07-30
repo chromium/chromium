@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 
 @interface WhatsNewSceneAgent ()
@@ -48,10 +48,10 @@
     case SceneActivationLevelDisconnected:
       break;
     case SceneActivationLevelBackground: {
-      id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      id<WhatsNewCommands> handler = HandlerForProtocol(
           sceneState.browserProviderInterface.mainBrowserProvider.browser
               ->GetCommandDispatcher(),
-          BrowserCoordinatorCommands);
+          WhatsNewCommands);
       DCHECK(handler);
       [handler dismissWhatsNew];
       break;

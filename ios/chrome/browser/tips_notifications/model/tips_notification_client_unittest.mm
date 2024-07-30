@@ -24,9 +24,9 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -330,11 +330,11 @@ TEST_F(TipsNotificationClientTest, WhatsNewRequest) {
 // Tests that the client handles a Whats New notification response.
 TEST_F(TipsNotificationClientTest, WhatsNewHandle) {
   StubPrepareToPresentModal();
-  id mock_handler = OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+  id mock_handler = OCMProtocolMock(@protocol(WhatsNewCommands));
   OCMExpect([mock_handler showWhatsNew]);
   [browser_->GetCommandDispatcher()
       startDispatchingToTarget:mock_handler
-                   forProtocol:@protocol(BrowserCoordinatorCommands)];
+                   forProtocol:@protocol(WhatsNewCommands)];
 
   id mock_response = MockRequestResponse(TipsNotificationType::kWhatsNew);
   client_->HandleNotificationInteraction(mock_response);

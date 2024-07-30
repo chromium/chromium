@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -288,6 +289,7 @@ using base::UserMetricsAction;
     mediator.textZoomHandler = HandlerForProtocol(dispatcher, TextZoomCommands);
     mediator.quickDeleteHandler =
         HandlerForProtocol(dispatcher, QuickDeleteCommands);
+    mediator.whatsNewHandler = HandlerForProtocol(dispatcher, WhatsNewCommands);
 
     mediator.webStateList = self.browser->GetWebStateList();
     mediator.navigationAgent =

@@ -26,10 +26,10 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -401,7 +401,7 @@ void TipsNotificationClient::ShowDefaultBrowserPromo() {
 
 void TipsNotificationClient::ShowWhatsNew() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(Dispatcher(), BrowserCoordinatorCommands) showWhatsNew];
+  [HandlerForProtocol(Dispatcher(), WhatsNewCommands) showWhatsNew];
 }
 
 void TipsNotificationClient::ShowSignin() {

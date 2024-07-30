@@ -10,7 +10,7 @@
 
 @protocol WhatsNewMediatorConsumer;
 @protocol ApplicationCommands;
-@protocol BrowserCoordinatorCommands;
+@protocol WhatsNewCommands;
 @protocol LensCommands;
 @protocol SettingsCommands;
 
@@ -34,9 +34,8 @@ class UrlLoadingBrowserAgent;
 // Dispatcher for handling Lens promo actions.
 @property(nonatomic, weak) id<LensCommands> lensHandler;
 
-// Browser coordinator command handler.
-@property(nonatomic, weak) id<BrowserCoordinatorCommands>
-    browserCoordinatorHandler;
+// What's New command handler.
+@property(nonatomic, weak) id<WhatsNewCommands> whatsNewHandler;
 
 // Settings command handler.
 @property(nonatomic, weak) id<SettingsCommands> settingsHandler;

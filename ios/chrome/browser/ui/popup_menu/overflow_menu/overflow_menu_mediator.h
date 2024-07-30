@@ -50,6 +50,7 @@ class TabBasedIPHBrowserAgent;
 @protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
 class WebStateList;
+@protocol WhatsNewCommands;
 
 // Mediator for the overflow menu. This object is in charge of creating and
 // updating the items of the overflow menu.
@@ -79,6 +80,7 @@ class WebStateList;
     priceNotificationHandler;
 @property(nonatomic, weak) id<TextZoomCommands> textZoomHandler;
 @property(nonatomic, weak) id<QuickDeleteCommands> quickDeleteHandler;
+@property(nonatomic, weak) id<WhatsNewCommands> whatsNewHandler;
 
 // Navigation agent for reloading pages.
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;

@@ -171,6 +171,7 @@
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/features_utils.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
@@ -338,7 +339,8 @@ enum class ToolbarKind {
     URLLoadingDelegate,
     WebContentCommands,
     WebNavigationNTPDelegate,
-    WebUsageEnablerBrowserAgentObserving>
+    WebUsageEnablerBrowserAgentObserving,
+    WhatsNewCommands>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -951,6 +953,7 @@ enum class ToolbarKind {
     @protocol(UnitConversionCommands),
     @protocol(AddContactsCommands),
     @protocol(CountryCodePickerCommands),
+    @protocol(WhatsNewCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -2078,24 +2081,6 @@ enum class ToolbarKind {
       [snapshotView removeFromSuperview];
     });
   }
-}
-
-- (void)showWhatsNew {
-  self.whatsNewCoordinator = [[WhatsNewCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [self.whatsNewCoordinator start];
-}
-
-- (void)dismissWhatsNew {
-  if (self.whatsNewCoordinator) {
-    [self.whatsNewCoordinator stop];
-    self.whatsNewCoordinator = nil;
-  }
-}
-
-- (void)showWhatsNewIPH {
-  [_bubblePresenter presentWhatsNewBottomToolbarBubble];
 }
 
 - (void)showSpotlightDebugger {
@@ -3837,6 +3822,26 @@ enum class ToolbarKind {
   CHECK(IsIosQuickDeleteEnabled());
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
+}
+
+#pragma mark - WhatsNewCommands
+
+- (void)showWhatsNew {
+  self.whatsNewCoordinator = [[WhatsNewCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.whatsNewCoordinator start];
+}
+
+- (void)dismissWhatsNew {
+  if (self.whatsNewCoordinator) {
+    [self.whatsNewCoordinator stop];
+    self.whatsNewCoordinator = nil;
+  }
+}
+
+- (void)showWhatsNewIPH {
+  [_bubblePresenter presentWhatsNewBottomToolbarBubble];
 }
 
 @end

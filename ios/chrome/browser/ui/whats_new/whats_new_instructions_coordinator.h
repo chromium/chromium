@@ -8,7 +8,8 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol WhatsNewDetailViewActionHandler;
-@protocol WhatsNewDetailViewDelegate;
+@protocol WhatsNewInstructionsViewDelegate;
+@protocol WhatsNewCommands;
 
 @class WhatsNewItem;
 
@@ -21,13 +22,14 @@
                                       item:(WhatsNewItem*)item
                              actionHandler:(id<WhatsNewDetailViewActionHandler>)
                                                actionHandler
+                           whatsNewHandler:(id<WhatsNewCommands>)whatsNewHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // The delegate object to the main coordinator.
-@property(nonatomic, weak) id<WhatsNewDetailViewDelegate> delegate;
+@property(nonatomic, weak) id<WhatsNewInstructionsViewDelegate> delegate;
 
 @end
 

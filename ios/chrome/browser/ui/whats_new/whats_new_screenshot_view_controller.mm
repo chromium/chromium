@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_screenshot_view_controller.h"
 
 #import "base/values.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_delegate.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -36,12 +36,14 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 @property(nonatomic, strong) UILabel* iPhoneOnlyLabel;
 // What's New item.
 @property(nonatomic, strong) WhatsNewItem* item;
-
+// What's New command handler.
+@property(nonatomic, weak) id<WhatsNewCommands> whatsNewHandler;
 @end
 
 @implementation WhatsNewScreenshotViewController
 
-- (instancetype)initWithWhatsNewItem:(WhatsNewItem*)item {
+- (instancetype)initWithWhatsNewItem:(WhatsNewItem*)item
+                     whatsNewHandler:(id<WhatsNewCommands>)whatsNewHandler {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _item = item;
@@ -55,6 +57,7 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
         setDictionaryTextProvider:_item.screenshotTextProvider];
     [_screenshotViewWrapperDarkMode
         setDictionaryTextProvider:_item.screenshotTextProvider];
+    self.whatsNewHandler = whatsNewHandler;
   }
   return self;
 }
@@ -87,7 +90,7 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 }
 
 - (void)dismiss {
-  [self.delegate dismissWhatsNewScreenshotViewController:self];
+  [self.whatsNewHandler dismissWhatsNew];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {

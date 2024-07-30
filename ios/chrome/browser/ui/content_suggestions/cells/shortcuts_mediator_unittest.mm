@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -31,7 +32,8 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 }
 }  // namespace
 
-@protocol ShortcutsMediatorDispatcher <BrowserCoordinatorCommands>
+@protocol
+    ShortcutsMediatorDispatcher <BrowserCoordinatorCommands, WhatsNewCommands>
 @end
 
 // Testing Suite for ShortcutsMediator
