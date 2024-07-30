@@ -51,8 +51,6 @@ namespace ash {
 
 namespace {
 
-// TODO(http://b/322359738): Localize all these strings.
-
 constexpr int kButtonContainerChildSpacing = 10;
 // The margins for the container view which houses the cancel and restore
 // buttons. The distance between this container and its siblings will be the

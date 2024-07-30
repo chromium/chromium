@@ -207,7 +207,7 @@ TEST_F(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "informed_restore_no_screenshot",
-      /*revision_number=*/0, widget));
+      /*revision_number=*/1, widget));
 }
 
 }  // namespace ash

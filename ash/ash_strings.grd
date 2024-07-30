@@ -8376,13 +8376,11 @@ To shut down the device, press and hold the power button on the device again.
       </message>
 
       <!-- Post login glanceables -->
-      <message name="IDS_ASH_INFORMED_RESTORE_WINDOW_OVERFLOW_COUNT" translateable="false" desc="Text summarizing how many windows left to restore. [ICU Syntax]">
-        {NUM_OVERFLOW, plural,
-         =1 {1 more window}
-         other {# more windows}}
+      <message name="IDS_ASH_INFORMED_RESTORE_WINDOW_OVERFLOW_COUNT" desc="Text summarizing how many windows left to restore.">
+        <ph name="WINDOWS">$1<ex>2</ex></ph> more
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_TITLE" translateable="false" desc="Label of the title for the informed restore dialog.">
-        Welcome Back
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_TITLE" desc="Label of the title for the informed restore dialog.">
+        Welcome Recap
       </message>
       <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_DESCRIPTION" desc="Label of the description for the informed restore dialog. Gives a little more information than the title.">
         Open your previous windows and apps
@@ -8399,13 +8397,13 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_RESTORE_BUTTON" desc="Label of the restore button for the informed restore dialog.">
         Open
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ASK_OPTION" translateable="false" desc="Ask every time option for the informed restore dialog context menu.">
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ASK_OPTION" desc="Ask every time option for the informed restore dialog context menu.">
         Ask every time
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ALWAYS_OPTION" translateable="false" desc="Always restore option for the informed restore dialog context menu.">
-        Always restore
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ALWAYS_OPTION" desc="Always restore option for the informed restore dialog context menu.">
+        Always open
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_NEVER_OPTION" translateable="false" desc="Do not restore option for the informed restore dialog context menu.">
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_NEVER_OPTION"  desc="Do not restore option for the informed restore dialog context menu.">
         Off
       </message>
       <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_EXTRA_INFO" desc="Text in the informed restore dialog's context menu. Gives users some information about the full restore setting.">
