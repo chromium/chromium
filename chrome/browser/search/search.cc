@@ -143,7 +143,7 @@ bool IsNTPOrRelatedURLHelper(const GURL& url, Profile* profile) {
 }
 
 bool IsURLAllowedForSupervisedUser(const GURL& url, Profile& profile) {
-  if (!supervised_user::IsSubjectToParentalControls(*profile.GetPrefs())) {
+  if (!profile.IsChild()) {
     return true;
   }
   supervised_user::SupervisedUserService* supervised_user_service =

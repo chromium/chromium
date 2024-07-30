@@ -96,8 +96,7 @@ bool ShouldDisplayManagedByParentUi(Profile* profile) {
   // displayed at the OS level.
   return false;
 #else
-  return profile &&
-         supervised_user::IsSubjectToParentalControls(*profile->GetPrefs());
+  return profile && profile->IsChild();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

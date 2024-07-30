@@ -1321,9 +1321,7 @@ void ExtensionService::CheckManagementPolicy() {
 
     // If this profile is not supervised, then remove any supervised user
     // related disable reasons.
-    bool is_supervised =
-        profile() &&
-        supervised_user::IsSubjectToParentalControls(*profile()->GetPrefs());
+    bool is_supervised = profile() && profile()->IsChild();
     if (!is_supervised) {
       disable_reasons &= (~disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
     }

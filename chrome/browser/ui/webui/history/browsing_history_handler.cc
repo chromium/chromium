@@ -253,7 +253,7 @@ base::Value::Dict HistoryEntryToValue(
   result.Set("deviceName", device_name);
   result.Set("deviceType", device_type);
 
-  if (supervised_user::IsSubjectToParentalControls(*profile.GetPrefs())) {
+  if (profile.IsChild()) {
     supervised_user::SupervisedUserService* supervised_user_service =
         SupervisedUserServiceFactory::GetForProfile(&profile);
     supervised_user::SupervisedUserURLFilter* url_filter =

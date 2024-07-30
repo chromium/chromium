@@ -35,7 +35,7 @@ SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle->GetWebContents()->GetBrowserContext());
   CHECK(profile);
-  if (!supervised_user::IsSubjectToParentalControls(*profile->GetPrefs())) {
+  if (!profile->IsChild()) {
     return nullptr;
   }
 
