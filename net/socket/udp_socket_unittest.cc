@@ -938,7 +938,8 @@ TEST_F(UDPSocketTest, VerifyDscpAndEcnExchangeV4) {
 
 // Send DSCP + ECN marked packets from server to client and verify the TOS
 // bytes that arrive.
-TEST_F(UDPSocketTest, VerifyDscpAndEcnExchangeV6) {
+// TODO(crbug.com/356363142): Test fails on multiple iOS builders.
+TEST_F(UDPSocketTest, DISABLED_VerifyDscpAndEcnExchangeV6) {
   IPEndPoint server_address(IPAddress::IPv6Localhost(), 0);
   UDPServerSocket server(nullptr, NetLogSource());
   server.AllowAddressReuse();
