@@ -301,11 +301,6 @@ BASE_FEATURE(kNtpHistoryClustersModule,
              "NtpHistoryClustersModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Dummy feature to set kNtpHistoryClustersModuleBeginTimeDurationHoursParam.
-BASE_FEATURE(kNtpHistoryClustersModuleBeginTimeDuration,
-             "NtpHistoryClustersModuleBeginTimeDuration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Dummy feature to set kNtpHistoryClustersModuleMinimumVisitsRequiredParam.
 BASE_FEATURE(kNtpHistoryClustersModuleMinimumVisitsRequired,
              "NtpHistoryClustersModuleMinimumVisitsRequired",
@@ -459,10 +454,6 @@ const char kNtpDriveModuleCacheMaxAgeSParam[] =
     "NtpDriveModuleCacheMaxAgeSParam";
 const char kNtpDriveModuleExperimentGroupParam[] =
     "NtpDriveModuleExperimentGroupParam";
-const char kNtpHistoryClustersModuleDataParam[] =
-    "NtpHistoryClustersModuleDataParam";
-const char kNtpChromeCartInHistoryClustersModuleDataParam[] =
-    "NtpChromeCartInHistoryClustersModuleDataParam";
 const char kNtpMiddleSlotPromoDismissalParam[] =
     "NtpMiddleSlotPromoDismissalParam";
 const char kNtpPhotosModuleDataParam[] = "NtpPhotosModuleDataParam";

@@ -2147,75 +2147,6 @@ const FeatureEntry::FeatureVariation kNtpDriveModuleVariations[] = {
      std::size(kNtpDriveModuleManagedUsersOnly), nullptr},
 };
 
-// History clusters fake data params are expressed as a comma separated tuple
-// consisting of a number desired clusters, a number of desired visits, and the
-// number of such visits to be marked as having url keyed images. The number of
-// visits must be greater than or equal to the number of visits marked as having
-// images.
-const FeatureEntry::FeatureParam
-    kNtpHistoryClustersModuleFakeData2Visits2Images[] = {
-        {ntp_features::kNtpHistoryClustersModuleDataParam, "1,2,2"}};
-const FeatureEntry::FeatureParam
-    kNtpHistoryClustersModuleFakeData3Visits1Image[] = {
-        {ntp_features::kNtpHistoryClustersModuleDataParam, "1,3,1"}};
-const FeatureEntry::FeatureParam
-    kNtpHistoryClustersModuleFakeData4Visits2Images[] = {
-        {ntp_features::kNtpHistoryClustersModuleDataParam, "1,4,2"}};
-const FeatureEntry::FeatureParam kNtpHistoryClustersModuleV2OneJourney[] = {
-    {ntp_features::kNtpHistoryClustersModuleDataParam, "1,2,2"}};
-const FeatureEntry::FeatureParam kNtpHistoryClustersModuleV2TwoJourneys[] = {
-    {ntp_features::kNtpHistoryClustersModuleDataParam, "2,2,2"}};
-const FeatureEntry::FeatureParam kNtpHistoryClustersModuleV2ThreeJourneys[] = {
-    {ntp_features::kNtpHistoryClustersModuleDataParam, "3,2,2"}};
-const FeatureEntry::FeatureParam
-    kNtpHistoryClustersModuleV2ThreeJourneysTextOnly[] = {
-        {ntp_features::kNtpHistoryClustersModuleDataParam, "3,2,0"}};
-const FeatureEntry::FeatureVariation kNtpHistoryClustersModuleVariations[] = {
-    {"- Fake Data - Layout 1", kNtpHistoryClustersModuleFakeData2Visits2Images,
-     std::size(kNtpHistoryClustersModuleFakeData2Visits2Images), nullptr},
-    {"- Fake Data - Layout 2", kNtpHistoryClustersModuleFakeData3Visits1Image,
-     std::size(kNtpHistoryClustersModuleFakeData3Visits1Image), nullptr},
-    {"- Fake Data - Layout 3", kNtpHistoryClustersModuleFakeData4Visits2Images,
-     std::size(kNtpHistoryClustersModuleFakeData4Visits2Images), nullptr},
-    {"- v2 Fake Data - 1 Journey", kNtpHistoryClustersModuleV2OneJourney,
-     std::size(kNtpHistoryClustersModuleV2OneJourney), nullptr},
-    {"- v2 Fake Data - 2 Journeys", kNtpHistoryClustersModuleV2TwoJourneys,
-     std::size(kNtpHistoryClustersModuleV2TwoJourneys), nullptr},
-    {"- v2 Fake Data - 3 Journeys", kNtpHistoryClustersModuleV2ThreeJourneys,
-     std::size(kNtpHistoryClustersModuleV2ThreeJourneys), nullptr},
-    {"- v2 Fake Data - 3 Journeys - Text Only",
-     kNtpHistoryClustersModuleV2ThreeJourneysTextOnly,
-     std::size(kNtpHistoryClustersModuleV2ThreeJourneysTextOnly), nullptr},
-};
-
-const FeatureEntry::FeatureParam
-    kNtpChromeCartInHistoryClustersModuleFakeData0[] = {
-        {ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam, "0"}};
-const FeatureEntry::FeatureParam
-    kNtpChromeCartInHistoryClustersModuleFakeData1[] = {
-        {ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam, "1"}};
-const FeatureEntry::FeatureParam
-    kNtpChromeCartInHistoryClustersModuleFakeData2[] = {
-        {ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam, "3"}};
-const FeatureEntry::FeatureParam
-    kNtpChromeCartInHistoryClustersModuleFakeData3[] = {
-        {ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam, "6"}};
-
-const FeatureEntry::FeatureVariation
-    kNtpChromeCartInHistoryClustersModuleVariations[] = {
-        {" - Fake cart: 0 product image",
-         kNtpChromeCartInHistoryClustersModuleFakeData0,
-         std::size(kNtpChromeCartInHistoryClustersModuleFakeData0), nullptr},
-        {" - Fake cart: 1 product image",
-         kNtpChromeCartInHistoryClustersModuleFakeData1,
-         std::size(kNtpChromeCartInHistoryClustersModuleFakeData1), nullptr},
-        {" - Fake cart: 3 product images",
-         kNtpChromeCartInHistoryClustersModuleFakeData2,
-         std::size(kNtpChromeCartInHistoryClustersModuleFakeData2), nullptr},
-        {" - Fake cart: 6 product images",
-         kNtpChromeCartInHistoryClustersModuleFakeData3,
-         std::size(kNtpChromeCartInHistoryClustersModuleFakeData3), nullptr}};
-
 const FeatureEntry::FeatureParam kNtpMiddleSlotPromoDismissalFakeData[] = {
     {ntp_features::kNtpMiddleSlotPromoDismissalParam, "fake"}};
 const FeatureEntry::FeatureVariation kNtpMiddleSlotPromoDismissalVariations[] =
@@ -7093,15 +7024,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpChromeCartHistoryClusterCoexist)},
 
-    {"ntp-chrome-cart-in-journeys-module",
-     flag_descriptions::kNtpChromeCartInHistoryClustersModuleName,
-     flag_descriptions::kNtpChromeCartInHistoryClustersModuleDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         ntp_features::kNtpChromeCartInHistoryClusterModule,
-         kNtpChromeCartInHistoryClustersModuleVariations,
-         "DesktopNtpModules")},
-
     {"ntp-chrome-cart-module", flag_descriptions::kNtpChromeCartModuleName,
      flag_descriptions::kNtpChromeCartModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpChromeCartModule,
@@ -7134,12 +7056,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpDummyModulesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpDummyModules)},
 #endif
-
-    {"ntp-journeys-module", flag_descriptions::kNtpHistoryClustersModuleName,
-     flag_descriptions::kNtpHistoryClustersModuleDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpHistoryClustersModule,
-                                    kNtpHistoryClustersModuleVariations,
-                                    "DesktopNtpModules")},
 
     {"ntp-journeys-module-suggestion-chip-header",
      flag_descriptions::kNtpHistoryClustersModuleSuggestionChipHeaderName,

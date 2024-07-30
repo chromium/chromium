@@ -293,7 +293,6 @@
 #include "chrome/browser/media_galleries/gallery_watch_manager.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_service_factory.h"
-#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 #include "chrome/browser/profile_resetter/reset_report_uploader_factory.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -892,7 +891,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   HidChooserContextFactory::GetInstance();
   HidConnectionTrackerFactory::GetInstance();
   HidPolicyAllowedDevicesFactory::GetInstance();
-  HistoryClustersModuleServiceFactory::GetInstance();
 #endif
   HistoryClustersServiceFactory::EnsureFactoryBuilt();
   HistoryEmbeddingsServiceFactory::GetInstance();

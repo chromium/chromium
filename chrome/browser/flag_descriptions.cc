@@ -5254,10 +5254,6 @@ const char kNtpDummyModulesDescription[] =
     "enabled.";
 #endif
 
-const char kNtpHistoryClustersModuleName[] = "NTP Journeys Module";
-const char kNtpHistoryClustersModuleDescription[] =
-    "Shows the Journeys module on the New Tab Page.";
-
 const char kNtpHistoryClustersModuleSuggestionChipHeaderName[] =
     "NTP Journeys Module Suggestion Chip Header ";
 const char kNtpHistoryClustersModuleSuggestionChipHeaderDescription[] =
@@ -5273,12 +5269,6 @@ const char kNtpHistoryClustersModuleTextOnlyName[] =
     "NTP Journeys Module Text Only";
 const char kNtpHistoryClustersModuleTextOnlyDescription[] =
     "Shows only text (i.e. no images) for Journeys module visits on the New "
-    "Tab Page.";
-
-const char kNtpChromeCartInHistoryClustersModuleName[] =
-    "NTP ChromeCart in Journeys Module";
-const char kNtpChromeCartInHistoryClustersModuleDescription[] =
-    "Shows ChromeCart tile in the Journeys module when available on the New "
     "Tab Page.";
 
 const char kNtpChromeCartHistoryClusterCoexistName[] =

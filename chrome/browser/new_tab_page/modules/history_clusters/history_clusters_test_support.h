@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/supports_user_data.h"
-#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_tab_helper.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_row.h"
@@ -28,13 +27,7 @@ struct Cluster;
 struct ClusterVisit;
 }  // namespace history
 
-namespace history_clusters {
-struct QueryClustersFilterParams;
-}  // namespace history_clusters
-
 class GURL;
-
-class HistoryClustersModuleRankingSignals;
 
 class MockHistoryClustersTabHelper
     : public side_panel::HistoryClustersTabHelper {
@@ -59,25 +52,6 @@ class MockHistoryClustersTabHelper
 
  private:
   explicit MockHistoryClustersTabHelper(content::WebContents* web_contents);
-};
-
-class MockHistoryClustersModuleService : public HistoryClustersModuleService {
- public:
-  MockHistoryClustersModuleService();
-  MockHistoryClustersModuleService(const MockHistoryClustersModuleService&) =
-      delete;
-  MockHistoryClustersModuleService& operator=(
-      const MockHistoryClustersModuleService&) = delete;
-  ~MockHistoryClustersModuleService() override;
-
-  MOCK_METHOD3(
-      GetClusters,
-      void(const history_clusters::QueryClustersFilterParams filter_params,
-           size_t min_required_related_searches,
-           base::OnceCallback<void(
-               std::vector<history::Cluster>,
-               base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
-               callback));
 };
 
 history::ClusterVisit SampleVisitForURL(
