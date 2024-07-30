@@ -3201,8 +3201,7 @@
                              'cros-settings+reviews@google.com'],
     'settings_os_settings_languages':
         ['mlcui+watch-os-settings-languages@google.com'],
-    'sharing': ['knollr+watch-sharing@chromium.org',
-                'mvanouwerkerk+watch-sharing@chromium.org'],
+    'sharing': ['knollr+watch-sharing@chromium.org'],
     'shimless_rma': ['zentaro+watch-shimless@chromium.org',
                      'jimmyxgong+watch-shimless@chromium.org',
                      'michaelcheco+watch-shimless@google.com'],
