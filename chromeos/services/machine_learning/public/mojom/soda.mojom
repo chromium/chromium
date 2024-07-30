@@ -23,6 +23,8 @@
 // Version 6: Include logging inclusion in request config.
 // Version 7: Include multilang fields in request config, and langid responses.
 // Version 8: Include leading_space field in HypothesisPart.
+// Version 9: Include speaker diarization in request config and HypothesisPart,
+//            and add LabelCorrectionEvent.
 module chromeos.machine_learning.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -52,6 +54,21 @@ struct SodaMultilangConfig {
   // Key is lowercased locale e.g. "en-us"
   // Value is directory for the languagepack dlc path to use.
   map<string, string> locale_to_language_pack_map;
+};
+
+[Stable, Extensible]
+enum SpeakerDiarizationMode {
+  // Not specified.
+  kDiarizationUnspecified,
+
+  // Do not use speaker diarization. The default.
+  [Default] kSpeakerDiarizationModeOffDefault,
+
+  // Use speaker turn detection.
+  kSpeakerChangeDetection,
+
+  // Use full speaker diarization.
+  kSpeakerLabelDetection,
 };
 
 // The configuration used to load Soda recognizer.
@@ -86,6 +103,15 @@ struct SodaConfig {
 
   [MinVersion=7]
   SodaMultilangConfig? multi_lang_config;
+
+  [MinVersion=9]
+  SpeakerDiarizationMode speaker_diarization_mode =
+      kSpeakerDiarizationModeOffDefault;
+
+  // When diarization set to kSpeakerLabelDetection, maximum number of labels
+  // to set.
+  [MinVersion=9]
+  uint32 max_speaker_count = 2;
 };
 
 // From the endpointer, What kind of endpointer event to record.
@@ -138,31 +164,6 @@ struct EndpointerEvent {
   TimingInfo? timing_event;
 };
 
-// A result _during_ a recognition. Could change at any time with the
-// next partial or the final recognition for this chunk.
-[Stable]
-struct PartialResult {
-  // Most likely hypothesis so far. First is the most likely, followed by
-  // others.
-  // Note: the relationship from first to other hypothess is not guaranteed in
-  // any way.
-  array<string> partial_text;
-  TimingInfo? timing_event;
-};
-
-[Stable, Extensible]
-enum EndpointReason {
-  // Default value, unknown reason.
-  ENDPOINT_UNKNOWN,
-  // Due to end_of_speech detection by endpointer.
-  ENDPOINT_END_OF_SPEECH,
-  // Due to end_of_utterance detection by endpointer.
-  ENDPOINT_END_OF_UTTERANCE,
-  // Due to the end of mics audio. This could be due to a mic event or SODA
-  // being stopped.
-  ENDPOINT_END_OF_AUDIO,
-};
-
 // Detail about a part of a hypothesis in a result. Only makes sense
 // in context of an array of them for a hypothesis.
 [Stable]
@@ -179,6 +180,46 @@ struct HypothesisPartInResult {
   // when formatting is enabled.
   [MinVersion=8]
   bool? leading_space;
+
+  // If this word was uttered by a different speaker than the previous word.
+  // Populated for kSpeakerLabelDetection and kSpeakerChangeDetection modes.
+  [MinVersion=9]
+  bool speaker_change = false;
+
+  // The label of the speaker who uttered this word. This will only be populated
+  // if in kSpeakerLabelDetection mode.
+  [MinVersion=9]
+  string? speaker_label;
+};
+
+// A result _during_ a recognition. Could change at any time with the
+// next partial or the final recognition for this chunk.
+[Stable]
+struct PartialResult {
+  // Most likely hypothesis so far. First is the most likely, followed by
+  // others.
+  // Note: the relationship from first to other hypothess is not guaranteed in
+  // any way.
+  array<string> partial_text;
+  TimingInfo? timing_event;
+
+  // If populated, this array contains the hypothesis parts for the
+  // first partial text in the array of partial_text.
+  [MinVersion=9]
+  array<HypothesisPartInResult>? hypothesis_part;
+};
+
+[Stable, Extensible]
+enum EndpointReason {
+  // Default value, unknown reason.
+  ENDPOINT_UNKNOWN,
+  // Due to end_of_speech detection by endpointer.
+  ENDPOINT_END_OF_SPEECH,
+  // Due to end_of_utterance detection by endpointer.
+  ENDPOINT_END_OF_UTTERANCE,
+  // Due to the end of mics audio. This could be due to a mic event or SODA
+  // being stopped.
+  ENDPOINT_END_OF_AUDIO,
 };
 
 [Stable]
@@ -233,6 +274,17 @@ struct LangIdEvent {
   AsrSwitchResult asr_switch_result;
 };
 
+// Result with corrected speaker labels.
+[Stable]
+struct LabelCorrectionEvent {
+  // The hypothesis parts with corrected speaker labels. The hypothesis part is
+  // only included if its speaker label is different from the original streaming
+  // label, or any of the previously corrected labels. This is designed to
+  // minimize the amount of data that needs to be emitted during correction by
+  // skipping parts with labels have never changed once.
+  array<HypothesisPartInResult> hypothesis_parts;
+};
+
 // This essentially mirrors the subset of SODA's SodaEvent proto we will
 // support.
 [Stable]
@@ -244,6 +296,9 @@ union SpeechRecognizerEvent {
 
   [MinVersion=7]
   LangIdEvent langid_event;
+
+  [MinVersion=9]
+  LabelCorrectionEvent label_correction_event;
 };
 
 // This interface is called upon by the SodaRecognizer. Implemented by
