@@ -22,14 +22,15 @@ found in the LICENSE file.
 </style>
 <oobe-adaptive-dialog id="managementTransitionDialog" role="dialog"
     aria-label$="[[getDialogTitle(locale, arcTransition, managementEntity)]]"
-    for-step="progress">
+    for-step="progress" aria-live="polite"
+    aria-labelledby="managementTransitionTitle">
   <iron-icon slot="icon" icon="oobe-32:enterprise" aria-hidden="true"
     hidden="[[isChildTransition(arcTransition)]]">
   </iron-icon>
   <iron-icon slot="icon" src="images/supervision_icon.png"
     aria-hidden="true" hidden="[[!isChildTransition(arcTransition)]]">
   </iron-icon>
-  <h1 slot="title">
+  <h1 slot="title" id="managementTransitionTitle">
     [[getDialogTitle(locale, arcTransition, managementEntity)]]
   </h1>
   <div slot="subtitle">
