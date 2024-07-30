@@ -222,3 +222,66 @@ TEST_F(PerformanceControlsHatsServiceBatterySaverOptOutTest,
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+class PerformanceControlsHatsServiceDestructorTest : public testing::Test {
+ public:
+  PerformanceControlsHatsServiceDestructorTest() = default;
+
+  void SetUp() override {
+    testing::Test::SetUp();
+
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    TestingProfile* profile =
+        profile_manager_->CreateTestingProfile("Test", true);
+
+    performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
+        local_state_.registry());
+    environment_.SetUp(&local_state_);
+
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {performance_manager::features::
+                 kPerformanceControlsBatterySaverOptOutSurvey,
+             {}},
+        },
+        {});
+
+    performance_controls_hats_service_ =
+        std::make_unique<PerformanceControlsHatsService>(profile);
+  }
+
+  void TearDown() override { testing::Test::TearDown(); }
+
+  void ResetPerformanceControlsHatsService() {
+    performance_controls_hats_service_.reset();
+  }
+
+  void ResetBatterySaverModeManager() { environment_.TearDown(); }
+
+ protected:
+  performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
+      environment_;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<PerformanceControlsHatsService>
+      performance_controls_hats_service_;
+};
+
+TEST_F(PerformanceControlsHatsServiceDestructorTest,
+       HandlesBatterySaverModeManagerDestruction) {
+  EXPECT_TRUE(
+      performance_manager::user_tuning::BatterySaverModeManager::HasInstance());
+  ResetBatterySaverModeManager();
+
+  EXPECT_FALSE(
+      performance_manager::user_tuning::BatterySaverModeManager::HasInstance());
+  // Check that destroying the PerformanceControlsHatsService after the
+  // BatterySaverModeManager doesn't cause UAF.
+  ResetPerformanceControlsHatsService();
+}
