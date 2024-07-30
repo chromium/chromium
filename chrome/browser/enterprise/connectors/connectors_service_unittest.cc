@@ -20,10 +20,9 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/connectors/common.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/enterprise/connectors/service_provider_config.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -314,10 +313,11 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(ConnectorsServiceTest, RealtimeURLCheck) {
   profile_->GetPrefs()->SetInteger(
-      kEnterpriseRealTimeUrlCheckMode,
-      enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-  profile_->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
-                                   policy::POLICY_SCOPE_MACHINE);
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+      policy::POLICY_SCOPE_MACHINE);
 
   auto maybe_dm_token = ConnectorsServiceFactory::GetForBrowserContext(profile_)
                             ->GetDMTokenForRealTimeUrlCheck();

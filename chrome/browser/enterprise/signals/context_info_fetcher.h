@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
-#include "components/enterprise/connectors/common.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace content {
@@ -40,7 +39,7 @@ struct ContextInfo {
   std::vector<std::string> on_bulk_data_entry_providers;
   std::vector<std::string> on_print_providers;
   std::vector<std::string> on_security_event_providers;
-  enterprise_connectors::EnterpriseRealTimeUrlCheckMode realtime_url_check_mode;
+  safe_browsing::EnterpriseRealTimeUrlCheckMode realtime_url_check_mode;
   std::string browser_version;
   safe_browsing::SafeBrowsingState safe_browsing_protection_level;
   bool site_isolation_enabled;
@@ -91,8 +90,7 @@ class ContextInfoFetcher {
   std::vector<std::string> GetAnalysisConnectorProviders(
       enterprise_connectors::AnalysisConnector connector);
 
-  enterprise_connectors::EnterpriseRealTimeUrlCheckMode
-  GetRealtimeUrlCheckMode();
+  safe_browsing::EnterpriseRealTimeUrlCheckMode GetRealtimeUrlCheckMode();
 
   std::vector<std::string> GetOnSecurityEventProviders();
 

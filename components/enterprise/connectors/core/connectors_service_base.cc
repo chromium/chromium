@@ -4,7 +4,6 @@
 
 #include "components/enterprise/connectors/core/connectors_service_base.h"
 
-#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace enterprise_connectors {
@@ -26,13 +25,14 @@ ConnectorsServiceBase::GetDMTokenForRealTimeUrlCheck() const {
     return std::nullopt;
   }
 
-  if (GetPrefs()->GetInteger(kEnterpriseRealTimeUrlCheckMode) ==
-      REAL_TIME_CHECK_DISABLED) {
+  if (GetPrefs()->GetInteger(
+          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode) ==
+      safe_browsing::REAL_TIME_CHECK_DISABLED) {
     return std::nullopt;
   }
 
   std::optional<DmToken> dm_token =
-      GetDmToken(kEnterpriseRealTimeUrlCheckScope);
+      GetDmToken(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope);
 
   if (dm_token.has_value()) {
     return dm_token.value().value;
@@ -40,15 +40,17 @@ ConnectorsServiceBase::GetDMTokenForRealTimeUrlCheck() const {
   return std::nullopt;
 }
 
-EnterpriseRealTimeUrlCheckMode
+safe_browsing::EnterpriseRealTimeUrlCheckMode
 ConnectorsServiceBase::GetAppliedRealTimeUrlCheck() const {
   if (!ConnectorsEnabled() ||
-      !GetDmToken(kEnterpriseRealTimeUrlCheckScope).has_value()) {
-    return REAL_TIME_CHECK_DISABLED;
+      !GetDmToken(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope)
+           .has_value()) {
+    return safe_browsing::REAL_TIME_CHECK_DISABLED;
   }
 
-  return static_cast<EnterpriseRealTimeUrlCheckMode>(
-      GetPrefs()->GetInteger(kEnterpriseRealTimeUrlCheckMode));
+  return static_cast<safe_browsing::EnterpriseRealTimeUrlCheckMode>(
+      GetPrefs()->GetInteger(
+          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode));
 }
 
 }  // namespace enterprise_connectors

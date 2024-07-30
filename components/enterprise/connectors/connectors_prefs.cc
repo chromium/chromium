@@ -10,7 +10,6 @@
 
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
-#include "components/enterprise/connectors/common.h"
 #include "components/enterprise/connectors/device_trust/prefs.h"
 #include "components/enterprise/connectors/service_provider_config.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -55,10 +54,6 @@ const char kLatestCrashReportCreationTime[] =
     "enterprise_connectors.latest_crash_report_creation_time";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(kEnterpriseRealTimeUrlCheckMode,
-                                REAL_TIME_CHECK_DISABLED);
-  registry->RegisterIntegerPref(kEnterpriseRealTimeUrlCheckScope, 0);
-#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(kOnFileAttachedPref);
   registry->RegisterListPref(kOnFileDownloadedPref);
   registry->RegisterListPref(kOnBulkDataEntryPref);
@@ -80,7 +75,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   client_certificates::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

@@ -15,11 +15,6 @@
 #include "components/user_prefs/user_prefs.h"
 #include "testing/platform_test.h"
 
-#if !BUILDFLAG(IS_IOS)
-#include "components/enterprise/connectors/common.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
-#endif  // !BUILDFLAG(IS_IOS)
-
 namespace safe_browsing {
 
 // Used in tests of CanPerformFullURLLookupWithToken().
@@ -37,9 +32,6 @@ class RealTimePolicyEngineTest : public PlatformTest {
 
   void SetUp() override {
     RegisterProfilePrefs(pref_service_.registry());
-#if !BUILDFLAG(IS_IOS)
-    enterprise_connectors::RegisterProfilePrefs(pref_service_.registry());
-#endif  // !BUILDFLAG(IS_IOS)
     unified_consent::UnifiedConsentService::RegisterPrefs(
         pref_service_.registry());
   }
@@ -181,27 +173,22 @@ TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup) {
     EXPECT_FALSE(CanPerformEnterpriseFullURLLookup(
         /*has_valid_dm_token=*/false, /*is_off_the_record=*/false));
   }
-
-#if !BUILDFLAG(IS_IOS)
   // Policy disabled.
   {
     pref_service_.SetUserPref(
-        enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
-        std::make_unique<base::Value>(
-            enterprise_connectors::REAL_TIME_CHECK_DISABLED));
+        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+        std::make_unique<base::Value>(REAL_TIME_CHECK_DISABLED));
     EXPECT_FALSE(CanPerformEnterpriseFullURLLookup(
         /*has_valid_dm_token=*/true, /*is_off_the_record=*/false));
   }
   // Policy enabled.
   {
     pref_service_.SetUserPref(
-        enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
-        std::make_unique<base::Value>(
-            enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED));
+        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+        std::make_unique<base::Value>(REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED));
     EXPECT_TRUE(CanPerformEnterpriseFullURLLookup(
         /*has_valid_dm_token=*/true, /*is_off_the_record=*/false));
   }
-#endif  // !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(RealTimePolicyEngineTest, TestIsInExcludedCountry) {

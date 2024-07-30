@@ -277,7 +277,7 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()))
           ->GetAppliedRealTimeUrlCheck() !=
-      enterprise_connectors::REAL_TIME_CHECK_DISABLED;
+      safe_browsing::REAL_TIME_CHECK_DISABLED;
 
   if (cloud_legacy_tech_report_enabled) {
     Profile::FromWebUI(web_ui())->GetPrefs()->GetList(
@@ -454,7 +454,7 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
   }
 
   if (connectors_service->GetAppliedRealTimeUrlCheck() !=
-      enterprise_connectors::REAL_TIME_CHECK_DISABLED) {
+      safe_browsing::REAL_TIME_CHECK_DISABLED) {
     AddThreatProtectionPermission(kManagementOnPageVisitedEvent,
                                   kManagementOnPageVisitedVisibleData, &info);
   }

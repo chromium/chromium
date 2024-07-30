@@ -21,8 +21,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/connectors/common.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -33,6 +31,7 @@
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -188,10 +187,10 @@ class DataProtectionNavigationObserverTest
     // Enable real-time URL checks.
     Profile* profile = Profile::FromBrowserContext(browser_context());
     profile->GetPrefs()->SetInteger(
-        enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
-        enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+        safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
     profile->GetPrefs()->SetInteger(
-        enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
+        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
         policy::POLICY_SCOPE_MACHINE);
   }
 
@@ -277,8 +276,8 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
 TEST_F(DataProtectionNavigationObserverTest,
        TestWatermarkTextUpdated_NoUrlCheck) {
   profile()->GetPrefs()->SetInteger(
-      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
-      enterprise_connectors::REAL_TIME_CHECK_DISABLED);
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      safe_browsing::REAL_TIME_CHECK_DISABLED);
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
@@ -375,8 +374,8 @@ TEST_F(DataProtectionNavigationObserverTest,
 TEST_F(DataProtectionNavigationObserverTest,
        TestScreenshotUpdated_DataControls_NoUrlCheck) {
   profile()->GetPrefs()->SetInteger(
-      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
-      enterprise_connectors::REAL_TIME_CHECK_DISABLED);
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      safe_browsing::REAL_TIME_CHECK_DISABLED);
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
@@ -518,8 +517,8 @@ TEST_F(DataProtectionNavigationObserverTest, GetDataProtectionSettings) {
 TEST_F(DataProtectionNavigationObserverTest,
        GetDataProtectionSettings_NoUrlCheck) {
   profile()->GetPrefs()->SetInteger(
-      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
-      enterprise_connectors::REAL_TIME_CHECK_DISABLED);
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      safe_browsing::REAL_TIME_CHECK_DISABLED);
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
@@ -581,8 +580,8 @@ TEST_F(DataProtectionNavigationObserverTest,
 TEST_F(DataProtectionNavigationObserverTest,
        GetDataProtectionSettings_DC_BlockScreenshot_NoUrlCheck) {
   profile()->GetPrefs()->SetInteger(
-      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
-      enterprise_connectors::REAL_TIME_CHECK_DISABLED);
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      safe_browsing::REAL_TIME_CHECK_DISABLED);
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
@@ -684,8 +683,8 @@ TEST_F(DataProtectionNavigationObserverTest,
 TEST_F(DataProtectionNavigationObserverTest,
        GetDataProtectionSettings_DC_BlockScreenshot_RedirectWithoutUrlCheck) {
   profile()->GetPrefs()->SetInteger(
-      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
-      enterprise_connectors::REAL_TIME_CHECK_DISABLED);
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      safe_browsing::REAL_TIME_CHECK_DISABLED);
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();

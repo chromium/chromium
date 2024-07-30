@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/api/enterprise_reporting_private.h"
+#include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
 #include <tuple>
 
@@ -18,12 +18,12 @@
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/chrome_desktop_report_request_helper.h"
-#include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -31,7 +31,6 @@
 #include "components/component_updater/pref_names.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -1013,12 +1012,11 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
   profile()->GetPrefs()->SetInteger(
-      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
-      url_check_enabled()
-          ? enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED
-          : enterprise_connectors::REAL_TIME_CHECK_DISABLED);
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      url_check_enabled() ? safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED
+                          : safe_browsing::REAL_TIME_CHECK_DISABLED);
   profile()->GetPrefs()->SetInteger(
-      enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);
   enterprise_reporting_private::ContextInfo info = GetContextInfo();
 

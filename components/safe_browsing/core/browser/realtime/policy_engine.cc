@@ -8,8 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "components/enterprise/connectors/common.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -110,8 +108,8 @@ bool RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
   }
 
   if (pref_service->GetInteger(
-          enterprise_connectors::kEnterpriseRealTimeUrlCheckMode) !=
-      enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED) {
+          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode) !=
+      REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED) {
     base::UmaHistogramEnumeration("SafeBrowsing.RT.ConsumerVersionReason",
                                   ConsumerVersionReason::POLICY_DISABLED);
     return false;
