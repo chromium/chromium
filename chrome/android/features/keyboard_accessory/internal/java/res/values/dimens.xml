@@ -22,7 +22,6 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_suggestion_padding">16dp</dimen>
     <dimen name="keyboard_accessory_suggestion_offset">12dp</dimen>
     <dimen name="keyboard_accessory_suggestion_height">48dp</dimen>
-    <dimen name="keyboard_accessory_suggestion_icon_size">20dp</dimen>
     <dimen name="keyboard_accessory_scroll_shadow_width">80dp</dimen>
     <dimen name="keyboard_accessory_tab_icon_width">48dp</dimen>
     <dimen name="keyboard_accessory_tab_size">@dimen/keyboard_accessory_height</dimen>
