@@ -56,7 +56,7 @@ enum class DefaultBrowserSettingsPageUsage {
   kDisplay,
   kMaxValue = kDisplay,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 }  // namespace
 
 @interface DefaultBrowserSettingsTableViewController () {

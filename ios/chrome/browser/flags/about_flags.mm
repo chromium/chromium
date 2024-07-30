@@ -920,7 +920,7 @@ const FeatureEntry::FeatureVariation
          std::size(kAutofillUploadCardRequestTimeout_7Seconds), nullptr},
         {"9 seconds", kAutofillUploadCardRequestTimeout_9Seconds,
          std::size(kAutofillUploadCardRequestTimeout_9Seconds), nullptr}};
-// LINT.ThenChange(//chrome/browser/about_flags.cc:AutofillUploadCardRequestTimeouts)
+// LINT.ThenChange(/chrome/browser/about_flags.cc:AutofillUploadCardRequestTimeouts)
 
 // LINT.IfChange(AutofillVcnEnrollRequestTimeouts)
 const FeatureEntry::FeatureParam kAutofillVcnEnrollRequestTimeout_5Seconds[] = {
@@ -937,7 +937,7 @@ const FeatureEntry::FeatureVariation kAutofillVcnEnrollRequestTimeoutOptions[] =
       std::size(kAutofillVcnEnrollRequestTimeout_7Point5Seconds), nullptr},
      {"10 seconds", kAutofillVcnEnrollRequestTimeout_10Seconds,
       std::size(kAutofillVcnEnrollRequestTimeout_10Seconds), nullptr}};
-// LINT.ThenChange(//chrome/browser/about_flags.cc:AutofillVcnEnrollRequestTimeouts)
+// LINT.ThenChange(/chrome/browser/about_flags.cc:AutofillVcnEnrollRequestTimeouts)
 
 // Contextual Panel flag variations.
 const FeatureEntry::FeatureParam kContextualPanelRichIPHArms[] = {
