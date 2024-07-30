@@ -81,16 +81,20 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
       views::BoxLayout::CrossAxisAlignment::kStart);
   title_and_emoji_box->SetBetweenChildSpacing(kSpaceBetweenText);
 
-  auto* title_label = title_and_emoji_box->AddChildView(
-      CreateTextLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosHeadline1,
-                      cros_tokens::kCrosSysOnSurface, /*allow_multiline=*/false,
-                      l10n_util::GetStringUTF16(
-                          IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE)));
+  auto* focus_mode_controller = FocusModeController::Get();
+  const size_t congratulatory_index =
+      focus_mode_controller->congratulatory_index();
+  auto* title_label = title_and_emoji_box->AddChildView(CreateTextLabel(
+      gfx::ALIGN_LEFT, TypographyToken::kCrosHeadline1,
+      cros_tokens::kCrosSysOnSurface, /*allow_multiline=*/false,
+      focus_mode_util::GetCongratulatoryText(congratulatory_index)));
   title_label->SetMaximumWidthSingleLine(kTitleMaximumWidth);
 
   title_and_emoji_box->AddChildView(CreateTextLabel(
       gfx::ALIGN_LEFT, TypographyToken::kCrosHeadline1,
-      cros_tokens::kCrosSysOnSurface, /*allow_multiline=*/false, u"🎉"));
+      cros_tokens::kCrosSysOnSurface,
+      /*allow_multiline=*/false,
+      focus_mode_util::GetCongratulatoryEmoji(congratulatory_index)));
 
   text_container->AddChildView(
       CreateTextLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosAnnotation1,
@@ -120,7 +124,6 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
   // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
   button_container->SetLayoutManagerUseConstrainedSpace(false);
 
-  auto* focus_mode_controller = FocusModeController::Get();
   button_container->AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&FocusModeController::ResetFocusSession,
                           base::Unretained(focus_mode_controller)),

@@ -65,6 +65,7 @@ constexpr base::TimeDelta kExtendDuration = base::Minutes(10);
 
 constexpr char kFocusModeEndingMomentNudgeId[] =
     "focus_mode_ending_moment_nudge";
+constexpr size_t kCongratulatoryTitleNum = 6;
 
 // Adaptation of `base::TimeDurationFormat`. This helper function
 // takes a `TimeDelta` and returns the time formatted according to
@@ -106,8 +107,14 @@ ASH_EXPORT std::u16string GetFormattedEndTimeString(const base::Time end_time);
 ASH_EXPORT std::string GetSourceTitleForMediaControls(
     const SelectedPlaylist& playlist);
 
+// Returns a congratulatory text for the ending moment.
+ASH_EXPORT std::u16string GetCongratulatoryText(const size_t index);
+
+// Returns an emoji after a congratulatory text for the ending moment.
+ASH_EXPORT std::u16string GetCongratulatoryEmoji(const size_t index);
+
 // Returns a congratulatory text followed by an emoji during the ending moment.
-ASH_EXPORT std::u16string GetCongratulatoryTextAndEmoji();
+ASH_EXPORT std::u16string GetCongratulatoryTextAndEmoji(const size_t index);
 
 }  // namespace focus_mode_util
 

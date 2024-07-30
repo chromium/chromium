@@ -53,9 +53,10 @@ constexpr base::TimeDelta kTaskItemViewFadeOutDuration =
     base::Milliseconds(200);
 
 std::u16string GetAccessibleTrayName(
-    const FocusModeSession::Snapshot& session_snapshot) {
+    const FocusModeSession::Snapshot& session_snapshot,
+    const size_t congratulatory_index) {
   if (session_snapshot.state == FocusModeSession::State::kEnding) {
-    return focus_mode_util::GetCongratulatoryTextAndEmoji();
+    return focus_mode_util::GetCongratulatoryTextAndEmoji(congratulatory_index);
   }
 
   const std::u16string duration_string =
@@ -72,9 +73,11 @@ std::u16string GetAccessibleTrayName(
 
 std::u16string GetAccessibleBubbleName(
     const FocusModeSession::Snapshot& session_snapshot,
-    const std::u16string& task_title) {
+    const std::u16string& task_title,
+    const size_t congratulatory_index) {
   if (session_snapshot.state == FocusModeSession::State::kEnding) {
-    std::u16string title = focus_mode_util::GetCongratulatoryTextAndEmoji();
+    std::u16string title =
+        focus_mode_util::GetCongratulatoryTextAndEmoji(congratulatory_index);
     std::u16string body = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY);
     return l10n_util::GetStringFUTF16(
@@ -286,7 +289,9 @@ std::u16string FocusModeTray::GetAccessibleNameForTray() {
     return std::u16string();
   }
 
-  return GetAccessibleTrayName(session_snapshot_.value());
+  return GetAccessibleTrayName(
+      session_snapshot_.value(),
+      FocusModeController::Get()->congratulatory_index());
 }
 
 std::u16string FocusModeTray::GetAccessibleNameForBubble() {
@@ -294,13 +299,15 @@ std::u16string FocusModeTray::GetAccessibleNameForBubble() {
     return std::u16string();
   }
 
+  auto* focus_mode_controller = FocusModeController::Get();
   const FocusModeTask* selected_task =
-      FocusModeController::Get()->tasks_model().selected_task();
+      focus_mode_controller->tasks_model().selected_task();
   const std::u16string task_title =
       selected_task ? base::UTF8ToUTF16(selected_task->title)
                     : std::u16string();
 
-  return GetAccessibleBubbleName(session_snapshot_.value(), task_title);
+  return GetAccessibleBubbleName(session_snapshot_.value(), task_title,
+                                 focus_mode_controller->congratulatory_index());
 }
 
 void FocusModeTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
@@ -397,14 +404,17 @@ void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
   UpdateProgressRing();
   show_progress_ring_after_animation_ = false;
 
-  auto current_session = FocusModeController::Get()->current_session();
+  auto* focus_mode_controller = FocusModeController::Get();
+  auto current_session = focus_mode_controller->current_session();
   if (!current_session) {
     session_snapshot_.reset();
     return;
   }
 
   session_snapshot_ = current_session->GetSnapshot(base::Time::Now());
-  image_view_->SetTooltipText(GetAccessibleTrayName(session_snapshot_.value()));
+  image_view_->SetTooltipText(
+      GetAccessibleTrayName(session_snapshot_.value(),
+                            focus_mode_controller->congratulatory_index()));
 
   if (bubble_) {
     UpdateBubbleViews(session_snapshot_.value());
@@ -417,7 +427,9 @@ void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
 void FocusModeTray::OnTimerTick(
     const FocusModeSession::Snapshot& session_snapshot) {
   session_snapshot_ = session_snapshot;
-  image_view_->SetTooltipText(GetAccessibleTrayName(session_snapshot_.value()));
+  image_view_->SetTooltipText(GetAccessibleTrayName(
+      session_snapshot_.value(),
+      FocusModeController::Get()->congratulatory_index()));
   UpdateProgressRing();
   MaybeUpdateCountdownViewUI(session_snapshot);
 }
@@ -425,7 +437,9 @@ void FocusModeTray::OnTimerTick(
 void FocusModeTray::OnActiveSessionDurationChanged(
     const FocusModeSession::Snapshot& session_snapshot) {
   session_snapshot_ = session_snapshot;
-  image_view_->SetTooltipText(GetAccessibleTrayName(session_snapshot_.value()));
+  image_view_->SetTooltipText(GetAccessibleTrayName(
+      session_snapshot_.value(),
+      FocusModeController::Get()->congratulatory_index()));
   UpdateProgressRing();
   MaybeUpdateCountdownViewUI(session_snapshot);
 }
