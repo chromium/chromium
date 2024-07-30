@@ -582,6 +582,16 @@ std::string GetCoreMLNameFromInput(std::string_view input_name,
                           kStringSeparator);
 }
 
+CoreML::Specification::MILSpec::Value CreateFloatValue(
+    CoreML::Specification::MILSpec::DataType mil_data_type,
+    float value) {
+  CHECK(kFloatDataTypes.contains(mil_data_type));
+  return mil_data_type == CoreML::Specification::MILSpec::DataType::FLOAT32
+             ? CreateScalarImmediateValue(value)
+             : CreateScalarImmediateValue(
+                   static_cast<Float16>(fp16_ieee_from_fp32_value(value)));
+}
+
 }  // namespace
 
 std::string GetCoreMLNameFromOutput(std::string_view output_name,
@@ -1329,10 +1339,9 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
                      GetOperandInfo(*operation.bias_operand_id).coreml_name);
   }
 
-  // TODO(crbug.com/339238741): Consider using float16 when the input is
-  // float16.
-  SetInputWithValue(*op->mutable_inputs(), kOpParamEpsilon,
-                    CreateScalarImmediateValue(operation.epsilon));
+  SetInputWithValue(
+      *op->mutable_inputs(), kOpParamEpsilon,
+      CreateFloatValue(input_operand_info.mil_data_type, operation.epsilon));
 
   CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
   PopulateNamedValueType(operation.output_operand_id, output);
@@ -1387,7 +1396,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForClamp(
   // WebNN's "clamp" maps to the "clip" operator in CoreML:
   // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.elementwise_unary.clip
   //
-  // TODO: crbug.com/332731569 - Use CoreML's support for float16.
   if (!kFloatDataTypes.contains(input_operand_info.mil_data_type)) {
     return NewNotSupportedError(NotSupportedInputArgumentTypeError(
         ops::kClamp,
@@ -1399,11 +1407,14 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForClamp(
 
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
+
   SetInputsWithValues(
       *op->mutable_inputs(),
       {
-          {kOpParamAlpha, CreateScalarImmediateValue(operation.min_value)},
-          {kOpParamBeta, CreateScalarImmediateValue(operation.max_value)},
+          {kOpParamAlpha, CreateFloatValue(input_operand_info.mil_data_type,
+                                           operation.min_value)},
+          {kOpParamBeta, CreateFloatValue(input_operand_info.mil_data_type,
+                                          operation.max_value)},
       });
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
@@ -1981,13 +1992,14 @@ GraphBuilderCoreml::AddOperationForHardSigmoid(
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
 
-  // TODO(crbug.com/339238741): Consider using float16 when the input is
-  // float16.
-  SetInputsWithValues(*op->mutable_inputs(),
-                      {
-                          {kOpParamAlpha, CreateScalarImmediateValue(alpha)},
-                          {kOpParamBeta, CreateScalarImmediateValue(beta)},
-                      });
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {
+          {kOpParamAlpha,
+           CreateFloatValue(input_operand_info.mil_data_type, alpha)},
+          {kOpParamBeta,
+           CreateFloatValue(input_operand_info.mil_data_type, beta)},
+      });
 
   PopulateNamedValueType(output_operand_id, *op->add_outputs());
   return base::ok();
@@ -2018,9 +2030,9 @@ GraphBuilderCoreml::AddOperationForHardSwish(
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
 
-  // TODO: crbug.com/339238741 - Use float16 when input type is float16.
   constexpr static float alpha = float(1.0 / 6);
   constexpr static float beta = float(0.5);
+
   RETURN_IF_ERROR(AddOperationForHardSigmoid(operation.input_operand_id, alpha,
                                              beta, hardsigmoid_output, block));
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
@@ -2060,10 +2072,9 @@ GraphBuilderCoreml::AddOperationForInstanceNormalization(
                      GetOperandInfo(*operation.bias_operand_id).coreml_name);
   }
 
-  // TODO(crbug.com/339238741): Consider using float16 when the input is
-  // float16.
-  SetInputWithValue(*op->mutable_inputs(), kOpParamEpsilon,
-                    CreateScalarImmediateValue(operation.epsilon));
+  SetInputWithValue(
+      *op->mutable_inputs(), kOpParamEpsilon,
+      CreateFloatValue(input_operand_info.mil_data_type, operation.epsilon));
 
   CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
   PopulateNamedValueType(operation.output_operand_id, output);
