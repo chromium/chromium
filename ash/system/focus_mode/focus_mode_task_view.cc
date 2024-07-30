@@ -348,8 +348,15 @@ void FocusModeTaskView::OnSelectedTaskChanged(
     textfield_->SetText(base::UTF8ToUTF16(task->title));
   }
 
+  const bool prev_radio_button_visibility = radio_button_->GetVisible();
   UpdateStyle(/*show_selected_state=*/show_selected_state,
               /*is_network_connected=*/is_network_connected_);
+
+  // Only when the `radio_button_` became visible, we request the focus for the
+  // button.
+  if (!prev_radio_button_visibility && radio_button_->GetVisible()) {
+    radio_button_->RequestFocus();
+  }
 }
 
 void FocusModeTaskView::OnTasksUpdated(
