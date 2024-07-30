@@ -131,6 +131,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   using GetRecoverableKeyStoresCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::GetRecoverableKeyStoresReply>;
 
+  using SetUserDataStorageWriteEnabledCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::SetUserDataStorageWriteEnabledReply>;
+
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;
   UserDataAuthClient& operator=(const UserDataAuthClient&) = delete;
@@ -349,6 +352,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void GetRecoverableKeyStores(
       const ::user_data_auth::GetRecoverableKeyStoresRequest& request,
       GetRecoverableKeyStoresCallback callback) = 0;
+
+  // Enable/disable write access permissions to MyFiles directory.
+  virtual void SetUserDataStorageWriteEnabled(
+      const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
+      SetUserDataStorageWriteEnabledCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

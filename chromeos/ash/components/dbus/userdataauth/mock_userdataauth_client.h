@@ -176,6 +176,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
               (const ::user_data_auth::GetRecoverableKeyStoresRequest& request,
                GetRecoverableKeyStoresCallback),
               (override));
+  MOCK_METHOD(
+      void,
+      SetUserDataStorageWriteEnabled,
+      (const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
+       SetUserDataStorageWriteEnabledCallback),
+      (override));
 };
 
 }  // namespace ash

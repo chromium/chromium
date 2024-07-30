@@ -1894,4 +1894,11 @@ void FakeUserDataAuthClient::GetRecoverableKeyStores(
   }
 }
 
+void FakeUserDataAuthClient::SetUserDataStorageWriteEnabled(
+    const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
+    SetUserDataStorageWriteEnabledCallback callback) {
+  ::user_data_auth::SetUserDataStorageWriteEnabledReply reply;
+  std::move(callback).Run(std::move(reply));
+}
+
 }  // namespace ash

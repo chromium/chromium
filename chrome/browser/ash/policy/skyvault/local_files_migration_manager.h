@@ -16,7 +16,9 @@
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -97,6 +99,18 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Handles the completion of the migration process (success or failure).
   void OnMigrationDone(std::map<base::FilePath, MigrationUploadError> errors);
 
+  // Handles the completion of the local files cleanup process.
+  void OnCleanupDone(
+      std::unique_ptr<chromeos::FilesCleanupHandler> cleanup_handler,
+      const std::optional<std::string>& error_message);
+
+  // Sends a D-Bus call to enable or disable write access to MyFiles.
+  void SetLocalUserFilesWriteEnabled(bool enabled);
+
+  // Handles the response of the SetUserDataStorageWriteEnabled D-Bus call.
+  void OnFilesWriteRestricted(
+      std::optional<user_data_auth::SetUserDataStorageWriteEnabledReply> reply);
+
   // Stops the migration if currently ongoing.
   void MaybeStopMigration();
 
@@ -105,6 +119,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
 
   // Indicates if migration is currently running.
   bool in_progress_ = false;
+
+  // Indicates if local files cleanup is currently running.
+  bool cleanup_in_progress_ = false;
 
   // Whether local user files are allowed by policy.
   bool local_user_files_allowed_ = true;

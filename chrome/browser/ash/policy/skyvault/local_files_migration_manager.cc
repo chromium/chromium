@@ -29,7 +29,14 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/error_util.h"
+#include "chromeos/ash/components/cryptohome/userdataauth_util.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 
 namespace policy::local_user_files {
@@ -163,6 +170,9 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   // migration or timers if any.
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
     MaybeStopMigration();
+    if (local_user_files_allowed_) {
+      SetLocalUserFilesWriteEnabled(/*enabled=*/true);
+    }
     return;
   }
 
@@ -271,6 +281,50 @@ void LocalFilesMigrationManager::OnMigrationDone(
     notification_manager_->ShowMigrationCompletedNotification(cloud_provider_,
                                                               base::FilePath());
     VLOG(1) << "Local files migration done";
+  }
+  if (cleanup_in_progress_) {
+    LOG(ERROR) << "Local files cleanup is already running";
+    return;
+  }
+  cleanup_in_progress_ = true;
+  std::unique_ptr<chromeos::FilesCleanupHandler> cleanup_handler =
+      std::make_unique<chromeos::FilesCleanupHandler>();
+  chromeos::FilesCleanupHandler* cleanup_handler_ptr = cleanup_handler.get();
+  cleanup_handler_ptr->Cleanup(
+      base::BindOnce(&LocalFilesMigrationManager::OnCleanupDone,
+                     weak_factory_.GetWeakPtr(), std::move(cleanup_handler)));
+}
+
+void LocalFilesMigrationManager::OnCleanupDone(
+    std::unique_ptr<chromeos::FilesCleanupHandler> cleanup_handler,
+    const std::optional<std::string>& error_message) {
+  cleanup_in_progress_ = false;
+  if (error_message.has_value()) {
+    LOG(ERROR) << "Local files cleanup failed: " << error_message.value();
+  } else {
+    VLOG(1) << "Local files cleanup done";
+  }
+  SetLocalUserFilesWriteEnabled(/*enabled=*/false);
+}
+
+void LocalFilesMigrationManager::SetLocalUserFilesWriteEnabled(bool enabled) {
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context_);
+  user_data_auth::SetUserDataStorageWriteEnabledRequest request;
+  *request.mutable_account_id() =
+      cryptohome::CreateAccountIdentifierFromAccountId(user->GetAccountId());
+  request.set_enabled(enabled);
+  ash::UserDataAuthClient::Get()->SetUserDataStorageWriteEnabled(
+      request,
+      base::BindOnce(&LocalFilesMigrationManager::OnFilesWriteRestricted,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void LocalFilesMigrationManager::OnFilesWriteRestricted(
+    std::optional<user_data_auth::SetUserDataStorageWriteEnabledReply> reply) {
+  if (!reply.has_value() ||
+      reply->error() != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    LOG(ERROR) << "Could not restrict write access";
   }
 }
 

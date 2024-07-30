@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/time/time.h"
@@ -25,6 +26,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -33,10 +36,26 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
+
 namespace policy::local_user_files {
 
 namespace {
 constexpr char kReadOnly[] = "read_only";
+
+constexpr char kEmail[] = "stub-user@example.com";
+
+// Matcher for `SetUserDataStorageWriteEnabledRequest`.
+MATCHER_P(WithEnabled, enabled, "") {
+  return arg.account_id().account_id() == kEmail && arg.enabled() == enabled;
+}
+
+// GMock action that runs the callback (which is expected to be the second
+// argument in the mocked function) with the given reply.
+template <typename ReplyType>
+auto ReplyWith(const ReplyType& reply) {
+  return base::test::RunOnceCallbackRepeatedly<1>(reply);
+}
 
 class MockMigrationObserver : public LocalFilesMigrationManager::Observer {
  public:
@@ -134,9 +153,14 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
     notification_manager_ = std::make_unique<MockMigrationNotificationManager>(
         browser()->profile());
     manager_->SetNotificationManagerForTesting(notification_manager_.get());
+
+    ash::UserDataAuthClient::OverrideGlobalInstanceForTesting(&userdataauth_);
   }
 
   void TearDownOnMainThread() override {
+    ash::UserDataAuthClient::OverrideGlobalInstanceForTesting(
+        ash::FakeUserDataAuthClient::Get());
+
     manager_->SetNotificationManagerForTesting(
         MigrationNotificationManagerFactory::GetInstance()
             ->GetForBrowserContext(browser()->profile()));
@@ -163,6 +187,7 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
       nullptr;
   raw_ptr<LocalFilesMigrationManager> manager_ = nullptr;
   MockMigrationObserver observer_;
+  testing::StrictMock<ash::MockUserDataAuthClient> userdataauth_;
 };
 
 class LocalFilesMigrationManagerLocationTest
@@ -214,6 +239,12 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 
   ASSERT_TRUE(manager_);
 
+  // Write access will be disallowed.
+  EXPECT_CALL(userdataauth_,
+              SetUserDataStorageWriteEnabled(WithEnabled(false), _))
+      .Times(1)
+      .WillRepeatedly(
+          ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply()));
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*destination=*/MigrationDestination());
   task_runner->FastForwardBy(base::TimeDelta(base::Hours(5)));
@@ -243,6 +274,12 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                        NoMigrationIfLocalFilesAllowed) {
   EXPECT_CALL(observer_, OnMigrationSucceeded).Times(0);
 
+  // Write access will be explicitly allowed.
+  EXPECT_CALL(userdataauth_,
+              SetUserDataStorageWriteEnabled(WithEnabled(true), _))
+      .Times(1)
+      .WillRepeatedly(
+          ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply()));
   SetMigrationPolicies(/*local_user_files_allowed=*/true,
                        /*destination=*/MigrationDestination());
 }
@@ -286,7 +323,12 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*destination=*/download_dir_util::kLocationGoogleDrive);
   task_runner->FastForwardBy(base::TimeDelta(base::Hours(24)));
-  // Allow local storage: stops the migration.
+  // Allow local storage: stops the migration and enables write to ensure.
+  EXPECT_CALL(userdataauth_,
+              SetUserDataStorageWriteEnabled(WithEnabled(true), _))
+      .Times(1)
+      .WillRepeatedly(
+          ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply()));
   SetMigrationPolicies(/*local_user_files_allowed=*/true,
                        /*destination=*/download_dir_util::kLocationOneDrive);
   task_runner->FastForwardBy(base::TimeDelta(base::Hours(24)));
