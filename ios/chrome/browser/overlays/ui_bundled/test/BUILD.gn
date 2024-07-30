@@ -1,0 +1,29 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+  sources = [
+    "fake_overlay_request_coordinator.h",
+    "fake_overlay_request_coordinator.mm",
+    "fake_overlay_request_coordinator_delegate.cc",
+    "fake_overlay_request_coordinator_delegate.h",
+    "mock_overlay_coordinator_delegate.h",
+    "mock_overlay_coordinator_delegate.mm",
+    "test_overlay_presentation_context.h",
+    "test_overlay_presentation_context.mm",
+    "test_overlay_request_coordinator_factory.h",
+    "test_overlay_request_coordinator_factory.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/ui_bundled",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/test_modality",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

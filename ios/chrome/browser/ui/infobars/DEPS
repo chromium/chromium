@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/badges/ui_bundled/badge_tappable_item.h",
-  "+ios/chrome/browser/ui/overlays",
+  "+ios/chrome/browser/overlays/ui_bundled",
 ]
 
 specific_include_rules = {
