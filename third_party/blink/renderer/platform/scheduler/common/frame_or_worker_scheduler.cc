@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/not_fatal_until.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "v8/include/v8-isolate.h"
@@ -134,7 +135,7 @@ void FrameOrWorkerScheduler::RemoveLifecycleObserver(
     LifecycleObserverHandle* handle) {
   DCHECK(handle);
   const auto found = lifecycle_observers_.find(handle);
-  DCHECK(lifecycle_observers_.end() != found);
+  CHECK(lifecycle_observers_.end() != found, base::NotFatalUntil::M130);
   lifecycle_observers_.erase(found);
 }
 

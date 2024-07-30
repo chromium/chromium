@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -587,7 +588,8 @@ CachedStorageArea::PopPendingMutation(const String& source) {
   const String key = mutation->key;
   if (!key.IsNull()) {
     auto key_queue_iter = pending_mutations_by_key_.find(key);
-    DCHECK(key_queue_iter != pending_mutations_by_key_.end());
+    CHECK(key_queue_iter != pending_mutations_by_key_.end(),
+          base::NotFatalUntil::M130);
     DCHECK_EQ(key_queue_iter->value.front(), mutation.get());
     key_queue_iter->value.pop_front();
     if (key_queue_iter->value.empty())

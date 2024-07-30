@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_manager.h"
 
 #include "base/check_op.h"
+#include "base/not_fatal_until.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -58,7 +59,7 @@ void WakeLockManager::UnregisterSentinel(WakeLockSentinel* sentinel) {
   // 1. If document.[[ActiveLocks]][type] does not contain lock, abort these
   //    steps.
   auto iterator = wake_lock_sentinels_.find(sentinel);
-  DCHECK(iterator != wake_lock_sentinels_.end());
+  CHECK(iterator != wake_lock_sentinels_.end(), base::NotFatalUntil::M130);
 
   // 2. Remove lock from document.[[ActiveLocks]][type].
   wake_lock_sentinels_.erase(iterator);
