@@ -5,11 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CACHED_COLOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CACHED_COLOR_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "v8/include/v8.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-primitive.h"
 
 namespace blink {
 
