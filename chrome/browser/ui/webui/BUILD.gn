@@ -98,6 +98,7 @@ source_set("configs") {
       "//chrome/browser/ash/system_web_apps/apps/vc_background_ui",
       "//chrome/browser/ui/ash/holding_space",
       "//chrome/browser/ui/webui/ash/account_manager",
+      "//chrome/browser/ui/webui/ash/app_install",
       "//chrome/browser/ui/webui/ash/crostini_installer",
       "//chrome/browser/ui/webui/ash/emoji",
       "//chrome/browser/ui/webui/ash/enterprise_reporting",

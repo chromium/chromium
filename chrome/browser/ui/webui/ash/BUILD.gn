@@ -208,6 +208,7 @@ source_set("unit_tests") {
     "diagnostics_dialog_unittest.cc",
     "edu_account_login_handler_unittest.cc",
   ]
+
   deps = [
     "//base",
     "//base/test:test_support",
@@ -247,12 +248,14 @@ source_set("unit_tests") {
 
 source_set("browser_tests") {
   testonly = true
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
     "cros_components_browsertest.cc",
     "system_web_dialog_browsertest.cc",
   ]
+
   deps = [
     "//ash:test_support",
     "//base",
@@ -272,7 +275,8 @@ source_set("browser_tests") {
     "//ui/aura",
     "//url",
 
-    # Gather browser tests from //c/b/ui/webui/ash subdirectories:
+    # Gather browser tests from subdirectories:
+    "//chrome/browser/ui/webui/ash/app_install:browser_tests",
     "//chrome/browser/ui/webui/ash/kerberos:browser_tests",
     "//chrome/browser/ui/webui/ash/login:browser_tests",
     "//chrome/browser/ui/webui/ash/login/testapi:browser_tests",

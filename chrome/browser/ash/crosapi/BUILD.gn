@@ -547,6 +547,7 @@ static_library("crosapi") {
 
 static_library("test_support") {
   testonly = true
+
   sources = [
     "ash_requires_lacros_browsertestbase.cc",
     "ash_requires_lacros_browsertestbase.h",
@@ -567,7 +568,9 @@ static_library("test_support") {
     "test_crosapi_environment.cc",
     "test_crosapi_environment.h",
   ]
+
   allow_circular_includes_from = [ "//chrome/test:test_support" ]
+
   deps = [
     ":crosapi",
     "//ash",
@@ -581,6 +584,7 @@ static_library("test_support") {
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/printing:test_support",
     "//chrome/browser/ui/ash/desks",
+    "//chrome/browser/ui/webui/ash/app_install",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/standalone_browser:test_support",

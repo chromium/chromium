@@ -5384,6 +5384,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/webui/ash",
+      "//chrome/browser/ui/webui/ash/app_install",
       "//chrome/browser/ui/webui/ash/crostini_installer",
       "//chrome/browser/ui/webui/ash/emoji",
       "//chrome/browser/ui/webui/ash/enterprise_reporting",
