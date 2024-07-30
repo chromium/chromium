@@ -26171,26 +26171,16 @@
             ]
         }
     ],
-    "ZPSPrefetchOnSRPWithDebouncingAndroid": [
+    "ZPSPrefetchDebouncingDesktop": [
         {
             "platforms": [
-                "android"
+                "windows",
+                "mac",
+                "linux",
+                "chromeos",
+                "chromeos_lacros"
             ],
             "experiments": [
-                {
-                    "name": "Enabled_300ms_FromLastRun",
-                    "params": {
-                        "ZeroSuggestPrefetchDebounceDelay": "300",
-                        "ZeroSuggestPrefetchDebounceFromLastRun": "true"
-                    },
-                    "enable_features": [
-                        "ZeroSuggestPrefetchDebouncing",
-                        "ZeroSuggestPrefetchingOnSRP"
-                    ],
-                    "disable_features": [
-                        "ZeroSuggestPrefetchingOnWeb"
-                    ]
-                },
                 {
                     "name": "Enabled_300ms_FromLastRequest",
                     "params": {
@@ -26198,31 +26188,61 @@
                         "ZeroSuggestPrefetchDebounceFromLastRun": "false"
                     },
                     "enable_features": [
-                        "ZeroSuggestPrefetchDebouncing",
-                        "ZeroSuggestPrefetchingOnSRP"
-                    ],
-                    "disable_features": [
-                        "ZeroSuggestPrefetchingOnWeb"
+                        "ZeroSuggestPrefetchDebouncing"
                     ]
                 },
                 {
-                    "name": "Enabled_600ms_FromLastRun",
+                    "name": "Enabled_900ms_FromLastRun",
                     "params": {
-                        "ZeroSuggestPrefetchDebounceDelay": "600",
+                        "ZeroSuggestPrefetchDebounceDelay": "900",
                         "ZeroSuggestPrefetchDebounceFromLastRun": "true"
                     },
                     "enable_features": [
-                        "ZeroSuggestPrefetchDebouncing",
-                        "ZeroSuggestPrefetchingOnSRP"
-                    ],
-                    "disable_features": [
-                        "ZeroSuggestPrefetchingOnWeb"
+                        "ZeroSuggestPrefetchDebouncing"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ZPSPrefetchDebouncingIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_300ms_FromLastRequest",
+                    "params": {
+                        "ZeroSuggestPrefetchDebounceDelay": "300",
+                        "ZeroSuggestPrefetchDebounceFromLastRun": "false"
+                    },
+                    "enable_features": [
+                        "ZeroSuggestPrefetchDebouncing"
                     ]
                 },
                 {
-                    "name": "Enabled_600ms_FromLastRequest",
+                    "name": "Enabled_900ms_FromLastRun",
                     "params": {
-                        "ZeroSuggestPrefetchDebounceDelay": "600",
+                        "ZeroSuggestPrefetchDebounceDelay": "900",
+                        "ZeroSuggestPrefetchDebounceFromLastRun": "true"
+                    },
+                    "enable_features": [
+                        "ZeroSuggestPrefetchDebouncing"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ZPSPrefetchOnSRPWithDebouncingAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_300ms_FromLastRequest",
+                    "params": {
+                        "ZeroSuggestPrefetchDebounceDelay": "300",
                         "ZeroSuggestPrefetchDebounceFromLastRun": "false"
                     },
                     "enable_features": [
@@ -26248,16 +26268,12 @@
                     ]
                 },
                 {
-                    "name": "Enabled_900ms_FromLastRequest",
-                    "params": {
-                        "ZeroSuggestPrefetchDebounceDelay": "900",
-                        "ZeroSuggestPrefetchDebounceFromLastRun": "false"
-                    },
+                    "name": "Enabled_Prefetching_Only",
                     "enable_features": [
-                        "ZeroSuggestPrefetchDebouncing",
                         "ZeroSuggestPrefetchingOnSRP"
                     ],
                     "disable_features": [
+                        "ZeroSuggestPrefetchDebouncing",
                         "ZeroSuggestPrefetchingOnWeb"
                     ]
                 }
