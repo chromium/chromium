@@ -69,6 +69,9 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
   BoolStatus IsOne() const {
     return DoubleValue() == 1.0 ? BoolStatus::kTrue : BoolStatus::kFalse;
   }
+  BoolStatus IsHundred() const {
+    return DoubleValue() == 100.0 ? BoolStatus::kTrue : BoolStatus::kFalse;
+  }
   BoolStatus IsNegative() const {
     return DoubleValue() < 0.0 ? BoolStatus::kTrue : BoolStatus::kFalse;
   }

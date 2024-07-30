@@ -11161,9 +11161,11 @@ const CSSValue* Zoom::ParseSingleValue(CSSParserTokenStream& stream,
   if (zoom) {
     if (!(token.Id() == CSSValueID::kNormal ||
           (token.GetType() == kNumberToken &&
-           To<CSSPrimitiveValue>(zoom)->GetDoubleValue() == 1) ||
+           To<CSSPrimitiveValue>(zoom)->IsOne() ==
+               CSSPrimitiveValue::BoolStatus::kTrue) ||
           (token.GetType() == kPercentageToken &&
-           To<CSSPrimitiveValue>(zoom)->GetDoubleValue() == 100))) {
+           To<CSSPrimitiveValue>(zoom)->IsHundred() ==
+               CSSPrimitiveValue::BoolStatus::kTrue))) {
       context.Count(WebFeature::kCSSZoomNotEqualToOne);
     }
   }

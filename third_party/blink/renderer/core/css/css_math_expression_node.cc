@@ -790,22 +790,14 @@ CSSMathExpressionNumericLiteral::CSSMathExpressionNumericLiteral(
   }
 }
 
-CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::IsZero() const {
+CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::ResolvesTo(
+    double value) const {
   std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
   if (!maybe_value.has_value()) {
     return CSSPrimitiveValue::BoolStatus::kUnresolvable;
   }
-  return maybe_value.value() == 0.0 ? CSSPrimitiveValue::BoolStatus::kTrue
-                                    : CSSPrimitiveValue::BoolStatus::kFalse;
-}
-
-CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::IsOne() const {
-  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
-  if (!maybe_value.has_value()) {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
-  return maybe_value.value() == 1.0 ? CSSPrimitiveValue::BoolStatus::kTrue
-                                    : CSSPrimitiveValue::BoolStatus::kFalse;
+  return maybe_value.value() == value ? CSSPrimitiveValue::BoolStatus::kTrue
+                                      : CSSPrimitiveValue::BoolStatus::kFalse;
 }
 
 CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::IsNegative()
@@ -2148,22 +2140,14 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
                             false),
       operator_(op) {}
 
-CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::IsZero() const {
+CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::ResolvesTo(
+    double value) const {
   std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
   if (!maybe_value.has_value()) {
     return CSSPrimitiveValue::BoolStatus::kUnresolvable;
   }
-  return maybe_value.value() == 0.0 ? CSSPrimitiveValue::BoolStatus::kTrue
-                                    : CSSPrimitiveValue::BoolStatus::kFalse;
-}
-
-CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::IsOne() const {
-  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
-  if (!maybe_value.has_value()) {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
-  return maybe_value.value() == 1.0 ? CSSPrimitiveValue::BoolStatus::kTrue
-                                    : CSSPrimitiveValue::BoolStatus::kFalse;
+  return maybe_value.value() == value ? CSSPrimitiveValue::BoolStatus::kTrue
+                                      : CSSPrimitiveValue::BoolStatus::kFalse;
 }
 
 CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::IsNegative() const {
