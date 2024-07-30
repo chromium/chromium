@@ -59,7 +59,8 @@ StreamAttempt::~StreamAttempt() {
 }
 
 int StreamAttempt::Start(CompletionOnceCallback callback) {
-  net_log().BeginEvent(net_log_attempt_event_type_);
+  net_log().BeginEvent(net_log_attempt_event_type_,
+                       [&] { return GetNetLogStartParams(); });
 
   int rv = StartInternal();
   if (rv != ERR_IO_PENDING) {

@@ -73,7 +73,9 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
     kTlsAttemptComplete,
   };
 
+  // StreamAttempt methods:
   int StartInternal() override;
+  base::Value::Dict GetNetLogStartParams() override;
 
   void OnIOComplete(int rv);
 

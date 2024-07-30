@@ -33,6 +33,7 @@
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_test_util.h"
+#include "net/log/test_net_log.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/spdy/spdy_test_util_common.h"
@@ -482,6 +483,8 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  // For NetLog recording test coverage.
+  RecordingNetLogObserver net_log_observer_;
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_network_session_;
 };
