@@ -82,6 +82,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
  private:
   void OnCompressionFinished(sk_sp<SkPixelRef> compressed_bitmap);
 
+  void StartCompression(const SkBitmap& bitmap);
   const cc::UIResourceBitmap& GetBitmap() const;
 
   // The uncompressed bitmap cached when navigating away from this navigation

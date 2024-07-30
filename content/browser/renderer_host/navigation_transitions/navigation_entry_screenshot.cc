@@ -21,6 +21,10 @@ namespace content {
 #if BUILDFLAG(IS_ANDROID)
 namespace {
 
+BASE_FEATURE(kNavigationEntryScreenshotCompression,
+             "NavigationEntryScreenshotCompression",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 static bool g_disable_compression_for_testing = false;
 
 using CompressionDoneCallback = base::OnceCallback<void(sk_sp<SkPixelRef>)>;
@@ -81,19 +85,7 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(const SkBitmap& bitmap,
   CHECK(AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if BUILDFLAG(IS_ANDROID)
-  CompressionDoneCallback done_callback = base::BindPostTask(
-      GetUIThreadTaskRunner(),
-      base::BindOnce(&NavigationEntryScreenshot::OnCompressionFinished,
-                     weak_factory_.GetWeakPtr()));
-
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&CompressNavigationScreenshotOnWorkerThread, bitmap,
-                     std::move(done_callback)));
-#endif
+  StartCompression(bitmap);
 }
 
 NavigationEntryScreenshot::~NavigationEntryScreenshot() {
@@ -131,6 +123,26 @@ SkBitmap NavigationEntryScreenshot::GetBitmapForTesting() const {
 
 size_t NavigationEntryScreenshot::CompressedSizeForTesting() const {
   return !bitmap_ ? compressed_bitmap_->SizeInBytes() : 0u;
+}
+
+void NavigationEntryScreenshot::StartCompression(const SkBitmap& bitmap) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(kNavigationEntryScreenshotCompression)) {
+    return;
+  }
+
+  CompressionDoneCallback done_callback = base::BindPostTask(
+      GetUIThreadTaskRunner(),
+      base::BindOnce(&NavigationEntryScreenshot::OnCompressionFinished,
+                     weak_factory_.GetWeakPtr()));
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&CompressNavigationScreenshotOnWorkerThread, bitmap,
+                     std::move(done_callback)));
+#endif
 }
 
 void NavigationEntryScreenshot::OnCompressionFinished(

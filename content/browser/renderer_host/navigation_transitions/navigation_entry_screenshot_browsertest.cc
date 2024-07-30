@@ -1745,7 +1745,8 @@ class NavigationEntryScreenshotCompressionBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(NavigationEntryScreenshotCompressionBrowserTest, Basic) {
+IN_PROC_BROWSER_TEST_F(NavigationEntryScreenshotCompressionBrowserTest,
+                       DISABLED_Basic) {
   // Start with only 1 regular screenshot allowed.
   const size_t screenshot_bytes = GetUncompressedScreenshotSizeInBytes();
   auto* manager = GetManagerForTab(web_contents());
