@@ -22,7 +22,6 @@ const char kDisableExtensionsHttpThrottling[] =
     "disable-extensions-http-throttling";
 const char kExtensionProcess[] = "extension-process";
 const char kExtensionsOnChromeURLs[] = "extensions-on-chrome-urls";
-const char kForceDevModeHighlighting[] = "force-dev-mode-highlighting";
 const char kDisableAppContentVerification[] =
     "disable-app-content-verification";
 const char kLoadApps[] = "load-apps";

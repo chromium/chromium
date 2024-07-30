@@ -28,7 +28,6 @@ namespace extensions {
 // 4. Otherwise, the default value is used.
 class FeatureSwitch {
  public:
-  static FeatureSwitch* force_dev_mode_highlighting();
   static FeatureSwitch* prompt_for_external_extensions();
   static FeatureSwitch* embedded_extension_options();
   static FeatureSwitch* trace_app_source();
