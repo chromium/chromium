@@ -33,6 +33,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
@@ -301,13 +302,11 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
     EXPECT_EQ(request.url, observed_request.url);
 
     // There should be an accept header, and it should be the same as before.
-    std::string original_accept_header;
-    std::string observed_accept_header;
-    EXPECT_TRUE(request.headers.GetHeader(net::HttpRequestHeaders::kAccept,
-                                          &original_accept_header));
-    EXPECT_TRUE(observed_request.headers.GetHeader(
-        net::HttpRequestHeaders::kAccept, &observed_accept_header));
-    EXPECT_EQ(original_accept_header, observed_accept_header);
+    std::optional<std::string> original_accept_header =
+        request.headers.GetHeader(net::HttpRequestHeaders::kAccept);
+    ASSERT_TRUE(original_accept_header.has_value());
+    EXPECT_EQ(original_accept_header, observed_request.headers.GetHeader(
+                                          net::HttpRequestHeaders::kAccept));
 
     // The accept header should be the only accept header.
     EXPECT_EQ(1u, observed_request.headers.GetHeaderVector().size());
@@ -324,7 +323,7 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
 
     bool cross_site_enabled_trusted_signals_request =
         PermitCrossOriginTrustedSignals() && !expect_bundle_request &&
-        original_accept_header == kAcceptJson;
+        *original_accept_header == kAcceptJson;
 
     // The initiator should be set.
     if (cross_site_enabled_trusted_signals_request) {

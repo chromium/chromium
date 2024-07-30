@@ -9004,10 +9004,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
     EXPECT_EQ(test_origin, request->request_initiator);
 
     EXPECT_EQ(1u, request->headers.GetHeaderVector().size());
-    std::string accept_value;
-    ASSERT_TRUE(request->headers.GetHeader(net::HttpRequestHeaders::kAccept,
-                                           &accept_value));
-    EXPECT_EQ(expected_request.accept_header, accept_value);
+    EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kAccept),
+                testing::Optional(expected_request.accept_header));
 
     EXPECT_EQ(expected_request.expect_trusted_params,
               request->trusted_params.has_value());
@@ -11549,10 +11547,8 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
     EXPECT_EQ(test_origin, request->request_initiator);
 
     EXPECT_EQ(1u, request->headers.GetHeaderVector().size());
-    std::string accept_value;
-    ASSERT_TRUE(request->headers.GetHeader(net::HttpRequestHeaders::kAccept,
-                                           &accept_value));
-    EXPECT_EQ(expected_request.accept_header, accept_value);
+    EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kAccept),
+                testing::Optional(expected_request.accept_header));
 
     EXPECT_EQ(expected_request.expect_trusted_params,
               request->trusted_params.has_value());
@@ -24568,10 +24564,8 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, RealTimeReporting) {
   EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
   EXPECT_EQ(test_origin, request->request_initiator);
 
-  std::string content_type;
-  EXPECT_TRUE(request->headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                         &content_type));
-  EXPECT_EQ("application/cbor", content_type);
+  EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kContentType),
+              testing::Optional(std::string("application/cbor")));
 
   ASSERT_TRUE(request->trusted_params);
   const net::IsolationInfo& isolation_info =
@@ -24671,10 +24665,8 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest,
   EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
   EXPECT_EQ(test_origin, request->request_initiator);
 
-  std::string content_type;
-  EXPECT_TRUE(request->headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                         &content_type));
-  EXPECT_EQ("application/cbor", content_type);
+  EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kContentType),
+              testing::Optional(std::string("application/cbor")));
   ASSERT_TRUE(request->trusted_params);
   const net::IsolationInfo& isolation_info =
       request->trusted_params->isolation_info;

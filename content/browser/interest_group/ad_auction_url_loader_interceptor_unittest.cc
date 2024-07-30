@@ -338,11 +338,8 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestArrivedBeforeCommit) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string ad_auction_request_header_value;
-  bool has_ad_auction_request_header =
-      pending_request->request.headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
-  EXPECT_FALSE(has_ad_auction_request_header);
+  EXPECT_EQ(pending_request->request.headers.GetHeader("Sec-Ad-Auction-Fetch"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
@@ -382,12 +379,9 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestArrivedAfterCommit) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string ad_auction_request_header_value;
-  bool has_ad_auction_request_header =
-      pending_request->request.headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
-  EXPECT_TRUE(has_ad_auction_request_header);
-  EXPECT_EQ(ad_auction_request_header_value, "?1");
+  EXPECT_THAT(
+      pending_request->request.headers.GetHeader("Sec-Ad-Auction-Fetch"),
+      testing::Optional(std::string("?1")));
 
   // The ad auction result from the response header will be stored in the page.
   pending_request->client->OnReceiveResponse(
@@ -438,12 +432,9 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestOnClonedPipeBeforeCommit) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string ad_auction_request_header_value;
-  bool has_ad_auction_request_header =
-      pending_request->request.headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
-  EXPECT_TRUE(has_ad_auction_request_header);
-  EXPECT_EQ(ad_auction_request_header_value, "?1");
+  EXPECT_THAT(
+      pending_request->request.headers.GetHeader("Sec-Ad-Auction-Fetch"),
+      testing::Optional(std::string("?1")));
 
   // The ad auction result from the response header will be stored in the page.
   pending_request->client->OnReceiveResponse(
@@ -484,12 +475,9 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromMainFrame) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string ad_auction_request_header_value;
-  bool has_ad_auction_request_header =
-      pending_request->request.headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
-  EXPECT_TRUE(has_ad_auction_request_header);
-  EXPECT_EQ(ad_auction_request_header_value, "?1");
+  EXPECT_THAT(
+      pending_request->request.headers.GetHeader("Sec-Ad-Auction-Fetch"),
+      testing::Optional(std::string("?1")));
 
   // The ad auction result from the response header will be stored in the page.
   pending_request->client->OnReceiveResponse(
@@ -541,12 +529,9 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromSubframe) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string ad_auction_request_header_value;
-  bool has_ad_auction_request_header =
-      pending_request->request.headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
-  EXPECT_TRUE(has_ad_auction_request_header);
-  EXPECT_EQ(ad_auction_request_header_value, "?1");
+  EXPECT_THAT(
+      pending_request->request.headers.GetHeader("Sec-Ad-Auction-Fetch"),
+      testing::Optional(std::string("?1")));
 
   // The ad auction result from the response header will be stored in the page.
   pending_request->client->OnReceiveResponse(
@@ -592,11 +577,8 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string ad_auction_request_header_value;
-  bool has_ad_auction_request_header =
-      pending_request->request.headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
-  EXPECT_FALSE(has_ad_auction_request_header);
+  EXPECT_EQ(pending_request->request.headers.GetHeader("Sec-Ad-Auction-Fetch"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
@@ -643,12 +625,9 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string ad_auction_request_header_value;
-  bool has_ad_auction_request_header =
-      pending_request->request.headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
-  EXPECT_TRUE(has_ad_auction_request_header);
-  EXPECT_EQ(ad_auction_request_header_value, "?1");
+  EXPECT_THAT(
+      pending_request->request.headers.GetHeader("Sec-Ad-Auction-Fetch"),
+      testing::Optional(std::string("?1")));
 
   // Redirect to `foo2.com`. The ad auction result response for the initial
   // request to `foo1.com` will be ignored, and the redirect request to
@@ -680,11 +659,9 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   EXPECT_EQ(follow_redirect_params[0].removed_headers[0],
             "Sec-Ad-Auction-Fetch");
 
-  std::string redirect_ad_auction_request_header_value;
-  bool redirect_has_ad_auction_request_header =
-      follow_redirect_params[0].modified_headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &redirect_ad_auction_request_header_value);
-  EXPECT_FALSE(redirect_has_ad_auction_request_header);
+  EXPECT_EQ(follow_redirect_params[0].modified_headers.GetHeader(
+                "Sec-Ad-Auction-Fetch"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
@@ -724,12 +701,9 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, AdAuctionSignalsResponseHeader) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string ad_auction_request_header_value;
-  bool has_ad_auction_request_header =
-      pending_request->request.headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
-  EXPECT_TRUE(has_ad_auction_request_header);
-  EXPECT_EQ(ad_auction_request_header_value, "?1");
+  EXPECT_THAT(
+      pending_request->request.headers.GetHeader("Sec-Ad-Auction-Fetch"),
+      testing::Optional(std::string("?1")));
 
   // The ad auction signals from the response header will be stored in the page.
   pending_request->client->OnReceiveResponse(
@@ -780,12 +754,9 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string ad_auction_request_header_value;
-  bool has_ad_auction_request_header =
-      pending_request->request.headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
-  EXPECT_TRUE(has_ad_auction_request_header);
-  EXPECT_EQ(ad_auction_request_header_value, "?1");
+  EXPECT_THAT(
+      pending_request->request.headers.GetHeader("Sec-Ad-Auction-Fetch"),
+      testing::Optional(std::string("?1")));
 
   // Redirect to `foo2.com`. The ad auction signals response for the initial
   // request to `foo1.com` will be ignored, and the redirect request to
@@ -817,11 +788,9 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   EXPECT_EQ(follow_redirect_params[0].removed_headers[0],
             "Sec-Ad-Auction-Fetch");
 
-  std::string redirect_ad_auction_request_header_value;
-  bool redirect_has_ad_auction_request_header =
-      follow_redirect_params[0].modified_headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &redirect_ad_auction_request_header_value);
-  EXPECT_FALSE(redirect_has_ad_auction_request_header);
+  EXPECT_EQ(follow_redirect_params[0].modified_headers.GetHeader(
+                "Sec-Ad-Auction-Fetch"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
@@ -868,12 +837,9 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, AdditionalBids) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string ad_auction_request_header_value;
-  bool has_ad_auction_request_header =
-      pending_request->request.headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
-  EXPECT_TRUE(has_ad_auction_request_header);
-  EXPECT_EQ(ad_auction_request_header_value, "?1");
+  EXPECT_THAT(
+      pending_request->request.headers.GetHeader("Sec-Ad-Auction-Fetch"),
+      testing::Optional(std::string("?1")));
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHeadWithAdditionalBids(
@@ -939,11 +905,8 @@ TEST_F(
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string ad_auction_request_header_value;
-  bool has_ad_auction_request_header =
-      pending_request->request.headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
-  EXPECT_FALSE(has_ad_auction_request_header);
+  EXPECT_EQ(pending_request->request.headers.GetHeader("Sec-Ad-Auction-Fetch"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHeadWithAdditionalBids(
@@ -991,12 +954,9 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string ad_auction_request_header_value;
-  bool has_ad_auction_request_header =
-      pending_request->request.headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
-  EXPECT_TRUE(has_ad_auction_request_header);
-  EXPECT_EQ(ad_auction_request_header_value, "?1");
+  EXPECT_THAT(
+      pending_request->request.headers.GetHeader("Sec-Ad-Auction-Fetch"),
+      testing::Optional(std::string("?1")));
 
   // Redirect to `foo2.com`. The ad auction additional bid response for the
   // initial request to `foo1.com` will be ignored, and the redirect request to
@@ -1022,11 +982,9 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   EXPECT_EQ(follow_redirect_params[0].removed_headers[0],
             "Sec-Ad-Auction-Fetch");
 
-  std::string redirect_ad_auction_request_header_value;
-  bool redirect_has_ad_auction_request_header =
-      follow_redirect_params[0].modified_headers.GetHeader(
-          "Sec-Ad-Auction-Fetch", &redirect_ad_auction_request_header_value);
-  EXPECT_FALSE(redirect_has_ad_auction_request_header);
+  EXPECT_EQ(follow_redirect_params[0].modified_headers.GetHeader(
+                "Sec-Ad-Auction-Fetch"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(
       CreateResponseHeadWithAdditionalBids(

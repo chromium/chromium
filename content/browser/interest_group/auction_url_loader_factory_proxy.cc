@@ -115,12 +115,13 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   // Worklet requests must include a request header.
-  std::string accept_header;
-  if (!url_request.headers.GetHeader(net::HttpRequestHeaders::kAccept,
-                                     &accept_header)) {
+  std::optional<std::string> opt_accept_header =
+      url_request.headers.GetHeader(net::HttpRequestHeaders::kAccept);
+  if (!opt_accept_header) {
     receiver_.ReportBadMessage("Missing accept header");
     return;
   }
+  std::string accept_header = std::move(opt_accept_header).value();
 
   bool is_request_allowed = false;
   bool is_trusted_signals_request = false;

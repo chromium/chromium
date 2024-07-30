@@ -79,6 +79,7 @@
 #include "net/base/isolation_info.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -14976,10 +14977,9 @@ function scoreAd(
       kTrustedBiddingSignalsUrlPath,
       base::BindLambdaForTesting(
           [&](URLLoaderInterceptor::RequestParams* params) {
-            std::string got_label;
-            EXPECT_TRUE(params->url_request.headers.GetHeader(
-                "Sec-Cookie-Deprecation", &got_label));
-            EXPECT_EQ("LabelForTesting", got_label);
+            EXPECT_THAT(
+                params->url_request.headers.GetHeader("Sec-Cookie-Deprecation"),
+                testing::Optional(std::string("LabelForTesting")));
             bidding_kv_called = true;
             URLLoaderInterceptor::WriteResponse(kFledgeSignalsHeaders, "{}",
                                                 params->client.get());
@@ -14988,10 +14988,9 @@ function scoreAd(
       kTrustedScoringSignalsUrlPath,
       base::BindLambdaForTesting(
           [&](URLLoaderInterceptor::RequestParams* params) {
-            std::string got_label;
-            EXPECT_TRUE(params->url_request.headers.GetHeader(
-                "Sec-Cookie-Deprecation", &got_label));
-            EXPECT_EQ("LabelForTesting", got_label);
+            EXPECT_THAT(
+                params->url_request.headers.GetHeader("Sec-Cookie-Deprecation"),
+                testing::Optional(std::string("LabelForTesting")));
             scoring_kv_called = true;
             URLLoaderInterceptor::WriteResponse(kFledgeSignalsHeaders, "{}",
                                                 params->client.get());

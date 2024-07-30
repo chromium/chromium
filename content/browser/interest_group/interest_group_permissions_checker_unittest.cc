@@ -17,6 +17,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -150,9 +151,8 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, RequestParameters) {
   EXPECT_EQ(network::mojom::RequestMode::kCors, request.mode);
   EXPECT_EQ(kFrameOrigin, request.request_initiator);
 
-  std::string accept;
-  ASSERT_TRUE(request.headers.GetHeader("Accept", &accept));
-  EXPECT_EQ(accept, "application/json");
+  EXPECT_THAT(request.headers.GetHeader("Accept"),
+              testing::Optional(std::string("application/json")));
 }
 
 TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, HttpError) {
