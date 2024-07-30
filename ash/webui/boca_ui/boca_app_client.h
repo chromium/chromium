@@ -43,12 +43,6 @@ class BocaAppClient {
 
   static BocaAppClient* Get();
 
-  // Returns `true` if contains producer attribute.
-  virtual bool IsProducer() = 0;
-
-  // Returns `true` if contains consumer attribute.
-  virtual bool IsConsumer() = 0;
-
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
