@@ -38,6 +38,7 @@ static_library("network") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/profiles:signin_profile_handler",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/common",
     "//chromeos/ash/components/carrier_lock",
     "//chromeos/ash/components/dbus/hermes",
@@ -61,6 +62,9 @@ static_library("network") {
     "//ui/message_center/public/cpp",
     "//ui/web_dialogs",
   ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ui/webui/ash/cellular_setup" ]
 }
 
 source_set("unit_tests") {
