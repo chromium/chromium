@@ -205,6 +205,7 @@ source_set("chromeos") {
     "//chrome/browser/extensions",
     "//chrome/browser/media/webrtc",
   ]
+
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",
@@ -254,6 +255,7 @@ source_set("chromeos") {
     "//ui/views",
     "//url",
   ]
+
   deps = [
     ":system_stack_sampled_metrics_status_proto",
     "//chrome/app:command_ids",
@@ -402,6 +404,7 @@ source_set("chromeos") {
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/ui/ash/network",
+      "//chrome/browser/ui/webui/ash/cloud_upload",
     ]
     public_deps += [
       "//ash/constants",
@@ -453,6 +456,7 @@ source_set("chromeos") {
       "//chrome/browser/ui/ash/network",
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/browser/ui/webui/ash/cloud_upload",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/chaps_util",
       "//chromeos/ash/components/login/auth/public:authpublic",

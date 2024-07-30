@@ -11,6 +11,7 @@ source_set("office_web_app") {
     "office_web_app.cc",
     "office_web_app.h",
   ]
+
   deps = [
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/apps/app_service",
@@ -20,6 +21,12 @@ source_set("office_web_app") {
     "//ui/base:base",
     "//url",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ui/webui/ash/cloud_upload" ]
+    allow_circular_includes_from =
+        [ "//chrome/browser/ui/webui/ash/cloud_upload" ]
+  }
 }
 
 source_set("unit_tests") {

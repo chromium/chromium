@@ -45,13 +45,17 @@ static_library("office_fallback") {
     "//chrome/browser/chromeos",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chromeos/constants",
     "//ui/base",
     "//ui/chromeos/strings",
     "//ui/webui",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/file_manager" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ui/webui/ash/cloud_upload",
+  ]
 }
 
 source_set("browser_tests") {
