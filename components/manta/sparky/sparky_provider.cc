@@ -1,12 +1,6 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354693352): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/manta/sparky/sparky_provider.h"
 
 #include <memory>
@@ -132,14 +126,8 @@ void SparkyProvider::OnScreenshotObtained(
 
   if (jpeg_screenshot) {
     proto::Image* image_proto = sparky_context_data->mutable_screenshot();
-
-    // This copies the raw data from jpeg_screenshot (handling constness).
-    const uint8_t* data_ptr =
-        reinterpret_cast<const uint8_t*>(jpeg_screenshot->front());
-    size_t data_size = jpeg_screenshot->size();
-    // TODO(crbug.com/354693352): Explicit size when making string is unsafe.
-    image_proto->set_serialized_bytes(std::string(
-        data_ptr, data_ptr + data_size));  // Construct string from data
+    image_proto->set_serialized_bytes(
+        std::string(base::as_string_view(*jpeg_screenshot)));
   }
   auto* apps_data = sparky_context_data->mutable_apps_data();
   AddAppsData(sparky_delegate_->GetAppsList(), apps_data);
