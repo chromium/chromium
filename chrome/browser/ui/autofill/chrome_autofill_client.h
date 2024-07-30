@@ -133,10 +133,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const AutofillProfile* original_profile,
       SaveAddressProfilePromptOptions options,
       AddressProfileSavePromptCallback callback) override;
-  bool ShowTouchToFillCreditCard(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard> cards_to_suggest,
-      const std::vector<bool>& card_acceptabilities) override;
   bool ShowTouchToFillIban(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::Iban> ibans_to_suggest) override;

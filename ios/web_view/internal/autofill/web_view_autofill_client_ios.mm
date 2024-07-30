@@ -222,14 +222,6 @@ void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
   NOTREACHED_IN_MIGRATION();
 }
 
-bool WebViewAutofillClientIOS::ShowTouchToFillCreditCard(
-    base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard> cards_to_suggest,
-    const std::vector<bool>& card_acceptabilities) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
-}
-
 void WebViewAutofillClientIOS::HideTouchToFillCreditCard() {
   NOTREACHED_IN_MIGRATION();
 }

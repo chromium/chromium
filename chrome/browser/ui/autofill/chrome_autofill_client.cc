@@ -538,30 +538,6 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
 #endif
 }
 
-// TODO(crbug.com/309163844): Add follow-up ManualFallback for showing IBANs.
-bool ChromeAutofillClient::ShowTouchToFillCreditCard(
-    base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard> cards_to_suggest,
-    const std::vector<bool>& card_acceptabilities) {
-#if BUILDFLAG(IS_ANDROID)
-  // Create the manual filling controller which will be used to show the
-  // unmasked virtual card details in the manual fallback.
-  ManualFillingController::GetOrCreate(web_contents())
-      ->UpdateSourceAvailability(
-          ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
-          !cards_to_suggest.empty());
-
-  return GetPaymentsAutofillClient()
-      ->GetTouchToFillPaymentMethodController()
-      .Show(std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
-            delegate, std::move(cards_to_suggest),
-            std::move(card_acceptabilities));
-#else
-  // Touch To Fill is not supported on Desktop.
-  NOTREACHED_NORETURN();
-#endif
-}
-
 bool ChromeAutofillClient::ShowTouchToFillIban(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::Iban> ibans_to_suggest) {

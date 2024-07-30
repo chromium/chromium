@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
@@ -205,6 +206,13 @@ AutofillOfferManager* PaymentsAutofillClient::GetAutofillOfferManager() {
 const AutofillOfferManager* PaymentsAutofillClient::GetAutofillOfferManager()
     const {
   return const_cast<PaymentsAutofillClient*>(this)->GetAutofillOfferManager();
+}
+
+bool PaymentsAutofillClient::ShowTouchToFillCreditCard(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const autofill::CreditCard> cards_to_suggest,
+    const std::vector<bool>& card_acceptabilies) {
+  return false;
 }
 
 }  // namespace autofill::payments

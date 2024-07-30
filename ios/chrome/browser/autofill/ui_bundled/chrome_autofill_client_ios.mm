@@ -304,14 +304,6 @@ void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog(
   NOTREACHED_NORETURN();
 }
 
-bool ChromeAutofillClientIOS::ShowTouchToFillCreditCard(
-    base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const CreditCard> cards_to_suggest,
-    const std::vector<bool>& card_acceptabilities) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
-}
-
 void ChromeAutofillClientIOS::HideTouchToFillCreditCard() {
   NOTREACHED_IN_MIGRATION();
 }

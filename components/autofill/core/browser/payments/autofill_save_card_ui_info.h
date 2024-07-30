@@ -15,6 +15,8 @@ struct AccountInfo;
 
 namespace autofill {
 
+class CreditCard;
+
 // Holds resources (strings, icons) for save card prompt UIs.
 struct AutofillSaveCardUiInfo {
   bool is_for_upload;

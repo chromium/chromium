@@ -104,10 +104,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void ShowDeleteAddressProfileDialog(
       const AutofillProfile& profile,
       AddressProfileDeleteDialogCallback delete_dialog_callback) override;
-  bool ShowTouchToFillCreditCard(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const CreditCard> cards_to_suggest,
-      const std::vector<bool>& card_acceptabilities) override;
   void HideTouchToFillCreditCard() override;
   void ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,

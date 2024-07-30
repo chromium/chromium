@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_AUTOFILL_CLIENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_PAYMENTS_AUTOFILL_CLIENT_H_
 
+#include <vector>
+
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
@@ -23,6 +26,7 @@ class AutofillClient;
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class MerchantPromoCodeManager;
+class TouchToFillDelegate;
 class VirtualCardEnrollmentManager;
 
 namespace payments {
@@ -95,6 +99,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   void ShowMandatoryReauthOptInConfirmation() override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
   AutofillOfferManager* GetAutofillOfferManager() override;
+  bool ShowTouchToFillCreditCard(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const autofill::CreditCard> cards_to_suggest,
+      const std::vector<bool>& card_acceptabilities) override;
 
   bool GetMandatoryReauthOptInPromptWasShown();
 
