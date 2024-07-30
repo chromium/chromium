@@ -353,8 +353,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kTrackingProtectionUserBypassPwa,
     &privacy_sandbox::kTrackingProtectionUserBypassPwaTrigger,
     &query_tiles::features::kQueryTiles,
-    &safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection,
-    &safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection,
     &safe_browsing::kHashPrefixRealTimeLookups,
     &safe_browsing::kSafeBrowsingCallNewGmsApiOnStartup,
     &safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,

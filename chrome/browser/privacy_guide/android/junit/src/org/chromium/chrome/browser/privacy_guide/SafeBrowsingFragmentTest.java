@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -31,11 +30,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
@@ -57,10 +53,7 @@ public class SafeBrowsingFragmentTest {
 
     private FragmentScenario mScenario;
     private RadioButtonWithDescriptionAndAuxButton mEnhancedProtectionButton;
-    private RadioButtonWithDescriptionAndAuxButton mStandardProtectionButton;
-    private RadioButtonWithDescription mStandardProtectionButtonFriendlier;
-    private String mFriendlierESBDescription;
-    private String mOriginalESBDescription;
+    private RadioButtonWithDescription mStandardProtectionButton;
     private final UserActionTester mActionTester = new UserActionTester();
 
     @Before
@@ -99,22 +92,10 @@ public class SafeBrowsingFragmentTest {
                 fragment -> {
                     mEnhancedProtectionButton =
                             fragment.getView().findViewById(R.id.enhanced_option);
-                    mStandardProtectionButtonFriendlier =
-                            fragment.getView().findViewById(R.id.standard_option_friendlier);
                     mStandardProtectionButton =
                             fragment.getView().findViewById(R.id.standard_option);
                     ((SafeBrowsingFragment) fragment)
                             .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
-                    mFriendlierESBDescription =
-                            fragment.getContext()
-                                    .getString(
-                                            R.string
-                                                    .safe_browsing_enhanced_protection_summary_updated);
-                    mOriginalESBDescription =
-                            fragment.getContext()
-                                    .getString(
-                                            R.string
-                                                    .privacy_guide_safe_browsing_enhanced_description);
                 });
     }
 
@@ -172,71 +153,22 @@ public class SafeBrowsingFragmentTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
-    public void testIsSBStandardFriendlierVisibleWhenInit() {
-        initFragmentWithSBState(SafeBrowsingState.STANDARD_PROTECTION);
-        assertEquals(View.GONE, mStandardProtectionButton.getVisibility());
-        assertFalse(mStandardProtectionButton.isChecked());
-        assertEquals(View.VISIBLE, mStandardProtectionButtonFriendlier.getVisibility());
-        assertTrue(mStandardProtectionButtonFriendlier.isChecked());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
-    public void testSelectStandardFriendlierFromEnhanced() {
-        initFragmentWithSBState(SafeBrowsingState.ENHANCED_PROTECTION);
-        assertFalse(mStandardProtectionButtonFriendlier.isChecked());
-        mStandardProtectionButtonFriendlier.performClick();
-        assertTrue(mStandardProtectionButtonFriendlier.isChecked());
-        verify(mNativeMock).setSafeBrowsingState(mProfile, SafeBrowsingState.STANDARD_PROTECTION);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
-    public void testInitWhenSBStandardAndFriendlierIsOff() {
-        initFragmentWithSBState(SafeBrowsingState.STANDARD_PROTECTION);
-        assertFalse(mEnhancedProtectionButton.isChecked());
-
-        assertEquals(View.VISIBLE, mStandardProtectionButton.getVisibility());
-        assertTrue(mStandardProtectionButton.isChecked());
-        assertEquals(View.GONE, mStandardProtectionButtonFriendlier.getVisibility());
-        assertFalse(mStandardProtectionButtonFriendlier.isChecked());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
     public void testDescriptionTextWhenHashRealTimeDisabled() {
         when(mNativeMock.isHashRealTimeLookupEligibleInSession()).thenReturn(false);
         initFragmentWithSBState(SafeBrowsingState.STANDARD_PROTECTION);
         assertEquals(
                 ContextUtils.getApplicationContext()
-                        .getString(R.string.safe_browsing_standard_protection_summary_updated),
-                mStandardProtectionButtonFriendlier.getDescriptionText());
+                        .getString(R.string.safe_browsing_standard_protection_summary),
+                mStandardProtectionButton.getDescriptionText());
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION})
     public void testDescriptionTextWhenHashRealTimeEnabled() {
         when(mNativeMock.isHashRealTimeLookupEligibleInSession()).thenReturn(true);
         initFragmentWithSBState(SafeBrowsingState.STANDARD_PROTECTION);
         assertEquals(
                 ContextUtils.getApplicationContext()
-                        .getString(
-                                R.string.safe_browsing_standard_protection_summary_updated_proxy),
-                mStandardProtectionButtonFriendlier.getDescriptionText());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
-    public void testUpdatedDescriptionEnhancedProtection() {
-        initFragmentWithSBState(SafeBrowsingState.ENHANCED_PROTECTION);
-        assertEquals(mFriendlierESBDescription, mEnhancedProtectionButton.getDescriptionText());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
-    public void testOriginalDescriptionEnhancedProtection() {
-        initFragmentWithSBState(SafeBrowsingState.ENHANCED_PROTECTION);
-        assertEquals(mOriginalESBDescription, mEnhancedProtectionButton.getDescriptionText());
+                        .getString(R.string.safe_browsing_standard_protection_summary_proxy),
+                mStandardProtectionButton.getDescriptionText());
     }
 }

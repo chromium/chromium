@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
@@ -99,44 +98,18 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
         }
         mEnhancedProtection.setVisibility(View.VISIBLE);
         mEnhancedProtection.setAuxButtonClickedListener(this);
-        // Update the description text with the friendlier settings string based on the value
-        // of the friendlier settings feature flag
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)) {
-            mEnhancedProtection.setDescriptionText(
-                    getContext()
-                            .getString(R.string.safe_browsing_enhanced_protection_summary_updated));
-        }
         mStandardProtection =
                 (RadioButtonWithDescriptionAndAuxButton)
                         holder.findViewById(R.id.standard_protection);
         mStandardProtection.setAuxButtonClickedListener(this);
-        // Update the description text with the friendlier settings string based on the value
-        // of the friendlier settings feature flag
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)) {
-            if (SafeBrowsingBridge.isHashRealTimeLookupEligibleInSession()) {
-                mStandardProtection.setDescriptionText(
-                        getContext()
-                                .getString(
-                                        R.string
-                                                .safe_browsing_standard_protection_summary_updated_proxy));
-            } else {
-                mStandardProtection.setDescriptionText(
-                        getContext()
-                                .getString(
-                                        R.string
-                                                .safe_browsing_standard_protection_summary_updated));
-            }
+        // Update the description text with the proxy string based on whether
+        // hash-prefix real-time lookups are eligible in the session.
+        if (SafeBrowsingBridge.isHashRealTimeLookupEligibleInSession()) {
+            mStandardProtection.setDescriptionText(
+                    getContext()
+                            .getString(R.string.safe_browsing_standard_protection_summary_proxy));
         }
         mNoProtection = (RadioButtonWithDescription) holder.findViewById(R.id.no_protection);
-        // Update the description text with the friendlier settings string based on the value
-        // of the friendlier settings feature flag
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)) {
-            mNoProtection.setDescriptionText(
-                    getContext().getString(R.string.safe_browsing_no_protection_summary_updated));
-        }
         RadioButtonWithDescriptionLayout groupLayout =
                 (RadioButtonWithDescriptionLayout) mNoProtection.getRootView();
         groupLayout.setOnCheckedChangeListener(this);

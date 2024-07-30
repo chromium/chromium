@@ -325,10 +325,6 @@ public abstract class ChromeFeatureList {
     public static final String FORCE_LIST_TAB_SWITCHER = "ForceListTabSwitcher";
     public static final String FORCE_STARTUP_SIGNIN_PROMO = "ForceStartupSigninPromo";
     public static final String FORCE_WEB_CONTENTS_DARK_MODE = "WebContentsForceDark";
-    public static final String FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION =
-            "FriendlierSafeBrowsingSettingsEnhancedProtection";
-    public static final String FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION =
-            "FriendlierSafeBrowsingSettingsStandardProtection";
     public static final String FULLSCREEN_INSETS_API_MIGRATION = "FullscreenInsetsApiMigration";
     public static final String FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE =
             "FullscreenInsetsApiMigrationOnAutomotive";
@@ -623,10 +619,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(FEED_LOADING_PLACEHOLDER, false);
     public static final CachedFlag sForceListTabSwitcher =
             newCachedFlag(FORCE_LIST_TAB_SWITCHER, false);
-    public static final CachedFlag sFriendlierSafeBrowsingSettingsEnhancedProtection =
-            newCachedFlag(FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION, false);
-    public static final CachedFlag sFriendlierSafeBrowsingSettingsStandardProtection =
-            newCachedFlag(FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION, false);
     public static final CachedFlag sFullscreenInsetsApiMigration =
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION, false);
     public static final CachedFlag sFullscreenInsetsApiMigrationOnAutomotive =
@@ -759,8 +751,6 @@ public abstract class ChromeFeatureList {
                     sEducationalTipModule,
                     sFeedLoadingPlaceholder,
                     sForceListTabSwitcher,
-                    sFriendlierSafeBrowsingSettingsEnhancedProtection,
-                    sFriendlierSafeBrowsingSettingsStandardProtection,
                     sFullscreenInsetsApiMigration,
                     sFullscreenInsetsApiMigrationOnAutomotive,
                     sGcmNativeBackgroundTask,

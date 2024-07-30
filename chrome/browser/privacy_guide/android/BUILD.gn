@@ -193,8 +193,6 @@ android_resources("java_resources") {
     "java/res/layout/privacy_guide_preload_standard_explanation.xml",
     "java/res/layout/privacy_guide_preload_step.xml",
     "java/res/layout/privacy_guide_sb_enhanced_explanation.xml",
-    "java/res/layout/privacy_guide_sb_enhanced_explanation_updated.xml",
-    "java/res/layout/privacy_guide_sb_standard_explanation.xml",
     "java/res/layout/privacy_guide_sb_step.xml",
     "java/res/layout/privacy_guide_search_suggestions_step.xml",
     "java/res/layout/privacy_guide_steps.xml",
