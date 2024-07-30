@@ -8554,7 +8554,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_DynamicSafeAreaInsetsOnly",
                     "enable_features": [
                         "DynamicSafeAreaInsets",
                         "DynamicSafeAreaInsetsOnScroll"
