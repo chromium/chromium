@@ -1355,11 +1355,6 @@ copy("mojo_service_manager_policy") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "policy/test_support/embedded_policy_test_server_mixin.cc",
-    "policy/test_support/embedded_policy_test_server_mixin.h",
-    "policy/test_support/policy_test_server_constants.h",
-    "policy/test_support/remote_commands_service_mixin.cc",
-    "policy/test_support/remote_commands_service_mixin.h",
     "scoped_test_system_nss_key_slot_mixin.cc",
     "scoped_test_system_nss_key_slot_mixin.h",
   ]

@@ -177,6 +177,7 @@ static_library("test_support") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash",
     "//chrome/browser/ash/policy/remote_commands/crd:test_support",
+    "//chrome/browser/ash/policy/test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chrome/test:test_support_ui",
