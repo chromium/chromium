@@ -108,7 +108,8 @@ public class ReadAloudController
     private final TabModel mIncognitoTabModel;
     @Nullable private Player mPlayerCoordinator;
     private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
-    private final TapToSeekHandler mTapToSeekHandler;
+    private TapToSeekHandler mTapToSeekHandler;
+    private TapToSeekSelectionManager mTapToSeekSelectionManager;
     private final UserEducationHelper mUserEducationHelper;
 
     private TabModelTabObserver mTabObserver;
@@ -493,11 +494,15 @@ public class ReadAloudController
         mActivityWindowAndroid = activityWindowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
-        mTapToSeekHandler = new TapToSeekHandler(mTabModel.getCurrentTabSupplier());
         mUserEducationHelper =
                 new UserEducationHelper(
                         activity, mProfileSupplier, new Handler(Looper.getMainLooper()));
         mActivePlaybackTabSupplier = new ObservableSupplierImpl<>();
+        if (ReadAloudFeatures.isTapToSeekEnabled()) {
+            mTapToSeekHandler = new TapToSeekHandler(mTabModel.getCurrentTabSupplier());
+            mTapToSeekSelectionManager =
+                    new TapToSeekSelectionManager(this, mActivePlaybackTabSupplier);
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

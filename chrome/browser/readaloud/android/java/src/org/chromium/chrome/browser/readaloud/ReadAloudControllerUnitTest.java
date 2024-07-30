@@ -99,6 +99,8 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.SelectionClient;
+import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -114,14 +116,11 @@ import java.util.List;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowDeviceConditions.class, ShadowPostTask.class})
-@EnableFeatures({
-    ChromeFeatureList.READALOUD,
-    ChromeFeatureList.READALOUD_PLAYBACK,
-    ChromeFeatureList.READALOUD_TAP_TO_SEEK
-})
+@EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
 @DisableFeatures({
     ChromeFeatureList.READALOUD_IN_MULTI_WINDOW,
-    ChromeFeatureList.READALOUD_BACKGROUND_PLAYBACK
+    ChromeFeatureList.READALOUD_BACKGROUND_PLAYBACK,
+    ChromeFeatureList.READALOUD_TAP_TO_SEEK
 })
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
@@ -167,6 +166,8 @@ public class ReadAloudControllerUnitTest {
     @Mock private WebContents mWebContents;
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private TemplateUrl mSearchEngine;
+    @Mock private SelectionClient mSelectionClient;
+    @Mock private SelectionPopupController mSelectionPopupController;
     private GlobalRenderFrameHostId mGlobalRenderFrameHostId = new GlobalRenderFrameHostId(1, 1);
     public UserActionTester mUserActionTester;
     private HistogramWatcher mHighlightingEnabledOnStartupHistogram;
@@ -264,6 +265,9 @@ public class ReadAloudControllerUnitTest {
         mTab = mTabModelSelector.getCurrentTab();
         mTab.setGurlOverrideForTesting(sTestGURL);
         mTab.setWebContentsOverrideForTesting(mWebContents);
+
+        TapToSeekSelectionManager.setSmartSelectionClient(mSelectionClient);
+        TapToSeekSelectionManager.setSelectionPopupController(mSelectionPopupController);
 
         mController = createController();
 
@@ -2682,6 +2686,7 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.READALOUD_TAP_TO_SEEK)
     public void testTapToSeek() {
         // play tab
         requestAndStartPlayback();
@@ -2723,6 +2728,7 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.READALOUD_TAP_TO_SEEK)
     public void testTapToSeek_differentTab() {
         // play tab
         requestAndStartPlayback();

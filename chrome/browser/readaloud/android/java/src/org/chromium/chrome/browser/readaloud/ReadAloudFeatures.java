@@ -139,7 +139,7 @@ public final class ReadAloudFeatures {
 
     /** Returns true if Read Aloud tap to seek is enabled. */
     public static boolean isTapToSeekEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_TAP_TO_SEEK);
+        return ChromeFeatureList.sReadAloudTapToSeek.isEnabled();
     }
 
     /** Returns true if the ReadAloud CCT IPH should highlight the menu button. */

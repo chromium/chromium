@@ -251,6 +251,9 @@ public class SmartSelectionProvider {
                 int start, int end, TextClassification tc, TextSelection ts) {
             SelectionClient.Result result = new SelectionClient.Result();
 
+            result.text = mText.toString();
+            result.start = start;
+            result.end = end;
             result.startAdjust = start - mOriginalStart;
             result.endAdjust = end - mOriginalEnd;
             result.label = tc.getLabel();

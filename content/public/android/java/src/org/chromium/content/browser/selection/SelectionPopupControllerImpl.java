@@ -435,7 +435,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         return mClassificationResult;
     }
 
-    /** Gets the current {@link SelectionClient}. */
+    @Override
     public SelectionClient getSelectionClient() {
         return mSelectionClient;
     }

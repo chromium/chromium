@@ -30,6 +30,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
+import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetworkChangeNotifier;
@@ -314,8 +315,16 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
             if (mSelectionClientManager != null) {
                 SelectionPopupController controller =
                         SelectionPopupController.fromWebContents(webContents);
-                controller.setSelectionClient(
-                        mSelectionClientManager.removeContextualSearchSelectionClient());
+                SelectionClient client =
+                        mSelectionClientManager.removeContextualSearchSelectionClient();
+                if (isReadAloudTapToSeekEnabled()) {
+                    if (controller.getSelectionClient()
+                            == mSelectionClientManager.getSelectionClient()) {
+                        controller.setSelectionClient(client);
+                    }
+                } else {
+                    controller.setSelectionClient(client);
+                }
             }
             // Also make sure the UI is hidden if the device is offline.
             ContextualSearchManager contextualSearchManager = getContextualSearchManager(mTab);

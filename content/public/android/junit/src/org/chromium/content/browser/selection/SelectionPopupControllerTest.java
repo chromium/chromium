@@ -427,7 +427,7 @@ public class SelectionPopupControllerTest {
                 MenuSourceType.MENU_SOURCE_LONG_PRESS,
                 mRenderFrameHost);
 
-        // Then we done with the first classification.
+        // Then we are done with the first classification.
         mController.getResultCallback().onClassified(result);
 
         // Followed by the second classifaction.

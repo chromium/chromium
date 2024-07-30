@@ -17,6 +17,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
@@ -57,6 +58,10 @@ public class SmartSelectionClient implements SelectionClient, UserData {
     private SmartSelectionProvider mProvider;
     private ResultCallback mCallback;
     private SmartSelectionEventProcessor mSmartSelectionEventProcessor;
+
+    /** Observer list for surrounding text received. */
+    private final ObserverList<SurroundingTextCallback> mSurroundingTextReceivedListeners =
+            new ObserverList<>();
 
     /**
      * Creates the SmartSelectionClient if not present. Returns null in case SmartSelectionProvider
@@ -162,9 +167,23 @@ public class SmartSelectionClient implements SelectionClient, UserData {
                         callbackData);
     }
 
+    @Override
+    public void addSurroundingTextReceivedListeners(SurroundingTextCallback observer) {
+        mSurroundingTextReceivedListeners.addObserver(observer);
+    }
+
+    @Override
+    public void removeSurroundingTextReceivedListeners(SurroundingTextCallback observer) {
+        mSurroundingTextReceivedListeners.removeObserver(observer);
+    }
+
     @CalledByNative
     private void onSurroundingTextReceived(
             @RequestType int callbackData, String text, int start, int end) {
+        for (SurroundingTextCallback observer : mSurroundingTextReceivedListeners) {
+            observer.onSurroundingTextReceived(text, start, end);
+        }
+
         if (!textHasValidSelection(text, start, end)) {
             mCallback.onClassified(new Result());
             return;
