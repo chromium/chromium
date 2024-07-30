@@ -818,6 +818,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.handleTranslateDetectedText();
   }
 
+  handleCopyForTesting() {
+    this.handleCopy();
+  }
+
   handleTranslateForTesting() {
     this.handleTranslate();
   }
