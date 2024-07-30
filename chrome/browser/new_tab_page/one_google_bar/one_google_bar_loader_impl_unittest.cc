@@ -349,11 +349,11 @@ TEST_F(OneGoogleBarLoaderImplTest, MirrorAccountConsistencyNotRequired) {
   if (check_x_chrome_connected_header) {
     // On Chrome OS, X-Chrome-Connected header is present, but
     // enable_account_consistency is set to false.
-    std::string header_value;
-    EXPECT_TRUE(last_request_headers().GetHeader(signin::kChromeConnectedHeader,
-                                                 &header_value));
+    EXPECT_THAT(
+        last_request_headers().GetHeader(signin::kChromeConnectedHeader),
+        testing::Optional(
+            testing::ResultOf(&GetEnableAccountConsistencyValue, "false")));
     // mode = PROFILE_MODE_DEFAULT
-    EXPECT_EQ(GetEnableAccountConsistencyValue(header_value), "false");
   } else {
     // On not Chrome OS, the X-Chrome-Connected header must not be present.
     EXPECT_FALSE(
@@ -390,12 +390,12 @@ TEST_F(OneGoogleBarLoaderImplWithMirrorAccountConsistencyTest,
   if (check_x_chrome_connected_header) {
     // On Chrome OS, X-Chrome-Connected header is present, and
     // enable_account_consistency is set to true.
-    std::string header_value;
-    EXPECT_TRUE(last_request_headers().GetHeader(signin::kChromeConnectedHeader,
-                                                 &header_value));
     // mode = PROFILE_MODE_INCOGNITO_DISABLED |
     // PROFILE_MODE_ADD_ACCOUNT_DISABLED
-    EXPECT_EQ(GetEnableAccountConsistencyValue(header_value), "true");
+    EXPECT_THAT(
+        last_request_headers().GetHeader(signin::kChromeConnectedHeader),
+        testing::Optional(
+            testing::ResultOf(&GetEnableAccountConsistencyValue, "true")));
   } else {
     // This is not a valid case (mirror account consistency can only be required
     // on Chrome OS). This ensures in this case nothing happens.
