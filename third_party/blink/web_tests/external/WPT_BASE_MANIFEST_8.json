@@ -73002,6 +73002,19 @@
        {}
       ]
      ],
+     "display-none-to-display-block.html": [
+      "9e8cb032d38d01eb176ac67d0cd8e0875d2033cb",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "flip-running-animation-via-variable.html": [
       "22d23c1f72603f465b0550b74a3e2367c88684ab",
       [
@@ -83242,6 +83255,45 @@
         {}
        ]
       ],
+      "block-container-block-end-collapsed-margins.html": [
+       "81ac9e141e3baddf3ca1b20528e9b12e5c9a3154",
+       [
+        null,
+        [
+         [
+          "/css/css-box/margin-trim/block-container-block-end-collapsed-margins-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-container-block-end-self-collapsing-item-has-larger-block-end.html": [
+       "f5c6f16797075fb77f15e988529c5108881b415c",
+       [
+        null,
+        [
+         [
+          "/css/css-box/margin-trim/block-container-block-end-self-collapsing-item-has-larger-block-end-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-container-block-end-self-collapsing-item-has-larger-block-start.html": [
+       "b5f7bf048db11553ed2588548a030b92c2e74fd8",
+       [
+        null,
+        [
+         [
+          "/css/css-box/margin-trim/block-container-block-end-self-collapsing-item-has-larger-block-start-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "block-container-block-start-001.html": [
        "c33c7f0abe5aa80c396f0050a47e4ea3c854e9dc",
        [
@@ -83262,6 +83314,45 @@
         [
          [
           "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-container-block-start-collapsed-margins.html": [
+       "35c5df82116e707f131f64944cb01aef73f0ea82",
+       [
+        null,
+        [
+         [
+          "/css/css-box/margin-trim/block-container-block-start-collapsed-margins-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-container-block-start-self-collapsing-item-has-larger-block-end.html": [
+       "6fab6732a876f73337bca95b2b04efc17a866253",
+       [
+        null,
+        [
+         [
+          "/css/css-box/margin-trim/block-container-block-start-self-collapsing-item-has-larger-block-end-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-container-block-start-self-collapsing-item-larger-block-start.html": [
+       "91919e22e07543d4d44d33bcc6f70b02916f10f0",
+       [
+        null,
+        [
+         [
+          "/css/css-box/margin-trim/block-container-block-start-self-collapsing-item-larger-block-start-ref.html",
           "=="
          ]
         ],
@@ -131565,7 +131656,7 @@
       ],
       "self-baseline": {
        "grid-self-baseline-001.html": [
-        "2473bb5d4fc8adc351af441bf39cffcacc076273",
+        "61621ab0d6bfbffde43d402d481263c301094e93",
         [
          null,
          [
@@ -131578,7 +131669,7 @@
         ]
        ],
        "grid-self-baseline-002-b.html": [
-        "7d9ebecb8ca542f8ebb7574e87a77c086262ebca",
+        "9d3b55793512be253f6e10fc37dccbf23c7163d7",
         [
          null,
          [
@@ -131591,7 +131682,7 @@
         ]
        ],
        "grid-self-baseline-002.html": [
-        "700fd26097e850a3a348dedc657ebd295a439486",
+        "d563dd9a2c473a3a55eeedecec6947aadda30175",
         [
          null,
          [
@@ -131604,7 +131695,7 @@
         ]
        ],
        "grid-self-baseline-003.html": [
-        "2372ac19318f65ba1a28ff15aea46579d10c63aa",
+        "746fb1a0b02abc2ea70db106ce5cb5783af41207",
         [
          null,
          [
@@ -131617,7 +131708,7 @@
         ]
        ],
        "grid-self-baseline-004.html": [
-        "c7f49bf24af08f82df9d2975bd485057de5e3018",
+        "9b08598cefbe898260699e3d16feebb466f602d7",
         [
          null,
          [
@@ -131630,7 +131721,7 @@
         ]
        ],
        "grid-self-baseline-005.html": [
-        "3bfa2d2079955095fc73244f7073e99aeda0e5b1",
+        "0e2e0c51aad3cc501b72071ad0218b65e0051514",
         [
          null,
          [
@@ -131643,7 +131734,7 @@
         ]
        ],
        "grid-self-baseline-006.html": [
-        "34edced2b4345474acd364f6d3cb6310f24eca3e",
+        "bbadf59158bccdc44f1ad8f9e8190dbfc90273e8",
         [
          null,
          [
@@ -131656,7 +131747,7 @@
         ]
        ],
        "grid-self-baseline-007.html": [
-        "e0966bb6e6421a5e950d486e3f45b93ce4a55416",
+        "5a6488f08ed07e378e2bc62ae2a2c5f7628c6381",
         [
          null,
          [
@@ -131838,7 +131929,7 @@
         ]
        ],
        "grid-self-baseline-horiz-001.html": [
-        "556009dfde719b49ad0bb62f939e4a08ee16053f",
+        "c70926b9a51e131424ae1e7e6260be4e48c688ca",
         [
          null,
          [
@@ -131851,7 +131942,7 @@
         ]
        ],
        "grid-self-baseline-horiz-002.html": [
-        "c196cd35c514da0e35a6754a3e7905b02d6eda16",
+        "8b7d080669fde3d93d4a570d99fae74aa5d173c0",
         [
          null,
          [
@@ -131864,7 +131955,7 @@
         ]
        ],
        "grid-self-baseline-horiz-003.html": [
-        "287cb80fd58b4f8feb57ce5723478cb025c77040",
+        "f97ffc7d281774edc212f18f939d07b2703f58fb",
         [
          null,
          [
@@ -131877,7 +131968,7 @@
         ]
        ],
        "grid-self-baseline-horiz-004.html": [
-        "673c9ff20829c5ac451443bf9bccacb6ed9d6546",
+        "472e0c1db9e63b62253aefaa4d7e74399ae9fcca",
         [
          null,
          [
@@ -131890,7 +131981,7 @@
         ]
        ],
        "grid-self-baseline-horiz-005.html": [
-        "f816e893ca288abeb0b94a13d049f04d6ea8b4f4",
+        "d482d7fbff7cb1e7a15ae0d9c0e1c13eca678c4d",
         [
          null,
          [
@@ -131903,7 +131994,7 @@
         ]
        ],
        "grid-self-baseline-horiz-006.html": [
-        "c034040b5fdc032770014d4b55ef55c2f5b7956c",
+        "f06a24723f00ae0d02baf77b48676a05634269d5",
         [
          null,
          [
@@ -131916,7 +132007,7 @@
         ]
        ],
        "grid-self-baseline-horiz-007.html": [
-        "60185142427a8858a37c93e380578a37cd9b936d",
+        "1b9178b16b0625117f7cfdeb9e60dce24ddd4eeb",
         [
          null,
          [
@@ -131929,7 +132020,7 @@
         ]
        ],
        "grid-self-baseline-vertical-lr-001.html": [
-        "801474df57c29737a173e46c0eb59a5e4211f0ed",
+        "e4023de1a26435c4cb8b8c700be5ae6307508316",
         [
          null,
          [
@@ -131942,7 +132033,7 @@
         ]
        ],
        "grid-self-baseline-vertical-lr-002.html": [
-        "6dd235a7b6fcdf7a7d37ee5f65776e28669bf252",
+        "a6d73382161629e609a83b45b2e650174ed77081",
         [
          null,
          [
@@ -131955,7 +132046,7 @@
         ]
        ],
        "grid-self-baseline-vertical-lr-003.html": [
-        "18f581620d611e159f9c9af8f9a9bc4b40b3a3ae",
+        "d100bfb9138e051c78342cf5987c0ebb682feae3",
         [
          null,
          [
@@ -131968,7 +132059,7 @@
         ]
        ],
        "grid-self-baseline-vertical-lr-004.html": [
-        "1f2e3860b06f96a5d4fe1ee6416a9ba78f347eee",
+        "4e57fdba679c9affbd765d53f4f7fa2d75d01dd2",
         [
          null,
          [
@@ -131981,7 +132072,7 @@
         ]
        ],
        "grid-self-baseline-vertical-lr-005.html": [
-        "a27cb67898eb5e3167c6869faffaf2936e9705cd",
+        "f3d9b2368d1bbad978c28a9b1bf4937b695849ed",
         [
          null,
          [
@@ -131994,7 +132085,7 @@
         ]
        ],
        "grid-self-baseline-vertical-lr-006.html": [
-        "654c17cd9e85ba7bb3d2abdd91e5405036d6ddaa",
+        "7a4a8118f5a7176754bc4194b4425978468143a2",
         [
          null,
          [
@@ -132007,7 +132098,7 @@
         ]
        ],
        "grid-self-baseline-vertical-lr-007.html": [
-        "ae7b6bf36ea49eb8b078a5b40f608dc8a7167323",
+        "8e2422403a63fe568042763e860a17da2ad1d2e9",
         [
          null,
          [
@@ -132020,7 +132111,7 @@
         ]
        ],
        "grid-self-baseline-vertical-rl-001.html": [
-        "af7ca16d6345ad52c00d2efcc5bd33fca93d5619",
+        "890cde5a00c3659d8a1e4a6b6ce2696cd5e27f21",
         [
          null,
          [
@@ -132033,7 +132124,7 @@
         ]
        ],
        "grid-self-baseline-vertical-rl-002.html": [
-        "9aa00a71147d2c4618859ba28905ddf6f0c4cd9a",
+        "345d71d0af264dfbd6bea14656b3586a92b39d5d",
         [
          null,
          [
@@ -132046,7 +132137,7 @@
         ]
        ],
        "grid-self-baseline-vertical-rl-003.html": [
-        "2ae2f4fba6536359b8ec11b71f3b448445e776a2",
+        "9567b08c693bb8972d63b5943ee1f38b57c18032",
         [
          null,
          [
@@ -132059,7 +132150,7 @@
         ]
        ],
        "grid-self-baseline-vertical-rl-004.html": [
-        "d2f08642fcd52bbb574206b957caf1a71cec231c",
+        "35c3fa49bea5692c9da74f5e4fe2d8e0b3ca5b01",
         [
          null,
          [
@@ -132072,7 +132163,7 @@
         ]
        ],
        "grid-self-baseline-vertical-rl-005.html": [
-        "0d40ce288d7406bec157fb27aff9bcb591d3b87d",
+        "639a76fe146071c2382e5c8b8eeb92a25c8325ed",
         [
          null,
          [
@@ -132085,7 +132176,7 @@
         ]
        ],
        "grid-self-baseline-vertical-rl-006.html": [
-        "40f1e0796ea3733d55679a3aa5fcbe8a220ab4bc",
+        "4ace6d0343931e281e563268826c485897d55a87",
         [
          null,
          [
@@ -132098,7 +132189,7 @@
         ]
        ],
        "grid-self-baseline-vertical-rl-007.html": [
-        "49bab61ca091aaab8e4773d29ea274ba3be3790c",
+        "dd06aae4c50d170d6042ef4a89497a2155683384",
         [
          null,
          [
@@ -135188,6 +135279,19 @@
        ]
       ]
      },
+     "grid-relayout-with-nested-grid.html": [
+      "a898affa3a2944aa870258e448b53dc06269f26a",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/grid-relayout-with-nested-grid-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "grid-with-aspect-ratio-uses-content-box-height-for-track-sizing.html": [
       "45e527dd44ae89bb42e87a15ccb6ae62c0a3f918",
       [
@@ -173186,6 +173290,32 @@
      ]
     },
     "css-rhythm": {
+     "block-step-size-establishes-block-formatting-context-list-item.html": [
+      "85daa729789becc1ed561596788ede5dde23c490",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-step-size-establishes-block-formatting-context.html": [
+      "e96e3e00824eca6c449a9753f82d81476a264c37",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "block-step-size-establishes-independent-formatting-context-list-item.html": [
       "301ae3e9a2ff58084ba942edbcaf862521cf51f0",
       [
@@ -173206,6 +173336,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-step-size-none-does-not-establish-block-formatting-context.html": [
+      "afbfcd84efb731cfa1fcb5d2261c93fb46e6ecc1",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -237404,7 +237547,7 @@
       ]
      ],
      "clip-path-larger-than-border-box-on-child-of-named-element.html": [
-      "4a26c50ef82e0d2dad55f56ae602755cea65dfe5",
+      "75019d349d1222380a13fbe40b538c875431ca8d",
       [
        null,
        [
@@ -310374,22 +310517,6 @@
       "10324966edb042c1c7298ce22dad76766c2a777b",
       []
      ],
-     "color-mix-currentcolor-background-repaint-expected.xht": [
-      "05a13794482a94f6c10bd9d4c98704e63ef60331",
-      []
-     ],
-     "color-mix-currentcolor-background-repaint-parent-expected.xht": [
-      "05a13794482a94f6c10bd9d4c98704e63ef60331",
-      []
-     ],
-     "color-mix-currentcolor-outline-repaint-expected.xht": [
-      "05a13794482a94f6c10bd9d4c98704e63ef60331",
-      []
-     ],
-     "color-mix-currentcolor-outline-repaint-parent-expected.xht": [
-      "05a13794482a94f6c10bd9d4c98704e63ef60331",
-      []
-     ],
      "document-canvas-remove-body-ref.html": [
       "8612aaafa99b6805690766d4ac5f910a695a7991",
       []
@@ -311793,6 +311920,62 @@
       []
      ],
      "margin-trim": {
+      "block-container-block-end-collapsed-margins-ref.html": [
+       "1d2f7ff98b28adb58509753e6c1a3714fa6ffe3d",
+       []
+      ],
+      "block-container-block-end-last-child-with-border-expected.txt": [
+       "03726ab8278f935ebd9d5849e3215808a850d5b4",
+       []
+      ],
+      "block-container-block-end-nested-last-child-with-border-expected.txt": [
+       "9aad3a815c15535bbc8408d4c8aeec0da3c6ac30",
+       []
+      ],
+      "block-container-block-end-self-collapsing-children-nested-at-bottom-expected.txt": [
+       "df8b83056c16c43cab881a87757bc9c2863a3832",
+       []
+      ],
+      "block-container-block-end-self-collapsing-children-nested-margin-trim-expected.txt": [
+       "99bdc7962b7816da4f8289d653a679d6399ce6a6",
+       []
+      ],
+      "block-container-block-end-self-collapsing-children-offsets-expected.txt": [
+       "989a7db353258103c35a230c76e00c3fb9988e00",
+       []
+      ],
+      "block-container-block-end-self-collapsing-children-offsets-nested-multiple-times-expected.txt": [
+       "99bdc7962b7816da4f8289d653a679d6399ce6a6",
+       []
+      ],
+      "block-container-block-end-self-collapsing-children-offsets-nested-once-expected.txt": [
+       "989a7db353258103c35a230c76e00c3fb9988e00",
+       []
+      ],
+      "block-container-block-end-self-collapsing-children-offsets-vert-lr-expected.txt": [
+       "9417f0497d02c7fd9dc8c612b534de51235fc3f7",
+       []
+      ],
+      "block-container-block-end-self-collapsing-item-has-larger-block-end-ref.html": [
+       "9633928fd4d1a9702496ff714241f2436a92169a",
+       []
+      ],
+      "block-container-block-end-self-collapsing-item-has-larger-block-start-ref.html": [
+       "0b2b5662d1065241bdef7a9353891ba5cd58afb2",
+       []
+      ],
+      "block-container-block-start-collapsed-margins-ref.html": [
+       "c90bc2bf3a9d683bc72deaee29396b388e549894",
+       []
+      ],
+      "block-container-block-start-self-collapsing-item-has-larger-block-end-ref.html": [
+       "f851fe437a15ddba32af84122047870a81234fad",
+       []
+      ],
+      "block-container-block-start-self-collapsing-item-larger-block-start-ref.html": [
+       "3e7de7eb972639ef400b20493e87eae7ed8a2920",
+       []
+      ],
       "block-container-non-adjoining-item-ref.html": [
        "4affb87f11b2174047836baecc556734fd2e77b7",
        []
@@ -311908,6 +312091,14 @@
        ],
        "grid-block-end-item-spans-multiple-rows-expected.txt": [
         "d3ac9e267c3fd31541ae16f9ef4c91458ad9b5b8",
+        []
+       ],
+       "grid-block-start-expected.txt": [
+        "3f48f45f71057f320024600c7eca8491e6ae7e18",
+        []
+       ],
+       "grid-inline-end-items-in-last-column-trimmed-expected.txt": [
+        "8e074fc6fe6b2f347ad1bb02fcd6bddac50e6a2a",
         []
        ],
        "grid-inline-start-expected.txt": [
@@ -326655,35 +326846,35 @@
       },
       "self-baseline": {
        "grid-self-baseline-001-ref.html": [
-        "c85fd77ef91092a1e87a9a60ddf5bc5392b3be3b",
+        "2253b24ac07f83b2b2b5e161e071c8e2309eb0ce",
         []
        ],
        "grid-self-baseline-002-b-ref.html": [
-        "1b563f1f42ad319879ef13f9798ceb771184f136",
+        "800578e31d70022c90cf3cb86300c8192e90f4d6",
         []
        ],
        "grid-self-baseline-002-ref.html": [
-        "8593ea1abce9757b07f04da3b8b257cff5448d3d",
+        "a959d659d35203bb65966b47d743a90eb94fc038",
         []
        ],
        "grid-self-baseline-003-ref.html": [
-        "cd097c1d48a6ba4cddf10030e2d499c383ac2fed",
+        "c701e97fb8567cbb6d158978d281decadc57e22d",
         []
        ],
        "grid-self-baseline-004-ref.html": [
-        "d589acb3742cdc8cd61557d5a5afa9d1cf206b2f",
+        "57b44e6d769c0879ed77598fef3b302213dedde8",
         []
        ],
        "grid-self-baseline-005-ref.html": [
-        "75a366fc409d7ecc19fef2408b0aad08a302b778",
+        "52390473f218dd01241385da91b37e7b6015afe9",
         []
        ],
        "grid-self-baseline-006-ref.html": [
-        "610b2ad0a11ff010e30fc9c8d8a532c5e8c7c973",
+        "a8129d0bec4ed6d925b99bed2b2ca81e90f30b23",
         []
        ],
        "grid-self-baseline-007-ref.html": [
-        "59a0e339598b4c6e0f9b604636c9199826c45f2d",
+        "aa79b3eda74a521dcad8dd8b3408d15a79fa3189",
         []
        ],
        "grid-self-baseline-008-ref.html": [
@@ -326691,87 +326882,87 @@
         []
        ],
        "grid-self-baseline-horiz-001-ref.html": [
-        "1b8130d7b89ae35111009318535320e05bbda766",
+        "e8c6bb3b09c2479b7f00f73882fe2c2203c94bca",
         []
        ],
        "grid-self-baseline-horiz-002-ref.html": [
-        "735ea557868ab9e2f4c4bcd3b2b8eebd60f9d150",
+        "35068082ba5c04537713c93a451b8a7552dc2327",
         []
        ],
        "grid-self-baseline-horiz-003-ref.html": [
-        "fd966d16a152cf0748f390acc9f651c3124651ea",
+        "26ab87872c39b6f583ca423815e0001686b0fbc9",
         []
        ],
        "grid-self-baseline-horiz-004-ref.html": [
-        "be610d4f7f2ba9a0fd51116e3dfd66be89c470af",
+        "3851c45ff45a874b4e7edece4a4430973b32409d",
         []
        ],
        "grid-self-baseline-horiz-005-ref.html": [
-        "c38b6c76115724d05b284c197b9012bcff86c9d9",
+        "7851a214eec3acae68b344c5593638b92ffbfd7f",
         []
        ],
        "grid-self-baseline-horiz-006-ref.html": [
-        "6053b38a6fdf1e402ed341d2077dd3b2e78cc990",
+        "a92602fb3dbae37485d8f5d39d8d3b11960ae4b6",
         []
        ],
        "grid-self-baseline-horiz-007-ref.html": [
-        "cba725f4256d67ce022635aea66ce5be2f8bf8dd",
+        "ef5e5dac1546d457095ac702c8cba787a615a9b3",
         []
        ],
        "grid-self-baseline-vertical-lr-001-ref.html": [
-        "cf19544be84333c3820a8cb7776d019ea3c15693",
+        "ecb3c7c5014fc547536e95dbacd14f491cb8ef06",
         []
        ],
        "grid-self-baseline-vertical-lr-002-ref.html": [
-        "9a7a53969d3aad4e0453b104a536387c24fc0487",
+        "0e32b854180053a53e02b2ae9602d260ef19edcc",
         []
        ],
        "grid-self-baseline-vertical-lr-003-ref.html": [
-        "795926615fabb0634162ae2592eae10d4450a4f6",
+        "ce7bbb722ec640e26e8f8cfc154376a256524927",
         []
        ],
        "grid-self-baseline-vertical-lr-004-ref.html": [
-        "1ce8267ee7d3a381116afd1dcd62c9bdc40c71c5",
+        "17f0bbf75064b6c75b2903f8fac114a4a311cead",
         []
        ],
        "grid-self-baseline-vertical-lr-005-ref.html": [
-        "fb68579d9aef3c511550337204383649840b6942",
+        "4409a98b778bfd7f96bd36079e2e53d5d4a75da1",
         []
        ],
        "grid-self-baseline-vertical-lr-006-ref.html": [
-        "51c5f77da3574f49b5d9ce87d1f3128607f07f9d",
+        "46fbf2ebbc86e5805db0bf828f79461b47fb1f68",
         []
        ],
        "grid-self-baseline-vertical-lr-007-ref.html": [
-        "6f5641448d588dcf58ada8560ddaa069c07d4101",
+        "d216a18a9e9c95430550a202ff9a59c57b40fe37",
         []
        ],
        "grid-self-baseline-vertical-rl-001-ref.html": [
-        "02d3feb12672028ba0616414b93245327014807f",
+        "e759c48e636e431c5c93e4eb8ef162f7917c76ca",
         []
        ],
        "grid-self-baseline-vertical-rl-002-ref.html": [
-        "ef6b45c9c97e91620982683da957d49a817b7422",
+        "03faebeeceb74e33606d93fc1efbd1877afb1333",
         []
        ],
        "grid-self-baseline-vertical-rl-003-ref.html": [
-        "b72fc8817a4986cae1b0143f74ddc9cb58ef0366",
+        "40f6ac86da3524f2812f3153397375ef76e1de68",
         []
        ],
        "grid-self-baseline-vertical-rl-004-ref.html": [
-        "bab359226660df446219a578da60da73f2855e00",
+        "33958bcf937fd609866206914b810e04f8c6fd3f",
         []
        ],
        "grid-self-baseline-vertical-rl-005-ref.html": [
-        "da72a5f0179f01204c49e1fcaa62f5b16a60918d",
+        "0a0a935e296bf4bb60e59fd152d76f8f40482d3a",
         []
        ],
        "grid-self-baseline-vertical-rl-006-ref.html": [
-        "4011c691427b8f13ac15f79409213df39a82b86c",
+        "e345ca9d761283f0a9a283d4a3a8199984b66a9f",
         []
        ],
        "grid-self-baseline-vertical-rl-007-ref.html": [
-        "30658b8cc730598817d055f8ba6d0d2ae1f74b81",
+        "6c702dfbf5d26b6e403a6426085537f2c60725e6",
         []
        ]
       },
@@ -327024,6 +327215,10 @@
        ]
       }
      },
+     "grid-relayout-with-nested-grid-ref.html": [
+      "5cace4099c4b3e271a853d06721e592f6442dce5",
+      []
+     ],
      "layout-algorithm": {
       "references": {
        "auto-margins-ignored-during-track-sizing-001-ref.html": [
@@ -334500,6 +334695,10 @@
      },
      "at-property-shadow-expected.txt": [
       "c901a08d39299de0a4d731262b8bd42cd7025637",
+      []
+     ],
+     "register-property-syntax-parsing-expected.txt": [
+      "fa7abb94229445760c6fba3669ae25c5bbd0da21",
       []
      ],
      "registered-property-change-style-002-ref.html": [
@@ -363872,6 +364071,10 @@
       "218858b24c1ff080016c82dbc0c4c16fb6e95a26",
       []
      ],
+     "collecting-file-system-observer.js": [
+      "94e93495e10b26750f9de078ae86b72591288305",
+      []
+     ],
      "message-target-dedicated-worker.js": [
       "26ff23ef8ac65009c3c5efd4bdeda3970ae93910",
       []
@@ -363917,7 +364120,7 @@
       []
      ],
      "test-helpers.js": [
-      "add3dba6455669854331a78b51a56fa9508b42e0",
+      "7bfd928e39c105555f7cb2244d2dc77065cea138",
       []
      ]
     },
@@ -377738,10 +377941,6 @@
        ],
        "selectlist-font-size-ref.tentative.html": [
         "46d6dbdb9b2c740dfe1dd3ef5a8e44a766cbd786",
-        []
-       ],
-       "selectlist-form-state-restore.tentative-expected.txt": [
-        "8b137891791fe96927ad78e64b0aad7bded08bdc",
         []
        ],
        "selectlist-listbox-element-ref.html": [
@@ -396644,6 +396843,10 @@
       "4e31ed49627c40f145e87e867d5c0395a72783f3",
       []
      ],
+     "getinnerhtml.tentative-expected.txt": [
+      "a1e94a1fa40c7b0d0fab7247e8f3c0effce19f9b",
+      []
+     ],
      "support": {
       "declarative-child-frame.html": [
        "603c47743b807ecc00a483d328edcacb7ebb8d57",
@@ -402332,31 +402535,31 @@
     "animation-model": {
      "animation-types": {
       "accumulation-per-property-001-expected.txt": [
-       "79179988503c95d42e34462f9222953c7814d95c",
+       "830d1949449653d2cfdaeadcf9fb25dcd8453453",
        []
       ],
       "accumulation-per-property-002-expected.txt": [
-       "476978ed30c0585149ffdcbba6d61dec9191d792",
+       "6ebe3d9dc109c617c8dd8f65b07072cb55f196f6",
        []
       ],
       "addition-per-property-001-expected.txt": [
-       "79179988503c95d42e34462f9222953c7814d95c",
+       "830d1949449653d2cfdaeadcf9fb25dcd8453453",
        []
       ],
       "addition-per-property-002-expected.txt": [
-       "ca8e53b33b1423885a1dbdda8c64930ac752b10f",
+       "6e71c7ae5d3a152ad398b98ef59a0284e53be337",
        []
       ],
       "interpolation-per-property-001-expected.txt": [
-       "d9d16f5a4428f58d5532623644ab4d51c4166f45",
+       "4fc1e1d5cfb06013a54dafceeae4a58f50d8afbc",
        []
       ],
       "interpolation-per-property-002-expected.txt": [
-       "27c4a6bfd250778724e707f8b42cbf0d2465f00d",
+       "33c7b057b8e2494e00a184edc7d64c9c9ee3514f",
        []
       ],
       "property-list.js": [
-       "b3e91512cf4c3d3110b748ffd8092865149f106b",
+       "ff809ceb211fe6bff5aa0ac32583ec5dece83f04",
        []
       ],
       "property-types.js": [
@@ -404804,7 +405007,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "7c88abcd2e029ffe2f938d6d187602e05a71ca67",
+       "b806144e750b8639e3d102acd5133cae7d3c2ff3",
        []
       ],
       "fixtures_http.py": [
@@ -450413,7 +450616,7 @@
       ]
      ],
      "display-none-dont-cancel.tentative.html": [
-      "6ae115803b820ffdb51169c38769ee51f5062652",
+      "12394ffb599c402cfc9843cbcec12833e1d0a13a",
       [
        null,
        {}
@@ -450421,6 +450624,13 @@
      ],
      "display-none-prevents-starting-in-subtree.html": [
       "d5d48b2a1849c3173d35db7b62ea36a207972308",
+      [
+       null,
+       {}
+      ]
+     ],
+     "display-none-to-display-block-dont-cancel.tentative.html": [
+      "45958a1ee240f740a9d01411c7df75896d76176c",
       [
        null,
        {}
@@ -452109,6 +452319,62 @@
       ]
      ],
      "margin-trim": {
+      "block-container-block-end-last-child-with-border.html": [
+       "42893cdc01b7893b180368d6aac648cbf792e0c8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-container-block-end-nested-last-child-with-border.html": [
+       "3bff1829b16e811425539d81198122b011fb3ae4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-container-block-end-self-collapsing-children-nested-at-bottom.html": [
+       "1cb9995e94849964815e6e7a135ba5e1f5af3d44",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-container-block-end-self-collapsing-children-nested-margin-trim.html": [
+       "997e20350d3d23a0b52a691d06520f3bb1f7a084",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-container-block-end-self-collapsing-children-offsets-nested-multiple-times.html": [
+       "9ca3c3b28afb04948be57fca5421c25ee16af7d0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-container-block-end-self-collapsing-children-offsets-nested-once.html": [
+       "97a15b3a841b81b24972ee0e1ff6cdec7c49e4ee",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-container-block-end-self-collapsing-children-offsets-vert-lr.html": [
+       "0b378b39eec61007474f1443a3b5a21fec034399",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-container-block-end-self-collapsing-children-offsets.html": [
+       "67c0a3e22838cb2025adf74b32114e0786c4dc6f",
+       [
+        null,
+        {}
+       ]
+      ],
       "computed-margin-values": {
        "block-container-block-end-nested-child.html": [
         "8a3b03c2e502c1f92ba43ac49ae0f4a304f60538",
@@ -452313,8 +452579,22 @@
          {}
         ]
        ],
+       "grid-block-start.html": [
+        "c08d905ca29d8191c842c6e75f5971625420415c",
+        [
+         null,
+         {}
+        ]
+       ],
        "grid-inline-end-columns-added-to-end.html": [
         "9c88c2981598f316a3b19be88b5bc99c10c76725",
+        [
+         null,
+         {}
+        ]
+       ],
+       "grid-inline-end-items-in-last-column-trimmed.html": [
+        "58c05216ae041a1bfb5b6e304a9b7b940ddb71e9",
         [
          null,
          {}
@@ -460515,28 +460795,28 @@
        ]
       ],
       "grid-column-axis-self-baseline-synthesized-001.html": [
-       "0d3a556f40c0cbdb107bc646d84314916e3f42be",
+       "e378b36d38847083cd21934591e75e43ab375955",
        [
         null,
         {}
        ]
       ],
       "grid-column-axis-self-baseline-synthesized-002.html": [
-       "c20489e9a8b68fe05939357c9aaf75492e5dc49d",
+       "49f983bb0117bb68af55f63717e26841d27ac89c",
        [
         null,
         {}
        ]
       ],
       "grid-column-axis-self-baseline-synthesized-003.html": [
-       "10a9adb9ff2d385c2b0f054e94e5cb59139c5f96",
+       "de17f70feb8218836b13c0ea6b5940d1a6afb601",
        [
         null,
         {}
        ]
       ],
       "grid-column-axis-self-baseline-synthesized-004.html": [
-       "8c6d7abe4edcd88d690c9f4748478078ea07d800",
+       "b48e112fa6a815ea276e084715072ee177b1268b",
        [
         null,
         {}
@@ -460921,28 +461201,28 @@
        ]
       ],
       "grid-row-axis-self-baseline-synthesized-001.html": [
-       "c9e630cbac40c153048d2d671cedf9c1d26ae1e4",
+       "43a57a200697f2063632a1ae207e87806022fb4d",
        [
         null,
         {}
        ]
       ],
       "grid-row-axis-self-baseline-synthesized-002.html": [
-       "e96f8da6e724b0e47b11265463cb795c4d875308",
+       "b1058a2aea262134a4ebdf287814510fb1997674",
        [
         null,
         {}
        ]
       ],
       "grid-row-axis-self-baseline-synthesized-003.html": [
-       "19a4f5193bfb12917a7454d65b9fd5ad35e6bca7",
+       "79c056f46fc6b694661bd69aca0dc2d3b92c4dd3",
        [
         null,
         {}
        ]
       ],
       "grid-row-axis-self-baseline-synthesized-004.html": [
-       "f3f70790c9811fea794a1cb892405a434073acec",
+       "8780377605543a446f69ae6454c71e9971f9cd37",
        [
         null,
         {}
@@ -467571,7 +467851,7 @@
       ]
      ],
      "register-property-syntax-parsing.html": [
-      "664ccabd33c3a1ac62b5dbad83b8ed8640053bc8",
+      "537a921efc7e7dde149622337314f4ad4a3151c7",
       [
        null,
        {}
@@ -541774,6 +542054,13 @@
       {}
      ]
     ],
+    "FileSystemObserver-sync-access-handle.https.tentative.worker.js": [
+     "e21a3dd39040558056bd09afd5465c22569d99bc",
+     [
+      "fs/FileSystemObserver-sync-access-handle.https.tentative.worker.html",
+      {}
+     ]
+    ],
     "FileSystemObserver.https.tentative.window.js": [
      "85ad3b1a9c9718eb1a90b8718be6c76371d9ddc7",
      [
@@ -590988,13 +591275,6 @@
          }
         ]
        ],
-       "selectlist-form-state-restore.tentative.html": [
-        "f98494a950719ef94d8b91f525659cb68682d813",
-        [
-         null,
-         {}
-        ]
-       ],
        "selectlist-form-submission.tentative.html": [
         "4b5e4970287b4df5bfd0c516f0e116fe68ddd77d",
         [
@@ -622785,6 +623065,15 @@
       }
      ]
     ],
+    "pointerevent-boundary-event-target-when-hover-generates-content-under-pointer.html": [
+     "3cbed96c8675d01bfa9bf6a2c8f45dc099dbf8c1",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "pointerevent_after_target_appended.html": [
      "a5cb82088e85a548159a8c0ab7700700fa10b4cd",
      [
@@ -648916,21 +649205,21 @@
    },
    "shared-storage-selecturl-limit": {
     "run-url-selection-operation-limit-multiple-sites.tentative.https.sub.html": [
-     "b71c368704bb9ca2bb7878fbbb6f37264c8dfa73",
+     "bc27ccae485173901bd4fb8609d6d730507a6282",
      [
       null,
       {}
      ]
     ],
     "run-url-selection-operation-limit.tentative.https.sub.html": [
-     "b8f8d5a4bf00f536ce5828aaaaca0a9e3348f352",
+     "5989aa160bc956de2c2d30544482c88939a6a1e3",
      [
       null,
       {}
      ]
     ],
     "select-url-limit-multiple-worklets.tentative.https.sub.html": [
-     "c0eedc6f5fa537ccd3c7ab0087e8b519a0800b47",
+     "62cbe7a90ffa04fffe34280d37a4add6409a8365",
      [
       null,
       {}
@@ -700312,7 +700601,7 @@
     ],
     "validation_tests": {
      "argMinMax.https.any.js": [
-      "cad2ed1fd290942f4ee2c3fb0478c58a7b3c21b6",
+      "5d6806e5f4c41479a12ddb2b563e1220af684216",
       [
        "webnn/validation_tests/argMinMax.https.any.html",
        {
@@ -700353,7 +700642,7 @@
       ]
      ],
      "batchNormalization.https.any.js": [
-      "6fcd5afb068f165bb32c58b1ac11b64d037935a1",
+      "2fec37dcbf513cbf2e018b8a68eee0432b6761be",
       [
        "webnn/validation_tests/batchNormalization.https.any.html",
        {
@@ -700394,7 +700683,7 @@
       ]
      ],
      "build-more-than-once.https.any.js": [
-      "8dbb7705ac590506270403e142e756c76395b905",
+      "d0d6800f682ad581eb82965cc03b323f7f79dd45",
       [
        "webnn/validation_tests/build-more-than-once.https.any.html",
        {
@@ -743025,7 +743314,7 @@
        },
        "fetch_error": {
         "fetch_error.py": [
-         "025da87c928df9a2966a08a31884d83304d57f0a",
+         "de6567100a96a4a5303f2ea4e7ec1f576ee8fddb",
          [
           null,
           {}
@@ -743938,7 +744227,7 @@
         ]
        ],
        "scroll_into_view.py": [
-        "041f0dee6a3fa6865e5645e024085eb9cb592774",
+        "1b9c671efaba12ac42a79ac0f97e84544ce9621e",
         [
          null,
          {}

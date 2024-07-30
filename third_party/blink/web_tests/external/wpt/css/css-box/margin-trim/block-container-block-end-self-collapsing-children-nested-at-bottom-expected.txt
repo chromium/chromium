@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] .collapsed 1
+  assert_equals: \n<item data-offset-y="58" class="collapsed" style="margin-block: 10px 20px;">\n                    <item data-offset-y="58" class="collapsed" style="margin-block: -40px 50px;"></item>\n                    <item data-offset-y="58" class="collapsed" style="margin-block: 35px 5px;">\n                        <item data-offset-y="58" class="collapsed" style="margin-block: 300px 100px"></item>\n                    </item>\n                </item>\noffsetTop expected 58 but got 318
+[FAIL] .collapsed 2
+  assert_equals: \n<item data-offset-y="58" class="collapsed" style="margin-block: -40px 50px;"></item>\noffsetTop expected 58 but got 318
+[FAIL] .collapsed 3
+  assert_equals: \n<item data-offset-y="58" class="collapsed" style="margin-block: 35px 5px;">\n                        <item data-offset-y="58" class="collapsed" style="margin-block: 300px 100px"></item>\n                    </item>\noffsetTop expected 58 but got 318
+[FAIL] .collapsed 4
+  assert_equals: \n<item data-offset-y="58" class="collapsed" style="margin-block: 300px 100px"></item>\noffsetTop expected 58 but got 318
+[FAIL] .collapsed 5
+  assert_equals: \n<item data-offset-y="58" class="collapsed" style="margin-block: 40px 23px;"></item>\noffsetTop expected 58 but got 318
+[FAIL] .collapsed 6
+  assert_equals: \n<item data-offset-y="58" class="collapsed" style="margin-block: 100px 200px">\n                <item data-offset-y="58" class="collapsed" style="margin-block: -100px -200px;"></item>\n            </item>\noffsetTop expected 58 but got 158
+[FAIL] .collapsed 7
+  assert_equals: \n<item data-offset-y="58" class="collapsed" style="margin-block: -100px -200px;"></item>\noffsetTop expected 58 but got 158
+Harness: the test ran to completion.
+

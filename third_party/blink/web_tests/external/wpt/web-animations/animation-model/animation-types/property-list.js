@@ -367,6 +367,10 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ 'srgb', 'linearrgb' ] ] }
     ]
   },
+  'columns': {
+    // https://drafts.csswg.org/css-multicol/#propdef-columns
+    types: [ 'positiveInteger', 'length' ]
+  },
   'column-count': {
     // https://drafts.csswg.org/css-multicol/#propdef-column-count
     types: [ 'positiveInteger',
@@ -476,6 +480,12 @@ const gCSSProperties1 = {
     // https://drafts.csswg.org/css-flexbox/#propdef-flex-direction
     types: [
       { type: 'discrete', options: [ [ 'row', 'row-reverse' ] ] }
+    ]
+  },
+  'flex-flow': {
+    // https://drafts.csswg.org/css-flexbox/#propdef-flex-flow
+    types: [
+      { type: 'discrete', options: [ [ 'row', 'row-reverse wrap' ] ] }
     ]
   },
   'flex-grow': {
@@ -621,6 +631,18 @@ const gCSSProperties1 = {
     types: [
     ]
   },
+  'gap': {
+    // https://drafts.csswg.org/css-align/#propdef-gap
+    types: [ 'length',
+            {  type: 'discrete', options: [ [ 'normal', '200px' ] ] }
+    ]
+  },
+  'grid-area': {
+    // https://drafts.csswg.org/css-grid/#propdef-grid-area
+    types: [
+      { type: 'discrete', options: [ [ '1', '5' ] ] }
+    ]
+  },
   'grid-auto-columns': {
     // https://drafts.csswg.org/css-grid/#propdef-grid-auto-columns
     types: [
@@ -639,6 +661,12 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ '1px', '5px' ] ] }
     ]
   },
+  'grid-column': {
+    // https://drafts.csswg.org/css-grid/#propdef-grid-column
+    types: [
+      { type: 'discrete', options: [ [ '1', '5' ] ] }
+    ]
+  },
   'grid-column-end': {
     // https://drafts.csswg.org/css-grid/#propdef-grid-column-end
     types: [
@@ -652,6 +680,12 @@ const gCSSProperties1 = {
   },
   'grid-column-start': {
     // https://drafts.csswg.org/css-grid/#propdef-grid-column-start
+    types: [
+      { type: 'discrete', options: [ [ '1', '5' ] ] }
+    ]
+  },
+  'grid-row': {
+    // https://drafts.csswg.org/css-grid/#propdef-grid-row
     types: [
       { type: 'discrete', options: [ [ '1', '5' ] ] }
     ]
@@ -673,8 +707,14 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ '1', '5' ] ] }
     ]
   },
+  'grid-template': {
+    // https://drafts.csswg.org/css-grid/#propdef-grid-template
+    types: [
+      { type: 'discrete', options: [ [ '". . a b" ". . a b"', 'none' ] ] }
+    ]
+  },
   'grid-template-areas': {
-    // https://drafts.csswg.org/css-template/#grid-template-areas
+    // https://drafts.csswg.org/css-grid/#propdef-grid-template-areas
     types: [
       { type: 'discrete', options: [ [ '". . a b" ". . a b"', 'none' ] ] }
     ]
@@ -763,6 +803,12 @@ const gCSSProperties2 = {
     types: [
         { type: 'discrete', options: [ [ 'normal', '10px' ],
                                        [ 'normal', '10', 'normal', '100px' ] ] }
+    ]
+  },
+  'list-style': {
+    // https://drafts.csswg.org/css-lists-3/#propdef-list-style
+    types: [
+      { type: 'discrete', options: [ [ 'inside url("http://localhost/test-1") circle', 'outside url("http://localhost/test-2") square' ] ] },
     ]
   },
   'list-style-image': {
@@ -1042,6 +1088,7 @@ const gCSSProperties2 = {
   'overflow': {
     // https://drafts.csswg.org/css-overflow/#propdef-overflow
     types: [
+      { type: 'discrete', options: [ [ 'visible', 'hidden' ] ] }
     ]
   },
   'overflow-wrap': {
@@ -1133,6 +1180,24 @@ const gCSSProperties2 = {
   'perspective-origin': {
     // https://drafts.csswg.org/css-transforms-1/#propdef-perspective-origin
     types: [ 'position' ]
+  },
+  'place-content': {
+    // https://drafts.csswg.org/css-align/#propdef-place-content
+    types: [
+      { type: 'discrete', options: [ [ 'start', 'end' ] ] }
+    ]
+  },
+  'place-items': {
+    // https://drafts.csswg.org/css-align/#propdef-place-items
+    types: [
+      { type: 'discrete', options: [ [ 'start', 'end' ] ] }
+    ]
+  },
+  'place-self': {
+    // https://drafts.csswg.org/css-align/#propdef-place-self
+    types: [
+      { type: 'discrete', options: [ [ 'start', 'end' ] ] }
+    ]
   },
   'pointer-events': {
     // https://svgwg.org/svg2-draft/interact.html#PointerEventsProperty
@@ -1309,6 +1374,12 @@ const gCSSProperties2 = {
       { type: 'discrete', options: [ [ 'none', 'start' ] ] }
     ]
   },
+  'text-decoration': {
+    // https://drafts.csswg.org/css-text-decor-3/#propdef-text-decoration
+    types: [
+      { type: 'discrete', options: [ [ 'underline', 'overline' ] ] }
+    ]
+  },
   'text-decoration-color': {
     // https://drafts.csswg.org/css-text-decor-3/#propdef-text-decoration-color
     types: [ 'color' ]
@@ -1317,6 +1388,18 @@ const gCSSProperties2 = {
     // https://drafts.csswg.org/css-text-decor-3/#propdef-text-decoration-line
     types: [
       { type: 'discrete', options: [ [ 'underline', 'overline' ] ] }
+    ]
+  },
+  'text-decoration-skip': {
+    // https://drafts.csswg.org/css-text-decor-4/#propdef-text-decoration-skip
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'none' ] ] }
+    ]
+  },
+  'text-decoration-skip-ink': {
+    // https://drafts.csswg.org/css-text-decor-4/#propdef-text-decoration-skip-ink
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'none' ] ] }
     ]
   },
   'text-decoration-style': {

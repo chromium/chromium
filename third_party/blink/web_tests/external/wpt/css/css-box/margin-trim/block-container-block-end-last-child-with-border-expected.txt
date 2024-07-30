@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] .collapsed 2
+  assert_equals: \n<item data-offset-y="59" class="collapsed" style="margin-block: 5px 8px;"></item>\noffsetTop expected 59 but got 79
+Harness: the test ran to completion.
+

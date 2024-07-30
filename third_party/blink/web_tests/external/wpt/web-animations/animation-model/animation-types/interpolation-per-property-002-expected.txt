@@ -1,11 +1,23 @@
 This is a testharness.js-based test.
-Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] list-style uses discrete animation when animating between "inside url("http://localhost/test-1") circle" and "outside url("http://localhost/test-2") square" with linear easing
+  assert_equals: The value should be inside url("http://localhost/test-1") circle at 499ms expected "inside url(\\"http://localhost/test-1\\") circle" but got "inside cross-fade(url(\\"http://localhost/test-1\\") 50.1%, url(\\"http://localhost/test-2\\")) circle"
+[FAIL] list-style uses discrete animation when animating between "inside url("http://localhost/test-1") circle" and "outside url("http://localhost/test-2") square" with effect easing
+  assert_equals: The value should be inside url("http://localhost/test-1") circle at 940ms expected "inside url(\\"http://localhost/test-1\\") circle" but got "inside cross-fade(url(\\"http://localhost/test-1\\") 57.1741%, url(\\"http://localhost/test-2\\")) circle"
+[FAIL] list-style uses discrete animation when animating between "inside url("http://localhost/test-1") circle" and "outside url("http://localhost/test-2") square" with keyframe easing
+  assert_equals: The value should be inside url("http://localhost/test-1") circle at 940ms expected "inside url(\\"http://localhost/test-1\\") circle" but got "inside cross-fade(url(\\"http://localhost/test-1\\") 57.1741%, url(\\"http://localhost/test-2\\")) circle"
 [FAIL] list-style-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
   assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(url(\\"http://localhost/test-1\\") 50.1%, url(\\"http://localhost/test-2\\"))"
 [FAIL] list-style-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
   assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(url(\\"http://localhost/test-1\\") 57.1741%, url(\\"http://localhost/test-2\\"))"
 [FAIL] list-style-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing
   assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(url(\\"http://localhost/test-1\\") 57.1741%, url(\\"http://localhost/test-2\\"))"
+[FAIL] text-decoration uses discrete animation when animating between "underline" and "overline" with linear easing
+  assert_equals: The value should be underline at 0ms expected "underline" but got "underline solid rgb(0, 0, 0)"
+[FAIL] text-decoration uses discrete animation when animating between "underline" and "overline" with effect easing
+  assert_equals: The value should be underline at 0ms expected "underline" but got "underline solid rgb(0, 0, 0)"
+[FAIL] text-decoration uses discrete animation when animating between "underline" and "overline" with keyframe easing
+  assert_equals: The value should be underline at 0ms expected "underline" but got "underline solid rgb(0, 0, 0)"
 [FAIL] word-spacing supports animating as a percentage
   assert_equals: The value should be 30% at 500ms expected "30%" but got "0px"
 [FAIL] word-spacing supports animating as combination units "px" and "%"
