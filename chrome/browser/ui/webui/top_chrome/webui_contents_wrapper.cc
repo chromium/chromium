@@ -19,6 +19,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace {
 
@@ -288,7 +289,11 @@ void WebUIContentsWrapper::SetHost(
   // size they will be capture by WebUIContentsWrapper::ResizeDueToAutoResize().
   content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
   if (webui_resizes_host_ && rfh && rfh->GetFrameSize().has_value()) {
-    host_->ResizeDueToAutoResize(web_contents_.get(), *rfh->GetFrameSize());
+    // RenderFrameHost::GetFrameSize() returns the actual frame size while
+    // the host view expects device-independent size.
+    const gfx::Size frame_dip_size = gfx::ScaleToCeiledSize(
+        *rfh->GetFrameSize(), 1.f / rfh->GetView()->GetDeviceScaleFactor());
+    host_->ResizeDueToAutoResize(web_contents_.get(), frame_dip_size);
   }
 
   if (supports_draggable_regions_ && draggable_regions_.has_value()) {
