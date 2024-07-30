@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cros_components/textfield/textfield.js';
+import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 
 import {
@@ -72,8 +73,9 @@ export class RecordingSearchBox extends ReactiveLitElement {
 
   private readonly opened = signal(false);
 
-  private readonly hasQuery =
-    computed(() => this.opened.value && this.query.value.trim().length !== 0);
+  private readonly hasQuery = computed(
+    () => this.opened.value && this.query.value.trim().length !== 0,
+  );
 
   private readonly textFieldRef = createRef<Textfield>();
 
@@ -133,14 +135,14 @@ export class RecordingSearchBox extends ReactiveLitElement {
     </cra-icon-button>`;
 
     const cancelButton = !this.hasQuery.value ? nothing : html`<cra-icon-button
-      buttonstyle="floating"
-      size="small"
-      slot="trailing"
-      shape="circle"
-      @click=${this.closeSearchBox}
-    >
-      <cra-icon slot="icon" name="remove_fill"></cra-icon>
-    </cra-icon-button>`;
+          buttonstyle="floating"
+          size="small"
+          slot="trailing"
+          shape="circle"
+          @click=${this.closeSearchBox}
+        >
+          <cra-icon slot="icon" name="remove_fill"></cra-icon>
+        </cra-icon-button>`;
 
     // TODO(pihsun): The textfield is disabled a bit too early and can be seen
     // "fade out" on the slowed down animation. It'd be nicer if we can

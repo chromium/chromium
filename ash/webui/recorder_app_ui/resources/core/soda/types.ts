@@ -7,7 +7,6 @@ import {Infer, z} from '../utils/schema.js';
 
 // The type is manually constructed from the .mojo at
 // chromeos/services/machine_learning/public/mojom/soda.mojom
-// TODO(pihsun): Add diarization info when those are implemented.
 
 export const timeDeltaSchema = z.object({
   microseconds: z.bigint(),
@@ -19,6 +18,7 @@ export const hypothesisPartSchema = z.object({
   text: z.array(z.string()),
   alignment: z.nullable(timeDeltaSchema),
   leadingSpace: z.nullable(z.boolean()),
+  speakerLabel: z.nullable(z.string()),
 });
 
 export type HypothesisPart = Infer<typeof hypothesisPartSchema>;
@@ -40,23 +40,30 @@ export type FinalResult = Infer<typeof finalResultSchema>;
 
 export const partialResultSchema = z.object({
   partialText: z.array(z.string()),
+  hypothesisPart: z.nullable(z.array(hypothesisPartSchema)),
   timingEvent: z.nullable(timingInfoSchema),
 });
 
 export type PartialResult = Infer<typeof partialResultSchema>;
 
-export const speechRecognizerEventSchema = z.union([
+export const speakerLabelCorrectionEventSchema = z.object({
+  hypothesisParts: z.array(hypothesisPartSchema),
+});
+
+export type SpeakerLabelCorrectionEvent =
+  Infer<typeof speakerLabelCorrectionEventSchema>;
+
+export const sodaEventSchema = z.union([
   z.object({
     finalResult: finalResultSchema,
   }),
   z.object({
     partialResult: partialResultSchema,
   }),
+  z.object({
+    labelCorrectionEvent: speakerLabelCorrectionEventSchema,
+  }),
 ]);
-
-export type SpeechRecognizerEvent = Infer<typeof speechRecognizerEventSchema>;
-
-export const sodaEventSchema = speechRecognizerEventSchema;
 
 export type SodaEvent = Infer<typeof sodaEventSchema>;
 

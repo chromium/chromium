@@ -5,7 +5,13 @@
 import {assertExists} from '../utils/assert.js';
 import {Infer, z} from '../utils/schema.js';
 
-import {FinalResult, SodaEvent, TimeDelta, TimingInfo} from './types.js';
+import {
+  FinalResult,
+  PartialResult,
+  SodaEvent,
+  TimeDelta,
+  TimingInfo,
+} from './types.js';
 
 // A time range in milliseconds.
 export const timeRangeSchema = z.object({
@@ -19,6 +25,7 @@ export const textPartSchema = z.object({
   text: z.string(),
   timeRange: z.nullable(timeRangeSchema),
   leadingSpace: z.nullable(z.boolean()),
+  speakerLabel: z.autoNullOptional(z.string()),
 });
 
 export type TextPart = Infer<typeof textPartSchema>;
@@ -57,7 +64,10 @@ function parseTimingInfo(
   };
 }
 
-function flattenEvent(ev: FinalResult, offsetMs: number): TextPart[] {
+function flattenEvent(
+  ev: FinalResult|PartialResult,
+  offsetMs: number,
+): TextPart[] {
   const {hypothesisPart, timingEvent} = ev;
 
   const result: TextPart[] = [];
@@ -96,6 +106,9 @@ function flattenEvent(ev: FinalResult, offsetMs: number): TextPart[] {
       text: assertExists(part.text[0]),
       timeRange,
       leadingSpace: part.leadingSpace,
+      // TODO: b/344794204 - wire settings for speaker label consent, and filter
+      // this field when there's no consent.
+      speakerLabel: part.speakerLabel,
     });
   }
   return result;
@@ -105,19 +118,16 @@ function flattenEvent(ev: FinalResult, offsetMs: number): TextPart[] {
 export class SodaEventTransformer {
   private readonly tokens: TextToken[] = [];
 
-  // The last token from the PartialResult in SodaEvent with partial result.
-  private partialResultToken: TextToken|null = null;
+  // The last tokens from the PartialResult in SodaEvent with partial result.
+  private partialResultTokens: TextToken[]|null = null;
 
   getTokens(): TextToken[] {
-    // TODO(pihsun): This happens to always return a new array each time it's
-    // called, which triggers lit update. We should have some "computed" values
-    // that is only updated when needed.
     const ret = [...this.tokens];
-    if (this.partialResultToken !== null) {
+    if (this.partialResultTokens !== null) {
       if (ret.length > 0) {
         ret.push(textSeparator);
       }
-      ret.push(this.partialResultToken);
+      ret.push(...this.partialResultTokens);
     }
     return ret;
   }
@@ -132,18 +142,13 @@ export class SodaEventTransformer {
    */
   addEvent(event: SodaEvent, offsetMs: number): void {
     if ('partialResult' in event) {
-      this.partialResultToken = {
-        kind: 'textPart',
-        text: assertExists(event.partialResult.partialText[0]),
-        timeRange: parseTimingInfo(event.partialResult.timingEvent, offsetMs),
-        leadingSpace: true,
-      };
+      this.partialResultTokens = flattenEvent(event.partialResult, offsetMs);
       // Don't update tokens since it'll be added in getTokens.
       return;
     }
     if ('finalResult' in event) {
       // New final result, remove the partial result event.
-      this.partialResultToken = null;
+      this.partialResultTokens = null;
       const {finalResult} = event;
       if (this.tokens.length > 0) {
         this.tokens.push(textSeparator);
@@ -152,6 +157,7 @@ export class SodaEventTransformer {
     } else {
       console.error('unknown event type', event);
     }
+    // TODO: b/344794204 - Handle speaker label correction event.
   }
 }
 

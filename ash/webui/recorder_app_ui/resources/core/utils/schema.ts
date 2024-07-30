@@ -262,6 +262,41 @@ function createNullableSchema<T, I>(
   });
 }
 
+/**
+ * Decodes undefined and null to null, and encodes null to null.
+ *
+ * This is useful to have backward compatible field, but still use `null` in
+ * code.
+ */
+function createAutoNullOptionalSchema<T, I>(
+  schema: Schema<T, I>,
+): Schema<T|null, I|null|undefined> {
+  return new Schema({
+    // clang-format formats `T | null` to multiple lines, which is hard to
+    // understand.
+    // clang-format off
+    test(input): input is T | null {
+      if (input === null) {
+        return true;
+      }
+      return schema.test(input);
+    },
+    // clang-format on
+    decode(input, ctx) {
+      if (input === null || input === undefined) {
+        return null;
+      }
+      return schema.decode(input, ctx);
+    },
+    encode(val) {
+      if (val === null) {
+        return null;
+      }
+      return schema.encode(val);
+    },
+  });
+}
+
 function createArraySchema<T, I>(elem: Schema<T, I>): Schema<T[], I[]> {
   return new Schema({
     test(input): input is T[] {
@@ -526,6 +561,7 @@ export const z = {
   'nativeEnum': createNativeEnumSchema,
   'optional': createOptionalSchema,
   'nullable': createNullableSchema,
+  'autoNullOptional': createAutoNullOptionalSchema,
   'array': createArraySchema,
   'object': createObjectSchema,
   'union': createUnionSchema,

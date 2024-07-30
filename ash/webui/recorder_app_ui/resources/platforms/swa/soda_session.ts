@@ -60,6 +60,10 @@ export class MojoSodaSession implements SodaSession, SodaClientInterface {
       this.observers.notify({partialResult: event.partialResult});
     } else if (event.finalResult !== undefined) {
       this.observers.notify({finalResult: event.finalResult});
+    } else if (event.labelCorrectionEvent !== undefined) {
+      this.observers.notify({
+        labelCorrectionEvent: event.labelCorrectionEvent,
+      });
     }
   }
 }

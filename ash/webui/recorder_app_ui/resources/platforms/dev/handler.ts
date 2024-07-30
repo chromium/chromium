@@ -25,7 +25,12 @@ import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
 import {signal} from '../../core/reactive/signal.js';
-import {SodaEvent, SodaSession, TimeDelta} from '../../core/soda/types.js';
+import {
+  HypothesisPart,
+  SodaEvent,
+  SodaSession,
+  TimeDelta,
+} from '../../core/soda/types.js';
 import {
   assert,
   assertEnumVariant,
@@ -129,6 +134,8 @@ Chrome OS.`.split('\n\n').map((line) => line.split(/\s+/));
 // Emit one word per 300 ms.
 const WORD_INTERVAL_MS = 300;
 
+const MAX_NUM_SPEAKER = 3;
+
 function timeDelta(milliseconds: number): TimeDelta {
   return {microseconds: BigInt(milliseconds * 1000)};
 }
@@ -158,16 +165,18 @@ class SodaSessionDev implements SodaSession {
       ),
       eventEndTime: timeDelta(this.fakeTimeMs),
     };
+    const hypothesisPart =
+      currentLine.slice(0, this.currentWordIdx + 1).map((w, i) => {
+        return {
+          text: [w],
+          alignment: timeDelta(i * WORD_INTERVAL_MS),
+          leadingSpace: true,
+          speakerLabel:
+            ((this.currentLineIdx % MAX_NUM_SPEAKER) + 1).toString(),
+        } satisfies HypothesisPart;
+      });
 
     if (this.currentWordIdx === currentLine.length - 1 || finishLine) {
-      const hypothesisPart =
-        currentLine.slice(0, this.currentWordIdx + 1).map((w, i) => {
-          return {
-            text: [w],
-            alignment: timeDelta(i * WORD_INTERVAL_MS),
-            leadingSpace: true,
-          };
-        });
       this.observers.notify({
         finalResult: {
           finalHypotheses: currentLine,
@@ -187,6 +196,7 @@ class SodaSessionDev implements SodaSession {
           partialText: [
             currentLine.slice(0, this.currentWordIdx + 1).join(' '),
           ],
+          hypothesisPart,
           timingEvent,
         },
       });
@@ -316,7 +326,8 @@ export class PlatformHandler extends PlatformHandlerBase {
     return new SodaSessionDev();
   }
 
-  override async getMicrophoneInfo(_deviceId: string
+  override async getMicrophoneInfo(
+    _deviceId: string,
   ): Promise<InternalMicInfo> {
     return {isDefault: false, isInternal: false};
   }
