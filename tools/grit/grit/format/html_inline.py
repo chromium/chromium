@@ -32,6 +32,10 @@ mimetypes.add_type('image/svg+xml', '.svg')
 # webm video type is not always available if mimetype package is outdated.
 mimetypes.add_type('video/webm', '.webm')
 
+# webp image type is not always available if mimetype package is outdated.
+# Requires python 3.11 or higher ( https://bugs.python.org/issue38902 )
+mimetypes.add_type('image/webp', '.webp')
+
 DIST_DEFAULT = 'chromium'
 DIST_ENV_VAR = 'CHROMIUM_BUILD'
 DIST_SUBSTR = '%DISTRIBUTION%'
