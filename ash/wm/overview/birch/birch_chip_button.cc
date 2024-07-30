@@ -256,16 +256,6 @@ void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image,
   icon_->SetImage(icon_image);
 }
 
-void BirchChipButton::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::EventType::kGestureLongPress) {
-    // Show removal chip panel.
-    gfx::Point screen_location(event->location());
-    views::View::ConvertPointToScreen(this, &screen_location);
-    ShowContextMenu(screen_location, ui::MENU_SOURCE_TOUCH);
-    event->SetHandled();
-  }
-}
-
 void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
   auto* birch_bar_controller = BirchBarController::Get();
   CHECK(birch_bar_controller);

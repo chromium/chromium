@@ -48,7 +48,6 @@ class BirchChipButton : public BirchChipButtonBase,
   const BirchItem* GetItem() const override;
   BirchItem* GetItem() override;
   void Shutdown() override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
