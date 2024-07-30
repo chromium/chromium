@@ -174,7 +174,6 @@ include_rules = [
   "+chrome/browser/ui/ui_features.h",
   "+chrome/browser/ui/views/accelerator_table.h",
   "+chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h",
-  "+chrome/browser/ui/views/apps/app_dialog/shortcut_removal_dialog_view.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h",
   "+chrome/browser/ui/views/chrome_constrained_window_views_client.h",
   "+chrome/browser/ui/views/chrome_layout_provider.h",

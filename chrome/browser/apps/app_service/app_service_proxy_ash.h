@@ -34,7 +34,6 @@
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
-#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "ui/gfx/native_widget_types.h"
 
 // Avoid including this header file directly or referring directly to
@@ -60,17 +59,11 @@ class BrowserAppInstanceTracker;
 class PackageId;
 class PromiseAppRegistryCache;
 class PromiseAppService;
-class ShortcutPublisher;
-class ShortcutRegistryCache;
-class ShortcutRemovalDialog;
 class StandaloneBrowserApps;
 class UninstallDialog;
 
 struct PromiseApp;
 using PromiseAppPtr = std::unique_ptr<PromiseApp>;
-
-using LoadShortcutIconWithBadgeCallback =
-    base::OnceCallback<void(IconValuePtr, IconValuePtr)>;
 
 struct PauseData {
   int hours = 0;
@@ -197,70 +190,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                        IconEffects icon_effects,
                        apps::LoadIconCallback callback);
 
-  // Registers `publisher` with the App Service as exclusively publishing
-  // shortcut to app type `app_type`. `publisher` must have a lifetime equal to
-  // or longer than this object.
-  void RegisterShortcutPublisher(AppType app_type,
-                                 ShortcutPublisher* publisher);
-
-  // Get pointer to the Shortcut Registry Cache which holds all shortcuts.
-  // May return a nullptr if this cache doesn't exist.
-  apps::ShortcutRegistryCache* ShortcutRegistryCache();
-
-  // Called by an shortcut publisher to inform the proxy of a change in shortcut
-  // state.
-  void PublishShortcut(ShortcutPtr delta);
-
-  // Called by an shortcut publisher inform the proxy of the removal of a
-  // shortcut.
-  void ShortcutRemoved(const ShortcutId& id);
-
-  // Launches shortcut with `id` in it's parent app. `display_id` contains the
-  // id of the display from which the shortcut will be launched.
-  // display::kInvalidDisplayId means that the default display for new windows
-  // will be used. See `display::Screen` for details.
-  void LaunchShortcut(const ShortcutId& id, int64_t display_id);
-
-  // Removes the shortcut for the given `id`. If `parent_window` is specified,
-  // the remove dialog will be created as a modal dialog anchored at
-  // `parent_window`. Otherwise, the browser window will be used as the anchor.
-  void RemoveShortcut(const ShortcutId& id,
-                      UninstallSource uninstall_source,
-                      gfx::NativeWindow parent_window);
-
-  // Removes the shortcut for the given 'shortcut_id' without prompting user to
-  // confirm.
-  void RemoveShortcutSilently(const ShortcutId& shortcut_id,
-                              UninstallSource uninstall_source);
-
-  // Loads the icon for app service shortcut represented by `shortcut_id`, this
-  // icon does not include the host app icon badge.
-  // `callback` may be dispatched synchronously if it's possible to quickly
-  // return a result.
-  std::unique_ptr<IconLoader::Releaser> LoadShortcutIcon(
-      const apps::ShortcutId& shortcut_id,
-      const IconType& icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::LoadIconCallback callback);
-
-  // Loads the icon for app service shortcut represented by `shortcut_id`, this
-  // icon will include a host app icon as it's badge (returned separately).
-  // `callback` may be dispatched synchronously if it's possible to quickly
-  // return a result.
-  std::unique_ptr<IconLoader::Releaser> LoadShortcutIconWithBadge(
-      const apps::ShortcutId& shortcut_id,
-      const IconType& icon_type,
-      int32_t size_hint_in_dip,
-      int32_t badge_size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::LoadShortcutIconWithBadgeCallback callback);
-
-  apps::IconLoader* OverrideShortcutInnerIconLoaderForTesting(
-      apps::IconLoader* icon_loader);
-
-  ShortcutPublisher* GetShortcutPublisherForTesting(AppType app_type);
-
   // Load the default icon for a particular app platform. E.g. load a default
   // icon for guest os app that is not registered in app service.
   void LoadDefaultIcon(AppType app_type,
@@ -274,30 +203,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void SetAppLocale(const std::string& app_id, const std::string& locale_tag);
 
  private:
-  // ShortcutInnerIconLoader is used to load icons for shortcuts, it follows the
-  // same logic as the AppInnerIconLoader defined in AppServiceProxyBase, which
-  // is used to load icons for apps.
-  class ShortcutInnerIconLoader : public apps::IconLoader {
-   public:
-    explicit ShortcutInnerIconLoader(AppServiceProxyAsh* host);
-
-    // apps::IconLoader overrides.
-    std::optional<IconKey> GetIconKey(const std::string& id) override;
-    std::unique_ptr<Releaser> LoadIconFromIconKey(
-        const std::string& id,
-        const IconKey& icon_key,
-        IconType icon_type,
-        int32_t size_hint_in_dip,
-        bool allow_placeholder_icon,
-        apps::LoadIconCallback callback) override;
-
-    // |host_| owns |this|, as the ShortcutInnerIconLoader is an
-    // AppServiceProxyAsh field.
-    raw_ptr<AppServiceProxyAsh> host_;
-
-    raw_ptr<apps::IconLoader> overriding_icon_loader_for_testing_;
-  };
-
   // OnAppsRequest is used to save the parameters of the OnApps calling.
   struct OnAppsRequest {
     OnAppsRequest(std::vector<AppPtr> deltas,
@@ -319,9 +224,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   using UninstallDialogs =
       base::flat_map<std::string, std::unique_ptr<apps::UninstallDialog>>;
-  using ShortcutRemovalDialogs =
-      base::flat_map<apps::ShortcutId,
-                     std::unique_ptr<apps::ShortcutRemovalDialog>>;
 
   bool IsValidProfile() override;
   void Initialize() override;
@@ -360,24 +262,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                bool clear_site_data,
                                bool report_abuse,
                                UninstallDialog* uninstall_dialog);
-
-  // Invoked when the shortcut removal dialog is closed. The shortcut for the
-  // given `shortcut_id` will be removed directly if `remove` is true.
-  // `shortcut_removal_dialog` will be removed from `shortcut_removal_dialogs_`.
-  void OnShortcutRemovalDialogClosed(
-      const ShortcutId& shortcut_id,
-      UninstallSource uninstall_source,
-      bool remove,
-      ShortcutRemovalDialog* shortcut_removal_dialog);
-
-  // Callback invoked when the icon is loaded for the shortcut removal dialog.
-  void OnLoadIconForShortcutRemovalDialog(
-      const ShortcutId& id,
-      UninstallSource uninstall_source,
-      gfx::NativeWindow parent_window,
-      ShortcutRemovalDialog* shortcut_removal_dialog,
-      IconValuePtr icon_value,
-      IconValuePtr badge_icon_value);
 
   // apps::AppServiceProxyBase overrides:
   void InitializePreferredAppsForAllSubscribers() override;
@@ -486,61 +370,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       const apps::IntentFilterPtr& filter,
       const apps::AppUpdate& update) override;
 
-  ShortcutPublisher* GetShortcutPublisher(AppType app_type);
-
-  void OnShortcutIconLoaded(const ShortcutId& shortcut_id,
-                            const IconType& icon_type,
-                            int32_t badge_size_hint_in_dip,
-                            bool allow_placeholder_icon,
-                            apps::LoadShortcutIconWithBadgeCallback callback,
-                            IconValuePtr shortcut_icon);
-  void OnHostAppIconForShortcutLoaded(
-      IconValuePtr shortcut_icon,
-      apps::LoadShortcutIconWithBadgeCallback callback,
-      IconValuePtr host_app_icon);
-
-  // Impl method to remove shortcut identified by `shortcut_id` from publishers.
-  void RemoveShortcutImpl(const ShortcutId& shortcut_id,
-                          UninstallSource uninstall_source);
-
-  // Reads shortcut icon image files from the local app_service icon directory
-  // on disk.
-  void ReadShortcutIcon(const ShortcutId& shortcut_id,
-                        int32_t size_in_dip,
-                        std::unique_ptr<IconKey> icon_key,
-                        IconType icon_type,
-                        LoadIconCallback callback);
-
-  // Invoked after reading icon image files from the local disk. If failed
-  // reading the icon data, calls 'icon_writer' to fetch the icon data.
-  void OnShortcutIconRead(const ShortcutId& shortcut_id,
-                          int32_t size_in_dip,
-                          IconEffects icon_effects,
-                          IconType icon_type,
-                          LoadIconCallback callback,
-                          IconValuePtr iv);
-
-  // Invoked after writing icon image files to the local disk.
-  void OnShortcutIconInstalled(const ShortcutId& shortcut_id,
-                               int32_t size_in_dip,
-                               IconEffects icon_effects,
-                               IconType icon_type,
-                               int default_icon_resource_id,
-                               LoadIconCallback callback,
-                               bool install_success);
-
-  void MaybeScheduleIconFolderDeletionForShortcut(
-      const ShortcutId& shortcut_id);
-
-  // The LoadIconFromIconKey implementation sends a chained series of requests
-  // through each icon loader, starting from the outer and working back to the
-  // inner. Fields are listed from inner to outer, the opposite of call order,
-  // as each one depends on the previous one, and in the constructor,
-  // initialization happens in field order.
-  ShortcutInnerIconLoader shortcut_inner_icon_loader_;
-  IconCoalescer shortcut_icon_coalescer_;
-  IconCache shortcut_outer_icon_loader_;
-
   raw_ptr<SubscriberCrosapi> crosapi_subscriber_ = nullptr;
 
   std::unique_ptr<PublisherHost> publisher_host_;
@@ -569,7 +398,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   PausedApps pending_pause_requests_;
 
   UninstallDialogs uninstall_dialogs_;
-  ShortcutRemovalDialogs shortcut_removal_dialogs_;
 
   // When the icon folder is being deleted, the `ReadIcons` request is added to
   // `pending_read_icon_requests_` to wait for the deletion. When the icon
@@ -599,10 +427,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // from the outstanding callback queue.
   std::list<std::pair<base::RepeatingCallback<bool(void)>, base::OnceClosure>>
       callback_list_;
-
-  base::flat_map<AppType, ShortcutPublisher*> shortcut_publishers_;
-
-  std::unique_ptr<apps::ShortcutRegistryCache> shortcut_registry_cache_;
 
   std::unique_ptr<apps::AppInstallService> app_install_service_;
 

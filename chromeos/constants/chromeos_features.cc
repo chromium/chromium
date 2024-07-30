@@ -365,17 +365,6 @@ bool IsCrosShortstandEnabled() {
 #endif
 }
 
-bool IsCrosWebAppShortcutUiUpdateEnabled() {
-  if (IsCrosShortstandEnabled()) {
-    return true;
-  }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return false;
-#else
-  return base::FeatureList::IsEnabled(kCrosWebAppShortcutUiUpdate);
-#endif
-}
-
 bool IsDataControlsFileAccessDefaultDenyEnabled() {
   return base::FeatureList::IsEnabled(kDataControlsFileAccessDefaultDeny);
 }

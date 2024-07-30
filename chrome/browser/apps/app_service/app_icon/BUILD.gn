@@ -136,7 +136,6 @@ source_set("unit_tests") {
     sources += [
       "app_icon_decoder_unittest.cc",
       "arc_apps_icon_unittest.cc",
-      "browser_shortcut_icon_unittest.cc",
       "guest_os_apps_icon_unittest.cc",
     ]
 

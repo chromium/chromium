@@ -55,8 +55,3 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
-
-specific_include_rules = {
-  "app_service_shortcut_item_browsertest.cc":
-  ["+chrome/browser/ui/views/apps/app_dialog/shortcut_removal_dialog_view.h"]
-}
