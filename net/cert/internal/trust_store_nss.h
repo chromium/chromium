@@ -33,8 +33,7 @@ class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
   //
   // |user_slot_trust_setting| configures the use of trust from user slots:
   //  * UseTrustFromAllUserSlots: all user slots will be allowed.
-  //  * nullptr: no user slots will be allowed.
-  //  * non-null PK11Slot: the specified slot will be allowed.
+  //  * PK11Slot: the specified slot will be allowed. Must not be nullptr.
   explicit TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting);
 
   TrustStoreNSS(const TrustStoreNSS&) = delete;
@@ -77,8 +76,7 @@ class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
   // settings from any user slots.
   //
   // |user_slot_trust_setting_| is a ScopedPK11Slot: Allow
-  // certificates from the specified slot to be trusted. If the slot is nullptr,
-  // trust from user slots will not be used.
+  // certificates from the specified slot to be trusted. Must not be nullptr.
   const UserSlotTrustSetting user_slot_trust_setting_;
 };
 
