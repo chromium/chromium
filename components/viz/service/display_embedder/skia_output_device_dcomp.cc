@@ -28,7 +28,9 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gl/dc_layer_overlay_image.h"
 #include "ui/gl/dc_layer_overlay_params.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
@@ -230,6 +232,15 @@ class SkiaOutputDeviceDComp::OverlayData {
     return access_->GetDCLayerOverlayImage();
   }
 
+  std::optional<gl::DCLayerOverlayImage> GetOverlayAccess() {
+    CHECK(representation_);
+    if (!access_) {
+      return std::nullopt;
+    }
+
+    return access_->GetDCLayerOverlayImage();
+  }
+
   void EndOverlayAccess() { access_.reset(); }
 
   // True of this overlay represents a quad with a non-scanout resource that
@@ -287,6 +298,8 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   capabilities_.renderer_allocates_images = true;
   capabilities_.supports_viewporter = presenter_->SupportsViewporter();
   capabilities_.supports_non_backed_solid_color_overlays = true;
+  capabilities_.rpdq_overlay_requires_dcomp_surface =
+      !gl::DirectCompositionTextureSupported();
 
   DCHECK(context_state_);
   DCHECK(context_state_->gr_context() || context_state_->graphite_context());
@@ -339,9 +352,27 @@ void SkiaOutputDeviceDComp::OnPresentFinished(
       return !scheduled_overlay_mailboxes_.contains(mailbox);
     });
     scheduled_overlay_mailboxes_.clear();
-    // End access for the remaining overlays that were scheduled this frame.
-    for (auto& kv : overlays_)
-      kv.second.EndOverlayAccess();
+    for (auto& [mailbox, overlay_data] : overlays_) {
+      if (auto overlay_image = overlay_data.GetOverlayAccess()) {
+        if (overlay_image->type() ==
+            gl::DCLayerOverlayType::kDCompVisualContent) {
+          Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture;
+          if (SUCCEEDED(Microsoft::WRL::ComPtr<IUnknown>(
+                            overlay_image->dcomp_visual_content())
+                            .As(&dcomp_texture))) {
+            // We don't want to end the read access for DComp textures since DWM
+            // can read from them for potentially multiple frames.
+            continue;
+          }
+        }
+
+        // The remaining overlays are either DComp surfaces (which do not
+        // require special synchronization) or handled by |SwapChainPresenter|
+        // (which copies the image into an internal swap chain, rather than
+        // having DWM read it directly).
+        overlay_data.EndOverlayAccess();
+      }
+    }
   }
 
   if (force_failure_on_next_swap_) {

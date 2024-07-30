@@ -3922,15 +3922,12 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 
-#if BUILDFLAG(IS_WIN)
-    // We must use DComp surfaces in this case since they have no special
-    // synchronization requirements. We can use DComp textures if we return them
-    // from |SkiaOutputDeviceDComp| when they become available or with buffer
-    // queue once render pass backings support it.
-    kOverlayUsage = gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                    gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                    gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
-#endif
+    if (output_surface_->capabilities().rpdq_overlay_requires_dcomp_surface) {
+      kOverlayUsage = gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+                      gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                      gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
+    }
+
     auto mailbox = skia_output_surface_->CreateSharedImage(
         buffer_format, buffer_size, color_space, RenderPassAlphaType::kPremul,
         kOverlayUsage, "RenderPassOverlay", gpu::kNullSurfaceHandle);
