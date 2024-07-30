@@ -745,6 +745,11 @@ const char kGStatic[] = ".gstatic.com";
   item.requestID = URLAggregate->request_id;
   item.commandHandler = self;
   item.delegate = self;
+  if (IsTabResumption2BubbleEnabled()) {
+    // Dummy reason for now as TR2 does not return one.
+    // TODO(crbug.com/342389622): put the correct reason.
+    item.reason = @"TEST TR2 REASON.";
+  }
   if (tab.id > 0 && tab.session_tag && !isLocal) {
     item.sessionName = base::SysUTF8ToNSString(tab.session_name.value());
     _sessionTag = tab.session_tag.value();

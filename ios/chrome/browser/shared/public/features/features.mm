@@ -720,6 +720,8 @@ BASE_FEATURE(kTabResumption2,
              "TabResumption2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kTabResumption2BubbleParam[] = "tab-resumption-2-bubble-param";
+
 const char kMagicStackMostVisitedModuleParam[] = "MagicStackMostVisitedModule";
 
 const char kReducedSpaceParam[] = "ReducedNTPTopSpace";
@@ -757,6 +759,14 @@ bool IsTabResumption2_0Enabled() {
     return false;
   }
   return base::FeatureList::IsEnabled(kTabResumption2);
+}
+
+bool IsTabResumption2BubbleEnabled() {
+  if (!IsTabResumption2_0Enabled()) {
+    return false;
+  }
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kTabResumption2, kTabResumption2BubbleParam, false);
 }
 
 const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {

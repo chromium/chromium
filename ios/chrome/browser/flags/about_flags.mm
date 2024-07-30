@@ -972,6 +972,12 @@ const FeatureEntry::FeatureVariation
         {" - for testing", kIdentityConfirmationSnackbarTestingConfig,
          std::size(kIdentityConfirmationSnackbarTestingConfig), nullptr}};
 
+const FeatureEntry::FeatureParam kTabResumption2EnableCauseBubble[] = {
+    {kTabResumption2BubbleParam, "true"}};
+const FeatureEntry::FeatureVariation kTabResumption2Variations[] = {
+    {"Enable Bubble", kTabResumption2EnableCauseBubble,
+     std::size(kTabResumption2EnableCauseBubble), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1852,7 +1858,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfIOSPushNotifications)},
     {"tab-resumption-2", flag_descriptions::kTabResumption2Name,
      flag_descriptions::kTabResumption2Description, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTabResumption2)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kTabResumption2,
+                                    kTabResumption2Variations,
+                                    "TabResumption2")},
     {"page-image-service-optimization-guide-salient-images",
      flag_descriptions::kPageImageServiceSalientImageName,
      flag_descriptions::kPageImageServiceSalientImageDescription,

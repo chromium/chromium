@@ -40,6 +40,9 @@ enum TabResumptionItemType {
 // The title of the tab.
 @property(nonatomic, copy) NSString* tabTitle;
 
+// The reason the tab was displayed in Tab Resumption, if any.
+@property(nonatomic, copy) NSString* reason;
+
 // The URL of the tab.
 @property(nonatomic, assign) const GURL& tabURL;
 

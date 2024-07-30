@@ -588,6 +588,9 @@ extern const char kTR15SeeMoreButtonParam[];
 // Feature that enables tab resumption 2.0.
 BASE_DECLARE_FEATURE(kTabResumption2);
 
+// The parameter to enable Tab resumption 2 bubble.
+extern const char kTabResumption2BubbleParam[];
+
 // A parameter to indicate whether the Most Visited Tiles should be in the Magic
 // Stack.
 extern const char kMagicStackMostVisitedModuleParam[];
@@ -625,6 +628,9 @@ bool IsTabResumptionEnabled();
 // Whether the tab resumption feature is enabled in 2.0 version. Implies
 // `IsTabResumptionEnabled`.
 bool IsTabResumption2_0Enabled();
+
+// Whether to show the reason bubble for Tab resumption.
+bool IsTabResumption2BubbleEnabled();
 
 // Whether the tab resumption feature is enabled for most recent tab only.
 bool IsTabResumptionEnabledForMostRecentTabOnly();
