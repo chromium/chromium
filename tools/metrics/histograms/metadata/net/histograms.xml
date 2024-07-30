@@ -4784,13 +4784,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SafeSearch.CacheHit" enum="CacheAccessStatus"
-    expires_after="2024-04-28">
+    expires_after="2025-07-31">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
     Records if a URL classification in safe_search_api::URLChecker was provided
     from the cache or not. In the latter case, it distinguishes between true
     cache misses and cache hits which were unfit for classification.
+
+    Missing data between 2024-04-28 and 2024-07-30.
   </summary>
 </histogram>
 
