@@ -91,6 +91,18 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
       std::optional<int>& max_aggregatable_reports_per_destination,
       std::optional<int64_t>& rate_limits_max_attributions);
 
+  // Generates null aggregatable reports for the given trigger and stores all
+  // those reports.
+  [[nodiscard]] bool GenerateNullAggregatableReportsAndStoreReports(
+      const AttributionTrigger&,
+      const AttributionInfo&,
+      const StoredSource* source,
+      std::optional<AttributionReport>& new_aggregatable_report,
+      std::optional<base::Time>& min_null_aggregatable_report_time);
+
+  base::Time GetAggregatableReportTime(const AttributionTrigger& trigger,
+                                       base::Time trigger_time) const;
+
   std::unique_ptr<AttributionResolverDelegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

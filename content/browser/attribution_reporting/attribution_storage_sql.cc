@@ -99,6 +99,7 @@ namespace {
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 
+using ::attribution_reporting::AggregatableTriggerConfig;
 using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceType;
@@ -2396,6 +2397,50 @@ AttributionStorageSql::StoreAttributionReport(
       SerializeEventLevelReportMetadata(trigger_data, priority));
 }
 
+[[nodiscard]] std::optional<AttributionReport::Id>
+AttributionStorageSql::StoreNullReport(
+    base::Time trigger_time,
+    base::Time initial_report_time,
+    const base::Uuid& external_report_id,
+    std::optional<uint64_t> trigger_debug_key,
+    const attribution_reporting::SuitableOrigin& context_origin,
+    const attribution_reporting::SuitableOrigin& reporting_origin,
+    const std::optional<SuitableOrigin>& coordinator_origin,
+    const AggregatableTriggerConfig& trigger_config,
+    base::Time fake_source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return StoreAttributionReport(
+      kUnsetRecordId, trigger_time, initial_report_time, external_report_id,
+      trigger_debug_key, context_origin, reporting_origin,
+      AttributionReport::Type::kNullAggregatable,
+      SerializeNullAggregatableReportMetadata(
+          coordinator_origin, trigger_config, fake_source_time));
+}
+
+[[nodiscard]] std::optional<AttributionReport::Id>
+AttributionStorageSql::StoreAggregatableReport(
+    StoredSource::Id source_id,
+    base::Time trigger_time,
+    base::Time initial_report_time,
+    const base::Uuid& external_report_id,
+    std::optional<uint64_t> trigger_debug_key,
+    const attribution_reporting::SuitableOrigin& context_origin,
+    const attribution_reporting::SuitableOrigin& reporting_origin,
+    const std::optional<SuitableOrigin>& coordinator_origin,
+    const AggregatableTriggerConfig& trigger_config,
+    const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
+        contributions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return StoreAttributionReport(
+      *source_id, trigger_time, initial_report_time, external_report_id,
+      trigger_debug_key, context_origin, reporting_origin,
+      AttributionReport::Type::kAggregatableAttribution,
+      SerializeAggregatableReportMetadata(coordinator_origin, trigger_config,
+                                          contributions));
+}
+
 std::optional<AttributionReport::Id>
 AttributionStorageSql::StoreAttributionReport(
     int64_t source_id,
@@ -2498,101 +2543,6 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReportData(
   }
 
   return AggregatableResult::kSuccess;
-}
-
-bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
-    const AttributionTrigger& trigger,
-    const AttributionInfo& attribution_info,
-    const StoredSource* source,
-    std::optional<AttributionReport>& new_aggregatable_report,
-    std::optional<base::Time>& min_null_aggregatable_report_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  sql::Transaction transaction(&db_);
-  if (!transaction.Begin()) {
-    return false;
-  }
-
-  std::optional<base::Time> attributed_source_time;
-
-  if (new_aggregatable_report) {
-    const auto* data =
-        absl::get_if<AttributionReport::AggregatableAttributionData>(
-            &new_aggregatable_report->data());
-    DCHECK(data);
-    attributed_source_time = data->source_time;
-
-    DCHECK(source);
-
-    std::optional<AttributionReport::Id> report_id = StoreAttributionReport(
-        *source->source_id(), attribution_info.time,
-        new_aggregatable_report->initial_report_time(),
-        new_aggregatable_report->external_report_id(),
-        attribution_info.debug_key, attribution_info.context_origin,
-        new_aggregatable_report->reporting_origin(),
-        AttributionReport::Type::kAggregatableAttribution,
-        SerializeAggregatableReportMetadata(
-            data->common_data.aggregation_coordinator_origin,
-            data->common_data.aggregatable_trigger_config,
-            data->contributions));
-
-    if (!report_id.has_value()) {
-      return false;
-    }
-
-    new_aggregatable_report->set_id(*report_id);
-  }
-
-  if (trigger.HasAggregatableData()) {
-    std::vector<attribution_reporting::NullAggregatableReport>
-        null_aggregatable_reports =
-            attribution_reporting::GetNullAggregatableReports(
-                trigger.registration().aggregatable_trigger_config,
-                attribution_info.time, attributed_source_time,
-                [&](int lookback_day) {
-                  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-                  return delegate_
-                      ->GenerateNullAggregatableReportForLookbackDay(
-                          lookback_day, trigger.registration()
-                                            .aggregatable_trigger_config
-                                            .source_registration_time_config());
-                });
-    for (const auto& null_aggregatable_report : null_aggregatable_reports) {
-      base::Time report_time =
-          GetAggregatableReportTime(trigger, attribution_info.time);
-      min_null_aggregatable_report_time = AttributionReport::MinReportTime(
-          min_null_aggregatable_report_time, report_time);
-
-      if (!StoreAttributionReport(
-              /*source_id=*/kUnsetRecordId,
-              /*trigger_time=*/attribution_info.time, report_time,
-              /*external_report_id=*/delegate_->NewReportID(),
-              /*trigger_debug_key=*/std::nullopt,
-              attribution_info.context_origin, trigger.reporting_origin(),
-              AttributionReport::Type::kNullAggregatable,
-              SerializeNullAggregatableReportMetadata(
-                  trigger.registration().aggregation_coordinator_origin,
-                  trigger.registration().aggregatable_trigger_config,
-                  null_aggregatable_report.fake_source_time))) {
-        return false;
-      }
-    }
-  }
-
-  return transaction.Commit();
-}
-
-base::Time AttributionStorageSql::GetAggregatableReportTime(
-    const AttributionTrigger& trigger,
-    base::Time trigger_time) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (trigger.registration()
-          .aggregatable_trigger_config
-          .ShouldCauseAReportToBeSentUnconditionally()) {
-    return trigger_time;
-  }
-  return delegate_->GetAggregatableReportTime(trigger_time);
 }
 
 std::set<AttributionDataModel::DataKey>

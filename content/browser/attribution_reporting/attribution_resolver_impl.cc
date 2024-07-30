@@ -64,6 +64,8 @@ using StoredSourceData = AttributionStorageSql::StoredSourceData;
 using ConversionCapacityStatus =
     AttributionStorageSql::ConversionCapacityStatus;
 
+constexpr int64_t kUnsetRecordId = -1;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -520,7 +522,7 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
           VALID_CONTEXT_REQUIRED(sequence_checker_) {
             DCHECK(!new_aggregatable_report.has_value());
 
-            if (!storage_.GenerateNullAggregatableReportsAndStoreReports(
+            if (!GenerateNullAggregatableReportsAndStoreReports(
                     trigger, attribution_info,
                     source_to_attribute ? &source_to_attribute->source
                                         : nullptr,
@@ -697,7 +699,7 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
 
   // Stores null reports and the aggregatable report here to be in the same
   // transaction.
-  if (!storage_.GenerateNullAggregatableReportsAndStoreReports(
+  if (!GenerateNullAggregatableReportsAndStoreReports(
           trigger, attribution_info, &source_to_attribute->source,
           new_aggregatable_report, min_null_aggregatable_report_time)) {
     min_null_aggregatable_report_time.reset();
@@ -827,7 +829,7 @@ EventLevelResult AttributionResolverImpl::MaybeCreateEventLevelReport(
       attribution_info.time);
 
   report = AttributionReport(
-      attribution_info, AttributionReport::Id(-1), report_time,
+      attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
       /*initial_report_time=*/report_time, delegate_->NewReportID(),
       /*failed_send_attempts=*/0,
       AttributionReport::EventLevelData(trigger_data, event_trigger->priority,
@@ -919,10 +921,10 @@ AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
   }
 
   base::Time report_time =
-      storage_.GetAggregatableReportTime(trigger, attribution_info.time);
+      GetAggregatableReportTime(trigger, attribution_info.time);
 
   report = AttributionReport(
-      attribution_info, AttributionReport::Id(-1), report_time,
+      attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
       /*initial_report_time=*/report_time, delegate_->NewReportID(),
       /*failed_send_attempts=*/0,
       AttributionReport::AggregatableAttributionData(
@@ -933,6 +935,92 @@ AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
       source.common_info().reporting_origin());
 
   return AggregatableResult::kSuccess;
+}
+
+bool AttributionResolverImpl::GenerateNullAggregatableReportsAndStoreReports(
+    const AttributionTrigger& trigger,
+    const AttributionInfo& attribution_info,
+    const StoredSource* source,
+    std::optional<AttributionReport>& new_aggregatable_report,
+    std::optional<base::Time>& min_null_aggregatable_report_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::optional<base::Time> attributed_source_time;
+
+  if (new_aggregatable_report) {
+    const auto* data =
+        absl::get_if<AttributionReport::AggregatableAttributionData>(
+            &new_aggregatable_report->data());
+    DCHECK(data);
+    attributed_source_time = data->source_time;
+
+    DCHECK(source);
+
+    std::optional<AttributionReport::Id> report_id =
+        storage_.StoreAggregatableReport(
+            source->source_id(), attribution_info.time,
+            new_aggregatable_report->initial_report_time(),
+            new_aggregatable_report->external_report_id(),
+            attribution_info.debug_key, attribution_info.context_origin,
+            new_aggregatable_report->reporting_origin(),
+            data->common_data.aggregation_coordinator_origin,
+            data->common_data.aggregatable_trigger_config, data->contributions);
+
+    if (!report_id.has_value()) {
+      return false;
+    }
+
+    new_aggregatable_report->set_id(*report_id);
+  }
+
+  if (trigger.HasAggregatableData()) {
+    std::vector<attribution_reporting::NullAggregatableReport>
+        null_aggregatable_reports =
+            attribution_reporting::GetNullAggregatableReports(
+                trigger.registration().aggregatable_trigger_config,
+                attribution_info.time, attributed_source_time,
+                [&](int lookback_day) {
+                  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+                  return delegate_
+                      ->GenerateNullAggregatableReportForLookbackDay(
+                          lookback_day, trigger.registration()
+                                            .aggregatable_trigger_config
+                                            .source_registration_time_config());
+                });
+
+    for (const auto& null_aggregatable_report : null_aggregatable_reports) {
+      base::Time report_time =
+          GetAggregatableReportTime(trigger, attribution_info.time);
+      min_null_aggregatable_report_time = AttributionReport::MinReportTime(
+          min_null_aggregatable_report_time, report_time);
+
+      if (!storage_.StoreNullReport(
+              /*trigger_time=*/attribution_info.time, report_time,
+              /*external_report_id=*/delegate_->NewReportID(),
+              /*trigger_debug_key=*/std::nullopt,
+              attribution_info.context_origin, trigger.reporting_origin(),
+              trigger.registration().aggregation_coordinator_origin,
+              trigger.registration().aggregatable_trigger_config,
+              null_aggregatable_report.fake_source_time)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+base::Time AttributionResolverImpl::GetAggregatableReportTime(
+    const AttributionTrigger& trigger,
+    base::Time trigger_time) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (trigger.registration()
+          .aggregatable_trigger_config
+          .ShouldCauseAReportToBeSentUnconditionally()) {
+    return trigger_time;
+  }
+  return delegate_->GetAggregatableReportTime(trigger_time);
 }
 
 std::vector<AttributionReport> AttributionResolverImpl::GetAttributionReports(
