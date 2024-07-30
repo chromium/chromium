@@ -9,10 +9,6 @@
 #include <string_view>
 #include <vector>
 
-namespace base {
-class FilePath;
-}
-
 class BrowserStateInfoCache;
 class ChromeBrowserState;
 
@@ -37,11 +33,6 @@ class ChromeBrowserStateManager {
   // Returns the ChromeBrowserState known by `name` or nullptr if there is
   // no loaded ChromeBrowserState with that `name`.
   virtual ChromeBrowserState* GetBrowserStateByName(std::string_view name) = 0;
-
-  // Returns the ChromeBrowserState associated with `path`, returns nullptr if
-  // there is no loaded ChromeBrowserState at `path`.
-  virtual ChromeBrowserState* GetBrowserStateByPath(
-      const base::FilePath& path) = 0;
 
   // Returns the BrowserStateInfoCache associated with this manager.
   virtual BrowserStateInfoCache* GetBrowserStateInfoCache() = 0;

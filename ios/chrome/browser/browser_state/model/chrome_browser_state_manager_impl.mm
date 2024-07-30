@@ -133,12 +133,6 @@ ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByName(
   return nullptr;
 }
 
-ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserStateByPath(
-    const base::FilePath& path) {
-  DCHECK_EQ(path.DirName(), data_dir_);
-  return GetBrowserStateByName(path.BaseName().AsUTF8Unsafe());
-}
-
 std::string ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateName() const {
   std::string last_used_browser_state_name =
       local_state_->GetString(prefs::kBrowserStateLastUsed);

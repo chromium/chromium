@@ -36,12 +36,6 @@ ChromeBrowserState* TestChromeBrowserStateManager::GetBrowserStateByName(
   return iterator != browser_states_.end() ? iterator->second.get() : nullptr;
 }
 
-ChromeBrowserState* TestChromeBrowserStateManager::GetBrowserStateByPath(
-    const base::FilePath& path) {
-  DCHECK_EQ(path.DirName(), data_dir_);
-  return GetBrowserStateByName(path.BaseName().AsUTF8Unsafe());
-}
-
 TestChromeBrowserState*
 TestChromeBrowserStateManager::AddBrowserStateWithBuilder(
     TestChromeBrowserState::Builder builder) {
