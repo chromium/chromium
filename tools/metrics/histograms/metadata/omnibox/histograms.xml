@@ -888,16 +888,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.FocusToEditTime" units="ms" expires_after="2022-06-30">
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <summary>
-    The length of time between when a user focused on the omnibox and first
-    modifies the omnibox.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.FocusToOpenTimeAnyPopupState3" units="ms"
     expires_after="2025-01-05">
   <owner>jdonnelly@chromium.org</owner>

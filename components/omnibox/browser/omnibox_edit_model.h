@@ -655,12 +655,6 @@ class OmniboxEditModel {
   // We keep track of when the user last focused on the omnibox.
   base::TimeTicks last_omnibox_focus_;
 
-  // Whether any user input has occurred since focusing on the omnibox. This is
-  // used along with |last_omnibox_focus_| to calculate the time between a user
-  // focusing on the omnibox and editing. It is initialized to true since
-  // there was no focus event.
-  bool user_input_since_focus_;
-
   // Indicates whether the current interaction with the Omnibox resulted in
   // navigation (true), or user leaving the omnibox without taking any action
   // (false).
