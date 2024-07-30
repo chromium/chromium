@@ -124,7 +124,7 @@ function start(): void {
   }
   const root = document.documentElement;
   idleTaskTracker = new IdleTaskTracker();
-  click = new TextClick(root, tapConsumer);
+  click = new TextClick(root, tapConsumer, () => decorator?.decorations);
   extractor = new TextExtractor(textChunkConsumer);
   styler = new TextStyler();
   decorator = new TextDecorator(styler);

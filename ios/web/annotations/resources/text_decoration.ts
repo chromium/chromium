@@ -43,6 +43,15 @@ function createChromeAnnotation(
   return element;
 }
 
+// Creates a <span>> with a single space. Attaches `id` and `type`.
+function createSpace(id: number, type: string): HTMLElementWithSymbolIndex {
+  const element = document.createElement('span') as HTMLElementWithSymbolIndex;
+  element[annotationUniqueId] = id;
+  element[annotationType] = type;
+  element.textContent = ' ';
+  return element;
+}
+
 // Returns `true` if given `node` is either an original node or a replacement
 // node.
 function isDecorationNode(node: NodeWithSymbolIndex): boolean {
@@ -193,6 +202,7 @@ export {
   annotationFullText,
   annotationExternalData,
   createChromeAnnotation,
+  createSpace,
   isDecorationNode,
   TextDecoration,
 }

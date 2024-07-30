@@ -26,11 +26,22 @@ function countAnnotations(): number {
 /**
  * Simulate clicking annotation at given `index`.
  */
-function clickAnnotation(index: number): boolean {
+function clickAnnotation(index: number, viewport: boolean): boolean {
   let nodes = document.querySelectorAll("chrome_annotation");
-  let decoration = nodes[index];
+  const decoration = nodes[index];
   if (decoration && decoration instanceof HTMLElement) {
-    decoration.click();
+    if (viewport) {
+      const rect = decoration.getBoundingClientRect();
+      const event = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        clientX: rect.x + 1,
+        clientY: rect.y + 1
+      });
+      decoration.parentElement!.dispatchEvent(event);
+    } else {
+      decoration.click();
+    }
     return true;
   }
   return false;
