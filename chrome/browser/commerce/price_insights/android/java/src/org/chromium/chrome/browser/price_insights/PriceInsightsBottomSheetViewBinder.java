@@ -4,18 +4,90 @@
 
 package org.chromium.chrome.browser.price_insights;
 
+import android.content.res.Resources;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.TextViewCompat;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 
 /** ViewBinder for the price insights bottom sheet */
 public class PriceInsightsBottomSheetViewBinder {
+
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE == propertyKey) {
+        ButtonCompat priceTrackingButton =
+                (ButtonCompat) view.findViewById(R.id.price_tracking_button);
+        TextView openUrlButton = (TextView) view.findViewById(R.id.open_jackpot_url_button);
+        if (PriceInsightsBottomSheetProperties.PRICE_TRACKING_TITLE == propertyKey) {
+            ((TextView) view.findViewById(R.id.price_tracking_title))
+                    .setText(model.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_TITLE));
+        } else if (PriceInsightsBottomSheetProperties.PRICE_TRACKING_DESCRIPTION == propertyKey) {
+            ((TextView) view.findViewById(R.id.price_tracking_description))
+                    .setText(
+                            model.get(
+                                    PriceInsightsBottomSheetProperties.PRICE_TRACKING_DESCRIPTION));
+        } else if (PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_TEXT == propertyKey) {
+            priceTrackingButton.setText(
+                    model.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_TEXT));
+        } else if (PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ICON == propertyKey) {
+            // Set price tracking button icon at the start position of the button.
+            priceTrackingButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    /* start= */ model.get(
+                            PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ICON),
+                    /* top= */ Resources.ID_NULL,
+                    /* end= */ Resources.ID_NULL,
+                    /* bottom= */ Resources.ID_NULL);
+        } else if (PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_FOREGROUND_COLOR
+                == propertyKey) {
+            priceTrackingButton.setTextColor(
+                    ContextCompat.getColor(
+                            priceTrackingButton.getContext(),
+                            model.get(
+                                    PriceInsightsBottomSheetProperties
+                                            .PRICE_TRACKING_BUTTON_FOREGROUND_COLOR)));
+            TextViewCompat.setCompoundDrawableTintList(
+                    priceTrackingButton,
+                    AppCompatResources.getColorStateList(
+                            priceTrackingButton.getContext(),
+                            model.get(
+                                    PriceInsightsBottomSheetProperties
+                                            .PRICE_TRACKING_BUTTON_FOREGROUND_COLOR)));
+        } else if (PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_BACKGROUND_COLOR
+                == propertyKey) {
+            ViewCompat.setBackgroundTintList(
+                    priceTrackingButton,
+                    AppCompatResources.getColorStateList(
+                            priceTrackingButton.getContext(),
+                            model.get(
+                                    PriceInsightsBottomSheetProperties
+                                            .PRICE_TRACKING_BUTTON_BACKGROUND_COLOR)));
+        } else if (PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ENABLED
+                == propertyKey) {
+            priceTrackingButton.setEnabled(
+                    model.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ENABLED));
+        } else if (PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE == propertyKey) {
             ((TextView) view.findViewById(R.id.price_history_title))
                     .setText(model.get(PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE));
+        } else if (PriceInsightsBottomSheetProperties.OPEN_URL_TITLE == propertyKey) {
+            openUrlButton.setText(model.get(PriceInsightsBottomSheetProperties.OPEN_URL_TITLE));
+        } else if (PriceInsightsBottomSheetProperties.OPEN_URL_BUTTON_ICON == propertyKey) {
+            // Set open url button icon at the end position of the view.
+            openUrlButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    /* start= */ Resources.ID_NULL,
+                    /* top= */ Resources.ID_NULL,
+                    /* end= */ model.get(PriceInsightsBottomSheetProperties.OPEN_URL_BUTTON_ICON),
+                    /* bottom= */ Resources.ID_NULL);
+        } else if (PriceInsightsBottomSheetProperties.OPEN_URL_BUTTON_ON_CLICK_LISTENER
+                == propertyKey) {
+            openUrlButton.setOnClickListener(
+                    model.get(
+                            PriceInsightsBottomSheetProperties.OPEN_URL_BUTTON_ON_CLICK_LISTENER));
         }
     }
 }

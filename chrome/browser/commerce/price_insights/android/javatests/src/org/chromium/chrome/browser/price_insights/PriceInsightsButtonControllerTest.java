@@ -5,6 +5,8 @@ package org.chromium.chrome.browser.price_insights;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -19,10 +21,13 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -31,9 +36,13 @@ public class PriceInsightsButtonControllerTest {
     @Mock private Tab mMockTab;
     @Mock private Supplier<TabBookmarker> mMockTabBookmarkerSupplier;
     @Mock private Supplier<Tab> mMockTabSupplier;
+    @Mock private Supplier<TabModelSelector> mMockTabModelSelectorSupplier;
+    @Mock private Supplier<ShoppingService> mMockShoppingServiceSupplier;
     @Mock private ModalDialogManager mMockModalDialogManager;
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private SnackbarManager mMockSnackbarManager;
+    @Mock private PriceInsightsBottomSheetCoordinator mMockPriceInsightsBottomSheetCoordinator;
+    @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
 
     @Before
     public void setUp() {
@@ -50,18 +59,36 @@ public class PriceInsightsButtonControllerTest {
         return new PriceInsightsButtonController(
                 mMockTab.getContext(),
                 mMockTabSupplier,
+                mMockTabModelSelectorSupplier,
+                mMockShoppingServiceSupplier,
                 mMockModalDialogManager,
                 mMockBottomSheetController,
                 mMockSnackbarManager,
+                mMockPriceInsightsDelegate,
                 mock(Drawable.class));
     }
 
     @Test
-    public void testPriceInsightsButtonClicked_controllerInit() {
+    public void testPriceInsightsButtonControllerOnClick() {
         PriceInsightsButtonController buttonController = createButtonController();
+        buttonController.setPriceInsightsBottomSheetCoordinatorForTesting(
+                mMockPriceInsightsBottomSheetCoordinator);
         ButtonData buttonData = buttonController.get(mMockTab);
+
         buttonData.getButtonSpec().getOnClickListener().onClick(null);
 
-        // TODO(b/336825059): Test price insights bottom sheet controller is presented.
+        verify(mMockPriceInsightsBottomSheetCoordinator, times(1)).requestShowContent();
+    }
+
+    @Test
+    public void testPriceInsightsButtonControllerDestroy() {
+        PriceInsightsButtonController buttonController = createButtonController();
+        buttonController.setPriceInsightsBottomSheetCoordinatorForTesting(
+                mMockPriceInsightsBottomSheetCoordinator);
+        ButtonData buttonData = buttonController.get(mMockTab);
+        buttonData.getButtonSpec().getOnClickListener().onClick(null);
+        buttonController.destroy();
+
+        verify(mMockPriceInsightsBottomSheetCoordinator, times(1)).closeContent();
     }
 }

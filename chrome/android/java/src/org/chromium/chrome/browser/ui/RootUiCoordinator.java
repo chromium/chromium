@@ -104,6 +104,7 @@ import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.price_insights.PriceInsightsButtonController;
 import org.chromium.chrome.browser.price_tracking.CurrentTabPriceTrackingStateSupplier;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
@@ -163,6 +164,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.wallet.BoardingPassController;
+import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinatorDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -1390,13 +1392,27 @@ public class RootUiCoordinator
             mCurrentTabPriceTrackingStateSupplier =
                     new CurrentTabPriceTrackingStateSupplier(
                             mActivityTabProvider, mProfileSupplier);
+            PriceInsightsDelegate priceInsightsDelegate =
+                    new PriceInsightsDelegate() {
+                        @Override
+                        public BookmarkId getBookmarkIdForTab(Tab tab) {
+                            BookmarkModel bookmarkModel =
+                                    BookmarkModel.getForProfile(tab.getProfile());
+                            return bookmarkModel != null
+                                    ? bookmarkModel.getUserBookmarkIdForTab(tab)
+                                    : null;
+                        }
+                    };
             PriceInsightsButtonController priceInsightsButtonController =
                     new PriceInsightsButtonController(
                             mActivity,
                             mActivityTabProvider,
+                            mTabModelSelectorSupplier,
+                            () -> ShoppingServiceFactory.getForProfile(mProfileSupplier.get()),
                             mModalDialogManagerSupplier.get(),
                             getBottomSheetController(),
                             mSnackbarManagerSupplier.get(),
+                            priceInsightsDelegate,
                             AppCompatResources.getDrawable(
                                     mActivity, R.drawable.ic_trending_down_24dp));
             PriceTrackingButtonController priceTrackingButtonController =

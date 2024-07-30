@@ -4424,6 +4424,24 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PRICE_INSIGHTS_BOTTOM_SHEET_CONTENT_OPENED_FULL" desc="Accessibility string that describes fully opening a price insights bottom sheet.">
         Price insights bottom sheet opened at full height
       </message>
+      <message name="IDS_PRICE_INSIGHTS_OPEN_URL_TITLE" desc="The label for the button that opens the link to buying options for a product.">
+        Search buying options
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_OPEN_URL_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility string that describes the button for opening the link to buying options for a product.">
+        Tap to search buying options for the product in a new tab.
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_DESCRIPTION" desc="The title of the section in the price insights bottom sheet that allows a user to track the price of a product.">
+        Get alerts when the price drops on any site across the web
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_DISABLED_BUTTON_TEXT" desc="The label of the price tracking button when the user is not tracking the product.">
+        Track
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_ENABLED_BUTTON_TEXT" desc="The label of the price tracking button when the user is tracking the product.">
+        Tracking
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility string that describes the price tracking button to track or untrack a product.">
+        Tap to track or untrack a product.
+      </message>
       <message name="IDS_PRICE_INSIGHTS_TITLE" desc="The title for the price insights button.">
         Price insights
       </message>
