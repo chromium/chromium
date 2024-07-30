@@ -140,7 +140,7 @@ PageLoadMetricsObserver::~PageLoadMetricsObserver() = default;
 const PageLoadMetricsObserverDelegate& PageLoadMetricsObserver::GetDelegate()
     const {
   // The delegate must exist and outlive the page load metrics observer.
-  DCHECK(delegate_);
+  CHECK(delegate_);
   return *delegate_;
 }
 
