@@ -1924,7 +1924,8 @@
       // experiment that enters trials after it got created; this makes it easy
       // to polyfill by only checking older things, and makes it serve its
       // purpose of modularly advertising new things.
-      implied_by: ["FledgePermitCrossOriginTrustedSignals"],
+      implied_by: ["FledgePermitCrossOriginTrustedSignals",
+                   "FledgeRealTimeReporting"],
       base_feature: "none",
     },
     {
@@ -1934,6 +1935,7 @@
       implied_by: ["FledgeCustomMaxAuctionAdComponents",
                    "FledgeDeprecatedRenderURLReplacements",
                    "FledgePermitCrossOriginTrustedSignals",
+                   "FledgeRealTimeReporting",
                    "FledgeReportingTimeout"],
       base_feature: "none",
     },

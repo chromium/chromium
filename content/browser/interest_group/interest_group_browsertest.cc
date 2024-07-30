@@ -730,13 +730,13 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeMultiBid, {}},
          {blink::features::kFledgeCustomMaxAuctionAdComponents,
           {{"FledgeAdComponentLimit", "40"}}},
-         {blink::features::kFledgeRealTimeReporting, {}},
          {blink::features::kFledgeReportingTimeout, {}},
          {blink::features::kFledgeDeprecatedRenderURLReplacements, {}}},
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
          blink::features::kFledgePermitCrossOriginTrustedSignals,
+         blink::features::kFledgeRealTimeReporting,
          features::kCookieDeprecationFacilitatedTesting});
   }
 
@@ -23352,6 +23352,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
         'permitCrossOriginTrustedSignals');
   )";
 
+  const char kQueryRealTimeReporting[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'realTimeReporting');
+  )";
+
   const char kQueryAll[] = R"(
     navigator.protectedAudience.queryFeatureSupport('*');
   )";
@@ -23360,6 +23365,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
   EXPECT_EQ(true, EvalJs(shell(), kQueryUrlReplacements));
   EXPECT_EQ(true, EvalJs(shell(), kQueryReportingTimeout));
   EXPECT_EQ(false, EvalJs(shell(), kQueryCrossOriginTrustedSignals));
+  EXPECT_EQ(false, EvalJs(shell(), kQueryRealTimeReporting));
   // Since only older features are on in this feature, * isn't available yet.
   EXPECT_EQ(nullptr, EvalJs(shell(), kQueryAll));
 }
@@ -23517,20 +23523,6 @@ class AuctionConfigReportingTimeoutEnabledTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutEnabledTest,
-                       FeatureDetection) {
-  const char kTestExpression[] = R"(
-    navigator.protectedAudience.queryFeatureSupport(
-        'reportingTimeout');
-  )";
-
-  GURL test_url =
-      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
-
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  EXPECT_EQ(true, EvalJs(shell(), kTestExpression));
-}
 
 IN_PROC_BROWSER_TEST_F(AuctionConfigReportingTimeoutEnabledTest,
                        ReportingTimeoutPassedToWorklets) {
@@ -24473,6 +24465,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                 "adComponentsLimit": 40,
                 "deprecatedRenderURLReplacements": true,
                 "permitCrossOriginTrustedSignals": true,
+                "realTimeReporting": false,
                 "reportingTimeout": true,
               })"))
       << all_result.error;
@@ -24882,6 +24875,33 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest,
   WaitForUrl(kRealTimeReportUrlA);
 }
 
+IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, FeatureDetection) {
+  const char kQueryRealTimeReporting[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'realTimeReporting');
+  )";
+
+  const char kQueryAll[] = R"(
+    navigator.protectedAudience.queryFeatureSupport('*');
+  )";
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(true, EvalJs(shell(), kQueryRealTimeReporting));
+
+  auto all_result = EvalJs(shell(), kQueryAll);
+  EXPECT_THAT(all_result.value, base::test::IsJson(R"({
+                "adComponentsLimit": 40,
+                "deprecatedRenderURLReplacements": true,
+                "permitCrossOriginTrustedSignals": false,
+                "realTimeReporting": true,
+                "reportingTimeout": true,
+              })"))
+      << all_result.error;
+}
+
 class RealTimeReportingAndCookieDeprecationEnabledTest
     : public InterestGroupBrowserTest {
  public:
@@ -24975,6 +24995,44 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingAndCookieDeprecationEnabledTest,
   for (const auto& report_url : kRealTimeReportUrls) {
     EXPECT_FALSE(HasServerSeenUrl(report_url));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(RealTimeReportingAndCookieDeprecationEnabledTest,
+                       FeatureDetection) {
+  const char kTestExpression[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'realTimeReporting');
+  )";
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(false, EvalJs(shell(), kTestExpression));
+}
+
+class RealTimeReportingDisabledTest : public InterestGroupBrowserTest {
+ public:
+  RealTimeReportingDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        {blink::features::kFledgeRealTimeReporting});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(RealTimeReportingDisabledTest, FeatureDetection) {
+  const char kTestExpression[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'realTimeReporting');
+  )";
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(false, EvalJs(shell(), kTestExpression));
 }
 
 }  // namespace
