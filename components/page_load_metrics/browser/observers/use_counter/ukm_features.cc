@@ -403,6 +403,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kIdentityDigitalCredentials,
           WebFeature::kIdentityDigitalCredentialsDeepLink,
           WebFeature::kV8FileSystemObserver_Observe_Method,
+          WebFeature::kGamepadHapticActuatorType,
       }));
   return *opt_in_features;
 }
