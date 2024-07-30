@@ -58,13 +58,14 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
 
     @Override
     public void onCredentialSelected(CredentialFillRequest credentialFillRequest) {
-        assert mNativeView != 0 : "The native side is already dismissed";
-        AllPasswordsBottomSheetBridgeJni.get()
-                .onCredentialSelected(
-                        mNativeView,
-                        credentialFillRequest.getCredential().getUsername(),
-                        credentialFillRequest.getCredential().getPassword(),
-                        credentialFillRequest.getRequestsToFillPassword());
+        if (mNativeView != 0) { // The native side is already dismissed.
+            AllPasswordsBottomSheetBridgeJni.get()
+                    .onCredentialSelected(
+                            mNativeView,
+                            credentialFillRequest.getCredential().getUsername(),
+                            credentialFillRequest.getCredential().getPassword(),
+                            credentialFillRequest.getRequestsToFillPassword());
+        }
     }
 
     @Override
