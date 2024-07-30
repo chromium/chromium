@@ -92,6 +92,12 @@ export class RecordingSession {
 
   private processedSamples = 0;
 
+  private readonly mediaRecorder: MediaRecorder;
+
+  private readonly audioProcessor: AudioWorkletNode;
+
+  private readonly combinedInputNode: MediaStreamAudioDestinationNode;
+
   readonly progress = computed<RecordingProgress>(() => {
     const powers = this.powers.value;
     const length = (powers.length * SAMPLES_PER_SLICE) / SAMPLE_RATE;
@@ -104,11 +110,15 @@ export class RecordingSession {
 
   private constructor(
     private readonly platformHandler: PlatformHandler,
+    private readonly audioCtx: AudioContext,
     private readonly sourceStreams: MediaStream[],
-    private readonly stream: MediaStream,
-    private readonly mediaRecorder: MediaRecorder,
-    private readonly audioProcessor: AudioWorkletNode,
   ) {
+    this.combinedInputNode = audioCtx.createMediaStreamDestination();
+    this.audioProcessor = new AudioWorkletNode(audioCtx, 'audio-processor');
+    this.mediaRecorder = new MediaRecorder(this.combinedInputNode.stream, {
+      mimeType: AUDIO_MIME_TYPE,
+    });
+
     this.mediaRecorder.addEventListener('dataavailable', (e) => {
       this.onDataAvailable(e);
     });
@@ -241,6 +251,14 @@ export class RecordingSession {
     }
     this.audioProcessor.port.start();
     this.mediaRecorder.start(TIME_SLICE_MS);
+
+    // Connect the input to the MediaRecorder and processor, to make sure both
+    // only starts after soda is initialized.
+    for (const stream of this.sourceStreams) {
+      const source = this.audioCtx.createMediaStreamSource(stream);
+      source.connect(this.combinedInputNode);
+      source.connect(this.audioProcessor);
+    }
   }
 
   async finish(): Promise<Blob> {
@@ -252,7 +270,8 @@ export class RecordingSession {
     await this.stopSodaSession().result;
     await stopped;
 
-    for (const stream of [this.stream, ...this.sourceStreams]) {
+    const streams = [this.combinedInputNode.stream, ...this.sourceStreams];
+    for (const stream of streams) {
       for (const track of stream.getTracks()) {
         track.stop();
       }
@@ -273,26 +292,7 @@ export class RecordingSession {
     const streams = await Promise.all(requestingStreams);
 
     const audioCtx = await getAudioContext();
-    const combinedInput = audioCtx.createMediaStreamDestination();
-    const processor = new AudioWorkletNode(audioCtx, 'audio-processor');
 
-    for (const stream of streams) {
-      const source = audioCtx.createMediaStreamSource(stream);
-      source.connect(combinedInput);
-      source.connect(processor);
-    }
-
-    const combinedStream = combinedInput.stream;
-    const mediaRecorder = new MediaRecorder(combinedStream, {
-      mimeType: AUDIO_MIME_TYPE,
-    });
-
-    return new RecordingSession(
-      config.platformHandler,
-      streams,
-      combinedStream,
-      mediaRecorder,
-      processor,
-    );
+    return new RecordingSession(config.platformHandler, audioCtx, streams);
   }
 }
