@@ -4736,9 +4736,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, ContextMenuSaveImageWithAcceptHeader) {
       ->GetWidget()
       ->ForwardMouseEvent(mouse_event);
   waiter->WaitForFinished();
-  std::string accept_header;
-  headers.GetHeader(net::HttpRequestHeaders::kAccept, &accept_header);
-  EXPECT_EQ(accept_header, blink::network_utils::ImageAcceptHeader());
+  EXPECT_EQ(headers.GetHeader(net::HttpRequestHeaders::kAccept)
+                .value_or(std::string()),
+            blink::network_utils::ImageAcceptHeader());
   EXPECT_EQ(1u, waiter->NumDownloadsSeenInState(DownloadItem::COMPLETE));
   CheckDownloadStates(1, DownloadItem::COMPLETE);
 }
