@@ -89,7 +89,6 @@ promise_test(t => {
       // Creates blob URL.
       const blob = new Blob(["blob data"], {type : "text/plain"});
       const blob_url = window.URL.createObjectURL(blob);
-      t.add_cleanup(() => window.URL.revokeObjectURL(blob_url));
 
       // Fetches blob URL to ensure that it's valid.
       var blob_fetch = fetch_contents_check(blob_url);
@@ -122,6 +121,7 @@ promise_test(t => {
       }
       response_2 = await fetch_contents_check(blob_url);
       if (response_2 !== fetch_unsuccessful_response) {
+        t.add_cleanup(() => window.URL.revokeObjectURL(blob_url));
         reject(`Blob URL wasn't revoked in same-top-level-site iframe: ${response_2}`);
       }
 
@@ -166,7 +166,6 @@ promise_test(t => {
 
       const blob = new Blob(["blob data"], {type : "text/plain"});
       const blob_url = window.URL.createObjectURL(blob);
-      t.add_cleanup(() => window.URL.revokeObjectURL(blob_url));
 
       await send(worker_1_uuid, can_blob_url_be_revoked_js(blob_url, response_queue_uuid));
       var response_1 = await receive(response_queue_uuid);
@@ -185,6 +184,7 @@ promise_test(t => {
       }
       response_2 = await fetch_contents_check(blob_url);
       if (response_2 !== fetch_unsuccessful_response) {
+        t.add_cleanup(() => window.URL.revokeObjectURL(blob_url));
         reject(`Blob URL wasn't revoked in same-top-level-site dedicated worker: ${response_2}`);
       }
 
@@ -231,8 +231,6 @@ promise_test(t => {
 
       const blob = new Blob(["blob data"], {type : "text/plain"});
       const blob_url = window.URL.createObjectURL(blob);
-      t.add_cleanup(() => window.URL.revokeObjectURL(blob_url));
-
 
       await send(worker_1_uuid, can_blob_url_be_revoked_js(blob_url, response_queue_uuid));
       var response_1 = await receive(response_queue_uuid);
@@ -251,6 +249,7 @@ promise_test(t => {
       }
       response_2 = await fetch_contents_check(blob_url);
       if (response_2 !== fetch_unsuccessful_response) {
+        t.add_cleanup(() => window.URL.revokeObjectURL(blob_url));
         reject(`Blob URL wasn't revoked in same-top-level-site shared worker: ${response_2}`);
       }
 
