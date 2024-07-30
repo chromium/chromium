@@ -1997,7 +1997,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
 #else   // !BUILDFLAG(IS_WIN)
         AddChildWindowToBrowser(presenter_->GetWindow());
         output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
-            dependency_, shared_image_factory_.get(),
             shared_image_representation_factory_.get(), context_state_.get(),
             std::move(presenter), feature_info_,
             shared_gpu_deps_->memory_tracker(),
@@ -2156,7 +2155,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
   if (presenter_) {
     AddChildWindowToBrowser(presenter_->GetWindow());
     output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
-        dependency_, shared_image_factory_.get(),
         shared_image_representation_factory_.get(), context_state_.get(),
         std::move(presenter), feature_info_, shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());

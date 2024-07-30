@@ -142,8 +142,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     bool supports_single_pixel_buffer = false;
     // Whether make current needs to be called for swap buffers.
     bool present_requires_make_current = true;
-    // Whether RPDQ overlays allocated by the renderer requires DComp surfaces.
-    bool rpdq_overlay_requires_dcomp_surface = false;
 
     // Map from SharedImageFormat to its associated SkColorType.
     base::flat_map<SharedImageFormat, SkColorType> sk_color_type_map;

@@ -120,8 +120,6 @@ OverlayCandidateFactory::OverlayContext WindowsDelegatedOverlayContext() {
   context.supports_rounded_display_masks = true;
   context.supports_mask_filter = true;
   context.transform_and_clip_rpdq = true;
-  context.allow_non_overlay_resources = base::FeatureList::IsEnabled(
-      features::kCopyNonOverlayResourcesToDCompSurfaces);
   return context;
 }
 
