@@ -64,6 +64,18 @@ struct BiddingParams {
   base::Value::Dict additional_params;
 };
 
+// Struct with input parameters for RequestTrustedScoringSignals().
+struct ScoringParams {
+  url::Origin main_frame_origin;
+  url::Origin seller;
+  GURL trusted_signals_url;
+  url::Origin interest_group_owner;
+  url::Origin joining_origin;
+  GURL render_url;
+  std::vector<GURL> component_render_urls;
+  base::Value::Dict additional_params;
+};
+
 // Subclass of TrustedSignalsCacheImpl that mocks out TrustedSignalsFetcher
 // calls, and lets tests monitor and respond to those fetches.
 class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
@@ -73,6 +85,17 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     struct PendingBiddingSignalsFetch {
       GURL trusted_signals_url;
       std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
+          compression_groups;
+      TrustedSignalsFetcher::Callback callback;
+
+      // Weak pointer to Fetcher to allow checking if the Fetcher has been
+      // destroyed.
+      base::WeakPtr<TestTrustedSignalsFetcher> fetcher_alive;
+    };
+
+    struct PendingScoringSignalsFetch {
+      GURL trusted_signals_url;
+      std::map<int, std::vector<TrustedSignalsFetcher::ScoringPartition>>
           compression_groups;
       TrustedSignalsFetcher::Callback callback;
 
@@ -120,7 +143,45 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
         }
       }
 
-      cache_->OnPendingFetch(PendingBiddingSignalsFetch(
+      cache_->OnPendingBiddingSignalsFetch(PendingBiddingSignalsFetch(
+          trusted_signals_url, std::move(compression_groups_copy),
+          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
+    }
+
+    void FetchScoringSignals(
+        const GURL& trusted_signals_url,
+        const std::map<int, std::vector<ScoringPartition>>& compression_groups,
+        Callback callback) override {
+      // This class is single use. Make sure a Fetcher isn't used more than
+      // once.
+      EXPECT_FALSE(fetch_started_);
+      fetch_started_ = true;
+
+      std::map<int, std::vector<TrustedSignalsFetcher::ScoringPartition>>
+          compression_groups_copy;
+      for (const auto& compression_group : compression_groups) {
+        auto& scoring_partitions_copy =
+            compression_groups_copy.try_emplace(compression_group.first)
+                .first->second;
+        for (const auto& scoring_partition : compression_group.second) {
+          // Have to manually copy each ScoringPartition, since ScoringPartition
+          // deliberately doesn't have a copy constructor, to avoid accidental
+          // copies, which can be resource intensive.
+          TrustedSignalsFetcher::ScoringPartition scoring_partition_copy;
+          scoring_partition_copy.partition_id = scoring_partition.partition_id;
+          scoring_partition_copy.render_url = scoring_partition.render_url;
+          scoring_partition_copy.component_render_urls =
+              scoring_partition.component_render_urls;
+          scoring_partition_copy.hostname = scoring_partition.hostname;
+          scoring_partition_copy.additional_params =
+              scoring_partition.additional_params.Clone();
+
+          scoring_partitions_copy.emplace_back(
+              std::move(scoring_partition_copy));
+        }
+      }
+
+      cache_->OnPendingScoringSignalsFetch(PendingScoringSignalsFetch(
           trusted_signals_url, std::move(compression_groups_copy),
           std::move(callback), weak_ptr_factory_.GetWeakPtr()));
     }
@@ -163,6 +224,30 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     return std::move(WaitForBiddingSignalsFetches(1).at(0));
   }
 
+  // Waits until there have been `num_fetches` fetches whose
+  // FetchScoringSignals() method has been invoked and returns them all,
+  // clearing the list of pending fetches. EXPECTs that number is not exceeded.
+  std::vector<TestTrustedSignalsFetcher::PendingScoringSignalsFetch>
+  WaitForScoringSignalsFetches(size_t num_fetches) {
+    DCHECK(!run_loop_);
+    while (trusted_scoring_signals_fetches_.size() < num_fetches) {
+      run_loop_ = std::make_unique<base::RunLoop>();
+      run_loop_->Run();
+      run_loop_.reset();
+    }
+    EXPECT_EQ(num_fetches, trusted_scoring_signals_fetches_.size());
+    std::vector<TestTrustedSignalsFetcher::PendingScoringSignalsFetch> out;
+    std::swap(out, trusted_scoring_signals_fetches_);
+    return out;
+  }
+
+  // Wrapper around WaitForScoringSignalsFetches() that waits for a single fetch
+  // and returns only it. Expects there to be at most one fetch.
+  TestTrustedSignalsFetcher::PendingScoringSignalsFetch
+  WaitForScoringSignalsFetch() {
+    return std::move(WaitForScoringSignalsFetches(1).at(0));
+  }
+
   size_t num_pending_fetches() const {
     return trusted_bidding_signals_fetches_.size();
   }
@@ -172,9 +257,17 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     return std::make_unique<TestTrustedSignalsFetcher>(this);
   }
 
-  void OnPendingFetch(
+  void OnPendingBiddingSignalsFetch(
       TestTrustedSignalsFetcher::PendingBiddingSignalsFetch fetch) {
     trusted_bidding_signals_fetches_.emplace_back(std::move(fetch));
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  void OnPendingScoringSignalsFetch(
+      TestTrustedSignalsFetcher::PendingScoringSignalsFetch fetch) {
+    trusted_scoring_signals_fetches_.emplace_back(std::move(fetch));
     if (run_loop_) {
       run_loop_->Quit();
     }
@@ -184,6 +277,8 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
   std::vector<TestTrustedSignalsFetcher::PendingBiddingSignalsFetch>
       trusted_bidding_signals_fetches_;
+  std::vector<TestTrustedSignalsFetcher::PendingScoringSignalsFetch>
+      trusted_scoring_signals_fetches_;
 };
 
 // Validates that `partition` has a single partition corresponding to the
@@ -205,38 +300,58 @@ void ValidateFetchParamsForPartition(
   EXPECT_EQ(partition.partition_id, expected_partition_id);
 }
 
+// Validates that `partition` has a single partition corresponding to the
+// ScoringParams in `params`.
+void ValidateFetchParamsForPartition(
+    const TrustedSignalsFetcher::ScoringPartition& partition,
+    const ScoringParams& params,
+    int expected_partition_id) {
+  EXPECT_EQ(partition.hostname, params.main_frame_origin.host());
+  EXPECT_EQ(partition.render_url, params.render_url);
+  EXPECT_THAT(partition.component_render_urls,
+              testing::ElementsAreArray(params.component_render_urls));
+  EXPECT_EQ(partition.additional_params, params.additional_params);
+  EXPECT_EQ(partition.partition_id, expected_partition_id);
+}
+
 // Validates that `partitions` has a single partition corresponding to the
-// params in `params`.
+// params in `params`. `ParamType` is expected to be BiddingParams or
+// ScoringParams, and `FetcherPartitionType` one of
+// TrustedSignalsFetcher::BiddingPartition or
+// TrustedSignalsFetcher::ScoringPartition.
+template <typename ParamType, typename FetcherPartitionType>
 void ValidateFetchParamsForPartitions(
-    const std::vector<TrustedSignalsFetcher::BiddingPartition>& partitions,
-    const BiddingParams& params,
+    const std::vector<FetcherPartitionType>& partitions,
+    const ParamType& params,
     int expected_partition_id) {
   ASSERT_EQ(partitions.size(), 1u);
   ValidateFetchParamsForPartition(partitions.at(0), params,
                                   expected_partition_id);
 }
 
-// Verifies that all fields of `trusted_bidding_signals_fetch` exactly match
-// `params` and the provided IDs. Doesn't handle the case that that multiple
-// fetches were merged into a single fetch. Note that `compression_group_id` is
-// never exposed externally by the TrustedSignalsCache API nor passed in, so
-// relies on information about the internal logic of the cache to provide the
-// expected value for.
-void ValidateFetchParams(
-    const TestTrustedSignalsCache::TestTrustedSignalsFetcher::
-        PendingBiddingSignalsFetch& trusted_bidding_signals_fetch,
-    const BiddingParams& params,
-    int expected_compression_group_id,
-    int expected_partition_id) {
-  EXPECT_EQ(trusted_bidding_signals_fetch.trusted_signals_url,
-            params.trusted_signals_url);
-  ASSERT_EQ(trusted_bidding_signals_fetch.compression_groups.size(), 1u);
-  EXPECT_EQ(trusted_bidding_signals_fetch.compression_groups.begin()->first,
+// Verifies that all fields of `trusted_signals_fetch` exactly match `params`
+// and the provided IDs. Doesn't handle the case that that multiple fetches were
+// merged into a single fetch. Note that `compression_group_id` is never exposed
+// externally by the TrustedSignalsCache API nor passed in, so relies on
+// information about the internal logic of the cache to provide the expected
+// value for.
+//
+// `ParamType` is expected to be BiddingParams or ScoringParams, and
+// `FetcherFetchType` one of
+// TestTrustedSignalsFetcher::PendingBiddingSignalsFetch or
+// TestTrustedSignalsFetcher::PendingScoringSignalsFetch.
+template <typename ParamType, typename FetcherFetchType>
+void ValidateFetchParams(const FetcherFetchType& fetch,
+                         const ParamType& params,
+                         int expected_compression_group_id,
+                         int expected_partition_id) {
+  EXPECT_EQ(fetch.trusted_signals_url, params.trusted_signals_url);
+  ASSERT_EQ(fetch.compression_groups.size(), 1u);
+  EXPECT_EQ(fetch.compression_groups.begin()->first,
             expected_compression_group_id);
 
-  ValidateFetchParamsForPartitions(
-      trusted_bidding_signals_fetch.compression_groups.begin()->second, params,
-      expected_partition_id);
+  ValidateFetchParamsForPartitions(fetch.compression_groups.begin()->second,
+                                   params, expected_partition_id);
 }
 
 TrustedSignalsFetcher::CompressionGroupResult CreateCompressionGroupResult(
@@ -266,56 +381,58 @@ CreateCompressionGroupResultMap(
 }
 
 // Respond to the next fetch with a generic successful body. Expects only one
-// compression group.
+// compression group. Uses a template so it can handle both
+// PendingBiddingSignalsFetches and PendingScoringSignalsFetches.
+template <class PendingSignalsFetch>
 void RespondToFetchWithSuccess(
-    TestTrustedSignalsCache::TestTrustedSignalsFetcher::
-        PendingBiddingSignalsFetch& trusted_bidding_signals_fetch,
+    PendingSignalsFetch& trusted_signals_fetch,
     auction_worklet::mojom::TrustedSignalsCompressionScheme compression_scheme =
         auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
     std::string_view body = kSuccessBody,
     base::TimeDelta ttl = base::Hours(1)) {
   // Shouldn't be calling this after the fetcher was destroyed.
-  ASSERT_TRUE(trusted_bidding_signals_fetch.fetcher_alive);
+  ASSERT_TRUE(trusted_signals_fetch.fetcher_alive);
 
   // Method only supports a single compression group.
-  ASSERT_EQ(trusted_bidding_signals_fetch.compression_groups.size(), 1u);
+  ASSERT_EQ(trusted_signals_fetch.compression_groups.size(), 1u);
 
-  ASSERT_TRUE(trusted_bidding_signals_fetch.callback);
-  std::move(trusted_bidding_signals_fetch.callback)
+  ASSERT_TRUE(trusted_signals_fetch.callback);
+  std::move(trusted_signals_fetch.callback)
       .Run(CreateCompressionGroupResultMap(
-          trusted_bidding_signals_fetch.compression_groups.begin()->first,
+          trusted_signals_fetch.compression_groups.begin()->first,
           compression_scheme, body, ttl));
 }
 
 // Responds to a two-compression group fetch with two successful responses, with
 // different parameters. The first uses a gzip with kSuccessBody, and the second
-// uses brotli with kOtherSuccessBody.
+// uses brotli with kOtherSuccessBody. Uses a template so it can handle both
+// PendingBiddingSignalsFetches and PendingScoringSignalsFetches.
+template <class PendingSignalsFetch>
 void RespondToTwoCompressionGroupFetchWithSuccess(
-    TestTrustedSignalsCache::TestTrustedSignalsFetcher::
-        PendingBiddingSignalsFetch& trusted_bidding_signals_fetch,
+    PendingSignalsFetch& trusted_signals_fetch,
     base::TimeDelta ttl1 = base::Hours(1),
     base::TimeDelta ttl2 = base::Hours(1)) {
-  ASSERT_EQ(trusted_bidding_signals_fetch.compression_groups.size(), 2u);
+  ASSERT_EQ(trusted_signals_fetch.compression_groups.size(), 2u);
   TrustedSignalsFetcher::CompressionGroupResultMap map;
-  map[trusted_bidding_signals_fetch.compression_groups.begin()->first] =
+  map[trusted_signals_fetch.compression_groups.begin()->first] =
       CreateCompressionGroupResult(
           auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
           kSuccessBody, ttl1);
-  map[std::next(trusted_bidding_signals_fetch.compression_groups.begin())
-          ->first] =
+  map[std::next(trusted_signals_fetch.compression_groups.begin())->first] =
       CreateCompressionGroupResult(
           auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
           kOtherSuccessBody, ttl2);
-  std::move(trusted_bidding_signals_fetch.callback).Run(std::move(map));
+  std::move(trusted_signals_fetch.callback).Run(std::move(map));
 }
 
 // Respond to the next fetch with a generic successful body. Does not care about
-// number of compression groups, as on error, all groups are failed.
-void RespondToFetchWithError(
-    TestTrustedSignalsCache::TestTrustedSignalsFetcher::
-        PendingBiddingSignalsFetch& trusted_bidding_signals_fetch) {
-  CHECK(trusted_bidding_signals_fetch.callback);
-  std::move(trusted_bidding_signals_fetch.callback)
+// number of compression groups, as on error, all groups are failed. Uses a
+// template so it can handle both PendingBiddingSignalsFetches and
+// PendingScoringSignalsFetches.
+template <class PendingSignalsFetch>
+void RespondToFetchWithError(PendingSignalsFetch& trusted_signals_fetch) {
+  CHECK(trusted_signals_fetch.callback);
+  std::move(trusted_signals_fetch.callback)
       .Run(base::unexpected(TrustedSignalsFetcher::ErrorInfo{kErrorMessage}));
 }
 
@@ -411,36 +528,37 @@ class TestTrustedSignalsCacheClient
   mojo::Receiver<auction_worklet::mojom::TrustedSignalsCacheClient> receiver_;
 };
 
+// The expected relationship between two sequential signals requests, if the
+// second request is made without waiting for the first to start its Fetch.
+enum class RequestRelation {
+  // Requests cannot share a fetch.
+  kDifferentFetches,
+  // Requests can use different compression groups within a fetch.
+  kDifferentCompressionGroups,
+  // Requests can use different partition within a fetch.
+  kDifferentPartitions,
+  // Requests can use the same partition, but the second request needs to
+  // modify the partition (and thus the fetch) to do so. As a result, if the
+  // first request's fetch has already been started, the second request cannot
+  // reuse it.
+  kSamePartitionModified,
+  // Requests can use the same partition, with the second request not
+  // modifying the partition of the first, which means it can use the same
+  // partition even if the first request already as a second request.
+  kSamePartitionUnmodified,
+};
+
+template <typename ParamsType>
 class TrustedSignalsCacheTest : public testing::Test {
  public:
-  // The expected relationship between two sequential signals requests, if the
-  // second request is made without waiting for the first to start its Fetch.
-  enum class RequestRelation {
-    // Requests cannot share a fetch.
-    kDifferentFetches,
-    // Requests can use different compression groups within a fetch.
-    kDifferentCompressionGroups,
-    // Requests can use different partition within a fetch.
-    kDifferentPartitions,
-    // Requests can use the same partition, but the second request needs to
-    // modify the partition (and thus the fetch) to do so. As a result, if the
-    // first request's fetch has already been started, the second request cannot
-    // reuse it.
-    kSamePartitionModified,
-    // Requests can use the same partition, with the second request not
-    // modifying the partition of the first, which means it can use the same
-    // partition even if the first request already as a second request.
-    kSamePartitionUnmodified,
-  };
-
   // Test case class shared by a number of tests. Each test makes a request
   // using `params1` before `params2`.
   struct TestCase {
     // Used for documentation + useful output on errors.
     const char* description;
     RequestRelation request_relation = RequestRelation::kDifferentFetches;
-    BiddingParams params1;
-    BiddingParams params2;
+    ParamsType params1;
+    ParamsType params2;
   };
 
   TrustedSignalsCacheTest() { CreateCache(); }
@@ -454,27 +572,54 @@ class TrustedSignalsCacheTest : public testing::Test {
   }
 
   // Waits for the next `num_fetches`
-  // TestTrustedSignalsFetcher::PendingBiddingSignalsFetches.
+  // TestTrustedSignalsFetcher::PendingBiddingSignalsFetches or
+  // TestTrustedSignalsFetcher::PendingScoringSignalsFetches, depending on
+  // ParamsType.
   auto WaitForSignalsFetches(int num_fetches) {
-    return trusted_signals_cache_->WaitForBiddingSignalsFetches(num_fetches);
+    if constexpr (std::is_same<ParamsType, BiddingParams>::value) {
+      return trusted_signals_cache_->WaitForBiddingSignalsFetches(num_fetches);
+    }
+    if constexpr (std::is_same<ParamsType, ScoringParams>::value) {
+      return trusted_signals_cache_->WaitForScoringSignalsFetches(num_fetches);
+    }
   }
 
-  // Waits the next TestTrustedSignalsFetcher::PendingBiddingSignalsFetch.
+  // Waits for the next TestTrustedSignalsFetcher::PendingBiddingSignalsFetch or
+  // TestTrustedSignalsFetcher::PendingScoringSignalsFetch, depending on
+  // ParamsType.
   auto WaitForSignalsFetch() {
-    return trusted_signals_cache_->WaitForBiddingSignalsFetch();
+    if constexpr (std::is_same<ParamsType, BiddingParams>::value) {
+      return trusted_signals_cache_->WaitForBiddingSignalsFetch();
+    }
+    if constexpr (std::is_same<ParamsType, ScoringParams>::value) {
+      return trusted_signals_cache_->WaitForScoringSignalsFetch();
+    }
   }
 
-  BiddingParams CreateDefaultParams() const {
-    BiddingParams out;
-    out.main_frame_origin = kMainFrameOrigin;
-    out.bidder = kBidder;
-    out.interest_group_names = {kInterestGroupName};
-    out.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
-    out.joining_origin = kJoiningOrigin;
-    out.trusted_signals_url = kTrustedBiddingSignalsUrl;
-    out.trusted_bidding_signals_keys = {{"key1", "key2"}};
-    return out;
+  ParamsType CreateDefaultParams() const {
+    if constexpr (std::is_same<ParamsType, BiddingParams>::value) {
+      BiddingParams out;
+      out.main_frame_origin = kMainFrameOrigin;
+      out.bidder = kBidder;
+      out.interest_group_names = {kInterestGroupName};
+      out.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
+      out.joining_origin = kJoiningOrigin;
+      out.trusted_signals_url = kTrustedBiddingSignalsUrl;
+      out.trusted_bidding_signals_keys = {{"key1", "key2"}};
+      return out;
+    }
+    if constexpr (std::is_same<ParamsType, ScoringParams>::value) {
+      ScoringParams out;
+      out.main_frame_origin = kMainFrameOrigin;
+      out.seller = kSeller;
+      out.trusted_signals_url = kTrustedScoringSignalsUrl;
+      out.interest_group_owner = kBidder;
+      out.joining_origin = kJoiningOrigin;
+      out.render_url = kRenderUrl;
+      out.component_render_urls = kComponentRenderUrls;
+      return out;
+    }
   }
 
   TestCase CreateDefaultTestCase() {
@@ -488,151 +633,234 @@ class TrustedSignalsCacheTest : public testing::Test {
   std::vector<TestCase> CreateTestCases() {
     std::vector<TestCase> out;
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Different main frame origins";
-    out.back().request_relation = RequestRelation::kDifferentFetches;
-    out.back().params2.main_frame_origin =
-        url::Origin::Create(GURL("https://other.origin.test/"));
+    if constexpr (std::is_same<ParamsType, BiddingParams>::value) {
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different main frame origins";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params2.main_frame_origin =
+          url::Origin::Create(GURL("https://other.origin.test/"));
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Different bidders";
-    out.back().request_relation = RequestRelation::kDifferentFetches;
-    out.back().params2.bidder =
-        url::Origin::Create(GURL("https://other.bidder.test/"));
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different bidders";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params2.bidder =
+          url::Origin::Create(GURL("https://other.bidder.test/"));
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Different interest group names";
-    out.back().request_relation = RequestRelation::kDifferentPartitions;
-    out.back().params2.interest_group_names = {"other interest group"};
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different interest group names";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params2.interest_group_names = {"other interest group"};
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Different joining origins";
-    out.back().request_relation = RequestRelation::kDifferentCompressionGroups;
-    out.back().params2.joining_origin =
-        url::Origin::Create(GURL("https://other.joining.origin.test"));
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different joining origins";
+      out.back().request_relation =
+          RequestRelation::kDifferentCompressionGroups;
+      out.back().params2.joining_origin =
+          url::Origin::Create(GURL("https://other.joining.origin.test"));
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Different trusted bidding signals URLs";
-    out.back().request_relation = RequestRelation::kDifferentFetches;
-    out.back().params2.trusted_signals_url =
-        GURL("https://other.bidder.test/signals");
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different trusted bidding signals URLs";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params2.trusted_signals_url =
+          GURL("https://other.bidder.test/signals");
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "First request has no keys";
-    out.back().request_relation = RequestRelation::kSamePartitionModified;
-    out.back().params1.trusted_bidding_signals_keys.reset();
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "First request has no keys";
+      out.back().request_relation = RequestRelation::kSamePartitionModified;
+      out.back().params1.trusted_bidding_signals_keys.reset();
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Second request has no keys";
-    out.back().request_relation = RequestRelation::kSamePartitionUnmodified;
-    out.back().params2.trusted_bidding_signals_keys.reset();
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Second request has no keys";
+      out.back().request_relation = RequestRelation::kSamePartitionUnmodified;
+      out.back().params2.trusted_bidding_signals_keys.reset();
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description =
-        "First request's keys are a subset of the second request's";
-    out.back().request_relation = RequestRelation::kSamePartitionModified;
-    out.back().params2.trusted_bidding_signals_keys->emplace_back("other key");
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "First request's keys are a subset of the second request's";
+      out.back().request_relation = RequestRelation::kSamePartitionModified;
+      out.back().params2.trusted_bidding_signals_keys->emplace_back(
+          "other key");
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description =
-        "Second request's keys are a subset of the first request's";
-    out.back().request_relation = RequestRelation::kSamePartitionUnmodified;
-    out.back().params2.trusted_bidding_signals_keys->erase(
-        out.back().params2.trusted_bidding_signals_keys->begin());
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "Second request's keys are a subset of the first request's";
+      out.back().request_relation = RequestRelation::kSamePartitionUnmodified;
+      out.back().params2.trusted_bidding_signals_keys->erase(
+          out.back().params2.trusted_bidding_signals_keys->begin());
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Requests have complete distinct keys";
-    out.back().request_relation = RequestRelation::kSamePartitionModified;
-    out.back().params2.trusted_bidding_signals_keys = {{"other key"}};
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Requests have complete distinct keys";
+      out.back().request_relation = RequestRelation::kSamePartitionModified;
+      out.back().params2.trusted_bidding_signals_keys = {{"other key"}};
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Requests have different `additional_params`";
-    out.back().request_relation = RequestRelation::kDifferentPartitions;
-    out.back().params2.additional_params.Set("additional", "param");
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Requests have different `additional_params`";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params2.additional_params.Set("additional", "param");
 
-    // Group-by-origin tests.
+      // Group-by-origin tests.
 
-    // Same interest group name is unlikely when other fields don't match, but
-    // best to test it.
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Group-by-origin: First request group-by-origin";
-    out.back().request_relation = RequestRelation::kDifferentPartitions;
-    out.back().params1.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      // Same interest group name is unlikely when other fields don't match, but
+      // best to test it.
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Group-by-origin: First request group-by-origin";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params1.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
 
-    // Same interest group name is unlikely when other fields don't match, but
-    // best to test it.
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Group-by-origin: Second request group-by-origin";
-    out.back().request_relation = RequestRelation::kDifferentPartitions;
-    out.back().params2.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      // Same interest group name is unlikely when other fields don't match, but
+      // best to test it.
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "Group-by-origin: Second request group-by-origin";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params2.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Group-by-origin: Different interest group names";
-    out.back().request_relation = RequestRelation::kSamePartitionModified;
-    out.back().params1.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().params2.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().params2.interest_group_names = {"other interest group"};
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "Group-by-origin: Different interest group names";
+      out.back().request_relation = RequestRelation::kSamePartitionModified;
+      out.back().params1.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.interest_group_names = {"other interest group"};
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Group-by-origin: Different keys.";
-    out.back().request_relation = RequestRelation::kSamePartitionModified;
-    out.back().params1.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().params2.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().params2.trusted_bidding_signals_keys = {{"other key"}};
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Group-by-origin: Different keys.";
+      out.back().request_relation = RequestRelation::kSamePartitionModified;
+      out.back().params1.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.trusted_bidding_signals_keys = {{"other key"}};
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description =
-        "Group-by-origin: Different keys and interest group names.";
-    out.back().request_relation = RequestRelation::kSamePartitionModified;
-    out.back().params1.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().params2.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().params2.interest_group_names = {"other interest group"};
-    out.back().params2.trusted_bidding_signals_keys = {{"other key"}};
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "Group-by-origin: Different keys and interest group names.";
+      out.back().request_relation = RequestRelation::kSamePartitionModified;
+      out.back().params1.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.interest_group_names = {"other interest group"};
+      out.back().params2.trusted_bidding_signals_keys = {{"other key"}};
 
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Group-by-origin: Different main frame origins";
-    out.back().request_relation = RequestRelation::kDifferentFetches;
-    out.back().params1.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().params2.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().params2.main_frame_origin =
-        url::Origin::Create(GURL("https://other.origin.test/"));
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Group-by-origin: Different main frame origins";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params1.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.main_frame_origin =
+          url::Origin::Create(GURL("https://other.origin.test/"));
 
-    // It would be unusual to have the same IG with different joining origins,
-    // since one would overwrite the other, but if it does happen, the requests
-    // should use different compression groups.
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description = "Group-by-origin: Different joining origin.";
-    out.back().request_relation = RequestRelation::kDifferentCompressionGroups;
-    out.back().params1.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().params2.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().params2.joining_origin =
-        url::Origin::Create(GURL("https://other.joining.origin.test"));
+      // It would be unusual to have the same IG with different joining origins,
+      // since one would overwrite the other, but if it does happen, the
+      // requests should use different compression groups.
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Group-by-origin: Different joining origin.";
+      out.back().request_relation =
+          RequestRelation::kDifferentCompressionGroups;
+      out.back().params1.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.joining_origin =
+          url::Origin::Create(GURL("https://other.joining.origin.test"));
 
-    // Like above test, but the more common case of different IGs with different
-    // joining origins.
-    out.emplace_back(CreateDefaultTestCase());
-    out.back().description =
-        "Group-by-origin: Different joining origin, different IGs.";
-    out.back().request_relation = RequestRelation::kDifferentCompressionGroups;
-    out.back().params1.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().params2.execution_mode =
-        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-    out.back().params2.interest_group_names = {"group2"};
-    out.back().params2.joining_origin =
-        url::Origin::Create(GURL("https://other.joining.origin.test"));
+      // Like above test, but the more common case of different IGs with
+      // different joining origins.
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "Group-by-origin: Different joining origin, different IGs.";
+      out.back().request_relation =
+          RequestRelation::kDifferentCompressionGroups;
+      out.back().params1.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.interest_group_names = {"group2"};
+      out.back().params2.joining_origin =
+          url::Origin::Create(GURL("https://other.joining.origin.test"));
+    }
+
+    if constexpr (std::is_same<ParamsType, ScoringParams>::value) {
+      // Note that no ScoringParams case currently results in
+      // RequestRelation::kSamePartitionModified.
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different main frame origins";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params2.main_frame_origin =
+          url::Origin::Create(GURL("https://other.origin.test/"));
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different sellers";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params2.seller =
+          url::Origin::Create(GURL("https://other.seller.test/"));
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different trusted scoring signals URLs";
+      out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().params2.trusted_signals_url =
+          GURL("https://seller.test/signals2");
+
+      // TODO(crbug.com/333445540): Make this case use different partitions.
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different interest group owners";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params2.interest_group_owner =
+          url::Origin::Create(GURL("https://other.bidder.test/"));
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different joining origins";
+      out.back().request_relation =
+          RequestRelation::kDifferentCompressionGroups;
+      out.back().params2.joining_origin =
+          url::Origin::Create(GURL("https://other.joining.origin.test"));
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Different render URLs";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params2.render_url = GURL("https://other.render.test/foo");
+
+      // Currently only exact matches of all URLs are results in reuse. Could do
+      // better, but it would require more complicated searching routine, and
+      // either a multimap potentially searching through multiple entries or
+      // std::map and a willingness to throw away entries, like with bidding
+      // signals. It's not clear if either approach is worth doing.
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "First request's component render URLs are a subset of the second "
+          "request's";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params2.component_render_urls.emplace_back(
+          GURL("https://component3.test/d"));
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "Second request's component render URLs are a subset of the first "
+          "request's";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params2.component_render_urls.erase(
+          out.back().params2.component_render_urls.begin());
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Requests have completely distinct keys";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params2.component_render_urls = {
+          GURL("https://component3.test/d")};
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Requests have different `additional_params`";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params2.additional_params.Set("additional", "param");
+    }
 
     return out;
   }
@@ -681,6 +909,15 @@ class TrustedSignalsCacheTest : public testing::Test {
     return merged_bidding_params;
   }
 
+  // Method to create set of merged scoring parameters. Currently this should
+  // never happen, so adds a failure. Needed for the kSamePartitionUnmodified
+  // case, which never happens for scoring, currently.
+  ScoringParams CreateMergedParams(const ScoringParams& scoring_params1,
+                                   const ScoringParams& params2) {
+    ADD_FAILURE() << "This should not be reached";
+    return ScoringParams();
+  }
+
   // Returns a pair of a handle and `partition_id`. This pattern reduces
   // boilerplate a bit, at the cost of making types at callsites a little less
   // clear.
@@ -706,11 +943,31 @@ class TrustedSignalsCacheTest : public testing::Test {
     return std::pair(std::move(handle), partition_id);
   }
 
+  // Same as above, but for scoring signals.
+  std::pair<scoped_refptr<TestTrustedSignalsCache::Handle>, int>
+  RequestTrustedSignals(const ScoringParams& scoring_params) {
+    int partition_id = -1;
+    auto handle = trusted_signals_cache_->RequestTrustedScoringSignals(
+        scoring_params.main_frame_origin, scoring_params.seller,
+        scoring_params.trusted_signals_url, scoring_params.interest_group_owner,
+        scoring_params.joining_origin, scoring_params.render_url,
+        scoring_params.component_render_urls,
+        scoring_params.additional_params.Clone(), partition_id);
+
+    // The call should never fail.
+    CHECK(handle);
+    CHECK(!handle->compression_group_token().is_empty());
+    CHECK_GE(partition_id, 0);
+
+    return std::pair(std::move(handle), partition_id);
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // Defaults used by most tests.
+
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main.frame.test"));
   const url::Origin kBidder = url::Origin::Create(GURL("https://bidder.test"));
@@ -719,13 +976,36 @@ class TrustedSignalsCacheTest : public testing::Test {
       url::Origin::Create(GURL("https://joining.origin.test"));
   const GURL kTrustedBiddingSignalsUrl{"https://bidder.test/signals"};
 
+  const url::Origin kSeller = url::Origin::Create(GURL("https://seller.test"));
+  const GURL kTrustedScoringSignalsUrl{"https://seller.test/signals"};
+  const GURL kRenderUrl{"https://render.test/foo"};
+  const std::vector<GURL> kComponentRenderUrls{
+      GURL("https://component1.test/a"), GURL("https://component2.test/b")};
+
   std::unique_ptr<TestTrustedSignalsCache> trusted_signals_cache_;
   mojo::Remote<auction_worklet::mojom::TrustedSignalsCache> cache_mojo_pipe_;
 };
 
+// Used by gtest to provide clearer names for tests.
+class SignalsCacheTestNames {
+ public:
+  template <typename T>
+  static std::string GetName(int) {
+    if constexpr (std::is_same<T, BiddingParams>::value) {
+      return "BiddingSignals";
+    }
+    if constexpr (std::is_same<T, ScoringParams>::value) {
+      return "ScoringSignals";
+    }
+  }
+};
+
+using ParamTypes = ::testing::Types<BiddingParams, ScoringParams>;
+TYPED_TEST_SUITE(TrustedSignalsCacheTest, ParamTypes, SignalsCacheTestNames);
+
 // Test the case where a GetTrustedSignals() request is received before the
 // fetch completes.
-TEST_F(TrustedSignalsCacheTest, GetBeforeFetchCompletes) {
+TYPED_TEST(TrustedSignalsCacheTest, GetBeforeFetchCompletes) {
   auto params = this->CreateDefaultParams();
   auto [handle, partition_id] = this->RequestTrustedSignals(params);
   EXPECT_EQ(partition_id, 0);
@@ -749,7 +1029,7 @@ TEST_F(TrustedSignalsCacheTest, GetBeforeFetchCompletes) {
 
 // Test the case where a GetTrustedSignals() request is received before the
 // fetch fails.
-TEST_F(TrustedSignalsCacheTest, GetBeforeFetchFails) {
+TYPED_TEST(TrustedSignalsCacheTest, GetBeforeFetchFails) {
   auto params = this->CreateDefaultParams();
   auto [handle, partition_id] = this->RequestTrustedSignals(params);
   EXPECT_EQ(partition_id, 0);
@@ -772,7 +1052,7 @@ TEST_F(TrustedSignalsCacheTest, GetBeforeFetchFails) {
 
 // Test the case where a GetTrustedSignals() request is made after the fetch
 // completes.
-TEST_F(TrustedSignalsCacheTest, GetAfterFetchCompletes) {
+TYPED_TEST(TrustedSignalsCacheTest, GetAfterFetchCompletes) {
   auto params = this->CreateDefaultParams();
   auto [handle, partition_id] = this->RequestTrustedSignals(params);
   EXPECT_EQ(partition_id, 0);
@@ -792,7 +1072,7 @@ TEST_F(TrustedSignalsCacheTest, GetAfterFetchCompletes) {
 
 // Test the case where a GetTrustedSignals() request is made after the fetch
 // fails.
-TEST_F(TrustedSignalsCacheTest, GetAfterFetchFails) {
+TYPED_TEST(TrustedSignalsCacheTest, GetAfterFetchFails) {
   auto params = this->CreateDefaultParams();
   auto [handle, partition_id] = this->RequestTrustedSignals(params);
   EXPECT_EQ(partition_id, 0);
@@ -812,7 +1092,7 @@ TEST_F(TrustedSignalsCacheTest, GetAfterFetchFails) {
 
 // Test the case where a GetTrustedSignals() request waiting on a fetch when the
 // Handle is destroyed.
-TEST_F(TrustedSignalsCacheTest, HandleDestroyedAfterGet) {
+TYPED_TEST(TrustedSignalsCacheTest, HandleDestroyedAfterGet) {
   auto params = this->CreateDefaultParams();
   auto [handle, partition_id] = this->RequestTrustedSignals(params);
   EXPECT_EQ(partition_id, 0);
@@ -837,7 +1117,7 @@ TEST_F(TrustedSignalsCacheTest, HandleDestroyedAfterGet) {
 //
 // Since in all cases the handle was destroyed before the read attempt, all
 // cases should return errors.
-TEST_F(TrustedSignalsCacheTest, GetAfterHandleDestroyed) {
+TYPED_TEST(TrustedSignalsCacheTest, GetAfterHandleDestroyed) {
   enum class TestCase { kFetchNotStarted, kFetchNotCompleted, kFetchSucceeded };
 
   for (auto test_case :
@@ -877,7 +1157,7 @@ TEST_F(TrustedSignalsCacheTest, GetAfterHandleDestroyed) {
 // Handle. Note that there's no need to test empty UnguessableTokens - the Mojo
 // serialization code DCHECKs when passed them, and the deserialization code
 // rejects them.
-TEST_F(TrustedSignalsCacheTest, GetWithNovelId) {
+TYPED_TEST(TrustedSignalsCacheTest, GetWithNovelId) {
   // Novel id with no live cache entries.
   TestTrustedSignalsCacheClient client1(base::UnguessableToken::Create(),
                                         this->cache_mojo_pipe_);
@@ -905,7 +1185,7 @@ TEST_F(TrustedSignalsCacheTest, GetWithNovelId) {
 // Tests multiple GetTrustedSignals calls for a single request, with one live
 // handle. Requests are made both before and after the response has been
 // received.
-TEST_F(TrustedSignalsCacheTest, GetMultipleTimes) {
+TYPED_TEST(TrustedSignalsCacheTest, GetMultipleTimes) {
   auto params = this->CreateDefaultParams();
   auto [handle, partition_id] = this->RequestTrustedSignals(params);
 
@@ -939,7 +1219,7 @@ TEST_F(TrustedSignalsCacheTest, GetMultipleTimes) {
 
 // Check that re-requesting trusted bidding with the same arguments returns the
 // same handle and IDs, when any Handle is still alive.
-TEST_F(TrustedSignalsCacheTest, ReRequestSignalsReused) {
+TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsReused) {
   auto params = this->CreateDefaultParams();
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params);
 
@@ -985,7 +1265,7 @@ TEST_F(TrustedSignalsCacheTest, ReRequestSignalsReused) {
 // Check that re-requesting trusted bidding with the same arguments returns a
 // different ID, when all Handles have been destroyed. Tests all points at which
 // a Handle may be deleted.
-TEST_F(TrustedSignalsCacheTest, ReRequestSignalsNotReused) {
+TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsNotReused) {
   auto params = this->CreateDefaultParams();
 
   // Create a Handle, create a request for it, destroy the Handle.
@@ -1056,7 +1336,7 @@ TEST_F(TrustedSignalsCacheTest, ReRequestSignalsNotReused) {
 
 // Test the case where a bidding signals request is made while there's still an
 // outstanding Handle, but the response has expired.
-TEST_F(TrustedSignalsCacheTest, OutstandingHandleResponseExpired) {
+TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleResponseExpired) {
   const base::TimeDelta kTtl = base::Minutes(10);
   // A small amount of time. Test will wait until this much time before
   // expiration, and then wait for this much time to pass, to check before/after
@@ -1122,7 +1402,7 @@ TEST_F(TrustedSignalsCacheTest, OutstandingHandleResponseExpired) {
 
 // Check that bidding signals error responses are not cached beyond the end of
 // the fetch.
-TEST_F(TrustedSignalsCacheTest, OutstandingHandleError) {
+TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleError) {
   auto params = this->CreateDefaultParams();
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params);
 
@@ -1163,7 +1443,7 @@ TEST_F(TrustedSignalsCacheTest, OutstandingHandleError) {
 
 // Check that zero (and negative) TTL bidding signals responses are handled
 // appropriately.
-TEST_F(TrustedSignalsCacheTest, OutstandingHandleSuccessZeroTTL) {
+TYPED_TEST(TrustedSignalsCacheTest, OutstandingHandleSuccessZeroTTL) {
   for (base::TimeDelta ttl : {base::Seconds(-1), base::Seconds(0)}) {
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
@@ -1219,8 +1499,8 @@ TEST_F(TrustedSignalsCacheTest, OutstandingHandleSuccessZeroTTL) {
 
 // Test the case of expiration of two requests that share the same compression
 // group, but are in different partitions.
-TEST_F(TrustedSignalsCacheTest,
-       OutstandingHandleResponseExpiredSharedCompressionGroup) {
+TYPED_TEST(TrustedSignalsCacheTest,
+           OutstandingHandleResponseExpiredSharedCompressionGroup) {
   const base::TimeDelta kTtl = base::Minutes(10);
   // A small amount of time. Test will wait until this much time before
   // expiration, and then wait for this much time to pass, to check before/after
@@ -1231,8 +1511,13 @@ TEST_F(TrustedSignalsCacheTest,
   auto params2 = this->CreateDefaultParams();
 
   // Modify `params2` so that the requests share the same compression group but
-  // not the same partition.
-  params2.interest_group_names = {"other interest group"};
+  // not the same partition. Need separate bidder and seller code.
+  if constexpr (std::is_same<TypeParam, BiddingParams>::value) {
+    params2.interest_group_names = {"other interest group"};
+  }
+  if constexpr (std::is_same<TypeParam, ScoringParams>::value) {
+    params2.render_url = GURL("https://render.other.test/");
+  }
 
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params1);
   auto [handle2, partition_id2] = this->RequestTrustedSignals(params2);
@@ -1302,8 +1587,8 @@ TEST_F(TrustedSignalsCacheTest,
 // Test the case of expiration of two requests that are sent in the same fetch,
 // but in different compression groups. The requests have different expiration
 // times.
-TEST_F(TrustedSignalsCacheTest,
-       OutstandingHandleResponseExpiredDifferentCompressionGroup) {
+TYPED_TEST(TrustedSignalsCacheTest,
+           OutstandingHandleResponseExpiredDifferentCompressionGroup) {
   const base::TimeDelta kTtl1 = base::Minutes(5);
   const base::TimeDelta kTtl2 = base::Minutes(10);
   // A small amount of time. Test will wait until this much time before
@@ -1421,7 +1706,7 @@ TEST_F(TrustedSignalsCacheTest,
 }
 
 // Test the case where the response has no compression groups.
-TEST_F(TrustedSignalsCacheTest, NoCompressionGroup) {
+TYPED_TEST(TrustedSignalsCacheTest, NoCompressionGroup) {
   auto params = this->CreateDefaultParams();
   auto [handle, partition_id] = this->RequestTrustedSignals(params);
 
@@ -1438,7 +1723,7 @@ TEST_F(TrustedSignalsCacheTest, NoCompressionGroup) {
 
 // Test the case where only information for the wrong compression group is
 // received.
-TEST_F(TrustedSignalsCacheTest, WrongCompressionGroup) {
+TYPED_TEST(TrustedSignalsCacheTest, WrongCompressionGroup) {
   auto params = this->CreateDefaultParams();
   auto [handle, partition_id] = this->RequestTrustedSignals(params);
 
@@ -1461,7 +1746,7 @@ TEST_F(TrustedSignalsCacheTest, WrongCompressionGroup) {
 // Test the case where only one of two compression groups is returned by the
 // server. Both compression groups should fail. Run two test cases, one with the
 // first compression group missing, one with the second missing.
-TEST_F(TrustedSignalsCacheTest, OneCompressionGroupMissing) {
+TYPED_TEST(TrustedSignalsCacheTest, OneCompressionGroupMissing) {
   for (int missing_group : {0, 1}) {
     auto params1 = this->CreateDefaultParams();
     auto params2 = this->CreateDefaultParams();
@@ -1506,7 +1791,7 @@ TEST_F(TrustedSignalsCacheTest, OneCompressionGroupMissing) {
 // group.
 //
 // * kSamePartitionModified, kSamePartitionUnmodified: Same partition is used.
-TEST_F(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
+TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
   for (const auto& test_case : this->CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
@@ -1627,7 +1912,7 @@ TEST_F(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
 // kDifferentCompressionGroups, kSamePartitionModified: A new fetch is made.
 //
 // * kSamePartitionUnmodified: Old response is reused.
-TEST_F(TrustedSignalsCacheTest, DifferentParamsAfterFetchStart) {
+TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchStart) {
   for (const auto& test_case : this->CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
@@ -1695,7 +1980,7 @@ TEST_F(TrustedSignalsCacheTest, DifferentParamsAfterFetchStart) {
 // kDifferentCompressionGroups, kSamePartitionModified: A new fetch.
 //
 // * kSamePartitionUnmodified: Old response is reused.
-TEST_F(TrustedSignalsCacheTest, DifferentParamsAfterFetchComplete) {
+TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchComplete) {
   for (const auto& test_case : this->CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
@@ -1770,7 +2055,8 @@ TEST_F(TrustedSignalsCacheTest, DifferentParamsAfterFetchComplete) {
 //
 // * kSamePartitionModified / kSamePartitionUnmodified: Same partition is used.
 // Only one fetch is made.
-TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelSecondBeforeFetchStart) {
+TYPED_TEST(TrustedSignalsCacheTest,
+           DifferentParamsCancelSecondBeforeFetchStart) {
   for (const auto& test_case : this->CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
@@ -1876,7 +2162,8 @@ TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelSecondBeforeFetchStart) {
 // second one. This is to test that cancelled the compression group 0 or
 // partition 0 request doesn't cause issues with the compression group 1 or
 // partition 1 request.
-TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelFirstBeforeFetchStart) {
+TYPED_TEST(TrustedSignalsCacheTest,
+           DifferentParamsCancelFirstBeforeFetchStart) {
   for (const auto& test_case : this->CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
@@ -1996,7 +2283,8 @@ TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelFirstBeforeFetchStart) {
 // partition is scoped to the lifetime of the compression group.
 //
 // * kSamePartitionModified / kSamePartitionUnmodified: Only one fetch is made.
-TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelSecondAfterFetchStart) {
+TYPED_TEST(TrustedSignalsCacheTest,
+           DifferentParamsCancelSecondAfterFetchStart) {
   for (const auto& test_case : this->CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
@@ -2170,7 +2458,7 @@ TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelSecondAfterFetchStart) {
 // Tests the case where two requests are made and both are cancelled before the
 // requests starts. No fetches should be made, regardless of whether the two
 // requests would normally share a fetch or not.
-TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelBothBeforeFetchStart) {
+TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsCancelBothBeforeFetchStart) {
   for (const auto& test_case : this->CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
@@ -2193,7 +2481,7 @@ TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelBothBeforeFetchStart) {
 
 // Tests the case where two requests are made and both are cancelled after the
 // fetch(es) start. The fetch(es) should be cancelled.
-TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelBothAfterFetchStart) {
+TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsCancelBothAfterFetchStart) {
   for (const auto& test_case : this->CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
@@ -2235,7 +2523,8 @@ TEST_F(TrustedSignalsCacheTest, DifferentParamsCancelBothAfterFetchStart) {
 // Tests the case of merging multiple requests with the same FetchKey. This test
 // serves to make sure that when there are multiple outstanding fetches, the
 // last fetch can be modified as long as it has not started.
-TEST_F(TrustedSignalsCacheTest, MultipleRequestsSameCacheKey) {
+using TrustedBiddingSignalsCacheTest = TrustedSignalsCacheTest<BiddingParams>;
+TEST_F(TrustedBiddingSignalsCacheTest, MultipleRequestsSameCacheKey) {
   // Start request and wait for its fetch.
   auto params1 = this->CreateDefaultParams();
   auto [handle1, partition_id1] = this->RequestTrustedSignals(params1);

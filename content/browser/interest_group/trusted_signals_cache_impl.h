@@ -176,6 +176,36 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
       base::Value::Dict additional_params,
       int& partition_id);
 
+  // Requests scoring signals. Return value is a Handle which must be kept alive
+  // until the response to the request is no longer needed, and which provides a
+  // key to identify the response. Also returns `partition_id`, which identifies
+  // the partition within the compression group identified by
+  // Handle::compression_group_token() that will have the relevant response.
+  //
+  // `interest_group_owner` and `joining_origin` are never sent over the wire,
+  // but are instead both used to determine if different compression groups
+  // should be used.
+  //
+  // Never starts a network fetch synchronously. Scoring signals are requested
+  // over the network after a post task.
+  //
+  // TODO(mmenke): Implement Some way to delay sending the fetch over the wire
+  // for a certain duration, with some way for an auction to flush requests once
+  // it knows all signals it needs have been requested. Probably need to either
+  // add a method to Handle to flush requests, or add an API to flush all
+  // Fetches matching a passed in {seller origin, joining origin, publisher
+  // origin} triplet.
+  scoped_refptr<TrustedSignalsCacheImpl::Handle> RequestTrustedScoringSignals(
+      const url::Origin& main_frame_origin,
+      const url::Origin& seller,
+      const GURL& trusted_signals_url,
+      const url::Origin& interest_group_owner,
+      const url::Origin& joining_origin,
+      const GURL& render_url,
+      const std::vector<GURL>& component_render_urls,
+      base::Value::Dict additional_params,
+      int& partition_id);
+
   // TrustedSignalsFetcher implementation:
   void GetTrustedSignals(
       const base::UnguessableToken& compression_group_token,
@@ -264,14 +294,15 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
 
   // A key that distinguishes bidding signals entries in the cache. The key is
   // used to find all potential matching entries whenever
-  // RequestTrusted*Signals() is invoked. A response with one key cannot be used
-  // to satisfy a request with another. There are some cases where even when the
-  // BiddingCacheKey of a new request matches an existing BiddingCacheEntry, the
-  // entry cannot be reused, in which case a new Entry is used and the old one
-  // is thrown out (though the CompressionGroupData will remain valid). This can
-  // happen in the case of cache expiration or the Entry not having the
-  // necessary `trusted_bidding_signals_keys` or `interest_group_name` after the
-  // corresponding network request has been sent over the wire.
+  // RequestTrustedBiddingSignals() is invoked. A response with one key cannot
+  // be used to satisfy a request with another. There are some cases where even
+  // when the BiddingCacheKey of a new request matches an existing
+  // BiddingCacheEntry, the entry cannot be reused, in which case a new Entry is
+  // used and the old one is thrown out (though the CompressionGroupData will
+  // remain valid). This can happen in the case of cache expiration or the Entry
+  // not having the necessary `trusted_bidding_signals_keys` or
+  // `interest_group_name` after the corresponding network request has been sent
+  // over the wire.
   struct BiddingCacheKey {
     BiddingCacheKey();
     BiddingCacheKey(BiddingCacheKey&&);
@@ -313,10 +344,66 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // BiddingCacheEntries that are sent to a TEE together in the same compressed
   // partition share a CompressionGroupData, but have different partition ids.
   // BiddingCacheEntries are only destroyed when the corresponding
-  // BiddingCompressionGroupData is destroyed, or when a new BiddingCacheEntry
-  // with the same key replaces them.
+  // CompressionGroupData is destroyed, or when a new BiddingCacheEntry with the
+  // same key replaces them.
   struct BiddingCacheEntry;
   using BiddingCacheEntryMap = std::map<BiddingCacheKey, BiddingCacheEntry>;
+
+  // A key that distinguishes scoring signals entries in the cache. The key is
+  // used to find all potential matching entries whenever
+  // RequestTrustedScoringSignals() is invoked. A response with one key cannot
+  // be used to satisfy a request with another.
+  //
+  // Currently, all parameters of each bid appear in ScoringCacheKeys, unlike
+  // BiddingCacheKeys, so there's no need to check if a ScoringCacheEntry has
+  // other fields necessary for there to be a cache hit, other than checking the
+  // TTL. It may be worth experimenting with matching partitioning with that of
+  // BiddingCacheEntries, but it seems less likely to be useful here, since most
+  // requests likely have a single renderURL and no componentRenderURLs. And in
+  // cases where componentRenderURLs are present, it still seems unlikely that
+  // merging requests will make it more likely all the values for a single bid
+  // appear in a single ScoringCacheEntry.
+  struct ScoringCacheKey {
+    ScoringCacheKey();
+    ScoringCacheKey(ScoringCacheKey&&);
+
+    ScoringCacheKey(const url::Origin& seller,
+                    const GURL& trusted_signals_url,
+                    const url::Origin& main_frame_origin,
+                    const url::Origin& interest_group_owner,
+                    const url::Origin& joining_origin,
+                    const GURL& render_url,
+                    const std::vector<GURL>& component_render_urls,
+                    base::Value::Dict additional_params);
+
+    ~ScoringCacheKey();
+
+    ScoringCacheKey& operator=(ScoringCacheKey&&);
+
+    bool operator<(const ScoringCacheKey& other) const;
+
+    // Values where mismatches are expected to be more likely are listed
+    // earlier.
+
+    GURL render_url;
+    std::set<GURL> component_render_urls;
+    FetchKey fetch_key;
+    url::Origin joining_origin;
+    url::Origin interest_group_owner;
+    base::Value::Dict additional_params;
+  };
+
+  // An indexed entry in the cache for callers of
+  // RequestTrustedScoringSignals(). It information about the bid being scored
+  // and main frame origins to CompressionGroupData objects and partition IDs.
+  // ScoringCacheEntries that are sent to a TEE together in the same compressed
+  // partition share a CompressionGroupData, but have different partition ids.
+  // ScoringCacheEntries are only destroyed when the corresponding
+  // CompressionGroupData is destroyed, or when they expire (in the latter case,
+  // the CompressionGroupData may still have outstanding consumers that have yet
+  // to fetch it, so may still be needed).
+  struct ScoringCacheEntry;
+  using ScoringCacheEntryMap = std::map<ScoringCacheKey, ScoringCacheEntry>;
 
   // Returns a CompressionGroupData that can be used to fetch and store data
   // associated with the provided FetchKey and joining origin. The returned
@@ -332,6 +419,10 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
 
   // Starts the corresponding queued network fetch.
   void StartFetch(FetchMap::iterator fetch_it);
+
+  // Called by StartFetch() to request bidding/scoring signals.
+  void StartBiddingSignalsFetch(FetchMap::iterator fetch_it);
+  void StartScoringSignalsFetch(FetchMap::iterator fetch_it);
 
   void OnFetchComplete(
       FetchMap::iterator fetch_it,
@@ -365,6 +456,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // retrieve, since Fetches rely on cache entries to know what to retrieve when
   // they're started.
   void DestroyBiddingCacheEntry(BiddingCacheEntryMap::iterator cache_entry_it);
+  void DestroyScoringCacheEntry(ScoringCacheEntryMap::iterator cache_entry_it);
 
   // Virtual for testing.
   virtual std::unique_ptr<TrustedSignalsFetcher> CreateFetcher();
@@ -381,6 +473,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   FetchMap fetches_;
 
   BiddingCacheEntryMap bidding_cache_entries_;
+  ScoringCacheEntryMap scoring_cache_entries_;
 
   // Map of IDs to CompressionGroupData. CompressionGroupData objects are
   // refcounted, and removed from the map whenever the last reference is

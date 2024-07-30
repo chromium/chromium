@@ -13,6 +13,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
@@ -31,6 +32,17 @@ TrustedSignalsFetcher::BiddingPartition::~BiddingPartition() = default;
 
 TrustedSignalsFetcher::BiddingPartition&
 TrustedSignalsFetcher::BiddingPartition::operator=(BiddingPartition&&) =
+    default;
+
+TrustedSignalsFetcher::ScoringPartition::ScoringPartition() = default;
+
+TrustedSignalsFetcher::ScoringPartition::ScoringPartition(ScoringPartition&&) =
+    default;
+
+TrustedSignalsFetcher::ScoringPartition::~ScoringPartition() = default;
+
+TrustedSignalsFetcher::ScoringPartition&
+TrustedSignalsFetcher::ScoringPartition::operator=(ScoringPartition&&) =
     default;
 
 TrustedSignalsFetcher::CompressionGroupResult::CompressionGroupResult() =
@@ -52,6 +64,15 @@ TrustedSignalsFetcher::~TrustedSignalsFetcher() = default;
 void TrustedSignalsFetcher::FetchBiddingSignals(
     const GURL& trusted_bidding_signals_url,
     const std::map<int, std::vector<BiddingPartition>>& compression_groups,
-    Callback callback) {}
+    Callback callback) {
+  NOTIMPLEMENTED();
+}
+
+void TrustedSignalsFetcher::FetchScoringSignals(
+    const GURL& trusted_scoring_signals_url,
+    const std::map<int, std::vector<ScoringPartition>>& compression_groups,
+    Callback callback) {
+  NOTIMPLEMENTED();
+}
 
 }  // namespace content
