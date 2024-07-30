@@ -48,21 +48,17 @@ void BrowserActionPrefsListener::UpdateActionsForSharingHubPolicy() {
   // these actions' visibility in the app menu.
   bool sharing_enabled = browser_->profile()->GetPrefs()->GetBoolean(
       prefs::kDesktopSharingHubEnabled);
-  if (auto* qr_code_action_item = actions::ActionManager::Get().FindAction(
-          kActionQrCodeGenerator,
-          browser_->browser_actions()->root_action_item())) {
-    qr_code_action_item->SetVisible(sharing_enabled);
-  }
-  if (auto* send_tab_to_self_action_item =
-          actions::ActionManager::Get().FindAction(
-              kActionSendTabToSelf,
-              browser_->browser_actions()->root_action_item())) {
-    send_tab_to_self_action_item->SetVisible(sharing_enabled);
-  }
-  if (auto* copy_link_action_item = actions::ActionManager::Get().FindAction(
-          kActionCopyUrl, browser_->browser_actions()->root_action_item())) {
-    copy_link_action_item->SetVisible(sharing_enabled);
-  }
+
+  auto update_action_visibility =
+      [this, &sharing_enabled](actions::ActionId action_id) {
+        if (auto* action_item = actions::ActionManager::Get().FindAction(
+                action_id, browser_->browser_actions()->root_action_item())) {
+          action_item->SetVisible(sharing_enabled);
+        }
+      };
+  update_action_visibility(kActionQrCodeGenerator);
+  update_action_visibility(kActionSendTabToSelf);
+  update_action_visibility(kActionCopyUrl);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
