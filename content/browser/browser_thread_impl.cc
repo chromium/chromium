@@ -265,4 +265,41 @@ void BrowserThread::PostBestEffortTask(
                          std::move(task_runner), from_here, std::move(task)));
 }
 
+namespace internal {
+
+bool BrowserThreadChecker::CalledOnValidBrowserThread(
+    BrowserThread::ID thread_identifier) const {
+  return BrowserThread::CurrentlyOn(thread_identifier);
+}
+
+const BrowserThreadChecker& GetBrowserThreadChecker(
+    BrowserThread::ID thread_identifier) {
+  static std::array<BrowserThreadChecker, BrowserThread::ID_COUNT>
+      browser_thread_checkers;
+  return browser_thread_checkers[thread_identifier];
+}
+
+ScopedValidateBrowserThreadChecker::ScopedValidateBrowserThreadChecker(
+    BrowserThread::ID thread_identifier,
+    base::NotFatalUntil fatal_milestone) {
+  const auto& checker = GetBrowserThreadChecker(thread_identifier);
+  CHECK(checker.CalledOnValidBrowserThread(thread_identifier), fatal_milestone)
+      << BrowserThread::GetCurrentlyOnErrorMessage(thread_identifier);
+}
+
+ScopedValidateBrowserThreadChecker::~ScopedValidateBrowserThreadChecker() =
+    default;
+
+#if DCHECK_IS_ON()
+ScopedValidateBrowserThreadDebugChecker::
+    ScopedValidateBrowserThreadDebugChecker(
+        BrowserThread::ID thread_identifier) {
+  const auto& checker = GetBrowserThreadChecker(thread_identifier);
+  DCHECK(checker.CalledOnValidBrowserThread(thread_identifier))
+      << BrowserThread::GetCurrentlyOnErrorMessage(thread_identifier);
+}
+#endif  // DCHECK_IS_ON()
+
+}  // namespace internal
+
 }  // namespace content

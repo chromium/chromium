@@ -402,8 +402,6 @@ class ContentVerifier::HashHelper {
       std::move(callback).Run(content_hash);
     callback_infos_.erase(iter);
 
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
     // OnFetchComplete will check content_hash->hash_mismatch_unix_paths():
     content_verifier_->OnFetchComplete(content_hash);
   }

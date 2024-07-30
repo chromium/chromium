@@ -570,7 +570,6 @@ void SecurityKeysCredentialHandler::OnCredentialsDeleted(
     device::CtapDeviceResponseCode status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(State::kDeletingCredentials, state_);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(credential_management_);
   DCHECK(!callback_id_.empty());
 
@@ -591,7 +590,6 @@ void SecurityKeysCredentialHandler::OnUserInformationUpdated(
     device::CtapDeviceResponseCode status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(State::kUpdatingUserInformation, state_);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(credential_management_);
   DCHECK(!callback_id_.empty());
 

@@ -12,8 +12,10 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/macros/uniquify.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_task_traits.h"
 
@@ -25,18 +27,33 @@ namespace content {
 
 // Use DCHECK_CURRENTLY_ON(BrowserThread::ID) to DCHECK that a function can only
 // be called on the named BrowserThread.
-#define DCHECK_CURRENTLY_ON(thread_identifier)                     \
-  DCHECK(::content::BrowserThread::CurrentlyOn(thread_identifier)) \
-      << ::content::BrowserThread::GetCurrentlyOnErrorMessage(     \
-             thread_identifier)
+#define DCHECK_CURRENTLY_ON(thread_identifier)                                \
+  ::content::internal::ScopedValidateBrowserThreadDebugChecker BASE_UNIQUIFY( \
+      scoped_validate_browser_thread_dchecker_)(thread_identifier)
 
 // Use CHECK_CURRENTLY_ON(BrowserThread::ID) to CHECK that a function can only
 // be called on the named BrowserThread.
-#define CHECK_CURRENTLY_ON(thread_identifier, ...)               \
-  CHECK(::content::BrowserThread::CurrentlyOn(thread_identifier) \
-            __VA_OPT__(, ) __VA_ARGS__)                          \
-      << ::content::BrowserThread::GetCurrentlyOnErrorMessage(   \
-             thread_identifier)
+#define CHECK_CURRENTLY_ON(thread_identifier, ...)                       \
+  ::content::internal::ScopedValidateBrowserThreadChecker BASE_UNIQUIFY( \
+      scoped_validate_browser_thread_checker_)(                          \
+      thread_identifier __VA_OPT__(, ) __VA_ARGS__)
+
+// GUARDED_BY_BROWSER_THREAD() enforces that a member variable is only accessed
+// from a scope that invokes DCHECK_CURRENTLY_ON() or CHECK_CURRENTLY_ON() or
+// from a function annotated with VALID_BROWSER_THREAD_REQUIRED(). The code will
+// not compile if the member variable is accessed and these conditions are not
+// met.
+#define GUARDED_BY_BROWSER_THREAD(thread_identifier) \
+  GUARDED_BY(::content::internal::GetBrowserThreadChecker(thread_identifier))
+
+// VALID_CONTEXT_REQUIRED() enforces that a member function is only accessed
+// from a scope that invokes DCHECK_CURRENTLY_ON() or CHECK_CURRENTLY_ON() or
+// from another function annotated with VALID_BROWSER_THREAD_REQUIRED(). The
+// code will not compile if the member function is accessed and these conditions
+// are not met.
+#define VALID_BROWSER_THREAD_REQUIRED(thread_identifier) \
+  EXCLUSIVE_LOCKS_REQUIRED(                              \
+      ::content::internal::GetBrowserThreadChecker(thread_identifier))
 
 // The main entry point to post tasks to the UI thread. Tasks posted with the
 // same |traits| will run in posting order (i.e. according to the
@@ -217,6 +234,56 @@ class CONTENT_EXPORT BrowserThread {
   friend class BrowserThreadImpl;
   BrowserThread() = default;
 };
+
+namespace internal {
+
+class THREAD_ANNOTATION_ATTRIBUTE__(capability("BrowserThread checker"))
+    CONTENT_EXPORT BrowserThreadChecker {
+ public:
+  [[nodiscard]] bool CalledOnValidBrowserThread(
+      BrowserThread::ID thread_identifier) const;
+};
+
+// Returns the global BrowserThreadChecker associated with `thread_identifier`.
+CONTENT_EXPORT const BrowserThreadChecker& GetBrowserThreadChecker(
+    BrowserThread::ID thread_identifier);
+
+// CHECK version.
+class CONTENT_EXPORT SCOPED_LOCKABLE ScopedValidateBrowserThreadChecker {
+ public:
+  explicit ScopedValidateBrowserThreadChecker(
+      BrowserThread::ID thread_identifier,
+      base::NotFatalUntil fatal_milestone =
+          base::NotFatalUntil::NoSpecifiedMilestoneInternal)
+      EXCLUSIVE_LOCK_FUNCTION(GetBrowserThreadChecker(thread_identifier));
+  ~ScopedValidateBrowserThreadChecker() UNLOCK_FUNCTION();
+};
+
+// DCHECK version.
+// Note: When DCHECKs are disabled, this class needs to be completely optimized
+// out in order to not regress binary size. This is achieved by inlining the
+// constructor and the destructor. When DCHECKs are enabled, the constructor
+// is not unnecessarily inlined.
+class CONTENT_EXPORT SCOPED_LOCKABLE ScopedValidateBrowserThreadDebugChecker {
+ public:
+  explicit ScopedValidateBrowserThreadDebugChecker(
+      BrowserThread::ID thread_identifier)
+      EXCLUSIVE_LOCK_FUNCTION(GetBrowserThreadChecker(thread_identifier))
+// Only inlined when DCHECKs are turned off.
+#if DCHECK_IS_ON()
+          ;
+#else
+  {
+  }
+#endif
+
+  // Note: Can't use = default as it does not work well with UNLOCK_FUNCTION().
+  // Clang will discard the UNLOCK_FUNCTION() attribute.
+  // See https://github.com/llvm/llvm-project/issues/101199.
+  ~ScopedValidateBrowserThreadDebugChecker() UNLOCK_FUNCTION() {}
+};
+
+}  // namespace internal
 
 }  // namespace content
 

@@ -3517,7 +3517,10 @@ if (is_apple) {
 
 if (enable_nocompile_tests) {
   nocompile_source_set("content_nocompile_tests") {
-    sources = [ "../browser/browser_task_traits_nocompile.nc" ]
+    sources = [
+      "../browser/browser_task_traits_nocompile.nc",
+      "../browser/browser_thread_nocompile.nc",
+    ]
 
     deps = [ "//content/public/browser" ]
   }
