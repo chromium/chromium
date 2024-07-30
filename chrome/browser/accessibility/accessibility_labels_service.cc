@@ -43,14 +43,6 @@ using LanguageInfo = language::UrlLanguageHistogram::LanguageInfo;
 
 namespace {
 
-// Returns the Chrome Google API key for the channel of this build.
-std::string APIKeyForChannel() {
-  if (chrome::GetChannel() == version_info::Channel::STABLE) {
-    return google_apis::GetAPIKey();
-  }
-  return google_apis::GetNonStableAPIKey();
-}
-
 AccessibilityLabelsService::ImageAnnotatorBinder&
 GetImageAnnotatorBinderOverride() {
   static base::NoDestructor<AccessibilityLabelsService::ImageAnnotatorBinder>
@@ -237,7 +229,8 @@ void AccessibilityLabelsService::BindImageAnnotator(
       auto* manta_service = manta::MantaServiceFactory::GetForProfile(profile_);
       CHECK(manta_service);
       service_ = std::make_unique<image_annotation::ImageAnnotationService>(
-          std::move(service_receiver), APIKeyForChannel(),
+          std::move(service_receiver),
+          google_apis::GetAPIKey(chrome::GetChannel()),
           profile_->GetURLLoaderFactory(),
           manta_service->CreateAnchovyProvider(),
           std::make_unique<ImageAnnotatorClient>(profile_));

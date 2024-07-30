@@ -531,9 +531,7 @@ void SecondDeviceAuthBroker::FetchChallengeBytes(
       /*post_data=*/kGetChallengeDataRequest,
       /*headers=*/std::vector<std::string>(),
       /*cors_exempt_headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/kChallengeDataAnnotation,
-      /*is_stable_channel=*/chrome::GetChannel() ==
-          version_info::Channel::STABLE);
+      /*annotation_tag=*/kChallengeDataAnnotation, chrome::GetChannel());
 
   metrics_.RecordChallengeBytesRequested();
   endpoint_fetcher_->PerformRequest(
@@ -592,9 +590,7 @@ void SecondDeviceAuthBroker::FetchAuthCode(
       CreateStartSessionRequestData(fido_assertion_info, certificate),
       /*headers=*/std::vector<std::string>(),
       /*cors_exempt_headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/kStartSessionAnnotation,
-      /*is_stable_channel=*/chrome::GetChannel() ==
-          version_info::Channel::STABLE);
+      /*annotation_tag=*/kStartSessionAnnotation, chrome::GetChannel());
 
   metrics_.RecordGaiaAuthenticationStarted();
   endpoint_fetcher_->PerformRequest(

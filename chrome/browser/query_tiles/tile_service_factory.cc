@@ -35,16 +35,6 @@
 #endif
 
 namespace query_tiles {
-namespace {
-
-std::string GetGoogleAPIKey() {
-  bool is_stable_channel =
-      chrome::GetChannel() == version_info::Channel::STABLE;
-  return is_stable_channel ? google_apis::GetAPIKey()
-                           : google_apis::GetNonStableAPIKey();
-}
-
-}  // namespace
 
 // static
 TileServiceFactory* TileServiceFactory::GetInstance() {
@@ -105,11 +95,12 @@ std::unique_ptr<KeyedService> TileServiceFactory::BuildServiceInstanceFor(
   default_server_url =
       base::android::ConvertJavaStringToUTF8(env, j_server_url);
 #endif
-  return CreateTileService(image_fetcher_service, db_provider, storage_dir,
-                           background_task_scheduler, accept_languanges,
-                           GetCountryCode(), GetGoogleAPIKey(), client_version,
-                           default_server_url, url_loader_factory,
-                           ProfileKey::FromSimpleFactoryKey(key)->GetPrefs());
+  return CreateTileService(
+      image_fetcher_service, db_provider, storage_dir,
+      background_task_scheduler, accept_languanges, GetCountryCode(),
+      google_apis::GetAPIKey(chrome::GetChannel()), client_version,
+      default_server_url, url_loader_factory,
+      ProfileKey::FromSimpleFactoryKey(key)->GetPrefs());
 }
 
 }  // namespace query_tiles

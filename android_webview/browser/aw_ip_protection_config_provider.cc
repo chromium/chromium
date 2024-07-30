@@ -38,17 +38,6 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 
-namespace {
-// TODO(crbug.com/40216037): Once `google_apis::GetAPIKey()` handles this
-// logic we can remove this helper.
-std::string GetAPIKey() {
-  version_info::Channel channel = version_info::android::GetChannel();
-  return channel == version_info::Channel::STABLE
-             ? google_apis::GetAPIKey()
-             : google_apis::GetNonStableAPIKey();
-}
-}  // namespace
-
 namespace android_webview {
 
 AwIpProtectionConfigProvider::AwIpProtectionConfigProvider(
@@ -71,7 +60,7 @@ void AwIpProtectionConfigProvider::SetUp() {
                 ->GetURLLoaderFactoryForBrowserProcess()
                 .get(),
             ip_protection::IpProtectionConfigProviderHelper::kWebViewIpBlinding,
-            GetAPIKey());
+            google_apis::GetAPIKey(version_info::android::GetChannel()));
   }
 
   if (!bsa_) {

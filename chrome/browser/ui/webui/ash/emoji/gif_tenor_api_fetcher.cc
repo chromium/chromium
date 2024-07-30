@@ -97,9 +97,7 @@ std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       /*post_data=*/"",
       /*headers=*/std::vector<std::string>(),
       /*cors_exempt_headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/annotation_tag,
-      /*is_stable_channel=*/chrome::GetChannel() ==
-          version_info::Channel::STABLE);
+      /*annotation_tag=*/annotation_tag, chrome::GetChannel());
 }
 
 const base::Value::List* FindList(

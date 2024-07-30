@@ -199,10 +199,7 @@ FeedServiceFactory::BuildServiceInstanceForBrowserContext(
       IdentityManagerFactory::GetForProfile(profile);
   std::string api_key;
   if (google_apis::IsGoogleChromeAPIKeyUsed()) {
-    bool is_stable_channel =
-        chrome::GetChannel() == version_info::Channel::STABLE;
-    api_key = is_stable_channel ? google_apis::GetAPIKey()
-                                : google_apis::GetNonStableAPIKey();
+    api_key = google_apis::GetAPIKey(chrome::GetChannel());
   }
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =

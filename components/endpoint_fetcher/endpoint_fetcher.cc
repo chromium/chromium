@@ -11,6 +11,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/version_info/channel.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/google_api_keys.h"
 #include "net/http/http_status_code.h"
@@ -60,7 +61,7 @@ EndpointFetcher::EndpointFetcher(
     const std::vector<std::string>& headers,
     const std::vector<std::string>& cors_exempt_headers,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
-    bool is_stable_channel)
+    version_info::Channel channel)
     : auth_type_(CHROME_API_KEY),
       url_(url),
       http_method_(http_method),
@@ -74,7 +75,7 @@ EndpointFetcher::EndpointFetcher(
       identity_manager_(nullptr),
       consent_level_(std::nullopt),
       sanitize_response_(true),
-      is_stable_channel_(is_stable_channel) {}
+      channel_(channel) {}
 
 EndpointFetcher::EndpointFetcher(
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
@@ -233,10 +234,7 @@ void EndpointFetcher::PerformRequest(
           base::StringPrintf("Bearer %s", key));
       break;
     case CHROME_API_KEY: {
-      std::string api_key = is_stable_channel_
-                                ? google_apis::GetAPIKey()
-                                : google_apis::GetNonStableAPIKey();
-      resource_request->headers.SetHeader("x-goog-api-key", api_key);
+      google_apis::AddDefaultAPIKeyToRequest(*resource_request, channel_);
       break;
     }
     default:

@@ -567,10 +567,7 @@ std::string GetAPIKeyForUrl(version_info::Channel channel) {
   }
 
   // Get the API key from Chrome baked keys.
-  if (channel == version_info::Channel::STABLE) {
-    return google_apis::GetAPIKey();
-  }
-  return google_apis::GetNonStableAPIKey();
+  return google_apis::GetAPIKey(channel);
 }
 
 std::optional<std::vector<variations::VariationID>>& GetActiveExperiments() {

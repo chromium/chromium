@@ -393,16 +393,13 @@ bool HasAPIKeyConfigured() {
 }
 
 std::string GetAPIKey(::version_info::Channel channel) {
-  return channel == ::version_info::Channel::STABLE ? GetAPIKey()
-                                                    : GetNonStableAPIKey();
+  return channel == ::version_info::Channel::STABLE
+             ? GetAPIKey()
+             : g_api_key_cache.Get().api_key_non_stable();
 }
 
 std::string GetAPIKey() {
   return g_api_key_cache.Get().api_key();
-}
-
-std::string GetNonStableAPIKey() {
-  return g_api_key_cache.Get().api_key_non_stable();
 }
 
 std::string GetRemotingAPIKey() {

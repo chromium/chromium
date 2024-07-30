@@ -89,12 +89,6 @@ std::string GetAPIKey(version_info::Channel channel);
 // distribution channel instead of calling this function directly.
 COMPONENT_EXPORT(GOOGLE_APIS) std::string GetAPIKey();
 
-// Non-stable channels may have a different Google API key.
-//
-// DEPRECATED: Use `GetAPIKey(channel)` to get the right key for your
-// distribution channel instead of calling this function directly.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetNonStableAPIKey();
-
 // Retrieves the Chrome Remote Desktop API key.
 COMPONENT_EXPORT(GOOGLE_APIS) std::string GetRemotingAPIKey();
 

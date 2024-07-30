@@ -5,6 +5,7 @@
 #include "components/manta/base_provider.h"
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/version_info/channel.h"
 #include "components/manta/proto/manta.pb.h"
 
 namespace manta {
@@ -157,7 +158,7 @@ std::unique_ptr<EndpointFetcher> BaseProvider::CreateEndpointFetcherForDemoMode(
       /*cors_exempt_headers=*/std::vector<std::string>(),
       /*annotation_tag=*/annotation_tag,
       // ChromeOS always uses the stable channel API key
-      /*is_stable_channel=*/true);
+      version_info::Channel::STABLE);
 }
 
 }  // namespace manta

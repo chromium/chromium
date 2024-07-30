@@ -796,9 +796,7 @@ void LensOverlayQueryController::FetchEndpoint(
           /*post_data=*/request_data_string,
           /*headers=*/headers,
           /*cors_exempt_headers=*/cors_exempt_headers,
-          /*annotation_tag=*/kTrafficAnnotationTag,
-          /*is_stable_channel=*/chrome::GetChannel() ==
-              version_info::Channel::STABLE);
+          /*annotation_tag=*/kTrafficAnnotationTag, chrome::GetChannel());
   EndpointFetcher* fetcher = endpoint_fetcher.get();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
