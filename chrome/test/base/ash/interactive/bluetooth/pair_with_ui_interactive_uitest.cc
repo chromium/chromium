@@ -220,6 +220,21 @@ class PairWithUiInteractiveUiTest : public InteractiveAshTest {
         CheckBluetoothDevicePairedState(device_name, /*paired=*/false));
   }
 
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  PerformOpenPairingDialogSteps() {
+    return Steps(
+        Log("Navigating to the Bluetooth device details page"),
+
+        NavigateSettingsToBluetoothPage(kOSSettingsId),
+        WaitForElementExists(
+            kOSSettingsId,
+            ash::settings::bluetooth::BluetoothPairNewDeviceButton()),
+        ClickElement(kOSSettingsId,
+                     ash::settings::bluetooth::BluetoothPairNewDeviceButton()),
+        WaitForElementExists(
+            kOSSettingsId, ash::settings::bluetooth::BluetoothPairingDialog()));
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 
@@ -341,6 +356,38 @@ IN_PROC_BROWSER_TEST_F(BluezPairWithUiInteractiveUiTest, SimplePairAndForget) {
       context,
 
       PerformDeviceForgetSteps(floss::FakeFlossAdapterClient::kJustWorksName),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(FlossPairWithUiInteractiveUiTest,
+                       OpenPairingDialogFromOsSettings) {
+  InstallSystemApps();
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  RunTestSequenceInContext(
+      context,
+
+      Log("Opening pairing dialog without pairing to a device"),
+
+      PerformOpenPairingDialogSteps(),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(BluezPairWithUiInteractiveUiTest,
+                       OpenPairingDialogFromOsSettings) {
+  InstallSystemApps();
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  RunTestSequenceInContext(
+      context,
+
+      Log("Opening pairing dialog without pairing to a device"),
+
+      PerformOpenPairingDialogSteps(),
 
       Log("Test complete"));
 }

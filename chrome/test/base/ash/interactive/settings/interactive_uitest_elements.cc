@@ -297,6 +297,14 @@ WebContentsInteractionTestUtil::DeepQuery BluetoothPage() {
   }});
 }
 
+WebContentsInteractionTestUtil::DeepQuery BluetoothPairNewDeviceButton() {
+  return BluetoothPage() + "cr-button#pairNewDevice";
+}
+
+WebContentsInteractionTestUtil::DeepQuery BluetoothPairingDialog() {
+  return BluetoothPage() + "os-settings-bluetooth-pairing-dialog";
+}
+
 WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceList() {
   return BluetoothPage() + "os-settings-bluetooth-devices-subpage" +
          "os-settings-paired-bluetooth-list";

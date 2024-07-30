@@ -213,6 +213,12 @@ namespace bluetooth {
 // The top level Bluetooth page.
 WebContentsInteractionTestUtil::DeepQuery BluetoothPage();
 
+// The pair new device button in top level Bluetooth page.
+WebContentsInteractionTestUtil::DeepQuery BluetoothPairNewDeviceButton();
+
+// The Bluetooth pairing dialog.
+WebContentsInteractionTestUtil::DeepQuery BluetoothPairingDialog();
+
 // The Bluetooth device list page.
 WebContentsInteractionTestUtil::DeepQuery BluetoothDeviceList();
 
