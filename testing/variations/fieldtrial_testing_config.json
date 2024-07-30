@@ -21942,6 +21942,29 @@
             ]
         }
     ],
+    "SuppressesPrerenderingOnSlowNetwork": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "slow_network_threshold_for_prerendering": "208ms"
+                    },
+                    "enable_features": [
+                        "SuppressesPrerenderingOnSlowNetwork"
+                    ]
+                }
+            ]
+        }
+    ],
     "SuppressesSearchPrefetchOnSlowNetwork": [
         {
             "platforms": [

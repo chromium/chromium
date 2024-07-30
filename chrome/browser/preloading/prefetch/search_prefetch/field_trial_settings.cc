@@ -131,6 +131,8 @@ BASE_FEATURE(kSuppressesSearchPrefetchOnSlowNetwork,
              "SuppressesSearchPrefetchOnSlowNetwork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Regarding how this number was chosen, see the design doc linked from
+// crbug.com/350519234.
 const base::FeatureParam<base::TimeDelta>
     kSuppressesSearchPrefetchOnSlowNetworkThreshold{
         &kSuppressesSearchPrefetchOnSlowNetwork,

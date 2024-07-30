@@ -12284,6 +12284,7 @@ experimental domain Preload
       JavaScriptInterfaceRemoved
       AllPrerenderingCanceled
       WindowClosed
+      SlowNetwork
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated

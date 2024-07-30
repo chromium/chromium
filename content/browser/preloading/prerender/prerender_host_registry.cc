@@ -16,6 +16,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
@@ -32,6 +33,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom.h"
+#include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -39,6 +41,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "net/base/load_flags.h"
+#include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
@@ -322,6 +325,8 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kAllPrerenderingCanceled:
     case PrerenderFinalStatus::kWindowClosed:
       NOTREACHED_NORETURN();
+    case PrerenderFinalStatus::kSlowNetwork:
+      return PreloadingEligibility::kSlowNetwork;
   }
 
   NOTREACHED_NORETURN();
@@ -468,6 +473,21 @@ void PrerenderHostBuilder::RejectAsFailure(
                                    attributes);
 
   Drop();
+}
+
+bool IsSlowNetwork(WebContents* web_contents) {
+  static const base::TimeDelta kSlowNetworkThreshold =
+      features::kSuppressesPrerenderingOnSlowNetworkThreshold.Get();
+  return web_contents && web_contents->GetBrowserContext() &&
+         web_contents->GetBrowserContext()
+             ->GetClientHintsControllerDelegate() &&
+         web_contents->GetBrowserContext()
+             ->GetClientHintsControllerDelegate()
+             ->GetNetworkQualityTracker() &&
+         web_contents->GetBrowserContext()
+                 ->GetClientHintsControllerDelegate()
+                 ->GetNetworkQualityTracker()
+                 ->GetHttpRTT() > kSlowNetworkThreshold;
 }
 
 }  // namespace
@@ -625,6 +645,17 @@ int PrerenderHostRegistry::CreateAndStartHost(
         builder.RejectAsNotEligible(
             attributes, PrerenderFinalStatus::kMemoryPressureOnTrigger);
         return RenderFrameHost::kNoFrameTreeNodeId;
+    }
+
+    // Disable prerendering on slow network.
+    static const bool kSuppressesPrerenderingOnSlowNetworkIsEnabled =
+        base::FeatureList::IsEnabled(
+            features::kSuppressesPrerenderingOnSlowNetwork);
+    if (kSuppressesPrerenderingOnSlowNetworkIsEnabled &&
+        IsSlowNetwork(web_contents())) {
+      builder.RejectAsNotEligible(attributes,
+                                  PrerenderFinalStatus::kSlowNetwork);
+      return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
     // Allow prerendering only for same-site. The initiator origin is nullopt

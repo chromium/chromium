@@ -69,4 +69,16 @@ const base::FeatureParam<int>
         &blink::features::kPrerender2NoVarySearch,
         "wait_for_headers_timeout_embedders", 1000};
 
+// If enabled, suppresses prerendering on slow network.
+BASE_FEATURE(kSuppressesPrerenderingOnSlowNetwork,
+             "SuppressesPrerenderingOnSlowNetwork",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Regarding how this number was chosen, see the design doc linked from
+// crbug.com/350519234.
+const base::FeatureParam<base::TimeDelta>
+    kSuppressesPrerenderingOnSlowNetworkThreshold{
+        &kSuppressesPrerenderingOnSlowNetwork,
+        "slow_network_threshold_for_prerendering", base::Milliseconds(208)};
+
 }  // namespace features

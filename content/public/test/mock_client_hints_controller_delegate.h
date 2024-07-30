@@ -7,6 +7,7 @@
 
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "services/network/test/test_network_quality_tracker.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -64,6 +65,7 @@ class MockClientHintsControllerDelegate : public ClientHintsControllerDelegate {
   ClientHintsContainer client_hints_map_;
   std::vector<network::mojom::WebClientHintsType> additional_hints_;
   gfx::Size viewport_size_;
+  network::TestNetworkQualityTracker network_quality_tracker_;
 };
 }  // end namespace content
 
