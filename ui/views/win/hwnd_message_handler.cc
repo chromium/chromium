@@ -406,7 +406,6 @@ HWNDMessageHandler::HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
       delegate_(delegate),
       fullscreen_handler_(new FullscreenHandler),
       waiting_for_close_now_(false),
-      use_system_default_icon_(false),
       restored_enabled_(false),
       current_cursor_(base::MakeRefCounted<ui::WinCursor>()),
       dpi_(0),
@@ -932,11 +931,6 @@ void HWNDMessageHandler::SetWindowIcons(const gfx::ImageSkia& window_icon,
   }
 }
 
-void HWNDMessageHandler::set_use_system_default_icon(
-    bool use_system_default_icon) {
-  use_system_default_icon_ = use_system_default_icon;
-}
-
 void HWNDMessageHandler::SetFullscreen(bool fullscreen,
                                        int64_t target_display_id) {
   // Erase any prior reference to this window in the fullscreen window map.
@@ -1049,15 +1043,11 @@ bool HWNDMessageHandler::using_wm_input() const {
 // HWNDMessageHandler, gfx::WindowImpl overrides:
 
 HICON HWNDMessageHandler::GetDefaultWindowIcon() const {
-  return use_system_default_icon_
-             ? nullptr
-             : ViewsDelegate::GetInstance()->GetDefaultWindowIcon();
+  return ViewsDelegate::GetInstance()->GetDefaultWindowIcon();
 }
 
 HICON HWNDMessageHandler::GetSmallWindowIcon() const {
-  return use_system_default_icon_
-             ? nullptr
-             : ViewsDelegate::GetInstance()->GetSmallWindowIcon();
+  return ViewsDelegate::GetInstance()->GetSmallWindowIcon();
 }
 
 LRESULT HWNDMessageHandler::OnWndProc(UINT message,

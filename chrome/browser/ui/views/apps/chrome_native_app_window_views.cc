@@ -118,7 +118,6 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
       views::Widget::InitParams::TYPE_WINDOW);
   init_params.delegate = this;
   init_params.remove_standard_frame = ShouldRemoveStandardFrame();
-  init_params.use_system_default_icon = true;
   if (create_params.alpha_enabled) {
     init_params.opacity =
         views::Widget::InitParams::WindowOpacity::kTranslucent;
