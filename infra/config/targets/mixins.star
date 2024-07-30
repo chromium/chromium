@@ -1872,6 +1872,18 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "win10_nvidia_rtx_4070_super_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            "display_attached": "1",
+            "gpu": "10de:2783",
+            "os": "Windows-10",
+            "pool": "chromium.tests.gpu.experimental",
+        },
+    ),
+)
+
+targets.mixin(
     name = "win11_qualcomm_adreno_690_stable",
     swarming = targets.swarming(
         dimensions = {

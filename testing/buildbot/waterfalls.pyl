@@ -4802,6 +4802,15 @@
           'gpu_telemetry_tests': 'gpu_fyi_win_intel_release_telemetry_tests',
         },
       },
+      'Win10 FYI x64 Release (NVIDIA RTX 4070 Super)': {
+        'os_type': 'win',
+        'browser_config': 'release_x64',
+        'mixins': [
+          'win10_nvidia_rtx_4070_super_stable',
+          'limited_capacity_bot',
+        ],
+        'test_suites': {},
+      },
       'Win10 FYI x64 Release (NVIDIA)': {
         'os_type': 'win',
         'browser_config': 'release_x64',

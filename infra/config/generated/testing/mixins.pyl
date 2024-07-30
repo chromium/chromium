@@ -1466,6 +1466,16 @@
       },
     },
   },
+  'win10_nvidia_rtx_4070_super_stable': {
+    'swarming': {
+      'dimensions': {
+        'display_attached': '1',
+        'gpu': '10de:2783',
+        'os': 'Windows-10',
+        'pool': 'chromium.tests.gpu.experimental',
+      },
+    },
+  },
   'win11': {
     'swarming': {
       'dimensions': {
