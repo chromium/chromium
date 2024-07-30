@@ -46,6 +46,7 @@ import java.util.List;
 public class InsetsRectProviderTest {
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 800;
+    private static final Size INSETS_FRAME_SIZE = new Size(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     private InsetsRectProvider mInsetsRectProvider;
 
@@ -72,7 +73,8 @@ public class InsetsRectProviderTest {
         Rect availableArea = new Rect(10, 0, WINDOW_WIDTH - 20, 10);
 
         WindowInsetsCompat windowInsets =
-                buildTestWindowInsets(type, insets, availableArea, blockingRects);
+                buildTestWindowInsets(
+                        type, insets, availableArea, INSETS_FRAME_SIZE, blockingRects);
         mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, windowInsets);
 
         assertSuppliedValues(insets, availableArea, blockingRects);
@@ -110,7 +112,8 @@ public class InsetsRectProviderTest {
         CallbackHelper observer = new CallbackHelper();
         mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
         WindowInsetsCompat windowInsets =
-                buildTestWindowInsets(type, insets, availableArea, blockingRects);
+                buildTestWindowInsets(
+                        type, insets, availableArea, INSETS_FRAME_SIZE, blockingRects);
         mInsetsRectProvider.onApplyWindowInsets(mView, windowInsets);
 
         assertEquals("Observer not called.", 1, observer.getCallCount());
@@ -134,7 +137,8 @@ public class InsetsRectProviderTest {
 
         // Initialize with valid insets.
         WindowInsetsCompat windowInsets =
-                buildTestWindowInsets(type, insets, availableArea, blockingRects);
+                buildTestWindowInsets(
+                        type, insets, availableArea, INSETS_FRAME_SIZE, blockingRects);
         mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, windowInsets);
         assertSuppliedValues(insets, availableArea, blockingRects);
 
@@ -145,22 +149,51 @@ public class InsetsRectProviderTest {
         // Create an insets with a different type so it removes the exists insets.
         WindowInsetsCompat newWindowInsets =
                 buildTestWindowInsets(
-                        WindowInsetsCompat.Type.systemBars(), Insets.NONE, new Rect(), List.of());
+                        WindowInsetsCompat.Type.systemBars(),
+                        Insets.NONE,
+                        new Rect(),
+                        INSETS_FRAME_SIZE,
+                        List.of());
         mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
 
         assertEquals("Observer not called.", 1, observer.getCallCount());
         assertSuppliedValues(Insets.NONE, new Rect(), List.of());
     }
 
+    @Test
+    public void testAppliedInsetsNotModifiedIfUnprocessed() {
+        // Assume a caption bar top insets.
+        int type = WindowInsetsCompat.Type.captionBar();
+        Insets insets = Insets.of(0, 10, 0, 0);
+
+        // Insets frame / bounding rects will be empty on a device that does not support the
+        // corresponding OS APIs.
+        WindowInsetsCompat windowInsets =
+                buildTestWindowInsets(type, insets, new Rect(), new Size(0, 0), List.of());
+        mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, windowInsets);
+
+        // Attach an observer to verify that input insets are not processed.
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
+        var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, windowInsets);
+        assertEquals("Input should not be modified.", appliedInsets, windowInsets);
+        assertEquals("Observer should not be called.", 0, observer.getCallCount());
+        assertSuppliedValues(Insets.NONE, new Rect(), List.of());
+    }
+
     private WindowInsetsCompat buildTestWindowInsets(
-            @InsetsType int type, Insets insets, Rect availableArea, List<Rect> blockingRects) {
+            @InsetsType int type,
+            Insets insets,
+            Rect availableArea,
+            Size frameSize,
+            List<Rect> blockingRects) {
         // WindowInsetsCompat.Builder does not work in robolectric (always yield an empty Inset).
         WindowInsetsCompat windowInsetsCompat = Mockito.mock(WindowInsetsCompat.class);
         doReturn(insets).when(windowInsetsCompat).getInsets(eq(type));
         doReturn(Insets.NONE).when(windowInsetsCompat).getInsets(not(eq(type)));
 
         ShadowWindowInsetsUtils.sWidestUnoccludedRect = availableArea;
-        ShadowWindowInsetsUtils.sFrame = new Size(WINDOW_WIDTH, WINDOW_HEIGHT);
+        ShadowWindowInsetsUtils.sFrame = frameSize;
         ShadowWindowInsetsUtils.sTestRects = blockingRects != null ? blockingRects : List.of();
 
         return windowInsetsCompat;
@@ -185,13 +218,13 @@ public class InsetsRectProviderTest {
     @Implements(WindowInsetsUtils.class)
     public static class ShadowWindowInsetsUtils {
         static Rect sWidestUnoccludedRect;
-        static Size sFrame;
-        static List<Rect> sTestRects;
+        static Size sFrame = new Size(0, 0);
+        static List<Rect> sTestRects = List.of();
 
         private static void reset() {
             sWidestUnoccludedRect = null;
-            sFrame = null;
-            sTestRects = null;
+            sFrame = new Size(0, 0);
+            sTestRects = List.of();
         }
 
         @Implementation
@@ -201,13 +234,13 @@ public class InsetsRectProviderTest {
 
         @Implementation
         protected static Size getFrameFromInsets(WindowInsets windowInsets) {
-            return sFrame != null ? sFrame : new Size(0, 0);
+            return sFrame;
         }
 
         @Implementation
         protected static List<Rect> getBoundingRectsFromInsets(
                 WindowInsets windowInsets, @InsetsType int insetType) {
-            return sTestRects != null ? sTestRects : List.of();
+            return sTestRects;
         }
     }
 }

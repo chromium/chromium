@@ -17,7 +17,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
 import org.chromium.base.ObserverList;
-import org.chromium.build.BuildConfig;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.util.WindowInsetsUtils;
 
@@ -35,7 +34,7 @@ import java.util.List;
  * insets.
  *
  * <p>This class works only when the criteria is satisfied:
- * <li>1. Android version is atLeastV.
+ * <li>1. Android version is at least R.
  * <li>2. WindowInsets of given type has insets from one side exactly.
  */
 public class InsetsRectProvider implements WindowInsetsConsumer {
@@ -71,11 +70,10 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         mBoundingRects = List.of();
         mInsetObserver = insetObserver;
 
-        // TODO (crbug/325351108): Remove the test check once we support Android V testing.
-        assert BuildConfig.IS_FOR_TEST || VERSION.SDK_INT >= VERSION_CODES.VANILLA_ICE_CREAM;
+        assert VERSION.SDK_INT >= VERSION_CODES.R;
         mInsetObserver.addInsetsConsumer(this);
         if (initialInsets != null) {
-            updateWidestUnoccludedRect(initialInsets);
+            maybeUpdateWidestUnoccludedRect(initialInsets);
         }
     }
 
@@ -130,24 +128,30 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     public WindowInsetsCompat onApplyWindowInsets(
             @NonNull View view, @NonNull WindowInsetsCompat windowInsetsCompat) {
         // Ignore the input by version check.
-        // TODO (crbug/351389242): Remove the test check once we support Android V testing.
-        if (!BuildConfig.IS_FOR_TEST && VERSION.SDK_INT < VERSION_CODES.VANILLA_ICE_CREAM) {
+        if (VERSION.SDK_INT < VERSION_CODES.R) {
             return windowInsetsCompat;
         }
 
-        updateWidestUnoccludedRect(windowInsetsCompat);
+        // Ignore the input if the insets were not processed.
+        if (!maybeUpdateWidestUnoccludedRect(windowInsetsCompat)) {
+            return windowInsetsCompat;
+        }
+
         return new WindowInsetsCompat.Builder(windowInsetsCompat)
                 .setInsets(mInsetType, Insets.NONE)
                 .build();
     }
 
-    private void updateWidestUnoccludedRect(WindowInsetsCompat windowInsetsCompat) {
-        // Do nothing if there's no update from the cached insets, or the root view size remains
-        // unchanged.
+    private boolean maybeUpdateWidestUnoccludedRect(WindowInsetsCompat windowInsetsCompat) {
+        // Do nothing if the window frame is empty, or there's no update from the cached insets, or
+        // the root view size remains unchanged.
         WindowInsets windowInsets = windowInsetsCompat.toWindowInsets();
         Size windowSize = WindowInsetsUtils.getFrameFromInsets(windowInsets);
+        if (windowSize.getWidth() == 0 && windowSize.getHeight() == 0) return false;
         Rect windowRect = new Rect(0, 0, windowSize.getWidth(), windowSize.getHeight());
-        if (windowInsetsCompat.equals(mCachedInsets) && windowRect.equals(mWindowRect)) return;
+        if (windowInsetsCompat.equals(mCachedInsets) && windowRect.equals(mWindowRect)) {
+            return false;
+        }
 
         mCachedInsets = windowInsetsCompat;
         mWindowRect.set(windowRect);
@@ -167,5 +171,6 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         for (Observer observer : mObservers) {
             observer.onBoundingRectsUpdated(mWidestUnoccludedRect);
         }
+        return true;
     }
 }
