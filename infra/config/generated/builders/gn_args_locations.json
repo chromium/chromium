@@ -344,6 +344,7 @@
   },
   "chromium.gpu": {
     "Android Release (Nexus 5X)": "ci/Android Release (Nexus 5X)/gn-args.json",
+    "Android Release (Pixel 2)": "ci/Android Release (Pixel 2)/gn-args.json",
     "GPU Linux Builder": "ci/GPU Linux Builder/gn-args.json",
     "GPU Linux Builder (dbg)": "ci/GPU Linux Builder (dbg)/gn-args.json",
     "GPU Mac Builder": "ci/GPU Mac Builder/gn-args.json",
@@ -646,7 +647,8 @@
     "gpu-fyi-try-android-pixel-6-64-exp": "try/gpu-fyi-try-android-pixel-6-64-exp/gn-args.json",
     "gpu-fyi-try-android-r-pixel-4-32": "try/gpu-fyi-try-android-r-pixel-4-32/gn-args.json",
     "gpu-fyi-try-android-s23-64": "try/gpu-fyi-try-android-s23-64/gn-args.json",
-    "gpu-try-android-m-nexus-5x-64": "try/gpu-try-android-m-nexus-5x-64/gn-args.json"
+    "gpu-try-android-m-nexus-5x-64": "try/gpu-try-android-m-nexus-5x-64/gn-args.json",
+    "gpu-try-android-pixel-2-64": "try/gpu-try-android-pixel-2-64/gn-args.json"
   },
   "tryserver.chromium.angle": {
     "android-angle-chromium-try": "try/android-angle-chromium-try/gn-args.json",

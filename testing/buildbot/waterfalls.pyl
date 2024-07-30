@@ -4107,6 +4107,18 @@
           'gpu_telemetry_tests': 'gpu_common_android_telemetry_tests',
         },
       },
+      'Android Release (Pixel 2)': {
+        'browser_config': 'android-chromium',
+        'os_type': 'android',
+        'skip_merge_script': True,
+        'mixins': [
+          'pie_fleet',
+          'walleye',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_common_android_telemetry_tests',
+        },
+      },
       'GPU Linux Builder': {},
       'GPU Linux Builder (dbg)': {},
       'GPU Mac Builder': {},

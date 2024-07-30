@@ -80,6 +80,55 @@ ci.gpu.linux_builder(
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Android",
+        short_name = "N5X",
+    ),
+    cq_mirrors_console_view = "mirrors",
+)
+
+ci.gpu.linux_builder(
+    name = "Android Release (Pixel 2)",
+    description_html = "Runs GPU tests on Pixel 2 phones",
+    # TODO(crbug.com/355671260): Enable on branch once stable
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "download_xr_test_apks",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder",
+        ),
+        build_gs_bucket = "chromium-gpu-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "android_builder",
+            "release_builder",
+            "try_builder",
+            "remoteexec",
+            "arm64",
+            "static_angle",
+            "android_fastbuild",
+        ],
+    ),
+    # TODO(crbug.com/355671260): Enable gardener once stable
+    gardener_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android",
+        short_name = "P2",
     ),
     cq_mirrors_console_view = "mirrors",
 )

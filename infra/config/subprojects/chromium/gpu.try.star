@@ -151,6 +151,15 @@ gpu_android_builder(
     pool = "luci.chromium.gpu.android.nexus5x.try",
 )
 
+gpu_android_builder(
+    name = "gpu-try-android-pixel-2-64",
+    mirrors = [
+        "ci/Android Release (Pixel 2)",
+    ],
+    gn_args = "ci/Android Release (Pixel 2)",
+    pool = "luci.chromium.gpu.android.pixel2.chromium.try",
+)
+
 def gpu_chromeos_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
