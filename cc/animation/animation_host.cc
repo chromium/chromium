@@ -132,6 +132,17 @@ void AnimationHost::RemoveAnimationTimeline(
   SetNeedsPushProperties();
 }
 
+void AnimationHost::DetachAnimationTimeline(
+    scoped_refptr<AnimationTimeline> timeline) {
+  if (InProtectedSequence()) {
+    // Defer cleanup until post-commit.
+    detached_timeline_map_.Write(*this).insert(
+        std::make_pair(timeline->id(), timeline));
+  } else {
+    RemoveAnimationTimeline(timeline);
+  }
+}
+
 void AnimationHost::SetHasCanvasInvalidation(bool has_canvas_invalidation) {
   has_canvas_invalidation_.Write(*this) = has_canvas_invalidation;
 }
@@ -355,6 +366,18 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
     // This is redundant but used in tests.
     host_impl->needs_push_properties_.Write(*host_impl) = false;
   }
+}
+
+void AnimationHost::RemoveStaleTimelines() {
+  DCHECK(!InProtectedSequence());
+  if (detached_timeline_map_.Read(*this).empty()) {
+    return;
+  }
+
+  for (auto& kv : detached_timeline_map_.Read(*this)) {
+    RemoveAnimationTimeline(kv.second);
+  }
+  detached_timeline_map_.Write(*this).clear();
 }
 
 void AnimationHost::PushTimelinesToImplThread(AnimationHost* host_impl) const {

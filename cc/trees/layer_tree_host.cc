@@ -409,6 +409,7 @@ std::unique_ptr<CommitState> LayerTreeHost::WillCommit(
   if (has_updates)
     result = ActivateCommitState();
   swap_promise_manager_.WillCommit();
+  mutator_host()->RemoveStaleTimelines();
   client_->WillCommit(has_updates ? *result : *pending_commit_state());
   pending_commit_state()->source_frame_number++;
   commit_completion_event_ = std::move(completion);
@@ -486,8 +487,19 @@ bool LayerTreeHost::IsUsingLayerLists() const {
 void LayerTreeHost::CommitComplete(int source_frame_number,
                                    const CommitTimestamps& commit_timestamps) {
   DCHECK(IsMainThread());
+
   // At this point, commit_completion_event_ could be for the *next* commit, and
-  // may not yet have been signaled.
+  // may not yet have been signaled. If we blocked on a protected sequence
+  // during the commit then the completion event for the frame will have been
+  // reset, which in turn unblocks starting a commit for the next frame. If we
+  // have a commit completion event that has been signaled, it means that we
+  // have not been blocked on a protected sequence during the commit. In this
+  // case, we still need to call WaitForCommitCompletion, which performs the
+  // flag reset; however, the Wait will be non-blocking given that the event was
+  // already signaled.
+  if (!in_commit()) {
+    mutator_host()->RemoveStaleTimelines();
+  }
   if (commit_completion_event_ && commit_completion_event_->IsSignaled())
     WaitForCommitCompletion(/* for_protected_sequence */ false);
   client_->DidCommit(source_frame_number, commit_timestamps.start,
