@@ -9,35 +9,71 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
+source_set("reading_headers") {
+  sources = [ "reading/distillable_pages.h" ]
+  visibility = [ "./*" ]
+}
+
+source_set("reading_sources") {
+  sources = [ "reading/distillable_pages.cc" ]
+  deps = [
+    ":reading_headers",
+    "//base",
+  ]
+  visibility = [ ":reading" ]
+}
+
 source_set("reading") {
   sources = [ "reading/distillable_pages.h" ]
 
+  deps = [ ":reading_headers" ]
+
   if (is_chrome_branded) {
-    sources += [ "internal/reading/distillable_pages.cc" ]
+    deps += [ "//components/accessibility/internal:reading_sources_internal" ]
   } else {
-    sources += [ "reading/distillable_pages.cc" ]
+    deps += [ ":reading_sources" ]
+  }
+}
+
+source_set("penguin_headers") {
+  sources = [ "penguin/penguin_client.h" ]
+
+  # Keep deps in :penguin_headers and :penguin in sync.
+  deps = [ "//base" ]
+  visibility = [ "./*" ]
+}
+
+source_set("penguin_sources") {
+  sources = [ "penguin/penguin_client.cc" ]
+  deps = [
+    ":penguin_headers",
+    "//base",
+    "//content/public/browser",
+  ]
+  visibility = [ ":penguin" ]
+}
+
+source_set("penguin") {
+  sources = [ "penguin/penguin_client.h" ]
+
+  # Keep deps in :penguin_headers and :penguin in sync.
+  deps = [
+    ":penguin_headers",
+    "//base",
+  ]
+
+  if (is_chrome_branded) {
+    deps += [ "//components/accessibility/internal:penguin_sources_internal" ]
+  } else {
+    deps += [ ":penguin_sources" ]
   }
 
-  deps = [
-    "//base",
-    "//url",
-  ]
+  if (is_android) {
+    deps += [ ":penguin_jni_headers" ]
+  }
 }
 
 if (is_android) {
-  source_set("penguin") {
-    sources = [
-      "penguin/penguin_client.cc",
-      "penguin/penguin_client.h",
-    ]
-
-    deps = [ "//base" ]
-
-    if (is_android) {
-      deps += [ ":penguin_jni_headers" ]
-    }
-  }
-
   generate_jni("penguin_jni_headers") {
     sources = [ "android/java/src/org/chromium/components/accessibility/penguin/PenguinClient.java" ]
   }

@@ -4,20 +4,19 @@
 
 #include "components/accessibility/penguin/penguin_client.h"
 
-#include <memory>
-
-#include "build/build_config.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
-namespace penguin {
+namespace a11y {
 
 // static
-PenguinClient* PenguinClient::Create(content::BrowserContext* context) {
+std::unique_ptr<PenguinClient> PenguinClient::Create(
+    content::BrowserContext* context,
+    bool penguin_variation) {
   return nullptr;
 }
 
@@ -57,6 +56,9 @@ void PenguinClient::PerformAPICall(const std::string& text_input,
 void PenguinClient::PerformAPICall(const std::string& text_input,
                                    PenguinFullResponseCallback callback) {}
 
+void PenguinClient::PerformAPICall(const std::string& text_input,
+                                   PenguinStreamingResponseCallback callback) {}
+
 #if BUILDFLAG(IS_ANDROID)
 
 void PenguinClient::PerformAPICall_var1(
@@ -89,4 +91,4 @@ void PenguinClient::PerformAPICall_var4(
 
 #endif
 
-}  // namespace penguin
+}  // namespace a11y
