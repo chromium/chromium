@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/types/fixed_array.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
@@ -47,26 +48,20 @@ void TextDecoder::Decode(gin::Arguments* arguments) {
   // Note: We do not support a TextDecoderOptions parameter.
   CHECK_GT(args.size(), 0u);
   CHECK(args[0]->IsArrayBuffer() || args[0]->IsArrayBufferView());
-  void* bytes = nullptr;
-  size_t num_bytes = 0;
+
+  v8::Local<v8::ArrayBufferView> view;
   if (args[0]->IsArrayBuffer()) {
     v8::Local<v8::ArrayBuffer> array = args[0].As<v8::ArrayBuffer>();
-    bytes = array->Data();
-    num_bytes = array->ByteLength();
+    view = v8::DataView::New(array, 0, array->ByteLength());
   } else {
-    v8::Local<v8::ArrayBufferView> view = args[0].As<v8::ArrayBufferView>();
-    num_bytes = view->ByteLength();
-    void* bites[num_bytes];
-    view->CopyContents(bites, num_bytes);
-    bytes = bites;
+    view = args[0].As<v8::ArrayBufferView>();
   }
-  char result[num_bytes + 1];
-  for (size_t i = 0; i < num_bytes; i++) {
-    result[i] = *(static_cast<char*>(bytes) + i);
-  }
-  result[num_bytes] = 0;
 
-  arguments->Return(std::string(result));
+  base::FixedArray<char> bytes(view->ByteLength() + 1);
+  view->CopyContents(bytes.data(), view->ByteLength());
+  bytes[view->ByteLength()] = 0;
+
+  arguments->Return(std::string(bytes.data()));
 }
 
 TextDecoder::TextDecoder(v8::Local<v8::Context> context)
