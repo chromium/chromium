@@ -667,10 +667,15 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   // However, if this is a request to a non-unique hostname, don't prefer
   // net error as it is likely non-recoverable -- we want to fallback to HTTP
   // and the HTTPS-First Mode interstitial in this case. (In particular, this
-  // avoids breaking corporate single-label hostnames.)
+  // avoids breaking corporate single-label hostnames.) Treat all single-label
+  // hostnames as if they were non-unique, since while unique single-label hosts
+  // (i.e. TLDs on the PSL) could get a cert, it's more likely they're being
+  // used as a corporate hostname. These domains are safe to exclude since this
+  // only results in potentially show an extra HFM warning before the net error.
   if (IsInterstitialEnabled(*interstitial_state_) &&
       IsHttpsFirstModeExemptedError(status.error_code) &&
-      !net::IsHostnameNonUnique(request.url.host())) {
+      !net::IsHostnameNonUnique(request.url.host()) &&
+      !net::GetSuperdomain(request.url.host()).empty()) {
     tab_helper->set_is_exempt_error(true);
     return false;
   }

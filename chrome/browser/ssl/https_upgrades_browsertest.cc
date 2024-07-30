@@ -1685,6 +1685,46 @@ IN_PROC_BROWSER_TEST_P(
       http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
 }
 
+// If the upgraded HTTPS URL is not available due to an exempted net error but
+// is to a single-label unique hostname (i.e. a TLD) don't show the net error
+// page. This is the same as
+// ExemptNetErrorOnUpgrade_NonUniqueHostname_ShouldFallback except with a unique
+// one-label hostname.
+// (Partial regression test for impact of crrev.com/c/5507613 on b/348330182.)
+IN_PROC_BROWSER_TEST_P(
+    HttpsUpgradesBrowserTest,
+    ExemptNetErrorOnUpgrade_UniqueSingleLabelHostname_ShouldFallback) {
+  // This test is only interesting when HTTPS-First Mode is enabled.
+  if (!IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+    return;
+  }
+
+  GURL http_url = http_server()->GetURL("cl", "/simple.html");
+  GURL https_url = https_server()->GetURL("cl", "/simple.html");
+  auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+
+  // Set up an interceptor that will return ERR_NAME_NOT_RESOLVED. Navigating
+  // to the HTTP URL should get upgraded to HTTPS, and then fallback to HTTP
+  // and the HFM interstitial.
+  auto dns_failure_interceptor =
+      std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+          [](content::URLLoaderInterceptor::RequestParams* params) {
+            params->client->OnComplete(
+                network::URLLoaderCompletionStatus(net::ERR_NAME_NOT_RESOLVED));
+            return true;
+          }));
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+  ProceedThroughInterstitial(contents);
+
+  // Should now be on the HTTP URL and it should be allowlisted.
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
+  EXPECT_TRUE(state->IsHttpAllowedForHost(
+      http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
+}
+
 // Navigations in subframes should not get upgraded by HTTPS-Only Mode. They
 // should be blocked as mixed content.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
