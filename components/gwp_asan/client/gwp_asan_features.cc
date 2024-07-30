@@ -35,6 +35,8 @@ constexpr base::FeatureParam<ExtremeLightweightUAFDetectorTargetProcesses>::
         {ExtremeLightweightUAFDetectorTargetProcesses::kAllProcesses, "all"},
         {ExtremeLightweightUAFDetectorTargetProcesses::kBrowserProcessOnly,
          "browser_only"},
+        {ExtremeLightweightUAFDetectorTargetProcesses::kNonRendererProcesses,
+         "non_renderer"},
 };
 const base::FeatureParam<ExtremeLightweightUAFDetectorTargetProcesses>
     kExtremeLightweightUAFDetectorTargetProcesses{

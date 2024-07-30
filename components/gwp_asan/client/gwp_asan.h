@@ -40,7 +40,7 @@ GWP_ASAN_EXPORT void MaybeEnableLightweightDetector(bool boost_sampling,
                                                     const char* process_type);
 GWP_ASAN_EXPORT void MaybeEnableExtremeLightweightDetector(
     bool boost_sampling,
-    const char* process_type);
+    std::string_view process_type);
 
 }  // namespace gwp_asan
 

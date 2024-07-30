@@ -546,7 +546,7 @@ void MaybeEnableLightweightDetector(bool boost_sampling,
 }
 
 void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
-                                           const char* process_type) {
+                                           std::string_view process_type) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if (!base::FeatureList::IsEnabled(internal::kExtremeLightweightUAFDetector)) {
     return;
@@ -557,8 +557,13 @@ void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
     case kAllProcesses:
       break;
     case kBrowserProcessOnly:
-      if (*process_type != '\0') {
+      if (!process_type.empty()) {
         return;  // Non-empty process_type means a non-browser process.
+      }
+      break;
+    case kNonRendererProcesses:
+      if (process_type == "renderer") {
+        return;
       }
       break;
   }
