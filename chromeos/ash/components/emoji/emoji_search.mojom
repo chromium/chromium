@@ -12,12 +12,14 @@ struct SearchResults {
 // string
 interface EmojiSearch {
   // Lookup metadata to find emoji/symbol/emoticon matches for a given query.
-  // If SetEmojiLanguage is not called, defaults to English locale.
-  SearchEmoji(string query) => (SearchResults emoji_results,
-                                SearchResults symbol_results,
-                                SearchResults emoticon_results);
+  // language_codes refers to BCP48 identifiers for a language such as "en-US".
+  // If no languages are supplied then loads all available languages.
+  SearchEmoji(string query, array<string> language_codes)
+      => (SearchResults emoji_results,
+          SearchResults symbol_results,
+          SearchResults emoticon_results);
 
-  // language_code refers to a BCP47 identifier for a language such as "en-US".
-  // Returns success if data for this language code exists.
-  SetEmojiLanguage(string language_code) => (bool success);
+  // language_code refers to a BCP48 identifier for a language such as "en-US".
+  // Previously loaded emoji languages not in this list will be cleared.
+  LoadEmojiLanguages(array<string> language_codes);
 };

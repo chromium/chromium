@@ -81,8 +81,8 @@ TEST_F(EmojiSearchTest, FindsSmilingEmojiInJapaneseLocale) {
 
   EmojiSearch search;
 
-  ASSERT_TRUE(search.SetEmojiLanguage("ja"));
-  EmojiSearchResult result = search.SearchEmoji("笑顔");
+  search.LoadEmojiLanguages({{"ja"}});
+  EmojiSearchResult result = search.SearchEmoji("笑顔", {{"ja"}});
   EXPECT_THAT(result.emojis, UnorderedElementsAre(FieldsAre(Gt(0), "😀"),
                                                   FieldsAre(Gt(0), "😺")));
   EXPECT_THAT(result.symbols, IsEmpty());
@@ -119,10 +119,48 @@ TEST_F(EmojiSearchTest, FindsSymbolInJapaneseLocale) {
 
   EmojiSearch search;
 
-  ASSERT_TRUE(search.SetEmojiLanguage("ja"));
-  EmojiSearchResult result = search.SearchEmoji("矢印");
+  search.LoadEmojiLanguages({{"ja"}});
+  EmojiSearchResult result = search.SearchEmoji("矢印", {{"ja"}});
   EXPECT_THAT(result.symbols, UnorderedElementsAre(FieldsAre(Gt(0), "←")));
   EXPECT_THAT(result.emojis, IsEmpty());
+  EXPECT_THAT(result.emoticons, IsEmpty());
+}
+
+TEST_F(EmojiSearchTest, CanSearchMultipleLocales) {
+  ScopedFakeResourceBundleDelegate mock_resource_delegate(
+      {{FakeResource{IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
+                     R"([{"emoji":[{"base":{"string":"🎸","name":"guitar",
+            "keywords":["music"]}}]}])"},
+        FakeResource{
+            IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
+            R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
+            "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
+                     R"([{"group":"Miscellaneous","emoji":[{"base":
+            {"string":"♭","name":"music flat sign","keywords":["music"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON,
+                     R"-([{"group":"Classic","emoji":[
+              {"base":{"string":":-)","name":"smiley face "}}]}])-"},
+        FakeResource{IDR_EMOJI_PICKER_SYMBOL_FR,
+                     R"([{"group":"Arrows","emoji":[{"base":
+            {"string":"♯","name":"dièse","keywords":["dièse","musique"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_FR_START,
+                     R"([{"emoji":[{"base":{"string":"🎹","name":"piano",
+            "keywords":["musique"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_FR_REMAINING,
+                     R"([{"emoji":[{"base":{"string":"😺","name":"chat",
+            "keywords":["chat"]}}]}])"}}});
+
+  EmojiSearch search;
+
+  search.LoadEmojiLanguages({{"en", "fr"}});
+
+  // Note that the results are to be presented in order of languages.
+  EmojiSearchResult result = search.SearchEmoji("musi", {{"fr", "en"}});
+  EXPECT_THAT(result.emojis, UnorderedElementsAre(FieldsAre(Gt(0), "🎹"),
+                                                  FieldsAre(Gt(0), "🎸")));
+  EXPECT_THAT(result.symbols, UnorderedElementsAre(FieldsAre(Gt(0), "♯"),
+                                                   FieldsAre(Gt(0), "♭")));
   EXPECT_THAT(result.emoticons, IsEmpty());
 }
 
@@ -145,7 +183,7 @@ TEST_F(EmojiSearchTest, FindsSmilingEmoji) {
 
   EmojiSearch search;
 
-  EmojiSearchResult result = search.SearchEmoji("face");
+  EmojiSearchResult result = search.SearchEmoji("face", {{"en"}});
 
   EXPECT_THAT(result.emojis, ElementsAre(FieldsAre(Gt(0), "😀")));
   EXPECT_THAT(result.emoticons, ElementsAre(FieldsAre(Gt(0), ":-)")));
@@ -171,7 +209,7 @@ TEST_F(EmojiSearchTest, MultiKeywordPartialMatch) {
 
   EmojiSearch search;
 
-  EmojiSearchResult result = search.SearchEmoji("gr fa");
+  EmojiSearchResult result = search.SearchEmoji("gr fa", {{"en"}});
 
   EXPECT_THAT(result.emojis, ElementsAre(FieldsAre(Gt(0), "😀")));
   EXPECT_THAT(result.symbols, IsEmpty());
@@ -197,7 +235,7 @@ TEST_F(EmojiSearchTest, FindsSmilingEmoticon) {
 
   EmojiSearch search;
 
-  EmojiSearchResult result = search.SearchEmoji("smiley");
+  EmojiSearchResult result = search.SearchEmoji("smiley", {{"en"}});
 
   EXPECT_THAT(result.emoticons, ElementsAre(FieldsAre(Gt(0), ":-)")));
   EXPECT_THAT(result.emojis, IsEmpty());
@@ -222,7 +260,7 @@ TEST_F(EmojiSearchTest, FindsSymbol) {
             {"string":":-)","name":"smiley face "}}]}])-"}}});
   EmojiSearch search;
 
-  EmojiSearchResult result = search.SearchEmoji("left");
+  EmojiSearchResult result = search.SearchEmoji("left", {{"en"}});
 
   EXPECT_THAT(result.symbols, ElementsAre(FieldsAre(Gt(0), "←")));
   EXPECT_THAT(result.emojis, IsEmpty());
@@ -248,7 +286,7 @@ TEST_F(EmojiSearchTest, IgnoresCase) {
 
   EmojiSearch search;
 
-  EmojiSearchResult result = search.SearchEmoji("LEFT");
+  EmojiSearchResult result = search.SearchEmoji("LEFT", {{"en"}});
 
   EXPECT_THAT(result.symbols, ElementsAre(FieldsAre(Gt(0), "←")));
   EXPECT_THAT(result.emojis, IsEmpty());
@@ -274,7 +312,7 @@ TEST_F(EmojiSearchTest, WholeNameScoresHigherThanPartialMatch) {
 
   EmojiSearch search;
 
-  EmojiSearchResult result = search.SearchEmoji("grinning face");
+  EmojiSearchResult result = search.SearchEmoji("grinning face", {{"en"}});
 
   EXPECT_THAT(result.emojis,
               ElementsAre(FieldsAre(Gt(0), "😀a"), FieldsAre(Gt(0), "😀")));
@@ -301,7 +339,7 @@ TEST_F(EmojiSearchTest, NameMatchScoresHigherThanKeyword) {
 
   EmojiSearch search;
 
-  EmojiSearchResult result = search.SearchEmoji("grinning face");
+  EmojiSearchResult result = search.SearchEmoji("grinning face", {{"en"}});
 
   EXPECT_THAT(result.emojis,
               ElementsAre(FieldsAre(Gt(0), "😀a"), FieldsAre(Gt(0), "😀")));
@@ -329,7 +367,7 @@ TEST_F(EmojiSearchTest, KeywordPartialScoresHigherThanFullKeywordMatch) {
 
   EmojiSearch search;
 
-  EmojiSearchResult result = search.SearchEmoji("grinning face");
+  EmojiSearchResult result = search.SearchEmoji("grinning face", {{"en"}});
 
   EXPECT_THAT(result.emojis,
               ElementsAre(FieldsAre(DoubleNear(0.0029, 0.00005), "😀"),
