@@ -218,7 +218,14 @@ void CampaignsManager::SetIsUserOwner(bool is_user_owner) {
 void CampaignsManager::PerformAction(int campaign_id,
                                      std::optional<int> group_id,
                                      const Action* action) {
-  CHECK(action);
+  // In rare case when the caller fails to check action, log
+  // an error metric if the action is not defined.
+  if (!action) {
+    LOG(ERROR) << "Missing action when performing action.";
+    RecordCampaignsManagerError(
+        CampaignsManagerError::kMissingActionPerformerAction);
+    return;
+  }
 
   auto* params = action->GetParams();
   auto action_type = action->GetActionType();
