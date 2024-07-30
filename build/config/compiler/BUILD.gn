@@ -221,7 +221,9 @@ if (is_android) {
   declare_args() {
     chrome_orderfile_path = ""
 
-    if (defined(default_chrome_orderfile)) {
+    # The default orderfile should not be used when generating a new PGO
+    # profile (chrome_pgo_phase == 1) to avoid affecting profiling.
+    if (defined(default_chrome_orderfile) && chrome_pgo_phase != 1) {
       # Allow downstream tools to set orderfile path with
       # another variable.
       chrome_orderfile_path = default_chrome_orderfile
