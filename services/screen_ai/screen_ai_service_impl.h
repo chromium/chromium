@@ -102,9 +102,6 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
       InitializeOCRCallback callback) override;
 
-  // mojom::ScreenAIServiceFactory:
-  void ShutDownIfNoClients() override;
-
   // mojom::OCRService:
   void BindAnnotator(
       mojo::PendingReceiver<mojom::ScreenAIAnnotator> annotator) override;

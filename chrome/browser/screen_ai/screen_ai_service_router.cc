@@ -34,9 +34,6 @@
 
 namespace {
 
-// How often it would be checked that the service is idle and can be shutdown.
-constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(10);
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // If any value is added, please update `ComponentAvailability` in `enums.xml`.
@@ -314,12 +311,6 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
           .WithExtraCommandLineSwitches(extra_switches)
 #endif  // BUILDFLAG(IS_WIN)
           .Pass());
-
-  screen_ai_service_factory_.reset_on_disconnect();
-
-  idle_checking_timer_ = std::make_unique<base::RepeatingTimer>();
-  idle_checking_timer_->Start(FROM_HERE, kIdleCheckingDelay, this,
-                              &ScreenAIServiceRouter::ShutDownIfNoClients);
 }
 
 void ScreenAIServiceRouter::InitializeServiceIfNeeded(Service service) {
@@ -349,7 +340,6 @@ void ScreenAIServiceRouter::InitializeServiceIfNeeded(Service service) {
               &ScreenAIServiceRouter::InitializeMainContentExtraction,
               weak_ptr_factory_.GetWeakPtr(), request_id,
               main_content_extraction_service_.BindNewPipeAndPassReceiver()));
-      main_content_extraction_service_.reset_on_disconnect();
       break;
 
     case Service::kOCR:
@@ -360,7 +350,6 @@ void ScreenAIServiceRouter::InitializeServiceIfNeeded(Service service) {
           base::BindOnce(&ScreenAIServiceRouter::InitializeOCR,
                          weak_ptr_factory_.GetWeakPtr(), request_id,
                          ocr_service_.BindNewPipeAndPassReceiver()));
-      ocr_service_.reset_on_disconnect();
       break;
   }
 }
@@ -444,18 +433,6 @@ bool ScreenAIServiceRouter::IsConnectionBoundForTesting(Service service) {
       return main_content_extraction_service_.is_bound();
     case Service::kOCR:
       return ocr_service_.is_bound();
-  }
-}
-
-bool ScreenAIServiceRouter::IsProcessRunningForTesting() {
-  return screen_ai_service_factory_.is_bound();
-}
-
-void ScreenAIServiceRouter::ShutDownIfNoClients() {
-  if (screen_ai_service_factory_.is_bound()) {
-    screen_ai_service_factory_->ShutDownIfNoClients();
-  } else {
-    idle_checking_timer_.reset();
   }
 }
 
