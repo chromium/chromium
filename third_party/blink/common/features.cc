@@ -878,6 +878,13 @@ BASE_FEATURE(kFencedFramesReportEventHeaderChanges,
              "FencedFramesReportEventHeaderChanges",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a bug fix that allows a 'src' allowlist in the |allow| parameter of a
+// <fencedframe> or <iframe> loaded with a FencedFrameConfig to behave as
+// expected. See: https://crbug.com/349080952
+BASE_FEATURE(kFencedFramesSrcPermissionsPolicy,
+             "FencedFramesSrcPermissionsPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls access to an API to exempt certain URLs from fenced frame
 // network revocation to facilitate testing.
 BASE_FEATURE(kExemptUrlFromNetworkRevocationForTesting,
