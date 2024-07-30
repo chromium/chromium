@@ -344,7 +344,8 @@ VISIT_PROTO_FIELDS(const sync_pb::ChromiumExtensionsActivity& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::CollaborationGroupSpecifics& proto) {
   VISIT(collaboration_id);
-  VISIT(last_updated_timestamp_millis_since_unix_epoch);
+  VISIT(changed_at_timestamp_millis_since_unix_epoch);
+  VISIT(consistency_token);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ComparisonData& proto) {

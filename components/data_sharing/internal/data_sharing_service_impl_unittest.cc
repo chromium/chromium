@@ -47,7 +47,7 @@ sync_pb::CollaborationGroupSpecifics MakeCollaborationGroupSpecifics(
     const GroupId& id) {
   sync_pb::CollaborationGroupSpecifics result;
   result.set_collaboration_id(id.value());
-  result.set_last_updated_timestamp_millis_since_unix_epoch(
+  result.set_changed_at_timestamp_millis_since_unix_epoch(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   return result;
 }

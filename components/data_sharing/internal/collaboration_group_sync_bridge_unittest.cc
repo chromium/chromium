@@ -40,11 +40,11 @@ using testing::UnorderedElementsAre;
 
 sync_pb::CollaborationGroupSpecifics MakeSpecifics(
     const GroupId& id,
-    const base::Time& last_update = base::Time::Now()) {
+    const base::Time& changed_at = base::Time::Now()) {
   sync_pb::CollaborationGroupSpecifics result;
   result.set_collaboration_id(id.value());
-  result.set_last_updated_timestamp_millis_since_unix_epoch(
-      last_update.InMillisecondsSinceUnixEpoch());
+  result.set_changed_at_timestamp_millis_since_unix_epoch(
+      changed_at.InMillisecondsSinceUnixEpoch());
   return result;
 }
 
@@ -239,7 +239,7 @@ TEST_F(CollaborationGroupSyncBridgeTest,
   const GroupId id3("id3");
   const sync_pb::CollaborationGroupSpecifics specifics3 =
       MakeSpecifics(id3, base::Time::FromMillisecondsSinceUnixEpoch(3000));
-  specifics2.set_last_updated_timestamp_millis_since_unix_epoch(4000);
+  specifics2.set_changed_at_timestamp_millis_since_unix_epoch(4000);
 
   syncer::EntityChangeList incremental_changes;
   incremental_changes.push_back(EntityChangeDeleteFromSpecifics(specifics1));
