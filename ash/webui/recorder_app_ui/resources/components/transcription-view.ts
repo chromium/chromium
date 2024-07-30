@@ -22,8 +22,8 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {computed, signal} from '../core/reactive/signal.js';
-import {TextPart, TextToken} from '../core/soda/soda.js';
+import {signal} from '../core/reactive/signal.js';
+import {TextPart, Transcription} from '../core/soda/soda.js';
 import {
   assert,
   assertExists,
@@ -196,24 +196,12 @@ export class TranscriptionView extends ReactiveLitElement {
   `;
 
   static override properties: PropertyDeclarations = {
-    textTokens: {attribute: false},
+    transcription: {attribute: false},
     currentTime: {type: Number},
     seekable: {type: Boolean},
   };
 
-  textTokens: TextToken[] = [];
-
-  private readonly textTokensSignal = this.propSignal('textTokens');
-
-  private readonly speakerLabels = computed(() => {
-    const speakerLabels = new Set<string>();
-    for (const token of this.textTokensSignal.value) {
-      if (token.kind === 'textPart' && token.speakerLabel !== null) {
-        speakerLabels.add(token.speakerLabel);
-      }
-    }
-    return Array.from(speakerLabels);
-  });
+  transcription: Transcription|null = null;
 
   currentTime: number|null = null;
 
@@ -374,26 +362,29 @@ export class TranscriptionView extends ReactiveLitElement {
     );
   }
 
-  private renderSpeakerLabel(speakerLabel: string|null) {
+  private renderSpeakerLabel(
+    speakerLabels: string[],
+    speakerLabel: string|null,
+  ) {
     if (speakerLabel === null) {
       return nothing;
     }
     const speakerLabelId =
-      this.speakerLabels.value.indexOf(speakerLabel) % MAX_SPEAKER_COLORS;
+      speakerLabels.indexOf(speakerLabel) % MAX_SPEAKER_COLORS;
     assert(speakerLabelId !== -1);
     return html`<div class="speaker-label speaker-${speakerLabelId + 1}">
       Speaker ${speakerLabel}
     </div>`;
   }
 
-  private renderParagraph(parts: TextPart[]) {
+  private renderParagraph(speakerLabels: string[], parts: TextPart[]) {
     // TODO: b/341014241 - Better heuristic for cutting sentences.
     const sentences = sliceWhen(parts, ({text}) => {
       return text.endsWith('.') || text.endsWith('?') || text.endsWith('!');
     });
     const {speakerLabel} = assertExists(parts[0]);
     return [
-      this.renderSpeakerLabel(speakerLabel),
+      this.renderSpeakerLabel(speakerLabels, speakerLabel),
       repeat(
         sentences,
         (_v, i) => i,
@@ -435,7 +426,13 @@ export class TranscriptionView extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    const paragraphs = sliceWhen(this.textTokens, (a, b) => {
+    if (this.transcription === null) {
+      return nothing;
+    }
+
+    const speakerLabels = this.transcription.getSpeakerLabels();
+
+    const paragraphs = sliceWhen(this.transcription.textTokens, (a, b) => {
       if (a.kind === 'textSeparator' || b.kind === 'textSeparator') {
         return true;
       }
@@ -485,13 +482,15 @@ export class TranscriptionView extends ReactiveLitElement {
               ${startTimeDisplay}
               <md-focus-ring></md-focus-ring>
             </span>
-            <div class="paragraph">${this.renderParagraph(parts)}</div>
+            <div class="paragraph">
+              ${this.renderParagraph(speakerLabels, parts)}
+            </div>
           </div>
         `;
       },
     );
 
-    const numSpeakers = this.speakerLabels.value.length;
+    const numSpeakers = speakerLabels.length;
     let speakerNumClass: string;
     if (numSpeakers <= 1) {
       speakerNumClass = 'speaker-single';

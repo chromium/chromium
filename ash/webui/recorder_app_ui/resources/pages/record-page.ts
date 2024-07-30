@@ -409,7 +409,7 @@ export class RecordPage extends ReactiveLitElement {
       durationMs: Math.round(session.progress.value.length * 1000),
       recordedAt: Date.now(),
       powers: session.progress.value.powers,
-      textTokens: session.progress.value.textTokens,
+      transcription: session.progress.value.transcription,
     };
     const id = await this.recordingDataManager.createRecording(
       params,
@@ -513,11 +513,11 @@ export class RecordPage extends ReactiveLitElement {
     // TODO: b/344789835 - Add state when transcription is disabled.
     // TODO: b/336963138 - Animation while opening/closing the panel.
     const session = this.recordingSession.value;
-    const {textTokens} = session.progress.value;
-    if (textTokens !== null && textTokens.length > 0) {
+    const {transcription} = session.progress.value;
+    if (transcription !== null && !transcription.isEmpty()) {
       // If there are existing transcription, it is always shown even if the
       // transcription is disabled afterwards.
-      return html`<transcription-view .textTokens=${textTokens}>
+      return html`<transcription-view .transcription=${transcription}>
       </transcription-view>`;
     }
 

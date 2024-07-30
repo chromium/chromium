@@ -309,14 +309,13 @@ export class PlaybackPage extends ReactiveLitElement {
     await this.audio.play();
   });
 
-  private readonly textTokens = new ScopedAsyncComputed(this, async () => {
+  private readonly transcription = new ScopedAsyncComputed(this, async () => {
     if (this.recordingIdSignal.value === null) {
       return null;
     }
-    const {textTokens} = await this.recordingDataManager.getTranscription(
+    return this.recordingDataManager.getTranscription(
       this.recordingIdSignal.value,
     );
-    return textTokens;
   });
 
   private readonly powers = new ScopedAsyncComputed(this, async () => {
@@ -406,11 +405,11 @@ export class PlaybackPage extends ReactiveLitElement {
   }
 
   private renderTranscription() {
-    const textTokens = this.textTokens.value;
-    if (textTokens === null) {
+    const transcription = this.transcription.value;
+    if (transcription === null) {
       return nothing;
     }
-    if (textTokens.length === 0) {
+    if (transcription.isEmpty()) {
       return html`<div id="transcription-empty">
         <cra-image name="transcription_no_speech"></cra-image>
         ${i18n.transcriptionNoSpeechText}
@@ -418,12 +417,12 @@ export class PlaybackPage extends ReactiveLitElement {
     }
     // TODO: b/336963138 - Animation while opening/closing the panel.
     return html`<transcription-view
-      .textTokens=${textTokens}
+      .transcription=${transcription}
       @word-clicked=${this.onWordClick}
       .currentTime=${this.currentTime.value}
       seekable
     >
-      <summarization-view .textTokens=${textTokens}></summarization-view>
+      <summarization-view .transcription=${transcription}></summarization-view>
     </transcription-view>`;
   }
 
@@ -501,7 +500,7 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private renderHeader() {
     const transcriptionToggleButton =
-      this.textTokens.value === null ? nothing : html`
+      this.transcription.value === null ? nothing : html`
             <cra-icon-button
               buttonstyle="toggle"
               @click=${this.toggleTranscription}

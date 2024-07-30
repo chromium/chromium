@@ -25,7 +25,7 @@ import {usePlatformHandler} from '../core/lit/context.js';
 import {ModelId, ModelResponse} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
-import {concatTextTokens, TextToken} from '../core/soda/soda.js';
+import {Transcription} from '../core/soda/soda.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
 import {assertExhaustive} from '../core/utils/assert.js';
 
@@ -154,10 +154,10 @@ export class SummarizationView extends ReactiveLitElement {
   `;
 
   static override properties: PropertyDeclarations = {
-    textTokens: {attribute: false},
+    transcription: {attribute: false},
   };
 
-  textTokens: TextToken[] = [];
+  transcription: Transcription|null = null;
 
   // TODO(pihsun): Store the summarization in metadata.
   // TODO(pihsun): Reset summarization when textTokens changes? Probably
@@ -188,7 +188,7 @@ export class SummarizationView extends ReactiveLitElement {
   private async requestSummary() {
     this.summaryRequested.value = true;
     this.summaryOpened.value = true;
-    const text = concatTextTokens(this.textTokens);
+    const text = this.transcription?.toPlainText() ?? '';
     const model = await this.platformHandler.loadModel(ModelId.SUMMARY);
     try {
       this.summary.value = await model.summarize(text);

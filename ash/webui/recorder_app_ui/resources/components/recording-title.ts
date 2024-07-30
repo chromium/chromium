@@ -30,7 +30,6 @@ import {
 } from '../core/reactive/lit.js';
 import {computed, signal} from '../core/reactive/signal.js';
 import {RecordingMetadata} from '../core/recording_data_manager.js';
-import {concatTextTokens} from '../core/soda/soda.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
 import {assertInstanceof} from '../core/utils/assert.js';
 
@@ -102,14 +101,13 @@ export class RecordingTitle extends ReactiveLitElement {
 
   private readonly platformHandler = usePlatformHandler();
 
-  private readonly textTokens = new ScopedAsyncComputed(this, async () => {
+  private readonly transcription = new ScopedAsyncComputed(this, async () => {
     if (this.recordingMetadataSignal.value === null) {
       return null;
     }
-    const {textTokens} = await this.recordingDataManager.getTranscription(
+    return this.recordingDataManager.getTranscription(
       this.recordingMetadataSignal.value.id,
     );
-    return textTokens;
   });
 
   private readonly shouldShowTitleSuggestion = computed(() => {
@@ -119,7 +117,7 @@ export class RecordingTitle extends ReactiveLitElement {
     return (
       modelState.value.kind === 'installed' &&
       settings.value.summaryEnabled === SummaryEnableState.ENABLED &&
-      this.textTokens.value !== null && this.textTokens.value.length > 0
+      this.transcription.value !== null && !this.transcription.value.isEmpty()
     );
   });
 
@@ -130,10 +128,12 @@ export class RecordingTitle extends ReactiveLitElement {
         !this.shouldShowTitleSuggestion.value) {
       return null;
     }
-    if (this.textTokens.value === null) {
+    if (this.transcription.value === null) {
       return null;
     }
-    const text = concatTextTokens(this.textTokens.value);
+    // TODO(pihsun): Have a specific format for transcription to be used as
+    // model input.
+    const text = this.transcription.value.toPlainText();
     const model = await this.platformHandler.loadModel(
       ModelId.GEMINI_XXS_IT_BASE,
     );

@@ -548,6 +548,33 @@ function createIntersectionSchema<const T extends SchemaArray>(
   });
 }
 
+function createTransformSchema<T, I, NewT>(
+  schema: Schema<T, I>,
+  {
+    test,
+    decode,
+    encode,
+  }: {
+    test: (input: unknown) => input is NewT,
+    decode: (val: T) => NewT,
+    encode: (val: NewT) => T,
+  },
+): Schema<NewT, I> {
+  return new Schema({
+    test,
+    decode(input, ctx) {
+      const val = schema.decode(input, ctx);
+      if (val === DECODE_ERROR) {
+        return DECODE_ERROR;
+      }
+      return decode(val);
+    },
+    encode(val) {
+      return schema.encode(encode(val));
+    },
+  });
+}
+
 /**
  * A minimal Zod-like interface.
  */
@@ -566,4 +593,5 @@ export const z = {
   'object': createObjectSchema,
   'union': createUnionSchema,
   'intersection': createIntersectionSchema,
+  'transform': createTransformSchema,
 };

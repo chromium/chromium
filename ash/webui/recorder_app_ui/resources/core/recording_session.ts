@@ -9,7 +9,7 @@ import {
 } from './audio_constants.js';
 import {PlatformHandler} from './platform_handler.js';
 import {computed, effect, signal} from './reactive/signal.js';
-import {SodaEventTransformer, TextToken} from './soda/soda.js';
+import {SodaEventTransformer, Transcription} from './soda/soda.js';
 import {SodaSession} from './soda/types.js';
 import {
   assert,
@@ -41,7 +41,7 @@ interface RecordingProgress {
   powers: number[];
   // Transcription of the ongoing recording. null if transcription is never
   // enabled throughout the recording.
-  textTokens: TextToken[]|null;
+  transcription: Transcription|null;
 }
 
 function getMicrophoneStream(micId: string): Promise<MediaStream> {
@@ -88,7 +88,7 @@ export class RecordingSession {
 
   private readonly powers = signal<number[]>([]);
 
-  private readonly textTokens = signal<TextToken[]|null>(null);
+  private readonly transcription = signal<Transcription|null>(null);
 
   private processedSamples = 0;
 
@@ -98,7 +98,7 @@ export class RecordingSession {
     return {
       length,
       powers,
-      textTokens: this.textTokens.value,
+      transcription: this.transcription.value,
     };
   });
 
@@ -188,8 +188,8 @@ export class RecordingSession {
       if (this.currentSodaSession !== null) {
         return;
       }
-      if (this.textTokens.value === null) {
-        this.textTokens.value = [];
+      if (this.transcription.value === null) {
+        this.transcription.value = new Transcription([]);
       }
       await this.ensureSodaInstalled();
       // Abort current running job if there's a new enable/disable request.
@@ -203,7 +203,7 @@ export class RecordingSession {
           ev,
           assertExists(this.currentSodaSession).startOffsetMs,
         );
-        this.textTokens.value = this.sodaEventTransformer.getTokens();
+        this.transcription.value = this.sodaEventTransformer.getTranscription();
       });
       this.currentSodaSession = {
         session,
