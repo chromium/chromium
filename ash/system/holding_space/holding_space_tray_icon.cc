@@ -161,14 +161,6 @@ void HoldingSpaceTrayIcon::Clear() {
   SetPreferredSize(CalculatePreferredSize({}));
 }
 
-int HoldingSpaceTrayIcon::GetHeightForWidth(int width) const {
-  // The parent for this view (`TrayContainer`) uses a `BoxLayout` for its
-  // `LayoutManager`. When the shelf orientation is vertical, the `BoxLayout`
-  // will also have vertical orientation and will invoke `GetHeightForWidth()`
-  // instead of `GetPreferredSize()` when determining preferred size.
-  return GetPreferredSize(views::SizeBounds(width, {})).height();
-}
-
 gfx::Size HoldingSpaceTrayIcon::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int num_visible_previews =

@@ -258,11 +258,11 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
   }
 
   // views::View:
-  int GetHeightForWidth(int width) const override {
-    DCHECK_EQ(width, kTrayMenuWidth);
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     if (current_layout_.host_size.IsEmpty())
       current_layout_ = layout_manager_.CalculateProposedLayout();
-    return current_layout_.host_size.height();
+    return current_layout_.host_size;
   }
 
   void ViewHierarchyChanged(

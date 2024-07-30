@@ -116,11 +116,7 @@ class FilesAppChip : public views::Button {
       const views::SizeBounds& available_size) const override {
     const int width =
         views::Button::CalculatePreferredSize(available_size).width();
-    return gfx::Size(width, GetHeightForWidth(width));
-  }
-
-  int GetHeightForWidth(int width) const override {
-    return kFilesAppChipHeight;
+    return gfx::Size(width, kFilesAppChipHeight);
   }
 
   void OnThemeChanged() override {
