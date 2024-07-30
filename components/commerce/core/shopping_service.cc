@@ -763,14 +763,6 @@ void ShoppingService::GetDiscountInfoForUrls(const std::vector<GURL>& urls,
   }
 }
 
-bool ShoppingService::HasDiscountShownBefore(uint64_t discount_id) {
-  return shown_discount_ids_.contains(discount_id);
-}
-
-void ShoppingService::ShownDiscount(uint64_t discount_id) {
-  shown_discount_ids_.insert(discount_id);
-}
-
 void ShoppingService::GetProductSpecificationsForUrls(
     const std::vector<GURL>& urls,
     ProductSpecificationsCallback callback) {

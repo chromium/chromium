@@ -426,10 +426,6 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   virtual ClusterManager* GetClusterManager();
 
-  // Return whether the |discount_id| has been shown before.
-  virtual bool HasDiscountShownBefore(uint64_t discount_id);
-  // Called after showing the DiscountInfo with the |discount_id|.
-  void ShownDiscount(uint64_t discount_id);
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 
@@ -670,10 +666,6 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   // The object handling discounts storage.
   std::unique_ptr<DiscountsStorage> discounts_storage_;
-
-  // This set includes the unique id of shown discounts in the current browser
-  // context. It serves as a cross-tab status tracker for the discounts UI.
-  base::flat_set<uint64_t> shown_discount_ids_;
 
   // Object for tracking parcel status.
   std::unique_ptr<ParcelsManager> parcels_manager_;

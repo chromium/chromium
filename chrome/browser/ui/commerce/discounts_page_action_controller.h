@@ -21,6 +21,7 @@ class DiscountsPageActionController : public CommercePageActionController {
   static constexpr char kDiscountsShownDataKey[] =
       "commerce.discounts_shown_data";
   struct DiscountsShownData : public base::SupportsUserData::Data {
+    base::flat_set<uint64_t> shown_discount_ids;
     base::flat_set<std::string> discount_shown_on_domains;
 
     DiscountsShownData();

@@ -284,30 +284,27 @@ TEST_F(DiscountsPageActionControllerUnittest, ShouldAlwaysAutoShow) {
 }
 
 TEST_F(DiscountsPageActionControllerUnittest, ShouldAutoShowOnce) {
+  constexpr uint64_t discount_id_1 = 123;
+  constexpr uint64_t discount_id_2 = 456;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       {GetAutoShownOnceBubbleParam()},
       /*disabled_features=*/{});
   shopping_service_->SetIsDiscountEligibleToShowOnNavigation(true);
   base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
-  EXPECT_CALL(*shopping_service_, HasDiscountShownBefore(testing::_))
-      .Times(2)
-      .WillRepeatedly(testing::Return(false));
-  ;
 
   DiscountsPageActionController controller(callback, shopping_service_.get());
-  EXPECT_TRUE(controller.ShouldAutoShowBubble(/*discount_id=*/123,
+  EXPECT_TRUE(controller.ShouldAutoShowBubble(discount_id_1,
                                               /*is_merchant_wide=*/false));
-  EXPECT_TRUE(controller.ShouldAutoShowBubble(/*discount_id=*/456,
+  EXPECT_TRUE(controller.ShouldAutoShowBubble(discount_id_2,
                                               /*is_merchant_wide=*/true));
+  // Simulate |discount_id_1| and |discount_id_2| has been shown.
+  controller.DiscountsBubbleShown(discount_id_1);
+  controller.DiscountsBubbleShown(discount_id_2);
 
-  EXPECT_CALL(*shopping_service_, HasDiscountShownBefore(testing::_))
-      .Times(2)
-      .WillRepeatedly(testing::Return(true));
-  ;
-  EXPECT_FALSE(controller.ShouldAutoShowBubble(/*discount_id=*/123,
+  EXPECT_FALSE(controller.ShouldAutoShowBubble(discount_id_1,
                                                /*is_merchant_wide=*/false));
-  EXPECT_FALSE(controller.ShouldAutoShowBubble(/*discount_id=*/456,
+  EXPECT_FALSE(controller.ShouldAutoShowBubble(discount_id_2,
                                                /*is_merchant_wide=*/true));
 }
 

@@ -146,7 +146,6 @@ class MockShoppingService : public commerce::ShoppingService {
               (),
               (override));
   MOCK_METHOD(ClusterManager*, GetClusterManager, (), (override));
-  MOCK_METHOD(bool, HasDiscountShownBefore, (uint64_t), (override));
 
   // Make this mock permissive for all features but default to providing empty
   // data for all accessors of shopping data.

@@ -152,11 +152,14 @@ bool DiscountsPageActionController::ShouldAutoShowBubble(
                             commerce::kNonMerchantWideBehavior.Get());
 
   switch (behavior) {
-    case commerce::DiscountDialogAutoPopupBehavior::kAutoPopupOnce:
-      if (shopping_service_->HasDiscountShownBefore(discount_id)) {
+    case commerce::DiscountDialogAutoPopupBehavior::kAutoPopupOnce: {
+      DiscountsShownData* shown_data =
+          DiscountsPageActionController::GetOrCreate(shopping_service_);
+      if (shown_data->shown_discount_ids.contains(discount_id)) {
         return false;
       }
       return true;
+    }
     case commerce::DiscountDialogAutoPopupBehavior::kAlwaysAutoPopup:
       return true;
     case commerce::DiscountDialogAutoPopupBehavior::kNoAutoPopup:
@@ -165,8 +168,9 @@ bool DiscountsPageActionController::ShouldAutoShowBubble(
 }
 
 void DiscountsPageActionController::DiscountsBubbleShown(uint64_t discount_id) {
-  // TODO(b/355346170): Migrate to use UserData instead.
-  shopping_service_->ShownDiscount(discount_id);
+  DiscountsShownData* shown_data =
+      DiscountsPageActionController::GetOrCreate(shopping_service_);
+  shown_data->shown_discount_ids.insert(discount_id);
 }
 
 }  // namespace commerce

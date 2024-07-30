@@ -1997,14 +1997,6 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutDiscountCode) {
   run_loop.Run();
 }
 
-TEST_P(ShoppingServiceTest, TestShowDiscount) {
-  ASSERT_FALSE(shopping_service_->HasDiscountShownBefore(kDiscountId1));
-
-  // Show the discount
-  shopping_service_->ShownDiscount(kDiscountId1);
-  EXPECT_TRUE(shopping_service_->HasDiscountShownBefore(kDiscountId1));
-}
-
 INSTANTIATE_TEST_SUITE_P(All, ShoppingServiceTest, ::testing::Bool());
 
 }  // namespace commerce
