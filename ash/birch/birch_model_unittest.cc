@@ -50,8 +50,9 @@ std::vector<BirchFileItem> MakeFileItemList(int item_count) {
   std::vector<BirchFileItem> file_item_list;
   for (int i = 0; i < item_count; i++) {
     file_item_list.emplace_back(
-        base::FilePath("test path " + base::NumberToString(i)), u"suggestion",
-        base::Time(), "file_id_" + base::NumberToString(i), "icon_url");
+        base::FilePath("test path " + base::NumberToString(i)), "title",
+        u"suggestion", base::Time(), "file_id_" + base::NumberToString(i),
+        "icon_url");
   }
   return file_item_list;
 }
@@ -1532,8 +1533,9 @@ TEST_F(BirchModelTest, RemoveFileItemNotifiesBirchClient) {
   BirchModel* model = Shell::Get()->birch_model();
 
   std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("/test/path"), u"suggestion",
-                              base::Time(), "file_id_0", "icon_url");
+  file_item_list.emplace_back(base::FilePath("/test/path"), "title",
+                              u"suggestion", base::Time(), "file_id_0",
+                              "icon_url");
   model->SetFileSuggestItems(file_item_list);
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
@@ -1576,12 +1578,12 @@ TEST_F(BirchModelTest, DuplicateFileAndAttachmentItem) {
 
   std::vector<BirchFileItem> file_item_list;
   file_item_list.emplace_back(
-      base::FilePath("Recently Edited File 1"),
+      base::FilePath("Recently Edited File 1"), "title_1",
       /*justification=*/u"",
       /*timestamp=*/base::Time(TimeFromString("22 Feb 2024 3:00 UTC")),
       /*file_id=*/"duplicate_file_id_1", "icon_url");
   file_item_list.emplace_back(
-      base::FilePath("Recently Edited File 2"),
+      base::FilePath("Recently Edited File 2"), "recently_edited_title_2",
       /*justification=*/u"",
       /*timestamp=*/base::Time(TimeFromString("22 Feb 2024 3:00 UTC")),
       /*file_id=*/"duplicate_file_id_2", "icon_url");
@@ -1594,7 +1596,7 @@ TEST_F(BirchModelTest, DuplicateFileAndAttachmentItem) {
   EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kAttachment);
   EXPECT_EQ(all_items[0]->title(), u"Ongoing Event Attachment 1");
   EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kFile);
-  EXPECT_EQ(all_items[1]->title(), u"Recently Edited File 2");
+  EXPECT_EQ(all_items[1]->title(), u"recently_edited_title_2");
 }
 
 TEST_F(BirchModelTest, DuplicateSelfShareAndRecentTabItem) {

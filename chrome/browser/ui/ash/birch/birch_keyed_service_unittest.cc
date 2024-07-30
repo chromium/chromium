@@ -672,6 +672,7 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider) {
       FileSuggestionType::kDriveFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kDriveFile, file_path_1,
+           /*title=*/std::nullopt,
            /*new_prediction_reason=*/std::nullopt,
            /*modified_time=*/std::nullopt,
            /*viewed_time=*/std::nullopt,
@@ -680,6 +681,7 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider) {
            /*drive_file_id=*/std::nullopt,
            /*icon_url=*/std::nullopt},
           {FileSuggestionType::kDriveFile, file_path_2,
+           /*title=*/std::nullopt,
            /*new_prediction_reason=*/std::nullopt,
            /*modified_time=*/std::nullopt,
            /*viewed_time=*/std::nullopt,
@@ -734,6 +736,7 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider_NoFilesAvailable) {
       FileSuggestionType::kDriveFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kDriveFile, file_path_1,
+           /*title=*/std::nullopt,
            /*new_prediction_reason=*/std::nullopt,
            /*modified_time=*/std::nullopt,
            /*viewed_time=*/std::nullopt,

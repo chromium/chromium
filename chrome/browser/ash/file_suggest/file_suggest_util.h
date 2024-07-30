@@ -71,6 +71,7 @@ double ToTimestampBasedScore(const FileSuggestData& suggestion_data,
 struct FileSuggestData {
   FileSuggestData(FileSuggestionType new_type,
                   const base::FilePath& new_file_path,
+                  const std::optional<std::string>& title,
                   const std::optional<std::u16string>& new_prediction_reason,
                   const std::optional<base::Time>& modified_time,
                   const std::optional<base::Time>& viewed_time,
@@ -88,6 +89,11 @@ struct FileSuggestData {
 
   // The path to the suggested file.
   base::FilePath file_path;
+
+  // The title of the file. The title can contain path separators like "/",
+  // which is the reason that this title member is used instead of the file name
+  // in `file_path`.
+  std::optional<std::string> title;
 
   // The suggestion id. Calculated from `type` and `file_path`.
   std::string id;

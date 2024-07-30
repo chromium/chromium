@@ -67,7 +67,7 @@ void BirchFileSuggestProvider::OnSuggestedFileDataUpdated(
     timestamp =
         std::max(timestamp, suggestion.shared_time.value_or(base::Time()));
 
-    file_items.emplace_back(suggestion.file_path,
+    file_items.emplace_back(suggestion.file_path, suggestion.title,
                             suggestion.prediction_reason.value_or(u""),
                             timestamp, suggestion.drive_file_id.value_or(""),
                             suggestion.icon_url.value_or(""));

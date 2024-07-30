@@ -262,6 +262,7 @@ TEST_F(ZeroStateDriveProviderTest, RespondOnSuggestDataFetched) {
         drive_fs_mount_point_.get()->CreateArbitraryFile();
     suggestions.emplace_back(ash::FileSuggestionType::kDriveFile,
                              suggested_file_path,
+                             /*title=*/std::nullopt,
                              /*new_prediction_reason=*/std::nullopt,
                              /*modified_time=*/std::nullopt,
                              /*viewed_time=*/std::nullopt,

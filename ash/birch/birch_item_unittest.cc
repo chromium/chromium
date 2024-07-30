@@ -397,16 +397,23 @@ TEST_F(BirchItemTest, Attachment_Subtitle_Upcoming) {
 }
 
 TEST_F(BirchItemTest, File_TitleDoesNotShowFileExtension) {
-  BirchFileItem item(base::FilePath("/path/to/file.gdoc"), u"suggested",
-                     base::Time(), "id_1", "icon_url");
+  BirchFileItem item(base::FilePath("/path/to/file.gdoc"), std::nullopt,
+                     u"suggested", base::Time(), "id_1", "icon_url");
   // The title does not contain the ".gdoc" extension.
   EXPECT_EQ(u"file", item.title());
 }
 
+TEST_F(BirchItemTest, File_Title) {
+  BirchFileItem item(base::FilePath("/path/to/file.gdoc"), "file_title",
+                     u"suggested", base::Time(), "id_1", "icon_url");
+  // When set, the title will take precedence over the file path.
+  EXPECT_EQ(u"file_title", item.title());
+}
+
 TEST_F(BirchItemTest, File_PerformAction) {
-  BirchFileItem item(base::FilePath("file_path"), u"suggested", base::Time(),
-                     "id_1", "icon_url");
-  EXPECT_EQ(u"file_path", item.title());
+  BirchFileItem item(base::FilePath("file_path"), "title", u"suggested",
+                     base::Time(), "id_1", "icon_url");
+  EXPECT_EQ(u"title", item.title());
   EXPECT_EQ(u"suggested", item.subtitle());
   EXPECT_EQ("id_1", item.file_id());
 
@@ -417,8 +424,8 @@ TEST_F(BirchItemTest, File_PerformAction) {
 
 TEST_F(BirchItemTest, File_PerformAction_Histograms) {
   base::HistogramTester histograms;
-  BirchFileItem item(base::FilePath("file_path"), u"suggested", base::Time(),
-                     "id_1", "icon_url");
+  BirchFileItem item(base::FilePath("file_path"), "title", u"suggested",
+                     base::Time(), "id_1", "icon_url");
   item.PerformAction();
   histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Activate", BirchItemType::kFile,
@@ -705,8 +712,8 @@ TEST_F(BirchItemIconTest, File_LoadIcon) {
       "https://drive-thirdparty.googleusercontent.com/32/type/application/"
       "vnd.google-apps.document";
 
-  BirchFileItem item(base::FilePath("/path/to/file.gdoc"), u"suggested",
-                     base::Time(), "id_1", icon_url);
+  BirchFileItem item(base::FilePath("/path/to/file.gdoc"), "title",
+                     u"suggested", base::Time(), "id_1", icon_url);
 
   base::test::TestFuture<const ui::ImageModel&, bool> future;
   item.LoadIcon(future.GetCallback());

@@ -129,11 +129,11 @@ TEST_F(BirchItemRemoverTest, RemoveCalendarItem) {
 }
 
 TEST_F(BirchItemRemoverTest, RemoveFileItem) {
-  BirchFileItem item0(base::FilePath(), u"justification", base::Time(),
+  BirchFileItem item0(base::FilePath(), "title", u"justification", base::Time(),
                       "file_id_0", "icon_url");
-  BirchFileItem item1(base::FilePath(), u"justification", base::Time(),
+  BirchFileItem item1(base::FilePath(), "title", u"justification", base::Time(),
                       "file_id_1", "icon_url");
-  BirchFileItem item2(base::FilePath(), u"justification", base::Time(),
+  BirchFileItem item2(base::FilePath(), "title", u"justification", base::Time(),
                       "file_id_2", "icon_url");
   std::vector<BirchFileItem> file_items = {item0, item1, item2};
 

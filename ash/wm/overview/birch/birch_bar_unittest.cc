@@ -404,6 +404,7 @@ class BirchBarTest : public AshTestBase {
     for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(
           /*file_path=*/base::FilePath(base::StringPrintf("test path %lu", i)),
+          "title",
           /*justification=*/u"suggestion",
           /*timestamp=*/base::Time(),
           /*file_id=*/base::StringPrintf("file_id_%lu", i),

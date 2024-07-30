@@ -79,6 +79,7 @@ drivefs::mojom::QueryParametersPtr CreateSharedWithMeQuery() {
 
 FileSuggestData CreateFileSuggestionWithJustification(
     const base::FilePath& path,
+    const std::optional<std::string>& title,
     const std::optional<base::Time>& modified_time,
     const std::optional<base::Time>& viewed_time,
     const std::optional<base::Time>& shared_time,
@@ -86,8 +87,8 @@ FileSuggestData CreateFileSuggestionWithJustification(
     const std::optional<std::string>& drive_file_id,
     const std::optional<std::string>& icon_url) {
   return FileSuggestData(
-      FileSuggestionType::kDriveFile, path, justification_string, modified_time,
-      viewed_time, shared_time,
+      FileSuggestionType::kDriveFile, path, title, justification_string,
+      modified_time, viewed_time, shared_time,
       /*new_score=*/std::nullopt, drive_file_id, /*icon_url=*/icon_url);
 }
 
@@ -123,6 +124,7 @@ std::optional<FileSuggestData> CreateFileSuggestion(
   const base::Time modified_time =
       file_metadata.modified_by_me_time.value_or(base::Time());
   const std::string& icon_url = file_metadata.custom_icon_url;
+  const std::optional<std::string>& title = file_metadata.title;
 
   // If the file was shared with user, but not yet viewed by the user, surface
   // it as a shared file.
@@ -138,8 +140,8 @@ std::optional<FileSuggestData> CreateFileSuggestion(
       sharing_user_name = user_info ? user_info->display_name : "";
     }
     return {CreateFileSuggestionWithJustification(
-        path, /*modified_time=*/std::nullopt, /*viewed_time*/ std::nullopt,
-        *shared_time,
+        path, title, /*modified_time=*/std::nullopt,
+        /*viewed_time*/ std::nullopt, *shared_time,
         app_list::GetJustificationString(
             FileSuggestionJustificationType::kShared, *shared_time,
             sharing_user_name),
@@ -161,7 +163,7 @@ std::optional<FileSuggestData> CreateFileSuggestion(
     }
 
     return CreateFileSuggestionWithJustification(
-        path,
+        path, title,
         /*modified_time=*/std::nullopt, viewed_time,
         /*shared_time=*/std::nullopt,
         CreateSuggestionStatusForNonSharedFile(file_metadata),
@@ -169,7 +171,7 @@ std::optional<FileSuggestData> CreateFileSuggestion(
   }
 
   return CreateFileSuggestionWithJustification(
-      path, modified_time, viewed_time, /*shared_time=*/std::nullopt,
+      path, title, modified_time, viewed_time, /*shared_time=*/std::nullopt,
       CreateSuggestionStatusForNonSharedFile(file_metadata),
       file_metadata.item_id, icon_url);
 }

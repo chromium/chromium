@@ -232,6 +232,7 @@ class ASH_EXPORT BirchAttachmentItem : public BirchItem {
 class ASH_EXPORT BirchFileItem : public BirchItem {
  public:
   BirchFileItem(const base::FilePath& file_path,
+                const std::optional<std::string>& title,
                 const std::u16string& justification,
                 base::Time timestamp,
                 const std::string& file_id,
@@ -255,7 +256,8 @@ class ASH_EXPORT BirchFileItem : public BirchItem {
   const base::FilePath& file_path() const { return file_path_; }
 
  private:
-  static std::u16string GetTitle(const base::FilePath& file_path);
+  static std::u16string GetTitle(const base::FilePath& file_path,
+                                 const std::optional<std::string>& title);
 
   // A unique file id which is used to identify file type items, specifically
   // BirchFileItem and BirchAttachmentItem.

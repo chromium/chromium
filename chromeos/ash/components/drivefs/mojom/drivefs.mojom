@@ -456,7 +456,7 @@ struct UserInfo {
   string display_name;
 };
 
-// Next MinVersion: 10
+// Next MinVersion: 11
 struct FileMetadata {
   [Extensible] enum Type {
     // A regular file.
@@ -552,6 +552,9 @@ struct FileMetadata {
   // metadata was last fetched with Drive FS configured using
   // false fetch_sharing_user_metadata value.
   [MinVersion=9] UserInfo? sharing_user;
+
+  // The title of the file.
+  [MinVersion=10] string? title;
 };
 
 // Details relating to the target item that a shortcut refers to.

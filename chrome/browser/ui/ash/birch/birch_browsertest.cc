@@ -118,7 +118,7 @@ class TestFileSuggestProvider : public BirchDataProvider {
   // BirchDataProvider:
   void RequestBirchDataFetch() override {
     std::vector<BirchFileItem> items;
-    items.emplace_back(base::FilePath("test-path"), u"suggestion",
+    items.emplace_back(base::FilePath("test-path"), "title", u"suggestion",
                        base::Time::Now() - base::Minutes(30), "file_id",
                        "icon_url");
     Shell::Get()->birch_model()->SetFileSuggestItems(std::move(items));

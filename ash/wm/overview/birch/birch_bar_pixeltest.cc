@@ -56,7 +56,7 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
       break;
     case BirchItemType::kFile:
       items.push_back(std::make_unique<BirchFileItem>(
-          /*file_path=*/base::FilePath("test path"),
+          /*file_path=*/base::FilePath("test path"), /*title=*/std::nullopt,
           /*justification=*/u"suggestion",
           /*timestamp=*/base::Time(),
           /*file_id=*/"file_id_0",
