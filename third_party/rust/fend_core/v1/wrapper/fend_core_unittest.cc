@@ -120,6 +120,38 @@ INSTANTIATE_TEST_SUITE_P(
             .query = "10 kB to kb",
             .expected = "80 kb",
         },
+
+        {
+            .name = "PercentSymbol",
+            .query = "11/12*100%",
+            .expected = "91.66%",
+        },
+        {
+            .name = "MultiplePercent",
+            .query = "50% * 50%",
+            .expected = "25%",
+        },
+        {
+            .name = "DivideByPercent",
+            .query = "1 / (80%)",
+            .expected = "1.25",
+        },
+
+        {
+            .name = "UppercaseLog",
+            .query = "LOG 10",
+            .expected = "1",
+        },
+        {
+            .name = "UppercaseExp",
+            .query = "EXP 0",
+            .expected = "1",
+        },
+        {
+            .name = "UppercaseSin",
+            .query = "SIN pi",
+            .expected = "0",
+        },
     }),
     [](const testing::TestParamInfo<FendCoreTestCase> &info) {
       return info.param.name;
@@ -218,40 +250,6 @@ INSTANTIATE_TEST_SUITE_P(
             .name = "UnitHalfFraction",
             .query = "3 half / 2 m",
             .expected = "0.75 m",
-        },
-
-        // TODO: b/342481033 - Support % better.
-        {
-            .name = "PercentSymbol",
-            .query = "11/12*100%",
-            .expected = "0.91",
-        },
-        {
-            .name = "MultiplePercent",
-            .query = "50% * 50%",
-            .expected = "0.25",
-        },
-        {
-            .name = "DivideByPercent",
-            .query = "1 / (80%)",
-            .expected = "1.25",
-        },
-
-        // TODO: b/345302335 - Resolve uppercase functions.
-        {
-            .name = "UppercaseLog",
-            .query = "LOG 10",
-            .expected = std::nullopt,
-        },
-        {
-            .name = "UppercaseExp",
-            .query = "EXP 0",
-            .expected = std::nullopt,
-        },
-        {
-            .name = "UppercaseSin",
-            .query = "SIN pi",
-            .expected = std::nullopt,
         },
 
         // Use `+ 0` to ensure a result isn't filtered out.
