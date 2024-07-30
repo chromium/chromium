@@ -3140,7 +3140,11 @@ std::optional<DisplayValidationResult> ValidateDisplayKeywords(
   return result;
 }
 
-void DropDisplayKeywords(DisplayValidationResult& result) {
+// Drop redundant keywords, and update to backward-compatible keywords.
+// e.g. {outside:"block", inside:"flow"} ==> {outside:"block", inside:null}
+//      {outside:"inline", inside:"flow-root"} ==>
+//          {outside:null, inside:"inline-block"}
+void AdjustDisplayKeywords(DisplayValidationResult& result) {
   CSSValueID outside =
       result.outside ? result.outside->GetValueID() : CSSValueID::kInvalid;
   CSSValueID inside =
@@ -3157,6 +3161,21 @@ void DropDisplayKeywords(DisplayValidationResult& result) {
     case CSSValueID::kTable:
       if (outside == CSSValueID::kBlock) {
         result.outside = nullptr;
+      } else if (RuntimeEnabledFeatures::CssDisplaySerialziationFixEnabled() &&
+                 outside == CSSValueID::kInline && !result.list_item) {
+        CSSValueID new_id = CSSValueID::kInvalid;
+        if (inside == CSSValueID::kFlex) {
+          new_id = CSSValueID::kInlineFlex;
+        } else if (inside == CSSValueID::kFlowRoot) {
+          new_id = CSSValueID::kInlineBlock;
+        } else if (inside == CSSValueID::kGrid) {
+          new_id = CSSValueID::kInlineGrid;
+        } else if (inside == CSSValueID::kTable) {
+          new_id = CSSValueID::kInlineTable;
+        }
+        CHECK_NE(new_id, CSSValueID::kInvalid);
+        result.outside = nullptr;
+        result.inside = CSSIdentifierValue::Create(new_id);
       }
       break;
     case CSSValueID::kMath:
@@ -3202,7 +3221,7 @@ const CSSValue* ParseDisplayMultipleKeywords(
     }
   }
 
-  DropDisplayKeywords(*result);
+  AdjustDisplayKeywords(*result);
   CSSValueList* result_list = CSSValueList::CreateSpaceSeparated();
   if (result->outside) {
     result_list->Append(*result->outside);
@@ -3234,9 +3253,12 @@ const CSSValue* Display::ParseSingleValue(CSSParserTokenStream& stream,
 
     // The property has only one keyword (or one keyword and then junk,
     // in which case the caller will abort for us).
-    if (id == CSSValueID::kListItem || IsDisplayBox(id) ||
-        IsDisplayInternal(id) || IsDisplayLegacy(id) || IsDisplayInside(id) ||
-        IsDisplayOutside(id)) {
+    if (RuntimeEnabledFeatures::CssDisplaySerialziationFixEnabled() &&
+        id == CSSValueID::kFlow) {
+      return CSSIdentifierValue::Create(CSSValueID::kBlock);
+    } else if (id == CSSValueID::kListItem || IsDisplayBox(id) ||
+               IsDisplayInternal(id) || IsDisplayLegacy(id) ||
+               IsDisplayInside(id) || IsDisplayOutside(id)) {
       return value;
     } else {
       return nullptr;
