@@ -17,4 +17,7 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="auto_open_synced_tab_groups_switch"
         android:summary="@string/auto_open_synced_tab_groups_summary"/>
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="show_tab_group_creation_dialog_switch"
+        android:summary="@string/tab_group_creation_dialog_show_setting_text"/>
 </PreferenceScreen>

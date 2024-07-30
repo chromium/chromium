@@ -93,7 +93,8 @@ public class TabListEditorGroupAction extends TabListEditorAction {
             tabGroupModelFilter.createSingleTabGroup(tab, /* notify= */ true);
             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
                     && !TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
-                            /* shouldShow= */ true)) {
+                            /* shouldShow= */ TabGroupCreationDialogManager
+                                    .shouldShowGroupCreationDialogViaSettingsSwitch())) {
                 mTabGroupCreationDialogManager.showDialog(tab.getRootId(), tabGroupModelFilter);
             }
             return true;
@@ -128,7 +129,8 @@ public class TabListEditorGroupAction extends TabListEditorAction {
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
                 && willMergingCreateNewGroup
                 && !TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
-                        /* shouldShow= */ true)) {
+                        /* shouldShow= */ TabGroupCreationDialogManager
+                                .shouldShowGroupCreationDialogViaSettingsSwitch())) {
             mTabGroupCreationDialogManager.showDialog(
                     destinationTab.getRootId(), tabGroupModelFilter);
         }

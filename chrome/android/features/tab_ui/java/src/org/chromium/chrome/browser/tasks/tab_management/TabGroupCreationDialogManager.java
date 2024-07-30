@@ -164,4 +164,13 @@ public class TabGroupCreationDialogManager {
             return TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
         }
     }
+
+    /**
+     * Returns whether the group creation dialog should be shown based on the setting switch for
+     * auto showing under tab settings. If it is not enabled, return true since that is the default
+     * case for all callsites.
+     */
+    public static boolean shouldShowGroupCreationDialogViaSettingsSwitch() {
+        return TabGroupModelFilter.shouldShowGroupCreationDialogViaSettingsSwitch();
+    }
 }

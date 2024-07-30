@@ -125,6 +125,7 @@ public class ChromeCachedFlags {
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS,
+                        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING,
                         TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG,
                         TabResumptionModuleUtils.TAB_RESUMPTION_DISABLE_BLEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND,

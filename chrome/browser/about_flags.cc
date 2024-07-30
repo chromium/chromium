@@ -3659,6 +3659,15 @@ const FeatureEntry::FeatureVariation kTabGroupParityAndroidVariations[] = {
     {"Skip tab group creation dialog", kTabGroupParityAndroidSkipCreationDialog,
      std::size(kTabGroupParityAndroidSkipCreationDialog), nullptr}};
 
+const FeatureEntry::FeatureParam kTabGroupCreationDialogAndroidShowSetting[] = {
+    {"show_tab_group_creation_dialog_setting", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kTabGroupCreationDialogAndroidVariations[] = {
+        {"Show tab group creation dialog setting",
+         kTabGroupCreationDialogAndroidShowSetting,
+         std::size(kTabGroupCreationDialogAndroidShowSetting), nullptr}};
+
 const FeatureEntry::FeatureParam kGtsCloseTabAnimationDefault[] = {
     {"skip_removal_delay", "false"}};
 const FeatureEntry::FeatureParam kGtsCloseTabAnimationSkipRemovalDelay[] = {
@@ -10290,7 +10299,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"tab-group-creation-dialog-android",
      flag_descriptions::kTabGroupCreationDialogAndroidName,
      flag_descriptions::kTabGroupCreationDialogAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabGroupCreationDialogAndroid)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kTabGroupCreationDialogAndroid,
+         kTabGroupCreationDialogAndroidVariations,
+         "TabGroupCreationDialogVariations")},
 
     {"tab-group-pane-android", flag_descriptions::kTabGroupPaneAndroidName,
      flag_descriptions::kTabGroupPaneAndroidDescription, kOsAndroid,

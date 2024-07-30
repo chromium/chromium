@@ -490,7 +490,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
                 && willMergingCreateNewGroup
                 && !TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
-                        /* shouldShow= */ true)) {
+                        /* shouldShow= */ TabGroupCreationDialogManager
+                                .shouldShowGroupCreationDialogViaSettingsSwitch())) {
             mTabGroupCreationDialogManager.showDialog(hoveredCard.getRootId(), filter);
         }
 
