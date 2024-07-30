@@ -442,6 +442,43 @@ TEST_F(
 
 // Verifies that the CallbackLayerAnimationObserver is robust to explicit
 // deletes caused as a side effect of calling the AnimationsStartedCallback()
+// when all attached animation sequences detach. This test also guards against
+// heap-use-after-free errors.
+TEST_F(CallbackLayerAnimationObserverTest,
+       ExplicitlyDeleteObserverInAnimationStartedCallbackSequencesDetached) {
+  TestCallbacksThatExplicitlyDeletesObserver callbacks;
+  callbacks.set_should_delete_observer_on_animations_ended(true);
+
+  bool is_destroyed = false;
+
+  std::unique_ptr<TestCallbackLayerAnimationObserver> observer =
+      std::make_unique<TestCallbackLayerAnimationObserver>(
+          base::BindRepeating(&TestCallbacks::AnimationsStarted,
+                              base::Unretained(&callbacks)),
+          base::BindRepeating(&TestCallbacks::AnimationsEnded,
+                              base::Unretained(&callbacks)),
+          &is_destroyed);
+
+  callbacks.set_observer_to_delete_in_animation_started(std::move(observer));
+  CallbackLayerAnimationObserver* observer_ptr =
+      callbacks.observer_to_delete_in_animation_started();
+  LayerAnimationObserverTestApi test_api(observer_ptr);
+
+  LayerAnimationSequence* sequence_1 = CreateLayerAnimationSequence();
+
+  test_api.AttachedToSequence(sequence_1);
+  observer_ptr->SetActive();
+  test_api.DetachedFromSequence(sequence_1, true);
+
+  EXPECT_TRUE(is_destroyed);
+  EXPECT_TRUE(callbacks.animations_started());
+
+  // The observer was destroyed before the end notification could be dispatched.
+  EXPECT_FALSE(callbacks.animations_ended());
+}
+
+// Verifies that the CallbackLayerAnimationObserver is robust to explicit
+// deletes caused as a side effect of calling the AnimationsStartedCallback()
 // when there are some animation sequences attached. This test also guards
 // against heap-use-after-free errors.
 TEST_F(
