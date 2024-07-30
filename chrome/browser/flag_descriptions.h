@@ -3154,6 +3154,21 @@ extern const char kSCTAuditingDescription[];
 extern const char kSmartCardWebApiName[];
 extern const char kSmartCardWebApiDescription[];
 
+extern const char kTabOrganizationName[];
+extern const char kTabOrganizationDescription[];
+
+extern const char kTabOrganizationSettingsVisibilityName[];
+extern const char kTabOrganizationSettingsVisibilityDescription[];
+
+extern const char kMultiTabOrganizationName[];
+extern const char kMultiTabOrganizationDescription[];
+
+extern const char kTabReorganizationName[];
+extern const char kTabReorganizationDescription[];
+
+extern const char kTabReorganizationDividerName[];
+extern const char kTabReorganizationDividerDescription[];
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kSettingsEnableGetTheMostOutOfChromeName[];
 extern const char kSettingsEnableGetTheMostOutOfChromeDescription[];

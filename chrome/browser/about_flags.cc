@@ -11951,6 +11951,33 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(::supervised_user::kClassifyUrlOnProcessResponseEvent)},
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"tab-organization", flag_descriptions::kTabOrganizationName,
+     flag_descriptions::kTabOrganizationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabOrganization)},
+
+    {"tab-organization-settings-visibility",
+     flag_descriptions::kTabOrganizationSettingsVisibilityName,
+     flag_descriptions::kTabOrganizationSettingsVisibilityDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(optimization_guide::features::internal::
+                            kTabOrganizationSettingsVisibility)},
+
+    {"multi-tab-organization", flag_descriptions::kMultiTabOrganizationName,
+     flag_descriptions::kMultiTabOrganizationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kMultiTabOrganization)},
+
+    {"tab-reorganization", flag_descriptions::kTabReorganizationName,
+     flag_descriptions::kTabReorganizationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabReorganization)},
+
+    {"tab-reorganization-divider",
+     flag_descriptions::kTabReorganizationDividerName,
+     flag_descriptions::kTabReorganizationDividerDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabReorganizationDivider)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
