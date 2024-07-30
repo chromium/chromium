@@ -50,11 +50,10 @@ TEST_F(RemotingIceConfigRequestTest, SuccessfulRequest) {
   IceConfig received_config;
   auto mock_on_result = SendRequest(&run_loop, &received_config);
 
-  std::string api_key;
-  ASSERT_TRUE(
+  EXPECT_THAT(
       test_responder_.GetMostRecentPendingRequest().request.headers.GetHeader(
-          "x-goog-api-key", &api_key));
-  EXPECT_FALSE(api_key.empty());
+          "x-goog-api-key"),
+      testing::Optional(testing::Not(testing::IsEmpty())));
 
   // Fill out the response.
   apis::v1::GetIceConfigResponse response;
