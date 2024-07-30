@@ -25,8 +25,8 @@ namespace ash {
 namespace {
 
 const char kInvalidPath[] = "/test/invalid/path";
-const char kTestRootSmds[] = "test.smds";
-const char kTestActivationCode[] = "   abc123   ";
+const char kTestActivationCode[] = "abc123";
+const char kTestActivationCodeWithSpacing[] = "   abc123   ";
 const char kTestConfirmationCode[] = "def456";
 const char kTestEuiccPath[] = "/org/chromium/hermes/Euicc/1";
 const char kTestCarrierProfilePath[] = "/org/chromium/hermes/Profile/1";
@@ -337,6 +337,54 @@ TEST_F(HermesEuiccClientTest, TestInstallProfileFromActivationCode) {
   EXPECT_EQ(dbus_result, dbus::DBusResult::kErrorLimitsExceeded);
 }
 
+// Hermes does not allow leading and trailing whitespace in activation codes; if provided,
+// these spaces can result in unexpected behavior e.g. failing to discover available eSIM
+// profiles that would have been found had the spaces been removed. All activation codes that
+// are provided to Hermes should be sanitized, and this test ensures we correctly handle any
+// activation codes with leading and/or trailing whitespace.
+TEST_F(HermesEuiccClientTest, TestInstallProfileFromActivationCodeWithSpacing) {
+  dbus::ObjectPath test_euicc_path(kTestEuiccPath);
+  dbus::ObjectPath test_carrier_path(kTestCarrierProfilePath);
+  dbus::MethodCall method_call(
+      hermes::kHermesEuiccInterface,
+      hermes::euicc::kInstallProfileFromActivationCode);
+  method_call.SetSerial(123);
+  EXPECT_CALL(*proxy_.get(),
+              DoCallMethodWithErrorResponse(
+                  MatchInstallFromActivationCodeCall(
+                      base::TrimWhitespaceASCII(kTestActivationCodeWithSpacing,
+                                                base::TrimPositions::TRIM_ALL),
+                      kTestConfirmationCode),
+                  _, _))
+      .WillOnce(Invoke(this, &HermesEuiccClientTest::OnMethodCalled));
+
+  HermesResponseStatus install_status;
+  dbus::DBusResult dbus_result;
+  dbus::ObjectPath installed_profile_path(kInvalidPath);
+
+  EXPECT_CALL(*proxy_.get(), DoWaitForServiceToBeAvailable(_))
+      .WillOnce(testing::WithArg<0>(
+          [=](dbus::ObjectProxy::WaitForServiceToBeAvailableCallback*
+                  callback) {
+            std::move(*callback).Run(/*service_is_available=*/true);
+          }));
+
+  // Verify that client makes corresponding dbus method call with
+  // correct arguments.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  dbus::MessageWriter response_writer(response.get());
+  response_writer.AppendObjectPath(test_carrier_path);
+  AddPendingMethodCallResult(std::move(response), nullptr);
+  client_->InstallProfileFromActivationCode(
+      test_euicc_path, kTestActivationCodeWithSpacing, kTestConfirmationCode,
+      base::BindOnce(&CopyInstallResult, &install_status, &dbus_result,
+                     &installed_profile_path));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(install_status, HermesResponseStatus::kSuccess);
+  EXPECT_EQ(dbus_result, dbus::DBusResult::kSuccess);
+  EXPECT_EQ(installed_profile_path, test_carrier_path);
+}
+
 TEST_F(HermesEuiccClientTest, TestInstallPendingProfile) {
   dbus::ObjectPath test_euicc_path(kTestEuiccPath);
   dbus::ObjectPath test_carrier_path(kTestCarrierProfilePath);
@@ -469,7 +517,7 @@ TEST_F(HermesEuiccClientTest, TestRequestPendingProfiles) {
   method_call.SetSerial(123);
   EXPECT_CALL(*proxy_.get(),
               DoCallMethodWithErrorResponse(
-                  MatchRequestPendingProfilesCall(kTestRootSmds), _, _))
+                  MatchRequestPendingProfilesCall(kTestActivationCode), _, _))
       .Times(2)
       .WillRepeatedly(Invoke(this, &HermesEuiccClientTest::OnMethodCalled));
 
@@ -479,7 +527,7 @@ TEST_F(HermesEuiccClientTest, TestRequestPendingProfiles) {
   // correct arguments.
   AddPendingMethodCallResult(dbus::Response::CreateEmpty(), nullptr);
   client_->RequestPendingProfiles(
-      test_euicc_path, kTestRootSmds,
+      test_euicc_path, kTestActivationCode,
       base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(status, HermesResponseStatus::kSuccess);
@@ -490,7 +538,7 @@ TEST_F(HermesEuiccClientTest, TestRequestPendingProfiles) {
                                           "");
   AddPendingMethodCallResult(nullptr, std::move(error_response));
   client_->RequestPendingProfiles(
-      test_euicc_path, kTestRootSmds,
+      test_euicc_path, kTestActivationCode,
       base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(status, HermesResponseStatus::kErrorUnknown);
