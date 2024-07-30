@@ -7,8 +7,8 @@
 
 #include <optional>
 
+#include "components/enterprise/connectors/common.h"
 #include "components/policy/core/common/policy_types.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 class PrefService;
 
@@ -25,8 +25,7 @@ class ConnectorsServiceBase {
   // Returns the value to used by the enterprise real-time URL check Connector
   // if it is set and if the scope it's set at has a valid browser-profile
   // affiliation.
-  safe_browsing::EnterpriseRealTimeUrlCheckMode GetAppliedRealTimeUrlCheck()
-      const;
+  EnterpriseRealTimeUrlCheckMode GetAppliedRealTimeUrlCheck() const;
 
  protected:
   struct DmToken {

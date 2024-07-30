@@ -836,24 +836,23 @@ INSTANTIATE_TEST_SUITE_P(,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
                        Test) {
-  SetPrefs(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-           prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, 1);
+  SetPrefs(kEnterpriseRealTimeUrlCheckMode, kEnterpriseRealTimeUrlCheckScope,
+           1);
   auto maybe_dm_token =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetDMTokenForRealTimeUrlCheck();
-  safe_browsing::EnterpriseRealTimeUrlCheckMode url_check_pref =
+  EnterpriseRealTimeUrlCheckMode url_check_pref =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAppliedRealTimeUrlCheck();
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(maybe_dm_token.has_value());
-    ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
+    ASSERT_EQ(REAL_TIME_CHECK_DISABLED, url_check_pref);
   } else {
     ASSERT_TRUE(maybe_dm_token.has_value());
     ASSERT_EQ(kFakeBrowserDMToken, maybe_dm_token.value());
-    ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
-              url_check_pref);
+    ASSERT_EQ(REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED, url_check_pref);
   }
 #else
   std::string management_domain =
@@ -862,8 +861,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
   // expected state is the same regardless of management_status() value.
   ASSERT_TRUE(maybe_dm_token.has_value());
   ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
-  ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
-            url_check_pref);
+  ASSERT_EQ(REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED, url_check_pref);
   ASSERT_EQ(kDomain1, management_domain);
 #endif
 }

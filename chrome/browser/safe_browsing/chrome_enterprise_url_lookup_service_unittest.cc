@@ -14,6 +14,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
@@ -149,10 +150,10 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         referrer_chain_provider_.get());
 
     test_profile_->GetPrefs()->SetInteger(
-        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-        REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+        enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+        enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
     test_profile_->GetPrefs()->SetInteger(
-        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+        enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
         policy::POLICY_SCOPE_MACHINE);
   }
 
@@ -320,19 +321,17 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   test_profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 
-  // Can check allowlist if SafeBrowsingEnterpriseRealTimeUrlCheckMode is
-  // disabled.
+  // Can check allowlist if `kEnterpriseRealTimeUrlCheckMode` is disabled.
   test_profile_->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-      REAL_TIME_CHECK_DISABLED);
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+      enterprise_connectors::REAL_TIME_CHECK_DISABLED);
   EXPECT_TRUE(
       enterprise_rt_service()->CanCheckSafeBrowsingHighConfidenceAllowlist());
 
-  // Bypass allowlist if the SafeBrowsingEnterpriseRealTimeUrlCheckMode pref is
-  // set.
+  // Bypass allowlist if the `kEnterpriseRealTimeUrlCheckMode` pref is set.
   test_profile_->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-      REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+      enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
   EXPECT_FALSE(
       enterprise_rt_service()->CanCheckSafeBrowsingHighConfidenceAllowlist());
 }

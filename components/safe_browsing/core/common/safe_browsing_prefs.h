@@ -38,17 +38,6 @@ inline constexpr char kSafeBrowsingEnabled[] = "safebrowsing.enabled";
 // Boolean that is true when Safe Browsing Enhanced Protection is enabled.
 inline constexpr char kSafeBrowsingEnhanced[] = "safebrowsing.enhanced";
 
-// Integer indicating the state of real time URL check. This is managed
-// by enterprise policy and has no effect on users who are not managed by
-// enterprise policy.
-inline constexpr char kSafeBrowsingEnterpriseRealTimeUrlCheckMode[] =
-    "safebrowsing.enterprise_real_time_url_check_mode";
-
-// Integer indicating the scope at which the
-// kSafeBrowsingEnterpriseRealTimeUrlCheckMode pref is set.
-inline constexpr char kSafeBrowsingEnterpriseRealTimeUrlCheckScope[] =
-    "safebrowsing.enterprise_real_time_url_check_scope";
-
 // Timestamp indicating the last time a protego ping with a token was sent.
 // This is only set if the user has enhanced protection enabled and is signed
 // in with their account.
@@ -342,11 +331,6 @@ enum class SafeBrowsingState {
   ENHANCED_PROTECTION = 2,
 
   kMaxValue = ENHANCED_PROTECTION,
-};
-
-enum EnterpriseRealTimeUrlCheckMode {
-  REAL_TIME_CHECK_DISABLED = 0,
-  REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED = 1,
 };
 
 SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs);

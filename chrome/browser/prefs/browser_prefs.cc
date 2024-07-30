@@ -1775,6 +1775,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   commerce::RegisterPrefs(registry);
   DocumentProvider::RegisterProfilePrefs(registry);
   enterprise::RegisterIdentifiersProfilePrefs(registry);
+  enterprise_connectors::RegisterProfilePrefs(registry);
   enterprise_reporting::RegisterProfilePrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   DownloadPrefs::RegisterProfilePrefs(registry);
@@ -1929,7 +1930,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   DeviceServiceImpl::RegisterProfilePrefs(registry);
   DevToolsWindow::RegisterProfilePrefs(registry);
   DriveService::RegisterProfilePrefs(registry);
-  enterprise_connectors::RegisterProfilePrefs(registry);
   extensions::CommandService::RegisterProfilePrefs(registry);
   extensions::TabsCaptureVisibleTabFunction::RegisterProfilePrefs(registry);
   first_run::RegisterProfilePrefs(registry);

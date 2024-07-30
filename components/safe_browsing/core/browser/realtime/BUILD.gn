@@ -21,6 +21,10 @@ static_library("policy_engine") {
     "//services/network/public/cpp:cpp",
     "//services/network/public/mojom",
   ]
+
+  if (!is_ios) {
+    deps += [ "//components/enterprise/connectors" ]
+  }
 }
 
 static_library("url_lookup_service") {
@@ -128,5 +132,7 @@ source_set("unit_tests") {
   ]
   if (is_ios) {
     deps += [ "//components/test:safe_browsing_test_bundle_data" ]
+  } else {
+    deps += [ "//components/enterprise/connectors" ]
   }
 }

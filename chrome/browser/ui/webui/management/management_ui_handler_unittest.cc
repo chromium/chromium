@@ -34,6 +34,8 @@
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/real_time_report_type.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/common.h"
+#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -538,9 +540,9 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled,
                             GetTestConfig().cloud_reporting_enabled);
     profile_->GetPrefs()->SetInteger(
-        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 1);
+        enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
     profile_->GetPrefs()->SetInteger(
-        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+        enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
         policy::POLICY_SCOPE_MACHINE);
     if (GetTestConfig().legacy_tech_reporting_enabled) {
       base::Value::List allowlist;
@@ -1600,9 +1602,9 @@ TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
   SetUpProfileAndHandler();
 
   profile_->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 1);
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
   profile_->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);
 
   std::set<std::string> expected_messages = {
@@ -1651,9 +1653,9 @@ TEST_F(ManagementUIHandlerTests,
       .WillRepeatedly(ReturnRef(policies));
   local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled, true);
   profile_->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 1);
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
   profile_->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);
 
   std::set<std::string> expected_messages = {
@@ -1731,9 +1733,9 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
       .WillOnce(ReturnRef(on_prem_reporting_extension_beta_policies));
   local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled, true);
   profile_->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 1);
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
   profile_->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);
 
   std::set<std::string> expected_messages = {
@@ -1811,7 +1813,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   SetConnectorPolicyValue(policy::key::kOnSecurityEventEnterpriseConnector,
                           "[]", chrome_policies);
   profile_no_domain->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 0);
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 0);
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   EXPECT_TRUE(info.FindList("info")->empty());
@@ -1842,9 +1844,9 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   enterprise_connectors::test::SetOnSecurityEventReporting(
       profile_no_domain->GetPrefs(), true);
   profile_no_domain->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 1);
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
   profile_no_domain->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
