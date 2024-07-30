@@ -7056,11 +7056,6 @@ const char kDiacriticsUseReplaceSurroundingTextDescription[] =
     "When longpress diacritics is enabled, use the ReplaceSurroundingText API "
     "for better app compatibility.";
 
-const char kHoldingSpaceRefreshName[] = "Enable holding space refresh";
-const char kHoldingSpaceRefreshDescription[] =
-    "Enables a refresh of holding space which better conveys the relationship "
-    "with the Files app.";
-
 const char kHoldingSpaceSuggestionsName[] = "Enable holding space suggestions";
 const char kHoldingSpaceSuggestionsDescription[] =
     "Enables pinned file suggestions in holding space to help the user "

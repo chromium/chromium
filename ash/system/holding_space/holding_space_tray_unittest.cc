@@ -2167,6 +2167,52 @@ TEST_F(HoldingSpaceTrayTest, SupportsScrollingOfPinnedFiles) {
   EXPECT_LT(chips[0]->GetBoundsInScreen().y(), previous_y);
 }
 
+TEST_F(HoldingSpaceTrayTest, HasExpectedBubbleTreatment) {
+  StartSession();
+
+  test_api()->Show();
+  views::View* bubble = test_api()->GetBubble();
+  ASSERT_TRUE(bubble);
+
+  // Background.
+  auto* background = bubble->GetBackground();
+  ASSERT_TRUE(background);
+  EXPECT_EQ(background->get_color(), SK_ColorTRANSPARENT);
+  EXPECT_EQ(bubble->layer()->background_blur(), 0.f);
+
+  // Border.
+  EXPECT_FALSE(bubble->GetBorder());
+
+  // Corner radius.
+  EXPECT_FALSE(bubble->layer()->is_fast_rounded_corner());
+  EXPECT_EQ(bubble->layer()->rounded_corner_radii(), gfx::RoundedCornersF(0.f));
+}
+
+TEST_F(HoldingSpaceTrayTest, CheckTrayAccessibilityText) {
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_EQ(GetTray()->GetAccessibleNameForTray(),
+            u"Tote: recent screen captures, downloads, and pinned files");
+}
+
+TEST_F(HoldingSpaceTrayTest, TrayButtonWithRefreshIcon) {
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *test_api()->GetDefaultTrayIcon()->GetImage().bitmap(),
+      *gfx::CreateVectorIcon(
+           kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
+           test_api()->GetDefaultTrayIcon()->GetColorProvider()->GetColor(
+               kColorAshIconColorPrimary))
+           .bitmap()));
+}
+
+TEST_F(HoldingSpaceTrayTest, CheckTrayTooltipText) {
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()), u"Tote");
+}
+
 using HoldingSpacePreviewsTrayTest = HoldingSpaceTrayTestBase;
 
 TEST_F(HoldingSpacePreviewsTrayTest, HideButtonOnChangeToEmptyModel) {
@@ -3566,177 +3612,6 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
   EXPECT_NE(has_files_app_chip, IsHoldingSpaceSuggestionsEnabled());
   EXPECT_TRUE(GSuiteIconsAreVisibleWhenSuggestionsFeatureIsEnabled(
       pinned_files_bubble));
-}
-
-// Base class for tests of holding space parameterized by whether the
-// `kHoldingSpaceRefresh` feature flag is enabled.
-class HoldingSpaceTrayRefreshTest
-    : public HoldingSpaceTrayTestBase,
-      public testing::WithParamInterface</*refresh_enabled=*/bool> {
- public:
-  HoldingSpaceTrayRefreshTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kHoldingSpaceRefresh,
-                                              IsHoldingSpaceRefreshEnabled());
-  }
-
-  bool IsHoldingSpaceRefreshEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceTrayRefreshTest,
-                         /*refresh_enabled=*/testing::Bool());
-
-TEST_P(HoldingSpaceTrayRefreshTest, HasExpectedBubbleTreatment) {
-  StartSession();
-
-  test_api()->Show();
-  views::View* bubble = test_api()->GetBubble();
-  ASSERT_TRUE(bubble);
-
-  if (IsHoldingSpaceRefreshEnabled()) {
-    // Background.
-    auto* background = bubble->GetBackground();
-    ASSERT_TRUE(background);
-    if (chromeos::features::IsJellyEnabled()) {
-      EXPECT_EQ(background->get_color(),
-                bubble->GetColorProvider()->GetColor(
-                    cros_tokens::kCrosSysSystemBaseElevated));
-    } else {
-      EXPECT_EQ(background->get_color(),
-                bubble->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
-    }
-    EXPECT_EQ(bubble->layer()->background_blur(),
-              ColorProvider::kBackgroundBlurSigma);
-
-    // Border.
-    EXPECT_TRUE(bubble->GetBorder());
-
-    // Corner radius.
-    EXPECT_TRUE(bubble->layer()->is_fast_rounded_corner());
-    EXPECT_EQ(bubble->layer()->rounded_corner_radii(),
-              gfx::RoundedCornersF(GetBubbleCornerRadius()));
-
-    // Header.
-    auto* header = bubble->GetViewByID(kHoldingSpaceHeaderLabelId);
-    ASSERT_TRUE(header);
-    EXPECT_EQ(views::AsViewClass<views::Label>(header)->GetText(),
-              u"Quick files");
-  } else {
-    // Background.
-    auto* background = bubble->GetBackground();
-    ASSERT_TRUE(background);
-    EXPECT_EQ(background->get_color(), SK_ColorTRANSPARENT);
-    EXPECT_EQ(bubble->layer()->background_blur(), 0.f);
-
-    // Border.
-    EXPECT_FALSE(bubble->GetBorder());
-
-    // Corner radius.
-    EXPECT_FALSE(bubble->layer()->is_fast_rounded_corner());
-    EXPECT_EQ(bubble->layer()->rounded_corner_radii(),
-              gfx::RoundedCornersF(0.f));
-
-    // Header.
-    EXPECT_FALSE(bubble->GetViewByID(kHoldingSpaceHeaderLabelId));
-  }
-}
-
-TEST_P(HoldingSpaceTrayRefreshTest, CheckTrayAccessibilityText) {
-  StartSession(/*pre_mark_time_of_first_add=*/true);
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  EXPECT_EQ(
-      GetTray()->GetAccessibleNameForTray(),
-      IsHoldingSpaceRefreshEnabled()
-          ? u"Quick files: recent screen captures, downloads, and pinned files"
-          : u"Tote: recent screen captures, downloads, and pinned files");
-}
-
-TEST_P(HoldingSpaceTrayRefreshTest, TrayButtonWithRefreshIcon) {
-  StartSession(/*pre_mark_time_of_first_add=*/true);
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *test_api()->GetDefaultTrayIcon()->GetImage().bitmap(),
-      *gfx::CreateVectorIcon(
-           IsHoldingSpaceRefreshEnabled() ? kHoldingSpaceRefreshIcon
-                                          : kHoldingSpaceIcon,
-           kHoldingSpaceTrayIconSize,
-           test_api()->GetDefaultTrayIcon()->GetColorProvider()->GetColor(
-               kColorAshIconColorPrimary))
-           .bitmap()));
-}
-
-TEST_P(HoldingSpaceTrayRefreshTest, CheckTrayTooltipText) {
-  StartSession(/*pre_mark_time_of_first_add=*/true);
-  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-  EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()),
-            IsHoldingSpaceRefreshEnabled() ? u"Quick files" : u"Tote");
-}
-
-TEST_P(HoldingSpaceTrayRefreshTest, PaintsSeparatorBetweenBubbles) {
-  StartSession();
-
-  // Add a pinned file and a download to holding space so that both the
-  // pinned files bubble and recent files bubble will be populated.
-  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake1"));
-  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"));
-
-  // Show holding space and verify that both the pinned files bubble and the
-  // recent files bubble are shown.
-  test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
-
-  // Paint the holding space `bubble` to a `bitmap`.
-  views::View* bubble = test_api()->GetBubble();
-  ASSERT_TRUE(bubble);
-  SkBitmap bitmap;
-  bubble->Paint(views::PaintInfo::CreateRootPaintInfo(
-      ui::CanvasPainter(
-          &bitmap, bubble->size(),
-          views::ScaleFactorForDragFromWidget(bubble->GetWidget()),
-          /*clear_color=*/SK_ColorTRANSPARENT,
-          bubble->GetWidget()->GetCompositor()->is_pixel_canvas())
-          .context(),
-      bubble->size()));
-
-  // Determine the midpoint of where a separator would appear if painted.
-  views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
-  ASSERT_TRUE(pinned_files_bubble);
-  views::View* recent_files_bubble = test_api()->GetRecentFilesBubble();
-  ASSERT_TRUE(recent_files_bubble);
-  const int separator_midpoint_x = std::round(bubble->width() / 2.f);
-  const int separator_midpoint_y = gfx::Tween::LinearIntValueBetween(
-      0.5f,
-      views::View::ConvertRectToTarget(
-          /*source=*/pinned_files_bubble, /*target=*/bubble,
-          gfx::RectF(pinned_files_bubble->GetLocalBounds()))
-          .bottom(),
-      views::View::ConvertRectToTarget(
-          /*source=*/recent_files_bubble, /*target=*/bubble,
-          gfx::RectF(recent_files_bubble->GetLocalBounds()))
-          .y());
-
-  // Cache the `actual_color` of the pixel at the midpoint of where a separator
-  // would appear as well as the `expected_color` given feature flag state.
-  SkColor actual_color =
-      bitmap.getColor(separator_midpoint_x, separator_midpoint_y);
-  SkColor expected_color = color_utils::GetResultingPaintColor(
-      /*foreground=*/IsHoldingSpaceRefreshEnabled()
-          ? bubble->GetColorProvider()->GetColor(kColorAshSeparatorColor)
-          : SK_ColorTRANSPARENT,
-      /*background=*/bubble->GetBackground()
-          ? bubble->GetBackground()->get_color()
-          : SK_ColorTRANSPARENT);
-
-  // Verify that the RGBA components of the `actual_color` versus the
-  // `expected_color` are near enough to be considered equal.
-  EXPECT_NEAR(SkColorGetR(actual_color), SkColorGetR(expected_color), 1);
-  EXPECT_NEAR(SkColorGetG(actual_color), SkColorGetG(expected_color), 1);
-  EXPECT_NEAR(SkColorGetB(actual_color), SkColorGetB(expected_color), 1);
-  EXPECT_NEAR(SkColorGetA(actual_color), SkColorGetA(expected_color), 1);
 }
 
 // Base class for holding space tray tests which make assertions about primary

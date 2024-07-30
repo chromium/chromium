@@ -163,9 +163,7 @@ std::unique_ptr<views::ImageView> CreateDefaultTrayIcon(
   icon->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   icon->SetPaintToLayer();
   icon->layer()->SetFillsBoundsOpaquely(false);
-  icon->SetImage(CreateForegroundImageModel(
-      tray, features::IsHoldingSpaceRefreshEnabled() ? kHoldingSpaceRefreshIcon
-                                                     : kHoldingSpaceIcon));
+  icon->SetImage(CreateForegroundImageModel(tray, kHoldingSpaceIcon));
   return icon;
 }
 
@@ -308,9 +306,7 @@ void HoldingSpaceTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
 std::u16string HoldingSpaceTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringFUTF16(
       IDS_ASH_HOLDING_SPACE_A11Y_NAME,
-      features::IsHoldingSpaceRefreshEnabled()
-          ? l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE_REFRESH)
-          : l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
+      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
 }
 
 views::View* HoldingSpaceTray::GetTooltipHandlerForPoint(
@@ -320,9 +316,7 @@ views::View* HoldingSpaceTray::GetTooltipHandlerForPoint(
 }
 
 std::u16string HoldingSpaceTray::GetTooltipText(const gfx::Point& point) const {
-  return features::IsHoldingSpaceRefreshEnabled()
-             ? l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE_REFRESH)
-             : l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
+  return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
 }
 
 void HoldingSpaceTray::HandleLocaleChange() {

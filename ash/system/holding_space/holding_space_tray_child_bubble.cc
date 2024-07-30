@@ -198,13 +198,27 @@ void HoldingSpaceTrayChildBubble::Init() {
   // Child bubbles should mask child layers to bounds so as not to paint over
   // other child bubbles in the event of overflow.
   layer()->SetMasksToBounds(true);
+
+  // Background.
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+
+  SetBackground(views::CreateThemedSolidBackground(
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
+          : kColorAshShieldAndBase80));
+
+  // Border.
   const float corner_radius = GetBubbleCornerRadius();
-  if (!features::IsHoldingSpaceRefreshEnabled()) {
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-    layer()->SetIsFastRoundedCorner(true);
-    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{corner_radius});
-  }
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      corner_radius,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorder1));
+
+  // Corner radius.
+  layer()->SetIsFastRoundedCorner(true);
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{corner_radius});
 
   // Placeholder.
   if (auto placeholder = CreatePlaceholder()) {
@@ -217,22 +231,6 @@ void HoldingSpaceTrayChildBubble::Init() {
     sections_.push_back(AddChildView(std::move(section)));
     sections_.back()->Init();
   }
-
-  // When refresh is enabled, backgrounds and borders are implemented in the
-  // top-level bubble rather than per child bubble.
-  if (features::IsHoldingSpaceRefreshEnabled()) {
-    return;
-  }
-
-  SetBackground(views::CreateThemedSolidBackground(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
-          : kColorAshShieldAndBase80));
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      corner_radius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1));
 }
 
 void HoldingSpaceTrayChildBubble::Reset() {

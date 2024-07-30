@@ -346,18 +346,11 @@ void AddStringsForSharesheet(base::Value::Dict* dict) {
 }
 
 void AddStringsForHoldingSpace(base::Value::Dict* dict) {
-  const std::u16string pin_command =
-      ash::features::IsHoldingSpaceRefreshEnabled()
-          ? l10n_util::GetStringUTF16(
-                IDS_FILE_BROWSER_HOLDING_SPACE_PIN_COMMAND_LABEL)
-          : l10n_util::GetStringUTF16(
-                IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL);
+  const std::u16string pin_command = l10n_util::GetStringUTF16(
+      IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL);
   dict->Set("HOLDING_SPACE_PIN_COMMAND_LABEL", pin_command);
-  SET_STRING(
-      "HOLDING_SPACE_UNPIN_COMMAND_LABEL",
-      ash::features::IsHoldingSpaceRefreshEnabled()
-          ? IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_COMMAND_LABEL
-          : IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL);
+  SET_STRING("HOLDING_SPACE_UNPIN_COMMAND_LABEL",
+             IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL);
   SET_STRING("HOLDING_SPACE_WELCOME_DISMISS",
              IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_DISMISS);
   dict->Set("HOLDING_SPACE_WELCOME_TEXT",
