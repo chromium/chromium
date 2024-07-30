@@ -1495,16 +1495,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DatabaseMonthlyHostCountTime" units="ms"
-    expires_after="2020-03-01">
-  <owner>dimich@chromium.org</owner>
-  <component>1456716</component>
-  <summary>
-    Time spent on computing the monthly count of hosts visited. Reported every
-    time computation is performed, which in turn is done approximately weekly.
-  </summary>
-</histogram>
-
 <histogram name="History.DatabaseSqliteError" enum="SqliteLoggedResultCode"
     expires_after="2024-12-08">
   <owner>sophiechang@chromium.org</owner>
@@ -2535,16 +2525,6 @@ chromium-metrics-reviews@google.com.
     Unique URLs in History database urls table with last-visit times in the last
     7 days. Metrics are logged on initialization of the History DB on 0.3% of
     starts.
-  </summary>
-</histogram>
-
-<histogram name="HistoryPage.ClickPosition" units="units"
-    expires_after="2020-02-23">
-  <owner>rpop@google.com</owner>
-  <component>1456716</component>
-  <summary>
-    Number of entries that the clicked entry is older than in History page. Last
-    bucket is any entry of that value or higher.
   </summary>
 </histogram>
 
