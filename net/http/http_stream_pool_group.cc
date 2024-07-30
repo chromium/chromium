@@ -5,10 +5,12 @@
 #include "net/http/http_stream_pool_group.h"
 
 #include "net/http/http_basic_stream.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_job.h"
+#include "net/log/net_log_event_type.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
 
@@ -56,11 +58,21 @@ HttpStreamPool::Group::Group(HttpStreamPool* pool,
                              SpdySessionKey spdy_session_key)
     : pool_(pool),
       stream_key_(std::move(stream_key)),
-      spdy_session_key_(std::move(spdy_session_key)) {}
+      spdy_session_key_(std::move(spdy_session_key)),
+      net_log_(
+          NetLogWithSource::Make(http_network_session()->net_log(),
+                                 NetLogSourceType::HTTP_STREAM_POOL_GROUP)) {
+  net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_ALIVE, [&] {
+    base::Value::Dict dict;
+    dict.Set("stream_key", stream_key_.ToValue());
+    return dict;
+  });
+}
 
 HttpStreamPool::Group::~Group() {
   // TODO(crbug.com/346835898): Ensure `pool_`'s total active stream counts
   // are consistent.
+  net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_ALIVE);
 }
 
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
@@ -69,6 +81,23 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
     const NetLogWithSource& net_log) {
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_GROUP_REQUEST_STREAM, [&] {
+        base::Value::Dict dict;
+        dict.Set("priority", priority);
+        base::Value::List allowed_bad_certs_list;
+        for (const auto& cert_and_status : allowed_bad_certs) {
+          allowed_bad_certs_list.Append(
+              cert_and_status.cert->subject().GetDisplayName());
+        }
+        dict.Set("allowed_bad_certs", std::move(allowed_bad_certs_list));
+        dict.Set("enable_ip_based_pooling", enable_ip_based_pooling);
+        net_log.source().AddToEventParameters(dict);
+        return dict;
+      });
+  net_log.AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_GROUP_REQUEST_BOUND, net_log_.source());
+
   if (!in_flight_job_) {
     in_flight_job_ = std::make_unique<Job>(this, net_log.net_log());
   }

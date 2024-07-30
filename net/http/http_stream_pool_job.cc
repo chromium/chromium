@@ -94,8 +94,6 @@ struct HttpStreamPool::Job::InFlightAttempt {
 
 HttpStreamPool::Job::Job(Group* group, NetLog* net_log)
     : group_(group),
-      net_log_(NetLogWithSource::Make(net_log,
-                                      NetLogSourceType::HTTP_STREAM_POOL_JOB)),
       requests_(NUM_PRIORITIES),
       attempt_params_(
           StreamAttemptParams::FromHttpNetworkSession(http_network_session())) {
@@ -245,6 +243,10 @@ const HttpStreamPool* HttpStreamPool::Job::pool() const {
   return group_->pool();
 }
 
+const NetLogWithSource& HttpStreamPool::Job::net_log() {
+  return group_->net_log();
+}
+
 bool HttpStreamPool::Job::UsingTls() const {
   return GURL::SchemeIsCryptographic(stream_key().destination().scheme());
 }
@@ -271,7 +273,7 @@ void HttpStreamPool::Job::ResolveServiceEndpoint(
   service_endpoint_request_ =
       http_network_session()->host_resolver()->CreateServiceEndpointRequest(
           HostResolver::Host(stream_key().destination()),
-          stream_key().network_anonymization_key(), net_log_,
+          stream_key().network_anonymization_key(), net_log(),
           std::move(parameters));
   int rv = service_endpoint_request_->Start(this);
   if (rv != ERR_IO_PENDING) {
@@ -401,8 +403,13 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
           /*ssl_config_provider=*/this);
     } else {
       attempt = std::make_unique<TcpStreamAttempt>(&attempt_params_,
-                                                   *ip_endpoint, &net_log_);
+                                                   *ip_endpoint, &net_log());
     }
+    net_log().AddEventReferencingSource(
+        NetLogEventType::HTTP_STREAM_POOL_JOB_ATTEMPT_START,
+        attempt->net_log().source());
+    attempt->net_log().AddEventReferencingSource(
+        NetLogEventType::STREAM_ATTEMPT_BOUND_TO_POOL, net_log().source());
 
     auto in_flight_attempt =
         std::make_unique<InFlightAttempt>(std::move(attempt));
@@ -549,7 +556,7 @@ void HttpStreamPool::Job::CreateSpdyStreamAndNotify() {
   }
 
   auto http_stream = std::make_unique<SpdyHttpStream>(
-      spdy_session_, net_log_.source(),
+      spdy_session_, net_log().source(),
       service_endpoint_request_->GetDnsAliasResults());
   NotifyStreamReady(std::move(http_stream), NextProto::kProtoHTTP2);
   // `this` may be deleted.
@@ -645,12 +652,12 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
   if (stream_socket->GetNegotiatedProtocol() == NextProto::kProtoHTTP2) {
     CHECK(!spdy_session_pool()->FindAvailableSession(
         group_->spdy_session_key(), enable_ip_based_pooling_,
-        /*is_websocket=*/false, net_log_));
+        /*is_websocket=*/false, net_log()));
     std::unique_ptr<HttpStreamPoolHandle> handle =
         group_->CreateHandle(std::move(stream_socket));
     int create_result =
         spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
-            spdy_session_key(), std::move(handle), net_log_, &spdy_session_);
+            spdy_session_key(), std::move(handle), net_log(), &spdy_session_);
     if (create_result != OK) {
       HandleAttemptFailure(std::move(in_flight_attempt), create_result);
       return;

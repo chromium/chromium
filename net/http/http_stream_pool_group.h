@@ -55,6 +55,8 @@ class HttpStreamPool::Group {
     return pool_->http_network_session();
   }
 
+  const NetLogWithSource& net_log() { return net_log_; }
+
   // Creates an HttpStreamRequest. Will call delegate's methods. See the
   // comments of HttpStreamRequest::Delegate methods for details.
   // TODO(crbug.com/346835898): Support QUIC.
@@ -144,6 +146,7 @@ class HttpStreamPool::Group {
   const raw_ptr<HttpStreamPool> pool_;
   const HttpStreamKey stream_key_;
   const SpdySessionKey spdy_session_key_;
+  const NetLogWithSource net_log_;
 
   size_t handed_out_stream_count_ = 0;
   int64_t generation_ = 0;

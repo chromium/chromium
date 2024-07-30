@@ -5,6 +5,7 @@
 #ifndef NET_HTTP_HTTP_STREAM_KEY_H_
 #define NET_HTTP_HTTP_STREAM_KEY_H_
 
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
@@ -50,6 +51,8 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
   bool disable_cert_network_fetches() const {
     return disable_cert_network_fetches_;
   }
+
+  base::Value::Dict ToValue() const;
 
  private:
   url::SchemeHostPort destination_;

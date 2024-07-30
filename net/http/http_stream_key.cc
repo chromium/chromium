@@ -46,4 +46,16 @@ bool HttpStreamKey::operator<(const HttpStreamKey& other) const {
                   other.disable_cert_network_fetches_);
 }
 
+base::Value::Dict HttpStreamKey::ToValue() const {
+  base::Value::Dict dict;
+  dict.Set("destination", destination_.Serialize());
+  dict.Set("privacy_mode", PrivacyModeToDebugString(privacy_mode_));
+  dict.Set("network_anonymization_key",
+           network_anonymization_key_.ToDebugString());
+  dict.Set("secure_dns_policy",
+           SecureDnsPolicyToDebugString(secure_dns_policy_));
+  dict.Set("disable_cert_network_fetches", disable_cert_network_fetches_);
+  return dict;
+}
+
 }  // namespace net

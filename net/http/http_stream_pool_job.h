@@ -143,6 +143,8 @@ class HttpStreamPool::Job
   HttpStreamPool* pool();
   const HttpStreamPool* pool() const;
 
+  const NetLogWithSource& net_log();
+
   bool UsingTls() const;
 
   // Returns the current load state.
@@ -210,7 +212,6 @@ class HttpStreamPool::Job
   void MaybeComplete();
 
   const raw_ptr<Group> group_;
-  const NetLogWithSource net_log_;
 
   ProxyInfo proxy_info_;
 
