@@ -6277,6 +6277,10 @@ data/fenced_frames/find_in_page.html
 data/fenced_frames/find_in_page.html.mock-http-headers
 data/fenced_frames/in_iframe.html
 data/fenced_frames/in_iframe.html.mock-http-headers
+data/fenced_frames/link_rel_preload.html
+data/fenced_frames/link_rel_preload.html.mock-http-headers
+data/fenced_frames/link_rel_preload_disable_network.html
+data/fenced_frames/link_rel_preload_disable_network.html.mock-http-headers
 data/fenced_frames/nested.html
 data/fenced_frames/nested.html.mock-http-headers
 data/fenced_frames/outer_inner_frame_as_param.html

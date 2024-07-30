@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    (async () => {
+      await window.fence.disableUntrustedNetwork().then(
+        () => {
+          var link_element = document.createElement('link');
+          link_element.href = '/title1.html';
+          link_element.rel = 'preload';
+          link_element.as = 'script';
+          document.body.appendChild(link_element);
+        }
+      );
+    })();
+  </script>
+</body>
+</html>
