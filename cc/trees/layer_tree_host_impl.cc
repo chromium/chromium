@@ -572,6 +572,10 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
   // `compositor_frame_reporting_controller_` holds.
   compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
       nullptr);
+  // Similar to the logic above. The `compositor_frame_reporting_controller_`
+  // was given a `this` pointer for the event_latency_tracker and thus needs
+  // to be nulled to prevent it dangling.
+  compositor_frame_reporting_controller_->set_event_latency_tracker(nullptr);
 }
 
 InputHandler& LayerTreeHostImpl::GetInputHandler() {

@@ -47,8 +47,6 @@ struct GlobalMetricsTrackers {
   RAW_PTR_EXCLUSION LatencyUkmReporter* latency_ukm_reporter = nullptr;
   RAW_PTR_EXCLUSION FrameSequenceTrackerCollection* frame_sequence_trackers =
       nullptr;
-  // TODO(crbug.com/40283905): This member was marked `DanglingUntriaged`
-  // before being unrewritten.
   RAW_PTR_EXCLUSION EventLatencyTracker* event_latency_tracker = nullptr;
   RAW_PTR_EXCLUSION PredictorJankTracker* predictor_jank_tracker = nullptr;
   RAW_PTR_EXCLUSION ScrollJankDroppedFrameTracker*
