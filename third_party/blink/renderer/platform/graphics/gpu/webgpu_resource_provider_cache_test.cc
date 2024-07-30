@@ -46,7 +46,7 @@ void WebGPURecyclableResourceCacheTest::SetUp() {
 
 void WebGPURecyclableResourceCacheTest::TearDown() {
   Platform::UnsetMainThreadTaskRunnerForTesting();
-  SharedGpuContext::ResetForTesting();
+  SharedGpuContext::Reset();
 }
 
 TEST_F(WebGPURecyclableResourceCacheTest, MRUSameSize) {

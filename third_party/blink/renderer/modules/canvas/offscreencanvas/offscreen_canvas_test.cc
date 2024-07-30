@@ -126,7 +126,7 @@ void OffscreenCanvasTest::SetUp() {
 }
 
 void OffscreenCanvasTest::TearDown() {
-  SharedGpuContext::ResetForTesting();
+  SharedGpuContext::Reset();
   // destruction order matters due to nested TestPlatformSupport instance.
   accelerated_compositing_scope_ = nullptr;
   web_view_helper_ = nullptr;

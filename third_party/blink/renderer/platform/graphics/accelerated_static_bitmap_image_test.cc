@@ -76,7 +76,7 @@ class AcceleratedStaticBitmapImageTest : public Test {
   }
   void TearDown() override {
     gl_ = nullptr;
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
   }
 
  protected:

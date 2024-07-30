@@ -1011,7 +1011,7 @@ class PrintContextAcceleratedCanvasTest : public PrintContextTest {
     // destroyed before the TestContextProvider.
     PrintContextTest::TearDown();
 
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
     test_context_provider_ = nullptr;
     accelerated_canvas_scope_ = nullptr;
   }
@@ -1086,7 +1086,7 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
     // destroyed before the TestContextProvider.
     accelerated_compositing_scope_ = nullptr;
     test_context_provider_ = nullptr;
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
     PrintContextTest::TearDown();
     accelerated_canvas_scope_ = nullptr;
   }

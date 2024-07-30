@@ -234,7 +234,7 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
 
   void TearDown() override {
     sii_ = nullptr;
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
   }
 
   gpu::SyncToken GenTestSyncToken(GLbyte id) {

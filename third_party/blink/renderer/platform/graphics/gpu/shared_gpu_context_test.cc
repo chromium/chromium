@@ -65,7 +65,7 @@ class SharedGpuContextTestBase : public Test {
   void TearDown() override {
     handle_.reset();
     task_runner_.reset();
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
     accelerated_compositing_scope_ = nullptr;
   }
 
@@ -118,7 +118,7 @@ class BadSharedGpuContextTest : public Test {
   void TearDown() override {
     handle_.reset();
     task_runner_.reset();
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
     accelerated_compositing_scope_ = nullptr;
   }
 
@@ -145,7 +145,7 @@ class SoftwareCompositingTest : public Test {
         WTF::BindRepeating(factory, WTF::Unretained(&gl_)));
   }
 
-  void TearDown() override { SharedGpuContext::ResetForTesting(); }
+  void TearDown() override { SharedGpuContext::Reset(); }
 
   FakeGLES2Interface gl_;
 };
@@ -166,7 +166,7 @@ class SharedGpuContextTestViz : public Test {
   void TearDown() override {
     handle_.reset();
     task_runner_.reset();
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
   }
   scoped_refptr<base::NullTaskRunner> task_runner_;
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle> handle_;

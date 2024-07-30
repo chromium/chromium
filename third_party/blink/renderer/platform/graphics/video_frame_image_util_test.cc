@@ -37,7 +37,7 @@ class AcceleratedCompositingTestPlatform
 class ScopedFakeGpuContext {
  public:
   explicit ScopedFakeGpuContext(bool disable_imagebitmap) {
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
     test_context_provider_ = viz::TestContextProvider::Create();
 
     if (disable_imagebitmap) {
@@ -60,7 +60,7 @@ class ScopedFakeGpuContext {
 
   ~ScopedFakeGpuContext() {
     task_environment_.RunUntilIdle();
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
   }
 
  private:

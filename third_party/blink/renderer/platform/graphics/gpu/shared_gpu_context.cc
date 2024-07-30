@@ -87,7 +87,7 @@ gpu::GpuMemoryBufferManager* SharedGpuContext::GetGpuMemoryBufferManager() {
 void SharedGpuContext::SetGpuMemoryBufferManagerForTesting(
     gpu::GpuMemoryBufferManager* mgr) {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
-  DCHECK(!!this_ptr->gpu_memory_buffer_manager_ == !mgr);
+  DCHECK(!this_ptr->gpu_memory_buffer_manager_ || !mgr);
   this_ptr->gpu_memory_buffer_manager_ = mgr;
 }
 
@@ -246,11 +246,13 @@ void SharedGpuContext::SetContextProviderFactoryForTesting(
 }
 
 // static
-void SharedGpuContext::ResetForTesting() {
+void SharedGpuContext::Reset() {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
   this_ptr->is_gpu_compositing_disabled_ = false;
+  this_ptr->shared_image_interface_provider_.reset();
   this_ptr->context_provider_wrapper_.reset();
   this_ptr->context_provider_factory_.Reset();
+  this_ptr->gpu_memory_buffer_manager_ = nullptr;
 }
 
 bool SharedGpuContext::IsValidWithoutRestoring() {

@@ -3304,7 +3304,7 @@ class ScrollingTestWithAcceleratedContext : public ScrollingTest {
   }
 
   void TearDown() override {
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
     ScrollingTest::TearDown();
   }
 

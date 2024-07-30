@@ -70,8 +70,8 @@ class PLATFORM_EXPORT SharedGpuContext {
   static void SetContextProviderFactoryForTesting(ContextProviderFactory);
   // Resets the global instance including the |context_provider_factory_| and
   // dropping the context. Should be called at the end of a test that uses this
-  // to not interfere with the next test.
-  static void ResetForTesting();
+  // to not interfere with the next test and when terminating web workers.
+  static void Reset();
 
   static gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager();
   static void SetGpuMemoryBufferManagerForTesting(

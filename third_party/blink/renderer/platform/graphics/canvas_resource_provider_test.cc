@@ -114,7 +114,7 @@ class CanvasResourceProviderTest : public Test {
     context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
   }
 
-  void TearDown() override { SharedGpuContext::ResetForTesting(); }
+  void TearDown() override { SharedGpuContext::Reset(); }
 
  protected:
   test::TaskEnvironment task_environment_{

@@ -48,7 +48,7 @@ class HTMLCanvasPainterTest : public PaintControllerPaintTestBase {
 
   void TearDown() override {
     PaintControllerPaintTestBase::TearDown();
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
     accelerated_compositing_scope_ = nullptr;
   }
 

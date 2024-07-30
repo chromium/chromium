@@ -166,7 +166,7 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   canvas_element().PostFinalizeFrame(FlushReason::kTesting);
   platform->RunUntilIdle();
 
-  SharedGpuContext::ResetForTesting();
+  SharedGpuContext::Reset();
 #endif
 }
 

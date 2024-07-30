@@ -109,7 +109,7 @@ class Canvas2DLayerBridgeTest : public Test {
   virtual bool NeedsMockGL() { return false; }
 
   void TearDown() override {
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
     test_context_provider_.reset();
     accelerated_compositing_scope_ = nullptr;
   }
