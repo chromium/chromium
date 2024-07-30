@@ -56,9 +56,7 @@ async function matchLine(process) {
 
   function check() {
     for (const line of stdout.split(/\n/g)) {
-      if (
-        /.*(BiDi server|ChromeDriver) was started successfully\./.test(line)
-      ) {
+      if (/.*(BiDi server|ChromeDriver) was started successfully/.test(line)) {
         process.off('exit', onExit);
         process.stdout.off('data', onStdout);
         process.stderr.off('data', onStdout);
