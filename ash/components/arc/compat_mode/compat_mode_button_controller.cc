@@ -149,12 +149,8 @@ void CompatModeButtonController::UpdateArrowIcon(aura::Window* window,
 
   auto* const compat_mode_button =
       frame_view->GetHeaderView()->GetFrameHeader()->GetCenterButton();
-  if (chromeos::features::IsJellyEnabled()) {
-    compat_mode_button->SetSubImage(widget_visibility ? ash::kKsvArrowUpIcon
-                                                      : ash::kKsvArrowDownIcon);
-  } else {
-    compat_mode_button->SetSubImage(views::kMenuDropArrowIcon);
-  }
+  compat_mode_button->SetSubImage(widget_visibility ? ash::kKsvArrowUpIcon
+                                                    : ash::kKsvArrowDownIcon);
   compat_mode_button->SchedulePaint();
 }
 
