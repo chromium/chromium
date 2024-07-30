@@ -5,8 +5,9 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -16,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -47,6 +50,8 @@ public class TabModelUtilsUnitTest {
     @Mock private Callback<TabModelSelector> mTabModelSelectorCallback;
     @Mock private WindowAndroid mWindowAndroid;
 
+    @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
+
     private MockTabModelSelector mTabModelSelector;
     private MockTabModel mTabModel;
     private MockTabModel mIncognitoTabModel;
@@ -58,7 +63,7 @@ public class TabModelUtilsUnitTest {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mIncognitoTab.getId()).thenReturn(INCOGNITO_TAB_ID);
         when(mIncognitoTab.isIncognito()).thenReturn(true);
-        mTabModelSelector = new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+        mTabModelSelector = spy(new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null));
         TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
 
         mTabModel = (MockTabModel) mTabModelSelector.getModel(false);
@@ -115,16 +120,29 @@ public class TabModelUtilsUnitTest {
     public void testRunOnTabStateInitializedCallback() {
         mTabModelSelector.markTabStateInitialized();
         TabModelUtils.runOnTabStateInitialized(mTabModelSelector, mTabModelSelectorCallback);
-        verify(mTabModelSelectorCallback, times(1)).onResult(mTabModelSelector);
+        verify(mTabModelSelectorCallback).onResult(mTabModelSelector);
     }
 
     @Test
     @SmallTest
     public void testRunOnTabStateInitializedObserver() {
         TabModelUtils.runOnTabStateInitialized(mTabModelSelector, mTabModelSelectorCallback);
+        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabModelSelectorCallback, never()).onResult(mTabModelSelector);
         mTabModelSelector.markTabStateInitialized();
-        verify(mTabModelSelectorCallback, times(1)).onResult(mTabModelSelector);
+        verify(mTabModelSelectorCallback).onResult(mTabModelSelector);
+        verify(mTabModelSelector).removeObserver(eq(mTabModelSelectorObserverCaptor.getValue()));
+    }
+
+    @Test
+    @SmallTest
+    public void testRunOnTabStateInitializedRemoveObserverWhenDestroyed() {
+        TabModelUtils.runOnTabStateInitialized(mTabModelSelector, mTabModelSelectorCallback);
+        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
+        verify(mTabModelSelector, never())
+                .removeObserver(eq(mTabModelSelectorObserverCaptor.getValue()));
+        mTabModelSelector.destroy();
+        verify(mTabModelSelector).removeObserver(eq(mTabModelSelectorObserverCaptor.getValue()));
     }
 
     @Test
