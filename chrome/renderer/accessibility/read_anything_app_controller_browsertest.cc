@@ -26,7 +26,7 @@
 class MockAXTreeDistiller : public AXTreeDistiller {
  public:
   explicit MockAXTreeDistiller(content::RenderFrame* render_frame)
-      : AXTreeDistiller(base::NullCallback()) {}
+      : AXTreeDistiller(render_frame, base::NullCallback()) {}
   MOCK_METHOD(void,
               Distill,
               (const ui::AXTree& tree,

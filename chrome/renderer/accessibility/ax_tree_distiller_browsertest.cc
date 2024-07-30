@@ -37,6 +37,7 @@ class AXTreeDistillerTestBase : public ChromeRenderViewTest {
         /* timeout= */ {}, &snapshot);
     ui::AXTree tree(snapshot);
     distiller_ = std::make_unique<AXTreeDistiller>(
+        render_frame,
         base::BindRepeating(&AXTreeDistillerTestBase::OnAXTreeDistilled,
                             base::Unretained(this), &tree));
     distiller_->Distill(tree, snapshot, ukm::kInvalidSourceId);

@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
@@ -24,6 +25,9 @@
 #include "ui/accessibility/ax_tree.h"
 
 namespace {
+
+// Time after which an idle connection to Screen AI service is disconnected.
+constexpr base::TimeDelta kScreenAIIdleDisconnectDelay = base::Minutes(5);
 
 // TODO: Consider moving this to AXNodeProperties.
 static const ax::mojom::Role kContentRoles[]{
@@ -149,8 +153,10 @@ void AddContentNodesToVector(const ui::AXNode* node,
 }  // namespace
 
 AXTreeDistiller::AXTreeDistiller(
+    content::RenderFrame* render_frame,
     OnAXTreeDistilledCallback on_ax_tree_distilled_callback)
-    : on_ax_tree_distilled_callback_(on_ax_tree_distilled_callback) {
+    : content::RenderFrameObserver(render_frame),
+      on_ax_tree_distilled_callback_(on_ax_tree_distilled_callback) {
   // TODO(crbug.com/40915547): Use a global ukm recorder instance instead.
   mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
   content::RenderThread::Get()->BindHostReceiver(
@@ -171,11 +177,11 @@ void AXTreeDistiller::Distill(const ui::AXTree& tree,
     DistillViaAlgorithm(tree, ukm_source_id, &content_node_ids);
   }
 
-  // If Read Anything with Screen 2x is enabled and the main content extractor
-  // is bound, kick off Screen 2x run, which distills the AXTree in the
-  // utility process using ML.
+  // If Read Anything with Screen 2x is enabled and Screen AI service is ready,
+  // kick off Screen 2x run, which distills the AXTree in the utility process
+  // using ML.
   if (features::IsReadAnythingWithScreen2xEnabled() &&
-      main_content_extractor_.is_bound()) {
+      screen_ai_service_ready_) {
     DistillViaScreen2x(tree, snapshot, ukm_source_id, start_time,
                        &content_node_ids);
     return;
@@ -225,7 +231,22 @@ void AXTreeDistiller::DistillViaScreen2x(
     const ukm::SourceId ukm_source_id,
     base::TimeTicks start_time,
     std::vector<ui::AXNodeID>* content_node_ids_algorithm) {
-  DCHECK(main_content_extractor_.is_bound());
+  CHECK(screen_ai_service_ready_);
+
+  // Establish connection to ScreenAI service if it's not already made and set
+  // it to reset if it stays idle for `kScreenAIIdleDisconnectDelay` to release
+  // resources. It will be created again if its needed.
+  if (!main_content_extractor_.is_bound() ||
+      !main_content_extractor_.is_connected()) {
+    render_frame()->GetBrowserInterfaceBroker().GetInterface(
+        main_content_extractor_.BindNewPipeAndPassReceiver());
+    main_content_extractor_.reset_on_disconnect();
+    main_content_extractor_.reset_on_idle_timeout(kScreenAIIdleDisconnectDelay);
+    main_content_extractor_.set_disconnect_handler(
+        base::BindOnce(&AXTreeDistiller::OnMainContentExtractorDisconnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   // Make a copy of |content_node_ids_algorithm| rather than sending a pointer.
   main_content_extractor_->ExtractMainContent(
       snapshot, ukm_source_id,
@@ -255,15 +276,8 @@ void AXTreeDistiller::ProcessScreen2xResult(
   // the selected nodes.
 }
 
-void AXTreeDistiller::ScreenAIServiceReady(content::RenderFrame* render_frame) {
-  if (main_content_extractor_.is_bound() || !render_frame) {
-    return;
-  }
-  render_frame->GetBrowserInterfaceBroker().GetInterface(
-      main_content_extractor_.BindNewPipeAndPassReceiver());
-  main_content_extractor_.set_disconnect_handler(
-      base::BindOnce(&AXTreeDistiller::OnMainContentExtractorDisconnected,
-                     weak_ptr_factory_.GetWeakPtr()));
+void AXTreeDistiller::ScreenAIServiceReady() {
+  screen_ai_service_ready_ = true;
 }
 
 void AXTreeDistiller::OnMainContentExtractorDisconnected() {

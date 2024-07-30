@@ -391,6 +391,7 @@ ReadAnythingAppController::ReadAnythingAppController(
                               /* recompute_display_nodes= */ true)) {
   renderer_load_triggered_time_ms_ = base::TimeTicks::Now();
   distiller_ = std::make_unique<AXTreeDistiller>(
+      render_frame,
       base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
                           weak_ptr_factory_.GetWeakPtr()));
   // TODO(crbug.com/40915547): Use a global ukm recorder instance instead.
@@ -766,7 +767,7 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
 
 void ReadAnythingAppController::ScreenAIServiceReady() {
   model_.set_screen_ai_service_ready_for_data_collection(true);
-  distiller_->ScreenAIServiceReady(render_frame());
+  distiller_->ScreenAIServiceReady();
 }
 
 gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
