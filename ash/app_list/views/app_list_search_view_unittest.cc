@@ -66,15 +66,15 @@ enum class ResultIconType {
   kLoaded,
 };
 
-// A callback that returns a FileMetadata which will be used by the image search
-// result list.
-ash::FileMetadata MetadataLoaderForTest() {
-  ash::FileMetadata metadata;
+// A callback that returns a base::File::Info which will be used by the image
+// search result list.
+base::File::Info MetadataLoaderForTest() {
+  base::File::Info info;
   base::Time last_modified;
   EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00", &last_modified));
 
-  metadata.last_modified = last_modified;
-  return metadata;
+  info.last_modified = last_modified;
+  return info;
 }
 
 }  // namespace
@@ -377,12 +377,12 @@ TEST_P(SearchResultImageViewTest, ImageListViewVisible) {
 TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
   GetAppListTestHelper()->ShowAppList();
   FileMetadataLoader loader;
-  base::RunLoop file_metadata_load_waiter;
+  base::RunLoop file_info_load_waiter;
   loader.SetLoaderCallback(
-      base::BindLambdaForTesting([&file_metadata_load_waiter]() {
-        FileMetadata metadata = MetadataLoaderForTest();
-        file_metadata_load_waiter.Quit();
-        return metadata;
+      base::BindLambdaForTesting([&file_info_load_waiter]() {
+        base::File::Info info = MetadataLoaderForTest();
+        file_info_load_waiter.Quit();
+        return info;
       }));
 
   TestAppListClient* const client = GetAppListTestHelper()->app_list_client();
@@ -421,7 +421,7 @@ TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
   // The file metadata, when requested, gets loaded on a worker thread.
   // Wait for the file metadata request to get handled, and then run main
   // loop to make sure load response posted on the main thread runs.
-  file_metadata_load_waiter.Run();
+  file_info_load_waiter.Run();
   base::RunLoop().RunUntilIdle();
 
   // Verify that the info container of the search result is visible.

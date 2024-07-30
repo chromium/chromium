@@ -580,14 +580,11 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
   std::optional<std::u16string> extra_details;
 };
 
-// Data required for showing file info.
-using FileMetadata = base::File::Info;
-
 class ASH_PUBLIC_EXPORT FileMetadataLoader {
  public:
-  using MetadataLoaderCallback = base::RepeatingCallback<ash::FileMetadata()>;
+  using MetadataLoaderCallback = base::RepeatingCallback<base::File::Info()>;
   using OnMetadataLoadedCallback =
-      base::RepeatingCallback<void(ash::FileMetadata)>;
+      base::RepeatingCallback<void(base::File::Info)>;
 
   FileMetadataLoader();
   FileMetadataLoader(const FileMetadataLoader&);

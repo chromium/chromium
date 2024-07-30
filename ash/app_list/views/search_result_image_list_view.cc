@@ -17,6 +17,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "base/check_op.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
@@ -211,16 +212,14 @@ void SearchResultImageListView::ConfigureLayoutForAvailableWidth(int width) {
   }
 }
 
-void SearchResultImageListView::OnImageMetadataLoaded(
-    ash::FileMetadata metadata) {
+void SearchResultImageListView::OnImageMetadataLoaded(base::File::Info info) {
   if (num_results() != 1) {
     return;
   }
 
   // Check that there are 3 labels in `metadata_content_labels_`.
   CHECK_EQ(metadata_content_labels_.size(), kNumOfContentLabels);
-  metadata_content_labels_[2]->SetText(
-      GetFormattedTime(metadata.last_modified));
+  metadata_content_labels_[2]->SetText(GetFormattedTime(info.last_modified));
 }
 
 int SearchResultImageListView::DoUpdate() {

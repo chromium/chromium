@@ -88,9 +88,9 @@ gfx::Size GetIconSizeForDisplayType(ash::SearchResultDisplayType display_type) {
   }
 }
 
-// Generates ash::FileMetadata for the result at `file_path`.
+// Generates base::File::Info for the result at `file_path`.
 // Performs blocking File IO, so should not be run on UI thread.
-ash::FileMetadata GetFileMetadata(base::FilePath file_path) {
+base::File::Info GetFileInfo(base::FilePath file_path) {
   CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI))
       << "FileIO attempted on UI thread.";
 
@@ -193,7 +193,7 @@ FileResult::FileResult(const std::string& id,
     SetDisplayableFilePath(
         file_manager::util::GetDisplayablePath(profile_, filepath_)
             .value_or(filepath_));
-    SetMetadataLoaderCallback(base::BindRepeating(&GetFileMetadata, filepath_));
+    SetMetadataLoaderCallback(base::BindRepeating(&GetFileInfo, filepath_));
   }
 
   if (display_type == DisplayType::kContinue) {
