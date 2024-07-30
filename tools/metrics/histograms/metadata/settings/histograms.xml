@@ -1077,16 +1077,6 @@ chromium-metrics-reviews@google.com.
   <summary>The id of a tracked preference which was reset by Chrome.</summary>
 </histogram>
 
-<histogram name="Settings.TrackedPreferencesNoEnforcementOnDomain"
-    enum="BooleanEnabled" expires_after="2018-08-30">
-  <owner>gab@chromium.org</owner>
-  <summary>
-    Whether settings enforcement was cancelled for a machine joined to a domain.
-    Reported once per session on browser startup (note: this histogram was
-    disabled for part of M40).
-  </summary>
-</histogram>
-
 <histogram name="Settings.TrackedPreferenceTrustedInitialized"
     enum="TrackedPreference" expires_after="2022-12-22">
   <expired_intentionally>
