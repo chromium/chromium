@@ -67,6 +67,12 @@ std::optional<GURL> ConvertToDataUrl(std::string_view media_type,
       {"data:", media_type, ";base64,", base::Base64Encode(*data)}));
 }
 
+bool ShouldSkipLinkClipboardInsertion(const GURL& url_of_target) {
+  // Google Slides does not correctly handle pasting of links.
+  return url_of_target.DomainIs("docs.google.com") &&
+         url_of_target.path_piece().starts_with("/presentation/");
+}
+
 bool ShouldUseLinkTitle(const GURL& url_of_target) {
   // TODO: b/337064111 - Determine allowlist for inserting link title.
   return url_of_target.DomainIs("google.com") &&
@@ -150,30 +156,37 @@ void InsertMediaToInputField(PickerRichMedia media,
                                        : std::move(get_web_paste_target).Run();
     base::OnceClosure do_paste;
     PickerClipboardDataOptions clipboard_data_options;
+    bool skip_clipboard_insertion = false;
     if (web_paste_target.has_value()) {
       do_paste = std::move(web_paste_target->do_paste);
       clipboard_data_options.links_should_use_title =
           ShouldUseLinkTitle(web_paste_target->url);
+      skip_clipboard_insertion =
+          ShouldSkipLinkClipboardInsertion(web_paste_target->url);
     }
-    InsertClipboardData(
-        ClipboardDataFromMedia(media, clipboard_data_options),
-        std::move(do_paste),
-        base::BindOnce(
-            [](PickerRichMedia media, base::WeakPtr<ui::TextInputClient> client,
-               OnInsertMediaCompleteCallback callback, bool success) {
-              if (success) {
-                std::move(callback).Run(InsertMediaResult::kSuccess);
-                return;
-              }
-              if (client == nullptr) {
-                std::move(callback).Run(InsertMediaResult::kUnsupported);
-                return;
-              }
-              InsertMediaToInputFieldNoClipboard(std::move(media), *client,
-                                                 std::move(callback));
-            },
-            std::move(media), client.AsWeakPtr(), std::move(callback)));
-    return;
+
+    if (!skip_clipboard_insertion) {
+      InsertClipboardData(
+          ClipboardDataFromMedia(media, clipboard_data_options),
+          std::move(do_paste),
+          base::BindOnce(
+              [](PickerRichMedia media,
+                 base::WeakPtr<ui::TextInputClient> client,
+                 OnInsertMediaCompleteCallback callback, bool success) {
+                if (success) {
+                  std::move(callback).Run(InsertMediaResult::kSuccess);
+                  return;
+                }
+                if (client == nullptr) {
+                  std::move(callback).Run(InsertMediaResult::kUnsupported);
+                  return;
+                }
+                InsertMediaToInputFieldNoClipboard(std::move(media), *client,
+                                                   std::move(callback));
+              },
+              std::move(media), client.AsWeakPtr(), std::move(callback)));
+      return;
+    }
   }
 
   InsertMediaToInputFieldNoClipboard(std::move(media), client,
