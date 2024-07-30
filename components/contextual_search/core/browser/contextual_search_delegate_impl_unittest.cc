@@ -212,9 +212,9 @@ class ContextualSearchDelegateImplTest : public testing::Test {
     auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
     net::HttpRequestHeaders request_headers = pending_request->request.headers;
     if (request_headers.HasHeader(kDiscourseContextHeaderName)) {
-      std::string actual_header_value;
-      request_headers.GetHeader(kDiscourseContextHeaderName,
-                                &actual_header_value);
+      std::string actual_header_value =
+          request_headers.GetHeader(kDiscourseContextHeaderName)
+              .value_or(std::string());
 
       // Unescape, since the server memoizer expects a web-safe encoding.
       std::string unescaped_header = actual_header_value;
