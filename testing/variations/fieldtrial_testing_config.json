@@ -11351,6 +11351,21 @@
             ]
         }
     ],
+    "IOSHomeMemoryImprovements": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HomeMemoryImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSInactiveTabButtonRefactoring": [
         {
             "platforms": [
