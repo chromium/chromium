@@ -79,7 +79,7 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
       /**
        * A map that stores a user's interest in various perks.
        */
-      interestedInPerks: {
+      selectedPerks: {
         type: Object,
       },
       /**
@@ -107,7 +107,7 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   }
 
   private perksList: PerkData[];
-  private interestedInPerks: Map<string, boolean>;
+  private selectedPerks: Set<string>;
   private currentPerk: number;
   private itemIconsRendered: number;
   private itemIllustrationsRendered: number;
@@ -146,6 +146,7 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
     this.currentPerk = -1;
     this.itemIconsRendered = 0;
     this.itemIllustrationsRendered = 0;
+    this.selectedPerks.clear();
   }
 
   isElementHidden(currentPerk: number, index: number): boolean {
@@ -155,7 +156,7 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   setPerksData(perksData: PerkData[]): void {
     assert(perksData !== null);
     this.perksList = perksData;
-    this.interestedInPerks = new Map<string, boolean>();
+    this.selectedPerks = new Set<string>();
   }
 
   setOverviewStep(): void {
@@ -249,17 +250,17 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   private advanceToNextPerk(): void {
     this.currentPerk++;
     if (this.currentPerk === this.perksList.length) {
-      this.userActed([UserAction.FINISHED, this.interestedInPerks]);
+      this.userActed([UserAction.FINISHED, this.selectedPerks]);
     }
   }
 
   private onNotInterestedClicked(): void {
-    this.interestedInPerks.set(this.perksList[this.currentPerk].perkId, false);
+    this.selectedPerks.delete(this.perksList[this.currentPerk].perkId);
     this.advanceToNextPerk();
   }
 
   private onInterestedClicked(): void {
-    this.interestedInPerks.set(this.perksList[this.currentPerk].perkId, true);
+    this.selectedPerks.add(this.perksList[this.currentPerk].perkId);
     this.advanceToNextPerk();
   }
 
