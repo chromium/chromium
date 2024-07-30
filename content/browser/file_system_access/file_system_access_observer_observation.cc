@@ -122,6 +122,20 @@ std::optional<base::FilePath> GetRelativePath(const base::FilePath& root_path,
   return std::nullopt;
 }
 
+bool RenderFrameHostIsActive(
+    const FileSystemAccessManagerImpl::BindingContext& binding_context) {
+  GlobalRenderFrameHostId render_frame_host_id = binding_context.frame_id;
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(render_frame_host_id);
+
+  // Frames without an associated render frame host (e.g. Service Workers,
+  // Shared Workers) are considered active.
+  if (!rfh) {
+    return true;
+  }
+
+  return rfh->IsActive();
+}
+
 }  // namespace
 
 FileSystemAccessObserverObservation::FileSystemAccessObserverObservation(
@@ -184,12 +198,10 @@ void FileSystemAccessObserverObservation::OnChanges(
   FileSystemAccessHandleBase& handle_base = AsHandleBase(handle_);
   const FileSystemAccessManagerImpl::BindingContext& binding_context =
       handle_base.context();
-  GlobalRenderFrameHostId render_frame_host_id = binding_context.frame_id;
-  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(render_frame_host_id);
 
   // Make sure the RenderFrameHost is Active before sending changes to the
   // renderer.
-  if (!rfh || !rfh->IsActive()) {
+  if (!RenderFrameHostIsActive(binding_context)) {
     received_changes_while_in_bf_cache_ = true;
     return;
   }
@@ -328,11 +340,9 @@ void FileSystemAccessObserverObservation::HandleError() {
   FileSystemAccessHandleBase& handle_base = AsHandleBase(handle_);
   const FileSystemAccessManagerImpl::BindingContext& binding_context =
       handle_base.context();
-  GlobalRenderFrameHostId render_frame_host_id = binding_context.frame_id;
-  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(render_frame_host_id);
 
   // Skip sending changes to the renderer if RenderFrameHost is not valid.
-  if (!rfh || !rfh->IsActive()) {
+  if (!RenderFrameHostIsActive(binding_context)) {
     host_->RemoveObservation(this);
     return;
   }
