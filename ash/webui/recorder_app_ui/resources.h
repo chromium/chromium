@@ -63,6 +63,7 @@ const webui::LocalizedString kLocalizedStrings[] = {
     {"playbackMenuExportOption", IDS_RECORDER_PLAYBACK_MENU_EXPORT_OPTION},
     {"playbackMenuShowDetailOption",
      IDS_RECORDER_PLAYBACK_MENU_SHOW_DETAIL_OPTION},
+    {"playbackSpeedNormalOption", IDS_RECORDER_PLAYBACK_SPEED_NORMAL_OPTION},
     {"recordDeleteDialogCancelButton",
      IDS_RECORDER_RECORD_DELETE_DIALOG_CANCEL_BUTTON},
     {"recordDeleteDialogCurrentHeader",

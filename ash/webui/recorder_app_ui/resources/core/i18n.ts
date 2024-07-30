@@ -49,6 +49,7 @@ const noArgStrings = [
   'playbackMenuDeleteOption',
   'playbackMenuExportOption',
   'playbackMenuShowDetailOption',
+  'playbackSpeedNormalOption',
   'recordDeleteDialogCancelButton',
   'recordDeleteDialogCurrentHeader',
   'recordDeleteDialogDeleteButton',

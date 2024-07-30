@@ -26,6 +26,7 @@ import {
   createRef,
   css,
   html,
+  live,
   nothing,
   PropertyDeclarations,
   ref,
@@ -46,8 +47,28 @@ import {
 } from '../core/reactive/lit.js';
 import {computed, signal} from '../core/reactive/signal.js';
 import {navigateTo} from '../core/state/route.js';
-import {assertInstanceof} from '../core/utils/assert.js';
+import {assertExists, assertInstanceof} from '../core/utils/assert.js';
 import {formatDuration} from '../core/utils/datetime.js';
+
+/**
+ * Mapping from playback speed to icon names.
+ *
+ * Note that the playback speed numbers can be precisely represented by IEEE 754
+ * floating point numbers, so using those as key shouldn't pose precision
+ * issues.
+ */
+const PLAYBACK_SPEED_ICON_MAP = new Map([
+  [0.25, 'rate_0_25'],
+  [0.5, 'rate_0_5'],
+  [0.75, 'rate_0_75'],
+  [1.0, 'rate_1_0'],
+  [1.25, 'rate_1_25'],
+  [1.5, 'rate_1_5'],
+  [1.75, 'rate_1_75'],
+  [2.0, 'rate_2_0'],
+]);
+
+const PLAYBACK_SPEEDS = Array.from(PLAYBACK_SPEED_ICON_MAP.keys());
 
 /**
  * Playback page of Recorder App.
@@ -256,8 +277,12 @@ export class PlaybackPage extends ReactiveLitElement {
       padding: 0 12px;
     }
 
-    cra-menu {
+    #menu {
       --cros-menu-width: 200px;
+    }
+
+    #speed-menu {
+      --cros-menu-width: 160px;
     }
   `;
 
@@ -284,6 +309,12 @@ export class PlaybackPage extends ReactiveLitElement {
   private readonly exportDialog = createRef<ExportDialog>();
 
   private readonly recordingDataManager = useRecordingDataManager();
+
+  private readonly playbackSpeed = signal(1);
+
+  private readonly playbackSpeedMenu = createRef<CraMenu>();
+
+  private readonly playbackSpeedMenuOpened = signal(false);
 
   // TODO(pihsun): Loading spinner when loading metadata.
   private readonly recordingMetadata = computed(() => {
@@ -348,6 +379,18 @@ export class PlaybackPage extends ReactiveLitElement {
         this.audioPlaying.value = !this.audio.paused;
       }),
     );
+
+    this.audio.addEventListener('ratechange', () => {
+      if (this.audio.playbackRate !== this.playbackSpeed.value) {
+        // TODO(pihsun): Integrate with error reporting.
+        // TODO(pihsun): Check if this will be fired on pause.
+        console.warn(
+          'Audio playback speed mismatch',
+          this.audio.playbackRate,
+          this.playbackSpeed.value,
+        );
+      }
+    });
   }
 
   private revokeAudio() {
@@ -470,7 +513,7 @@ export class PlaybackPage extends ReactiveLitElement {
   private renderMenu() {
     // TODO: b/344789992 - Implements show detail.
     return html`
-      <cra-menu ${ref(this.menu)} anchor="show-menu">
+      <cra-menu ${ref(this.menu)} anchor="show-menu" id="menu">
         <cra-menu-item
           headline=${i18n.playbackMenuExportOption}
           @cros-menu-item-triggered=${this.onExportClick}
@@ -562,6 +605,57 @@ export class PlaybackPage extends ReactiveLitElement {
     </div>`;
   }
 
+  private renderSpeedControl(): RenderResult {
+    const iconName = assertExists(
+      PLAYBACK_SPEED_ICON_MAP.get(this.playbackSpeed.value),
+    );
+    const menuItems = PLAYBACK_SPEEDS.map((speed) => {
+      const label =
+        speed === 1.0 ? i18n.playbackSpeedNormalOption : speed.toString();
+      const onClick = () => {
+        this.playbackSpeed.value = speed;
+        this.audio.playbackRate = speed;
+      };
+
+      return html`<cra-menu-item
+        headline=${label}
+        ?checked=${this.playbackSpeed.value === speed}
+        @cros-menu-item-triggered=${onClick}
+      ></cra-menu-item>`;
+    });
+
+    const onMenuOpen = () => {
+      this.playbackSpeedMenuOpened.value = true;
+    };
+    const onMenuClose = () => {
+      this.playbackSpeedMenuOpened.value = false;
+    };
+    const togglePlaybackSpeedMenu = () => {
+      this.playbackSpeedMenu.value?.toggle();
+    };
+
+    return html`
+      <cra-menu
+        ${ref(this.playbackSpeedMenu)}
+        anchor="show-speed-menu"
+        id="speed-menu"
+        @opened=${onMenuOpen}
+        @closed=${onMenuClose}
+      >
+        ${menuItems}
+      </cra-menu>
+      <cra-icon-button
+        buttonstyle="toggle"
+        id="show-speed-menu"
+        @click=${togglePlaybackSpeedMenu}
+        .selected=${live(this.playbackSpeedMenuOpened.value)}
+      >
+        <cra-icon slot="icon" .name=${iconName}></cra-icon>
+        <cra-icon slot="selectedIcon" .name=${iconName}></cra-icon>
+      </cra-icon-button>
+    `;
+  }
+
   override render(): RenderResult {
     const mainSectionClasses = {
       'show-transcription': this.showTranscription.value,
@@ -602,12 +696,7 @@ export class PlaybackPage extends ReactiveLitElement {
               <cra-icon slot="icon" name="forward_10"></cra-icon>
             </secondary-button>
           </div>
-          <div id="speed-controls">
-            <cra-icon-button buttonstyle="floating">
-              <!-- TODO: b/336963138 - Implements speed control -->
-              <cra-icon slot="icon" name="rate_1_0"></cra-icon>
-            </cra-icon-button>
-          </div>
+          <div id="speed-controls">${this.renderSpeedControl()}</div>
         </div>
       </div>
     `;
