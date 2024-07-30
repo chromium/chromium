@@ -22,6 +22,20 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="SafetyHubDashboardModuleType">
+  <variant name="BrowserState"/>
+  <variant name="NotificationReview"/>
+  <variant name="Passwords"/>
+  <variant name="RevokedPermissions"/>
+  <variant name="SafeBrowsing"/>
+  <variant name="UpdateCheck"/>
+</variants>
+
+<variants name="SafetyHubLifecycleEvent">
+  <variant name="OnExit"/>
+  <variant name="OnImpression"/>
+</variants>
+
 <!-- LINT.IfChange(AllPermissionTypes) -->
 
 <variants name="SettingsAllPermissionTypes">
@@ -679,6 +693,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.SafetyHub.Dashboard.Interactions"
+    enum="SafetyHubDashboardInteractions" expires_after="2025-02-01">
+  <owner>rubindl@google.com</owner>
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures actions taken on the Safety Hub dashboard, except those taken on
+    the notifications review and revoked permissions module. Emitted for all
+    relevant click events on the Safety Hub dashboard.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.DashboardWarning"
     enum="SafetyHubModuleType" expires_after="2025-01-12">
   <owner>sideyilmaz@chromium.org</owner>
@@ -708,6 +734,17 @@ chromium-metrics-reviews@google.com.
     Captures the interaction with an entry point of Safety Hub, that will
     eventually lead to the Safety Check page, password manager checkup page or
     the extensions page.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.ExternalInteractions"
+    enum="SafetyHubExternalInteractions" expires_after="2025-02-01">
+  <owner>rubindl@google.com</owner>
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures the interaction with an entry point of Safety Hub. Emitted when the
+    user click on the entry point.
   </summary>
 </histogram>
 
@@ -856,6 +893,18 @@ chromium-metrics-reviews@google.com.
     Version Card is located on Safety Check page in settings and can be in one
     of the multiple states. This is the Version Card state recorded on click.
   </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.{ModuleType}.{LifecycleEvent}"
+    enum="SafetyHubModuleState" expires_after="2025-02-01">
+  <owner>rubindl@google.com</owner>
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Captures the state of Safety Hub dashboard modules on impression or exit.
+  </summary>
+  <token key="ModuleType" variants="SafetyHubDashboardModuleType"/>
+  <token key="LifecycleEvent" variants="SafetyHubLifecycleEvent"/>
 </histogram>
 
 <histogram name="Settings.SearchEngines.Interactions"

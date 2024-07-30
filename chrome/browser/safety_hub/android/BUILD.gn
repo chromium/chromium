@@ -36,6 +36,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackView.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackViewBinder.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackViewProperties.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMetricUtils.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegate.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleProperties.java",

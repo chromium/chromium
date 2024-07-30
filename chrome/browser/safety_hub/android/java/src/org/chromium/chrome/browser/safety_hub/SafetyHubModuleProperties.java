@@ -19,7 +19,7 @@ import java.lang.annotation.RetentionPolicy;
 public class SafetyHubModuleProperties {
     /**
      * Order reflects state severity. Lowest being the most severe state and highest being the
-     * safest state.
+     * safest state. Must be kept in sync with SafetyHubModuleState in settings/enums.xml.
      */
     @IntDef({ModuleState.WARNING, ModuleState.UNAVAILABLE, ModuleState.INFO, ModuleState.SAFE})
     @Retention(RetentionPolicy.SOURCE)

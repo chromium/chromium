@@ -150,12 +150,36 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="SAFE"/>
 </enum>
 
+<enum name="SafetyHubDashboardInteractions">
+  <int value="0" label="Open play store"/>
+  <int value="1" label="Go to safe browsing settings"/>
+  <int value="2" label="Open safety tools info"/>
+  <int value="3" label="Open incognito info"/>
+  <int value="4" label="Open safe browsing info"/>
+  <int value="5" label="Open help center"/>
+  <int value="6" label="Open password manager"/>
+  <int value="7" label="Show sign in promo"/>
+</enum>
+
 <enum name="SafetyHubEntryPoint">
   <int value="0" label="Privacy page (safe)"/>
   <int value="1" label="Privacy page (warning)"/>
   <int value="2" label="Site settings"/>
   <int value="3" label="Three-dot menu notification"/>
   <int value="4" label="Notification settings"/>
+</enum>
+
+<enum name="SafetyHubExternalInteractions">
+  <int value="0" label="Open Safety Hub (main settings)"/>
+  <int value="1" label="Open Safety Hub (magic stack)"/>
+  <int value="2" label="Open Safe Browsing (magic stack)"/>
+</enum>
+
+<enum name="SafetyHubModuleState">
+  <int value="0" label="Warning"/>
+  <int value="1" label="Unavailable"/>
+  <int value="2" label="Info"/>
+  <int value="3" label="Safe"/>
 </enum>
 
 <enum name="SafetyHubModuleType">
