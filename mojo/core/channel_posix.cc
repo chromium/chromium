@@ -28,6 +28,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
+#include "base/types/fixed_array.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 
@@ -522,8 +523,7 @@ bool ChannelPosix::WriteOutgoingMessagesWithWritev() {
   // outgoing_messages_.size() but never more than the kernel allows.
   size_t num_messages_to_send =
       std::min<size_t>(IOV_MAX, outgoing_messages_.size());
-  iovec iov[num_messages_to_send];
-  memset(&iov[0], 0, sizeof(iov));
+  base::FixedArray<iovec> iov(num_messages_to_send);
 
   // Populate the iov.
   size_t num_iovs_set = 0;
