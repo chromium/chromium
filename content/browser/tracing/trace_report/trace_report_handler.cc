@@ -96,6 +96,7 @@ void TraceReportHandler::OnGetAllReportsTaskComplete(
     new_trace->upload_state = single_report.upload_state;
     new_trace->upload_time = single_report.upload_time;
     new_trace->skip_reason = single_report.skip_reason;
+    new_trace->has_trace_content = single_report.has_trace_content;
     reports.push_back(std::move(new_trace));
   }
   std::move(callback).Run(std::move(reports));

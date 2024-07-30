@@ -40,8 +40,7 @@ ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
   client_report.upload_time = statement.ColumnTime(5);
   client_report.skip_reason =
       static_cast<SkipUploadReason>(statement.ColumnInt(6));
-  client_report.has_trace_content =
-      static_cast<uint64_t>(statement.ColumnBool(7));
+  client_report.has_trace_content = statement.ColumnBool(7);
   client_report.total_size = static_cast<uint64_t>(statement.ColumnInt64(8));
 
   return client_report;
@@ -174,7 +173,11 @@ bool TraceReportDatabase::AddTrace(const NewTraceReport& new_report) {
              : static_cast<int>(ReportUploadState::kNotUploaded));
   create_local_trace.BindNull(5);
   create_local_trace.BindInt(6, static_cast<int>(new_report.skip_reason));
-  create_local_trace.BindBlob(7, new_report.trace_content);
+  if (!new_report.trace_content.empty()) {
+    create_local_trace.BindBlob(7, new_report.trace_content);
+  } else {
+    create_local_trace.BindNull(7);
+  }
   create_local_trace.BindInt64(8, new_report.total_size);
   create_local_trace.BindBlob(9, new_report.system_profile);
 
@@ -468,7 +471,7 @@ std::vector<ClientTraceReport> TraceReportDatabase::GetAllReports() {
   sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
       SELECT uuid, creation_time, scenario_name, upload_rule_name,
         state, upload_time, skip_reason,
-        trace_content != null as has_trace_content, file_size
+        trace_content IS NOT NULL as has_trace_content, file_size
       FROM local_traces
       ORDER BY creation_time DESC
     )sql"));
@@ -490,7 +493,7 @@ TraceReportDatabase::GetNextReportPendingUpload() {
   sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
       SELECT uuid, creation_time, scenario_name, upload_rule_name,
         state, upload_time, skip_reason,
-        trace_content != null as has_trace_content, file_size
+        trace_content IS NOT NULL as has_trace_content, file_size
       FROM local_traces WHERE state in (1,2)
       ORDER BY creation_time DESC
     )sql"));
