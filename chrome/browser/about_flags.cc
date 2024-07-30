@@ -4161,6 +4161,23 @@ const FeatureEntry::FeatureVariation kDiscountsVariations[] = {
     {"Discount on Shoppy page", kDiscountOnShoppyPage,
      std::size(kDiscountOnShoppyPage), nullptr}};
 
+const FeatureEntry::FeatureParam
+    kSecurePaymentConfirmationNetworkAndIssuerIcons_Inline[] = {
+        {"spc_network_and_issuer_icons_option", "inline"}};
+const FeatureEntry::FeatureParam
+    kSecurePaymentConfirmationNetworkAndIssuerIcons_Rows[] = {
+        {"spc_network_and_issuer_icons_option", "rows"}};
+
+const FeatureEntry::FeatureVariation
+    kSecurePaymentConfirmationNetworkAndIssuerIconsOptions[] = {
+        {"inline with title",
+         kSecurePaymentConfirmationNetworkAndIssuerIcons_Inline,
+         std::size(kSecurePaymentConfirmationNetworkAndIssuerIcons_Inline),
+         nullptr},
+        {"as table rows", kSecurePaymentConfirmationNetworkAndIssuerIcons_Rows,
+         std::size(kSecurePaymentConfirmationNetworkAndIssuerIcons_Rows),
+         nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -5989,17 +6006,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::
          kSecurePaymentConfirmationNetworkAndIssuerIconsDescription,
      kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)},
-    {"inline-network-and-issuer-icons-for-secure-payment-confirmation",
-     flag_descriptions::
-         kSecurePaymentConfirmationInlineNetworkAndIssuerIconsName,
-     flag_descriptions::
-         kSecurePaymentConfirmationInlineNetworkAndIssuerIconsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         payments::features::
-             kSecurePaymentConfirmationInlineNetworkAndIssuerIcons)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
+         kSecurePaymentConfirmationNetworkAndIssuerIconsOptions,
+         "SecurePaymentConfirmationNetworkAndIssuerIcons")},
     {"mutation-events", flag_descriptions::kMutationEventsName,
      flag_descriptions::kMutationEventsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kMutationEvents)},

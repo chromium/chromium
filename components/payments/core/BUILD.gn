@@ -101,6 +101,10 @@ static_library("core") {
     "//url",
   ]
 
+  if (!is_ios) {
+    deps += [ "//third_party/blink/public:runtime_features_for_public" ]
+  }
+
   public_deps = [
     "//services/network/public/cpp",
     "//third_party/icu",

@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "chrome/browser/ui/views/payments/test_secure_payment_confirmation_payment_request_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/payments/core/features.h"
 #include "components/payments/core/sizes.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -629,6 +628,13 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
 class SecurePaymentConfirmationDialogViewNetworkAndIssuerIconsTest
     : public SecurePaymentConfirmationDialogViewTest {
  public:
+  SecurePaymentConfirmationDialogViewNetworkAndIssuerIconsTest() {
+    base::FieldTrialParams params;
+    params["spc_network_and_issuer_icons_option"] = "rows";
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
+        params);
+  }
   void ExpectViewMatchesModelForNetworkAndIssuerRows() override {
     ExpectLabelText(
         model_.network_label(),
@@ -650,8 +656,7 @@ class SecurePaymentConfirmationDialogViewNetworkAndIssuerIconsTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Variant of the main ViewMatchesModel test, which verifies that the network
@@ -702,10 +707,11 @@ class SecurePaymentConfirmationDialogViewInlineNetworkAndIssuerIconsTest
     : public SecurePaymentConfirmationDialogViewTest {
  public:
   SecurePaymentConfirmationDialogViewInlineNetworkAndIssuerIconsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
-         features::kSecurePaymentConfirmationInlineNetworkAndIssuerIcons},
-        {});
+    base::FieldTrialParams params;
+    params["spc_network_and_issuer_icons_option"] = "inline";
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
+        params);
   }
 
   void CreateModel() override {
