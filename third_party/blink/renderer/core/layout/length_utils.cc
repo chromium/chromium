@@ -870,7 +870,24 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
 
   const ComputedStyle& style = node.Style();
   const EBoxSizing box_sizing = style.BoxSizingForAspectRatio();
+  const LogicalSize aspect_ratio = node.GetAspectRatio();
+  const std::optional<LogicalSize> natural_size = ComputeNormalizedNaturalSize(
+      node, border_padding, box_sizing, aspect_ratio);
+
   const Length& block_length = style.LogicalHeight();
+
+  auto BlockSizeFunc = [&](SizeType) -> LayoutUnit {
+    if (aspect_ratio.IsEmpty()) {
+      DCHECK(natural_size);
+      return natural_size->block_size;
+    }
+    if (mode == ReplacedSizeMode::kNormal) {
+      return ComputeReplacedSize(node, space, border_padding,
+                                 ReplacedSizeMode::kIgnoreBlockLengths)
+          .block_size;
+    }
+    return kIndefiniteSize;
+  };
 
   MinMaxSizes block_min_max_sizes;
   std::optional<LayoutUnit> replaced_block;
@@ -890,14 +907,14 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
             : space.ReplacedPercentageResolutionBlockSize();
 
     block_min_max_sizes = {
-        ResolveMinBlockLengthDeprecated(
-            space, style, border_padding, style.LogicalMinHeight(),
-            /* override_available_size */ kIndefiniteSize,
-            &min_max_percentage_resolution_size),
-        ResolveMaxBlockLengthDeprecated(
-            space, style, border_padding, style.LogicalMaxHeight(),
-            /* override_available_size */ kIndefiniteSize,
-            &min_max_percentage_resolution_size)};
+        ResolveMinBlockLength(space, style, border_padding,
+                              style.LogicalMinHeight(), BlockSizeFunc,
+                              /* override_available_size */ kIndefiniteSize,
+                              &min_max_percentage_resolution_size),
+        ResolveMaxBlockLength(space, style, border_padding,
+                              style.LogicalMaxHeight(), BlockSizeFunc,
+                              /* override_available_size */ kIndefiniteSize,
+                              &min_max_percentage_resolution_size)};
 
     if (space.IsFixedBlockSize()) {
       replaced_block = space.AvailableSize().block_size;
@@ -923,9 +940,6 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     }
   }
 
-  const LogicalSize aspect_ratio = node.GetAspectRatio();
-  const std::optional<LogicalSize> natural_size = ComputeNormalizedNaturalSize(
-      node, border_padding, box_sizing, aspect_ratio);
   const Length& inline_length = style.LogicalWidth();
 
   auto StretchFit = [&]() -> LayoutUnit {
@@ -965,7 +979,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     return size;
   };
 
-  auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
+  auto MinMaxSizesFunc = [&](SizeType) -> MinMaxSizesResult {
     LayoutUnit size;
     if (aspect_ratio.IsEmpty()) {
       DCHECK(natural_size);
