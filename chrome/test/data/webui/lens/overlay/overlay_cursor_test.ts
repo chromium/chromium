@@ -12,11 +12,12 @@ import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {LensOverlayAppElement} from 'chrome-untrusted://lens/lens_overlay_app.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createObject} from '../utils/object_utils.js';
+import {simulateStartDrag} from '../utils/selection_utils.js';
 import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
@@ -31,7 +32,7 @@ function isRendered(el: HTMLElement) {
   return isVisible(el) && getComputedStyle(el).visibility !== 'hidden';
 }
 
-suite('OverlayCursorTooltip', () => {
+suite('OverlayCursor', () => {
   let lensOverlayElement: LensOverlayAppElement;
   let selectionOverlayElement: SelectionOverlayElement;
   let cursorTooltip: CursorTooltipElement;
@@ -154,7 +155,7 @@ suite('OverlayCursorTooltip', () => {
     return flushTasks();
   }
 
-  test('TextTooltip', async () => {
+  test('Text', async () => {
     await simulateEnterViewport();
 
     // Hover over a text element.
@@ -165,9 +166,25 @@ suite('OverlayCursorTooltip', () => {
     // Verify the cursor tooltip changed to text string.
     assertTrue(isRendered(tooltipEl));
     assertStringContains(tooltipEl.innerHTML, 'Select text');
+
+    // Verify the cursor changed to text and the cursor image changed to text
+    // icon.
+    assertEquals('text', document.body.style.cursor);
+    assertEquals(
+        'url("text.svg")',
+        selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
+
+    await simulateUnhover(textElement);
+
+    // Verify the cursor changed to unset and the cursor image is still Lens
+    // icon.
+    assertEquals('unset', document.body.style.cursor);
+    assertEquals(
+        'url("lens.svg")',
+        selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
   });
 
-  test('ObjectTooltip', async () => {
+  test('Object', async () => {
     await simulateEnterViewport();
 
     // Hover over a object element.
@@ -179,9 +196,23 @@ suite('OverlayCursorTooltip', () => {
     // Verify the cursor tooltip changed to object string.
     assertTrue(isRendered(tooltipEl));
     assertStringContains(tooltipEl.innerHTML, 'Select object');
+
+    // Verify the cursor image changed to Lens icon.
+    assertEquals(
+        'url("lens.svg")',
+        selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
+
+    await simulateUnhover(objectElement);
+
+    // Verify the cursor changed to unset and the cursor image is still Lens
+    // icon.
+    assertEquals('unset', document.body.style.cursor);
+    assertEquals(
+        'url("lens.svg")',
+        selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
   });
 
-  test('RegionSelectionTooltip', async () => {
+  test('RegionSelection', async () => {
     await simulateEnterViewport();
 
     // Hover over a selection overlay.
@@ -190,6 +221,23 @@ suite('OverlayCursorTooltip', () => {
     // Verify the cursor tooltip changed to object string.
     assertTrue(isRendered(tooltipEl));
     assertStringContains(tooltipEl.innerHTML, 'Drag to search');
+
+    // Start a drag that goes outside the overlay boundaries.
+    const boundingRect = selectionOverlayElement.getBoundingClientRect();
+    simulateStartDrag(
+        selectionOverlayElement, {x: 0, y: 0},
+        {x: boundingRect.right + 2000, y: boundingRect.bottom + 2000});
+
+    // Verify the cursor tooltip is still object string.
+    assertTrue(isRendered(tooltipEl));
+    assertStringContains(tooltipEl.innerHTML, 'Drag to search');
+
+    // Verify the cursor changed to crosshair and the cursor image changed to
+    // Lens icon.
+    assertEquals('crosshair', document.body.style.cursor);
+    assertEquals(
+        'url("lens.svg")',
+        selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
   });
 
 
@@ -262,5 +310,23 @@ suite('OverlayCursorTooltip', () => {
 
     // Verify no tooltip.
     assertFalse(isRendered(tooltipEl));
+  });
+
+  test('HideCursor', async () => {
+    await simulateEnterViewport();
+
+    // Hover over overlay.
+    await simulateHover(selectionOverlayElement.$.selectionOverlay);
+
+    // Verify cursor shows.
+    const cursor = selectionOverlayElement.$.cursor;
+    assertEquals('', cursor.className);
+
+    // Simulate changing hover from text to close button.
+    await simulateUnhover(selectionOverlayElement.$.selectionOverlay);
+    await simulateHover(lensOverlayElement.$.closeButton);
+
+    // Verify no cursor.
+    assertEquals('hidden', cursor.className);
   });
 });
