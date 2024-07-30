@@ -715,11 +715,12 @@ void DrawingBuffer::MailboxReleasedSoftware(RegisteredBitmap registered,
 scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   ScopedStateRestorer scoped_state_restorer(this);
 
+  scoped_refptr<gpu::ClientSharedImage> client_si;
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
   constexpr bool force_gpu_result = true;
   if (!PrepareTransferableResourceInternal(
-          nullptr, nullptr, &transferable_resource, &release_callback,
+          nullptr, &client_si, &transferable_resource, &release_callback,
           force_gpu_result)) {
     // If we can't get a mailbox, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
@@ -739,10 +740,8 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   DCHECK(release_callback);
   DCHECK_EQ(size_.width(), transferable_resource.size.width());
   DCHECK_EQ(size_.height(), transferable_resource.size.height());
+  CHECK(client_si);
 
-  // We reuse the same mailbox name from above since our texture id was consumed
-  // from it.
-  const auto& sk_image_mailbox = transferable_resource.mailbox();
   // Use the sync token generated after producing the mailbox. Waiting for this
   // before trying to use the mailbox with some other context will ensure it is
   // valid. We wouldn't need to wait for the consume done in this function
@@ -759,9 +758,10 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   // TODO(xidachen): Create a small pool of recycled textures from
   // ImageBitmapRenderingContext's transferFromImageBitmap, and try to use them
   // in DrawingBuffer.
-  return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      sk_image_mailbox, sk_image_sync_token, /* shared_image_texture_id = */ 0,
-      sk_image_info, transferable_resource.texture_target(),
+  return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+      std::move(client_si), sk_image_sync_token,
+      /* shared_image_texture_id = */ 0, sk_image_info,
+      transferable_resource.texture_target(),
       /* is_origin_top_left = */ opengl_flip_y_extension_,
       context_provider_->GetWeakPtr(), base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),

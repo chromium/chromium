@@ -295,6 +295,13 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
     return MakeFallbackImageBitmap(V8GPUCanvasAlphaMode::Enum::kOpaque);
   }
 
+  // NOTE: It is necessary to call this before calling
+  // PrepareTransferableResource(), as the latter moves the current swapbuffer
+  // into `release_callback`.
+  // TODO(crbug.com/353744937): Eliminate this code needing to prepare the
+  // TransferableResource altogether in favor of it happening further down the
+  // line via the ClientSI.
+  auto client_si = swap_buffers_->GetCurrentSharedImage();
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
   if (!swap_buffers_->PrepareTransferableResource(
@@ -306,10 +313,8 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
     return MakeFallbackImageBitmap(alpha_mode_);
   }
   DCHECK(release_callback);
+  CHECK(client_si);
 
-  // We reuse the same mailbox name from above since our texture id was consumed
-  // from it.
-  const auto& sk_image_mailbox = transferable_resource.mailbox();
   // Use the sync token generated after producing the mailbox. Waiting for this
   // before trying to use the mailbox with some other context will ensure it is
   // valid.
@@ -323,8 +328,8 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
       sk_color_type, kPremul_SkAlphaType);
 
   return MakeGarbageCollected<ImageBitmap>(
-      AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-          sk_image_mailbox, sk_image_sync_token,
+      AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+          std::move(client_si), sk_image_sync_token,
           /* shared_image_texture_id = */ 0, sk_image_info,
           transferable_resource.texture_target(),
           /* is_origin_top_left = */ kBottomLeft_GrSurfaceOrigin,
