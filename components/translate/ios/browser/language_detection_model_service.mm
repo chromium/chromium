@@ -13,6 +13,9 @@
 namespace translate {
 
 class LanguageDetectionModelContainer
+    // TODO(https://crbug.com/356380874): Clarify the thread safety of this
+    // class. The TFLite model should not be accessed from multiple threads,
+    // so it should not be destroyed from another thread.
     : public base::RefCountedThreadSafe<LanguageDetectionModelContainer>,
       public LanguageDetectionModel {
  public:
