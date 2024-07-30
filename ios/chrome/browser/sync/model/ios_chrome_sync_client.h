@@ -18,7 +18,7 @@ class ChromeBrowserState;
 namespace browser_sync {
 class LocalDataQueryHelper;
 class LocalDataMigrationHelper;
-class SyncApiComponentFactoryImpl;
+class SyncEngineFactoryImpl;
 }  // namespace browser_sync
 
 namespace password_manager {
@@ -43,7 +43,7 @@ class IOSChromeSyncClient : public syncer::SyncClient {
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
-  syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
+  syncer::SyncEngineFactory* GetSyncEngineFactory() override;
   bool IsCustomPassphraseAllowed() override;
   bool IsPasswordSyncAllowed() override;
   void SetPasswordSyncAllowedChangeCb(
@@ -61,8 +61,8 @@ class IOSChromeSyncClient : public syncer::SyncClient {
  private:
   const raw_ptr<ChromeBrowserState> browser_state_;
 
-  // The sync api component factory in use by this client.
-  std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
+  // The sync engine factory in use by this client.
+  std::unique_ptr<browser_sync::SyncEngineFactoryImpl> engine_factory_;
 
   scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store_;

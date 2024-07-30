@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TEST_FAKE_SYNC_API_COMPONENT_FACTORY_H_
-#define COMPONENTS_SYNC_TEST_FAKE_SYNC_API_COMPONENT_FACTORY_H_
+#ifndef COMPONENTS_SYNC_TEST_FAKE_SYNC_ENGINE_FACTORY_H_
+#define COMPONENTS_SYNC_TEST_FAKE_SYNC_ENGINE_FACTORY_H_
 
 #include <memory>
 #include <string>
 
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_engine.h"
-#include "components/sync/service/sync_api_component_factory.h"
+#include "components/sync/service/sync_engine_factory.h"
 
 namespace syncer {
 
 class FakeSyncEngine;
 
-class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
+class FakeSyncEngineFactory : public SyncEngineFactory {
  public:
-  FakeSyncApiComponentFactory();
-  ~FakeSyncApiComponentFactory() override;
+  FakeSyncEngineFactory();
+  ~FakeSyncEngineFactory() override;
 
   // Enables or disables FakeSyncEngine's synchronous completion of
   // Initialize(). Defaults to true.
@@ -33,7 +33,7 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
     is_first_time_sync_configure_done_ = done;
   }
 
-  // SyncApiComponentFactory overrides.
+  // SyncEngineFactory overrides.
   std::unique_ptr<SyncEngine> CreateSyncEngine(
       const std::string& name,
       const signin::GaiaIdHash& gaia_id_hash,
@@ -48,9 +48,9 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
   base::WeakPtr<FakeSyncEngine> last_created_engine_;
   bool allow_fake_engine_init_completion_ = true;
   bool is_first_time_sync_configure_done_ = false;
-  base::WeakPtrFactory<FakeSyncApiComponentFactory> weak_factory_{this};
+  base::WeakPtrFactory<FakeSyncEngineFactory> weak_factory_{this};
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_TEST_FAKE_SYNC_API_COMPONENT_FACTORY_H_
+#endif  // COMPONENTS_SYNC_TEST_FAKE_SYNC_ENGINE_FACTORY_H_

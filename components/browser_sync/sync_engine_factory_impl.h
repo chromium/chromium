@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_BROWSER_SYNC_SYNC_API_COMPONENT_FACTORY_IMPL_H_
-#define COMPONENTS_BROWSER_SYNC_SYNC_API_COMPONENT_FACTORY_IMPL_H_
+#ifndef COMPONENTS_BROWSER_SYNC_SYNC_ENGINE_FACTORY_IMPL_H_
+#define COMPONENTS_BROWSER_SYNC_SYNC_ENGINE_FACTORY_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/service/sync_api_component_factory.h"
+#include "components/sync/service/sync_engine_factory.h"
 
 namespace syncer {
 class DeviceInfoTracker;
@@ -21,17 +21,17 @@ class SyncInvalidationsService;
 
 namespace browser_sync {
 
-class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
+class SyncEngineFactoryImpl : public syncer::SyncEngineFactory {
  public:
-  SyncApiComponentFactoryImpl(syncer::SyncClient* sync_client,
+  SyncEngineFactoryImpl(syncer::SyncClient* sync_client,
                               syncer::DeviceInfoTracker* device_info_tracker,
                               const base::FilePath& sync_data_folder);
-  SyncApiComponentFactoryImpl(const SyncApiComponentFactoryImpl&) = delete;
-  SyncApiComponentFactoryImpl& operator=(const SyncApiComponentFactoryImpl&) =
+  SyncEngineFactoryImpl(const SyncEngineFactoryImpl&) = delete;
+  SyncEngineFactoryImpl& operator=(const SyncEngineFactoryImpl&) =
       delete;
-  ~SyncApiComponentFactoryImpl() override;
+  ~SyncEngineFactoryImpl() override;
 
-  // SyncApiComponentFactory implementation:
+  // SyncEngineFactory implementation:
   std::unique_ptr<syncer::SyncEngine> CreateSyncEngine(
       const std::string& name,
       const signin::GaiaIdHash& gaia_id_hash,
@@ -52,4 +52,4 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
 
 }  // namespace browser_sync
 
-#endif  // COMPONENTS_BROWSER_SYNC_SYNC_API_COMPONENT_FACTORY_IMPL_H_
+#endif  // COMPONENTS_BROWSER_SYNC_SYNC_ENGINE_FACTORY_IMPL_H_

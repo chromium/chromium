@@ -52,8 +52,8 @@
 #include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/service/get_types_with_unsynced_data_request_barrier.h"
 #include "components/sync/service/local_data_description.h"
-#include "components/sync/service/sync_api_component_factory.h"
 #include "components/sync/service/sync_auth_manager.h"
+#include "components/sync/service/sync_engine_factory.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_prefs_policy_handler.h"
@@ -447,7 +447,7 @@ void SyncServiceImpl::Initialize() {
       GetPreferredDataTypes());
 
   if (IsEngineAllowedToRun()) {
-    if (!sync_client_->GetSyncApiComponentFactory()
+    if (!sync_client_->GetSyncEngineFactory()
              ->HasTransportDataIncludingFirstSync(
                  signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia))) {
       // Sync never initialized before on this profile, so let's try immediately
@@ -669,7 +669,7 @@ void SyncServiceImpl::TryStartImpl() {
     DCHECK(!authenticated_account_info.account_id.empty());
   }
 
-  engine_ = sync_client_->GetSyncApiComponentFactory()->CreateSyncEngine(
+  engine_ = sync_client_->GetSyncEngineFactory()->CreateSyncEngine(
       debug_identifier_,
       signin::GaiaIdHash::FromGaiaId(authenticated_account_info.gaia),
       sync_client_->GetSyncInvalidationsService());
@@ -760,12 +760,12 @@ std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
     // If the engine hasn't started or is already shut down when a DISABLE_SYNC
     // happens, the Directory needs to be cleaned up here.
     if (shutdown_reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
-      sync_client_->GetSyncApiComponentFactory()->CleanupOnDisableSync();
+      sync_client_->GetSyncEngineFactory()->CleanupOnDisableSync();
     }
     // Depending on the `reset_reason`, maybe clear account-keyed transport
     // data.
     if (ShouldClearTransportDataForAccount(reset_reason)) {
-      sync_client_->GetSyncApiComponentFactory()->ClearTransportDataForAccount(
+      sync_client_->GetSyncEngineFactory()->ClearTransportDataForAccount(
           signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
     }
     return nullptr;
@@ -805,7 +805,7 @@ std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
 
   // Depending on the `reset_reason`, maybe clear account-keyed transport data.
   if (ShouldClearTransportDataForAccount(reset_reason)) {
-    sync_client_->GetSyncApiComponentFactory()->ClearTransportDataForAccount(
+    sync_client_->GetSyncEngineFactory()->ClearTransportDataForAccount(
         signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
   }
 
@@ -1589,9 +1589,8 @@ ModelTypeSet SyncServiceImpl::GetTypesWithPendingDownloadForInitialSync()
   CHECK(data_type_manager_);
 
   if (GetTransportState() == TransportState::INITIALIZING &&
-      !sync_client_->GetSyncApiComponentFactory()
-           ->HasTransportDataIncludingFirstSync(
-               signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia))) {
+      !sync_client_->GetSyncEngineFactory()->HasTransportDataIncludingFirstSync(
+          signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia))) {
     // The engine is initializing for the very first sync (usually after
     // sign-in). In this case all types are reported as pending download,
     // optimistically assuming datatype preconditions will be met.

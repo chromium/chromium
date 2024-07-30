@@ -28,7 +28,7 @@ namespace browser_sync {
 
 class LocalDataQueryHelper;
 class LocalDataMigrationHelper;
-class SyncApiComponentFactoryImpl;
+class SyncEngineFactoryImpl;
 
 class ChromeSyncClient : public syncer::SyncClient {
  public:
@@ -48,7 +48,7 @@ class ChromeSyncClient : public syncer::SyncClient {
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
-  syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
+  syncer::SyncEngineFactory* GetSyncEngineFactory() override;
   bool IsCustomPassphraseAllowed() override;
   bool IsPasswordSyncAllowed() override;
   void SetPasswordSyncAllowedChangeCb(
@@ -88,8 +88,8 @@ class ChromeSyncClient : public syncer::SyncClient {
 
   const raw_ptr<Profile> profile_;
 
-  // The sync api component factory in use by this client.
-  std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
+  // The sync engine factory in use by this client.
+  std::unique_ptr<browser_sync::SyncEngineFactoryImpl> engine_factory_;
 
   // Generates and monitors the ExtensionsActivity object used by sync.
   ExtensionsActivityMonitor extensions_activity_monitor_;

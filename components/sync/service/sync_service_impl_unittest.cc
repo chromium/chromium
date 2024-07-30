@@ -41,8 +41,8 @@
 #include "components/sync/service/sync_token_status.h"
 #include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "components/sync/test/fake_model_type_controller.h"
-#include "components/sync/test/fake_sync_api_component_factory.h"
 #include "components/sync/test/fake_sync_engine.h"
+#include "components/sync/test/fake_sync_engine_factory.h"
 #include "components/sync/test/mock_model_type_local_data_batch_uploader.h"
 #include "components/sync/test/sync_client_mock.h"
 #include "components/sync/test/sync_service_impl_bundle.h"
@@ -236,7 +236,7 @@ class SyncServiceImplTest : public ::testing::Test {
 
   void PopulatePrefsForInitialSyncFeatureSetupComplete() {
     CHECK(!service_);
-    component_factory()->set_first_time_sync_configure_done(true);
+    engine_factory()->set_first_time_sync_configure_done(true);
     // Set first sync time before initialize to simulate a complete sync setup.
     SyncPrefs sync_prefs(prefs());
     sync_prefs.SetSelectedTypesForSyncingUser(
@@ -278,13 +278,11 @@ class SyncServiceImplTest : public ::testing::Test {
     return sync_service_impl_bundle_.pref_service();
   }
 
-  FakeSyncApiComponentFactory* component_factory() {
-    return sync_service_impl_bundle_.component_factory();
+  FakeSyncEngineFactory* engine_factory() {
+    return sync_service_impl_bundle_.engine_factory();
   }
 
-  FakeSyncEngine* engine() {
-    return component_factory()->last_created_engine();
-  }
+  FakeSyncEngine* engine() { return engine_factory()->last_created_engine(); }
 
   MockSyncInvalidationsService* sync_invalidations_service() {
     return sync_service_impl_bundle_.sync_invalidations_service();
@@ -515,7 +513,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyAfterInit) {
 // Exercises the SyncServiceImpl's code paths related to getting shut down
 // before the backend initialize call returns.
 TEST_F(SyncServiceImplTest, AbortedByShutdown) {
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
   InitializeService();
@@ -533,7 +531,7 @@ TEST_F(SyncServiceImplTest, AbortedByShutdown) {
 // Test the user signing out before the backend's initialization completes.
 TEST_F(SyncServiceImplTest, EarlySignOut) {
   // Set up a fake sync engine that will not immediately finish initialization.
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
   InitializeService();
@@ -600,7 +598,7 @@ TEST_F(SyncServiceImplTest,
       service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   ASSERT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
   ASSERT_TRUE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // Sign-out.
   signin::PrimaryAccountMutator* account_mutator =
@@ -616,7 +614,7 @@ TEST_F(SyncServiceImplTest,
                 {SyncService::DISABLE_REASON_NOT_SIGNED_IN}),
             service()->GetDisableReasons());
   EXPECT_FALSE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 }
 
 TEST_F(SyncServiceImplTest,
@@ -643,7 +641,7 @@ TEST_F(SyncServiceImplTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -953,12 +951,12 @@ TEST_F(SyncServiceImplTest, StopAndClearWillClearDataAndSwitchToTransportMode) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   ASSERT_TRUE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   service()->StopAndClear();
 
   EXPECT_FALSE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // Even though Sync-the-feature is disabled, there's still an (unconsented)
   // signed-in account, so Sync-the-transport should still be running.
@@ -995,13 +993,13 @@ TEST_F(SyncServiceImplTest, ClearTransportDataOnInitializeWhenSignedOut) {
   identity_test_env()->WaitForRefreshTokensLoaded();
 
   ASSERT_TRUE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // Don't sign-in before creating the service.
   InitializeService();
 
   EXPECT_FALSE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -2023,7 +2021,7 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorOnSyncPaused) {
 TEST_F(
     SyncServiceImplTest,
     GetTypesWithPendingDownloadForInitialSyncDuringFirstSyncInTransportMode) {
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   std::vector<FakeControllerInitParams> params;
   params.emplace_back(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true);
   params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
@@ -2052,7 +2050,7 @@ TEST_F(
 
 TEST_F(SyncServiceImplTest,
        GetTypesWithPendingDownloadForInitialSyncDuringFirstSync) {
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   InitializeService();
   base::RunLoop().RunUntilIdle();
   SignInWithSyncConsent();
@@ -2081,7 +2079,7 @@ TEST_F(SyncServiceImplTest,
 
 TEST_F(SyncServiceImplTest,
        GetTypesWithPendingDownloadForInitialSyncDuringNthSync) {
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
 
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
@@ -2422,7 +2420,7 @@ TEST_F(SyncServiceImplTest, ShouldCacheTrustedVaultAutoUpgradeDebugInfo) {
   const int kTestCohort1 = 11;
   const int kTestCohort2 = 22;
 
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   InitializeService();
   base::RunLoop().RunUntilIdle();
   SignInWithSyncConsent();

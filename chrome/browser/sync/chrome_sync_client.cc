@@ -62,7 +62,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browser_sync/common_controller_builder.h"
-#include "components/browser_sync/sync_api_component_factory_impl.h"
+#include "components/browser_sync/sync_engine_factory_impl.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/data_sharing/public/features.h"
 #include "components/desks_storage/core/desk_sync_service.h"
@@ -90,7 +90,7 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync/service/model_type_controller.h"
-#include "components/sync/service/sync_api_component_factory.h"
+#include "components/sync/service/sync_engine_factory.h"
 #include "components/sync/service/syncable_service_based_model_type_controller.h"
 #include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
@@ -272,7 +272,7 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
     : profile_(profile), extensions_activity_monitor_(profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  component_factory_ = std::make_unique<SyncApiComponentFactoryImpl>(
+  engine_factory_ = std::make_unique<SyncEngineFactoryImpl>(
       this,
       DeviceInfoSyncServiceFactory::GetForProfile(profile_)
           ->GetDeviceInfoTracker(),
@@ -768,9 +768,8 @@ ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
   }
 }
 
-syncer::SyncApiComponentFactory*
-ChromeSyncClient::GetSyncApiComponentFactory() {
-  return component_factory_.get();
+syncer::SyncEngineFactory* ChromeSyncClient::GetSyncEngineFactory() {
+  return engine_factory_.get();
 }
 
 bool ChromeSyncClient::IsCustomPassphraseAllowed() {

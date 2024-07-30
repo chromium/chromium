@@ -42,10 +42,7 @@ class SyncClientMock : public SyncClient {
               GetExtensionsActivity,
               (),
               (override));
-  MOCK_METHOD(SyncApiComponentFactory*,
-              GetSyncApiComponentFactory,
-              (),
-              (override));
+  MOCK_METHOD(SyncEngineFactory*, GetSyncEngineFactory, (), (override));
   MOCK_METHOD(bool, IsCustomPassphraseAllowed, (), (override));
   MOCK_METHOD(bool, IsPasswordSyncAllowed, (), (override));
   MOCK_METHOD(void,

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/service/sync_service_impl.h"
-
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -11,9 +9,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/pref_names.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_model_type_controller.h"
-#include "components/sync/test/fake_sync_api_component_factory.h"
 #include "components/sync/test/fake_sync_engine.h"
+#include "components/sync/test/fake_sync_engine_factory.h"
 #include "components/sync/test/sync_client_mock.h"
 #include "components/sync/test/sync_service_impl_bundle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -157,13 +156,11 @@ class SyncServiceImplStartupTest : public testing::Test {
     return sync_service_impl_bundle_.pref_service();
   }
 
-  FakeSyncApiComponentFactory* component_factory() {
-    return sync_service_impl_bundle_.component_factory();
+  FakeSyncEngineFactory* engine_factory() {
+    return sync_service_impl_bundle_.engine_factory();
   }
 
-  FakeSyncEngine* engine() {
-    return component_factory()->last_created_engine();
-  }
+  FakeSyncEngine* engine() { return engine_factory()->last_created_engine(); }
 
   FakeModelTypeController* get_controller(ModelType type) {
     return controller_map_[type];
@@ -291,7 +288,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutDuringDeferredStartup) {
   SetSyncFeatureEnabledPrefs();
 
   // Deferred startup is only possible if first sync completed earlier.
-  component_factory()->set_first_time_sync_configure_done(true);
+  engine_factory()->set_first_time_sync_configure_done(true);
 
   CreateSyncService();
   sync_service()->Initialize();
@@ -374,7 +371,7 @@ TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
   CreateSyncService();
 
   // Prevent automatic (and successful) completion of engine initialization.
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   sync_service()->Initialize();
   FastForwardUntilNoTasksRemain();
   // Simulate an auth error while downloading control types.
@@ -395,7 +392,7 @@ TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
 TEST_F(SyncServiceImplStartupTest, StartAshNoCredentials) {
   // We've never completed startup.
   ASSERT_FALSE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // On ChromeOS, the user is always immediately signed in, but a refresh token
   // isn't necessarily available yet.
@@ -420,7 +417,7 @@ TEST_F(SyncServiceImplStartupTest, StartAshNoCredentials) {
 TEST_F(SyncServiceImplStartupTest, StartAshFirstTime) {
   // We've never completed Sync startup.
   ASSERT_FALSE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // There is already a signed-in user.
   SignInWithSyncConsent();
@@ -586,14 +583,14 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   CreateSyncService();
   SignInWithSyncConsent();
   ASSERT_FALSE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Prevent automatic (and successful) completion of engine initialization.
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   sync_service()->Initialize();
   FastForwardUntilNoTasksRemain();
 
@@ -616,7 +613,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
   ASSERT_FALSE(
-      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
+      engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   CreateSyncService({SESSIONS});
   sync_service()->Initialize();
@@ -633,7 +630,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // Sign in. Now Sync-the-transport can start. Since this was triggered by an
   // explicit user event, deferred startup is bypassed.
   // Sync-the-feature still doesn't start until the user says they want it.
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   SignInWithoutSyncConsent();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(sync_service()->GetDisableReasons().empty());
@@ -701,8 +698,8 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   SignInWithSyncConsent();
   SetSyncFeatureEnabledPrefs();
   // Deferred startup is only possible if first sync completed earlier.
-  component_factory()->set_first_time_sync_configure_done(true);
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->set_first_time_sync_configure_done(true);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   CreateSyncService({SESSIONS});
   get_controller(SESSIONS)->model()->EnableManualModelStart();
 
@@ -747,7 +744,7 @@ TEST_F(SyncServiceImplStartupTest, DeferredStartInterruptedByDataType) {
   SetSyncFeatureEnabledPrefs();
 
   // Deferred startup is only possible if first sync completed earlier.
-  component_factory()->set_first_time_sync_configure_done(true);
+  engine_factory()->set_first_time_sync_configure_done(true);
 
   SignInWithSyncConsent();
   CreateSyncService();
@@ -831,7 +828,7 @@ TEST_F(SyncServiceImplStartupTest,
 
   CreateSyncService(/*registered_types=*/{BOOKMARKS, READING_LIST});
 
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   sync_service()->Initialize();
   FastForwardUntilNoTasksRemain();
 
@@ -860,7 +857,7 @@ TEST_F(SyncServiceImplStartupTest,
 
   CreateSyncService(/*registered_types=*/{BOOKMARKS, READING_LIST});
 
-  component_factory()->AllowFakeEngineInitCompletion(false);
+  engine_factory()->AllowFakeEngineInitCompletion(false);
   sync_service()->Initialize();
   FastForwardUntilNoTasksRemain();
 

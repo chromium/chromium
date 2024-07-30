@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/fake_sync_api_component_factory.h"
+#include "components/sync/test/fake_sync_engine_factory.h"
 
 #include <utility>
 
@@ -11,15 +11,15 @@
 
 namespace syncer {
 
-FakeSyncApiComponentFactory::FakeSyncApiComponentFactory() = default;
+FakeSyncEngineFactory::FakeSyncEngineFactory() = default;
 
-FakeSyncApiComponentFactory::~FakeSyncApiComponentFactory() = default;
+FakeSyncEngineFactory::~FakeSyncEngineFactory() = default;
 
-void FakeSyncApiComponentFactory::AllowFakeEngineInitCompletion(bool allow) {
+void FakeSyncEngineFactory::AllowFakeEngineInitCompletion(bool allow) {
   allow_fake_engine_init_completion_ = allow;
 }
 
-std::unique_ptr<SyncEngine> FakeSyncApiComponentFactory::CreateSyncEngine(
+std::unique_ptr<SyncEngine> FakeSyncEngineFactory::CreateSyncEngine(
     const std::string& name,
     const signin::GaiaIdHash& gaia_id_hash,
     syncer::SyncInvalidationsService* sync_invalidations_service) {
@@ -27,22 +27,22 @@ std::unique_ptr<SyncEngine> FakeSyncApiComponentFactory::CreateSyncEngine(
       allow_fake_engine_init_completion_,
       /*is_first_time_sync_configure=*/!is_first_time_sync_configure_done_,
       /*sync_transport_data_cleared_cb=*/
-      base::BindRepeating(&FakeSyncApiComponentFactory::CleanupOnDisableSync,
+      base::BindRepeating(&FakeSyncEngineFactory::CleanupOnDisableSync,
                           weak_factory_.GetWeakPtr()));
   last_created_engine_ = engine->AsWeakPtr();
   return engine;
 }
 
-bool FakeSyncApiComponentFactory::HasTransportDataIncludingFirstSync(
+bool FakeSyncEngineFactory::HasTransportDataIncludingFirstSync(
     const signin::GaiaIdHash& gaia_id_hash) {
   return is_first_time_sync_configure_done_;
 }
 
-void FakeSyncApiComponentFactory::CleanupOnDisableSync() {
+void FakeSyncEngineFactory::CleanupOnDisableSync() {
   is_first_time_sync_configure_done_ = false;
 }
 
-void FakeSyncApiComponentFactory::ClearTransportDataForAccount(
+void FakeSyncEngineFactory::ClearTransportDataForAccount(
     const signin::GaiaIdHash& gaia_id_hash) {}
 
 }  // namespace syncer

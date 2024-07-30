@@ -21,7 +21,7 @@
 #import "components/sync/base/sync_util.h"
 #import "components/sync/model/model_type_store_service.h"
 #import "components/sync/service/model_type_controller.h"
-#import "components/sync/service/sync_api_component_factory.h"
+#import "components/sync/service/sync_engine_factory.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/version_info/version_info.h"
 #import "components/version_info/version_string.h"
@@ -87,10 +87,9 @@ WebViewSyncClient::WebViewSyncClient(
     : pref_service_(pref_service),
       identity_manager_(identity_manager),
       sync_invalidations_service_(sync_invalidations_service) {
-  component_factory_ =
-      std::make_unique<browser_sync::SyncApiComponentFactoryImpl>(
-          this, device_info_sync_service->GetDeviceInfoTracker(),
-          model_type_store_service->GetSyncDataPath());
+  engine_factory_ = std::make_unique<browser_sync::SyncEngineFactoryImpl>(
+      this, device_info_sync_service->GetDeviceInfoTracker(),
+      model_type_store_service->GetSyncDataPath());
 
   // TODO(crbug.com/40264840): introduce ios webview version of
   // TrustedVaultServiceFactory.
@@ -167,9 +166,8 @@ WebViewSyncClient::GetExtensionsActivity() {
   return nullptr;
 }
 
-syncer::SyncApiComponentFactory*
-WebViewSyncClient::GetSyncApiComponentFactory() {
-  return component_factory_.get();
+syncer::SyncEngineFactory* WebViewSyncClient::GetSyncEngineFactory() {
+  return engine_factory_.get();
 }
 
 bool WebViewSyncClient::IsCustomPassphraseAllowed() {

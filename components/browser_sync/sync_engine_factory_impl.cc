@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/browser_sync/sync_api_component_factory_impl.h"
+#include "components/browser_sync/sync_engine_factory_impl.h"
 
 #include <utility>
 
@@ -23,7 +23,7 @@
 
 namespace browser_sync {
 
-SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
+SyncEngineFactoryImpl::SyncEngineFactoryImpl(
     syncer::SyncClient* sync_client,
     syncer::DeviceInfoTracker* device_info_tracker,
     const base::FilePath& sync_data_folder)
@@ -37,10 +37,10 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
   CHECK(sync_client_);
 }
 
-SyncApiComponentFactoryImpl::~SyncApiComponentFactoryImpl() = default;
+SyncEngineFactoryImpl::~SyncEngineFactoryImpl() = default;
 
 std::unique_ptr<syncer::SyncEngine>
-SyncApiComponentFactoryImpl::CreateSyncEngine(
+SyncEngineFactoryImpl::CreateSyncEngine(
     const std::string& name,
     const signin::GaiaIdHash& gaia_id_hash,
     syncer::SyncInvalidationsService* sync_invalidation_service) {
@@ -53,7 +53,7 @@ SyncApiComponentFactoryImpl::CreateSyncEngine(
       sync_data_folder_, engines_and_directory_deletion_thread_);
 }
 
-bool SyncApiComponentFactoryImpl::HasTransportDataIncludingFirstSync(
+bool SyncEngineFactoryImpl::HasTransportDataIncludingFirstSync(
     const signin::GaiaIdHash& gaia_id_hash) {
   syncer::SyncTransportDataPrefs sync_transport_data_prefs(
       sync_client_->GetPrefService(), gaia_id_hash);
@@ -62,7 +62,7 @@ bool SyncApiComponentFactoryImpl::HasTransportDataIncludingFirstSync(
   return !sync_transport_data_prefs.GetLastSyncedTime().is_null();
 }
 
-void SyncApiComponentFactoryImpl::CleanupOnDisableSync() {
+void SyncEngineFactoryImpl::CleanupOnDisableSync() {
   PrefService* pref_service = sync_client_->GetPrefService();
   // Clearing the Directory via DeleteLegacyDirectoryFilesAndNigoriStorage()
   // means there's IO involved which may be considerable overhead if
@@ -80,7 +80,7 @@ void SyncApiComponentFactoryImpl::CleanupOnDisableSync() {
   syncer::SyncTransportDataPrefs::ClearAllLegacy(pref_service);
 }
 
-void SyncApiComponentFactoryImpl::ClearTransportDataForAccount(
+void SyncEngineFactoryImpl::ClearTransportDataForAccount(
     const signin::GaiaIdHash& gaia_id_hash) {
   syncer::SyncTransportDataPrefs prefs(sync_client_->GetPrefService(),
                                        gaia_id_hash);

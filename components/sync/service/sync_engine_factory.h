@@ -2,31 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_SERVICE_SYNC_API_COMPONENT_FACTORY_H_
-#define COMPONENTS_SYNC_SERVICE_SYNC_API_COMPONENT_FACTORY_H_
+#ifndef COMPONENTS_SYNC_SERVICE_SYNC_ENGINE_FACTORY_H_
+#define COMPONENTS_SYNC_SERVICE_SYNC_ENGINE_FACTORY_H_
 
 #include <memory>
 #include <string>
 
 namespace signin {
 class GaiaIdHash;
-}
+}  // namespace signin
 
 namespace syncer {
 
 class SyncEngine;
 class SyncInvalidationsService;
 
-// This factory provides sync service code with the model type specific sync/api
-// service (like SyncableService) implementations.
-// TODO(crbug.com/335688372): Rename class to EngineLoader or similar to convey
-// its scope.
-class SyncApiComponentFactory {
+// Class responsible for instantiating SyncEngine and restoring its state
+// (transport data including cache GUID, birthday, Nigori, etc.). In addition to
+// acting as a factory, it fully abstrcts and encapsulates the storage of
+// transport data and offers APIs to interact with this data even without having
+// to instantiate SyncEngine.
+class SyncEngineFactory {
  public:
-  virtual ~SyncApiComponentFactory() = default;
+  virtual ~SyncEngineFactory() = default;
 
-  // Creating this in the factory helps us mock it out in testing.
-  // `sync_invalidation_service` must not be null.
+  // Instantiates SyncEngine for a specific account determined by `gaia_id_hash`. `sync_invalidation_service` must not be null. `name` is for logging purposes only, useful in integration tests that involve multiple clients.
   virtual std::unique_ptr<SyncEngine> CreateSyncEngine(
       const std::string& name,
       const signin::GaiaIdHash& gaia_id_hash,
@@ -51,4 +51,4 @@ class SyncApiComponentFactory {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_SERVICE_SYNC_API_COMPONENT_FACTORY_H_
+#endif  // COMPONENTS_SYNC_SERVICE_SYNC_ENGINE_FACTORY_H_

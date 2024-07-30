@@ -14,10 +14,10 @@ static_library("browser_sync") {
     "common_controller_builder.h",
     "signin_confirmation_helper.cc",
     "signin_confirmation_helper.h",
-    "sync_api_component_factory_impl.cc",
-    "sync_api_component_factory_impl.h",
     "sync_client_utils.cc",
     "sync_client_utils.h",
+    "sync_engine_factory_impl.cc",
+    "sync_engine_factory_impl.h",
     "sync_to_signin_migration.cc",
     "sync_to_signin_migration.h",
   ]

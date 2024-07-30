@@ -374,8 +374,7 @@ class SyncServiceImpl : public SyncService,
   // Returns the types that have a non-null ModelTypeLocalDataBatchUploader.
   ModelTypeSet GetModelTypesWithLocalDataBatchUploader() const;
 
-  // This profile's SyncClient, which abstracts away non-Sync dependencies and
-  // the Sync API component factory.
+  // This profile's SyncClient.
   const std::unique_ptr<SyncClient> sync_client_;
 
   // The class that handles getting, setting, and persisting sync preferences.

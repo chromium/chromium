@@ -27,7 +27,7 @@ class TrustedVaultClient;
 namespace syncer {
 
 struct LocalDataDescription;
-class SyncApiComponentFactory;
+class SyncEngineFactory;
 class SyncInvalidationsService;
 class SyncService;
 class TrustedVaultAutoUpgradeSyntheticFieldTrialGroup;
@@ -62,8 +62,8 @@ class SyncClient {
   virtual trusted_vault::TrustedVaultClient* GetTrustedVaultClient() = 0;
   virtual scoped_refptr<ExtensionsActivity> GetExtensionsActivity() = 0;
 
-  // Returns the current SyncApiComponentFactory instance.
-  virtual SyncApiComponentFactory* GetSyncApiComponentFactory() = 0;
+  // Returns the current SyncEngineFactory instance.
+  virtual SyncEngineFactory* GetSyncEngineFactory() = 0;
 
   // Returns whether custom passphrase is allowed for the current user.
   virtual bool IsCustomPassphraseAllowed() = 0;
