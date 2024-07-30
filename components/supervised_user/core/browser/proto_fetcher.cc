@@ -23,6 +23,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
+#include "base/version_info/channel.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
@@ -30,6 +31,7 @@
 #include "components/supervised_user/core/browser/proto/test.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/google_api_keys.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_status_code.h"
 #include "proto_fetcher.h"
@@ -98,6 +100,7 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
     const std::optional<signin::AccessTokenInfo> access_token_info,
     const FetcherConfig& fetcher_config,
     const FetcherConfig::PathArgs& args,
+    std::optional<version_info::Channel> channel,
     const std::optional<std::string>& payload) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       std::make_unique<network::ResourceRequest>();
@@ -105,11 +108,19 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   resource_request->method = fetcher_config.GetHttpMethod();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->priority = fetcher_config.request_priority;
+
   if (access_token_info) {
     resource_request->headers.SetHeader(
         net::HttpRequestHeaders::kAuthorization,
         CreateAuthorizationHeader(access_token_info.value()));
+  } else {
+    CHECK(channel);
+    resource_request->headers.SetHeader(
+        "X-Goog-Api-Key", *channel == version_info::Channel::STABLE
+                              ? google_apis::GetAPIKey()
+                              : google_apis::GetNonStableAPIKey());
   }
+
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        fetcher_config.traffic_annotation());
@@ -395,10 +406,12 @@ AbstractProtoFetcher::AbstractProtoFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string_view payload,
     const FetcherConfig& fetcher_config,
-    const FetcherConfig::PathArgs& args)
+    const FetcherConfig::PathArgs& args,
+    std::optional<version_info::Channel> channel)
     : payload_(payload),
       config_(fetcher_config),
       args_(args),
+      channel_(channel),
       metrics_(Metrics::FromConfig(fetcher_config)),
       fetcher_(identity_manager,
                fetcher_config.access_token_config,
@@ -448,7 +461,7 @@ void AbstractProtoFetcher::OnAccessTokenFetchComplete(
 
   simple_url_loader_ =
       InitializeSimpleUrlLoader(base::OptionalFromExpected(access_token),
-                                config_, args_, GetRequestPayload());
+                                config_, args_, channel_, GetRequestPayload());
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory.get(),
       base::BindOnce(
@@ -486,12 +499,14 @@ StatusFetcher::StatusFetcher(
     std::string_view payload,
     const FetcherConfig& fetcher_config,
     const FetcherConfig::PathArgs& args,
+    std::optional<version_info::Channel> channel,
     Callback callback)
     : AbstractProtoFetcher(identity_manager,
                            url_loader_factory,
                            payload,
                            fetcher_config,
-                           args),
+                           args,
+                           channel),
       callback_(std::move(callback)) {}
 StatusFetcher::~StatusFetcher() = default;
 
@@ -510,9 +525,11 @@ std::unique_ptr<ClassifyUrlFetcher> CreateClassifyURLFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const kidsmanagement::ClassifyUrlRequest& request,
-    const FetcherConfig& config) {
+    const FetcherConfig& config,
+    version_info::Channel channel) {
   return CreateFetcher<kidsmanagement::ClassifyUrlResponse>(
-      identity_manager, url_loader_factory, request, config);
+      identity_manager, url_loader_factory, request, config, /*args=*/{},
+      channel);
 }
 
 std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
@@ -546,7 +563,8 @@ std::unique_ptr<ProtoFetcher<Response>> CreateTestFetcher(
     const Request& request,
     const FetcherConfig& config) {
   return CreateFetcher<Response>(identity_manager, url_loader_factory, request,
-                                 config);
+                                 config, /*args=*/{},
+                                 version_info::Channel::UNKNOWN);
 }
 
 }  // namespace supervised_user

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 
 #import "base/no_destructor.h"
+#import "base/version_info/channel.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_platform_delegate.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/common/channel_info.h"
 #import "url/gurl.h"
 
 namespace {
@@ -25,7 +27,7 @@ namespace {
 class FilterDelegateImpl
     : public supervised_user::SupervisedUserURLFilter::Delegate {
  public:
-  std::string GetCountryCode() override {
+  std::string GetCountryCode() const override {
     std::string country;
     variations::VariationsService* variations_service =
         GetApplicationContext()->GetVariationsService();
@@ -37,6 +39,8 @@ class FilterDelegateImpl
     }
     return country;
   }
+
+  version_info::Channel GetChannel() const override { return ::GetChannel(); }
 };
 
 }  // namespace

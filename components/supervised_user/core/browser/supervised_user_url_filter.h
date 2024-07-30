@@ -26,6 +26,10 @@
 class GURL;
 class PrefService;
 
+namespace version_info {
+enum class Channel;
+}
+
 // Callback type for additional url validations.
 typedef base::RepeatingCallback<bool(const GURL&)> ValidateURLSupportCallback;
 
@@ -88,7 +92,8 @@ class SupervisedUserURLFilter {
   class Delegate {
    public:
     virtual ~Delegate() = default;
-    virtual std::string GetCountryCode() = 0;
+    virtual std::string GetCountryCode() const = 0;
+    virtual version_info::Channel GetChannel() const = 0;
   };
 
   using FilteringBehaviorCallback =

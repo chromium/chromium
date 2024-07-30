@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "base/version_info/channel.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -49,7 +50,8 @@ class KidsChromeManagementURLCheckerClientTest
         UncredentialedFilteringFallbackEnabled());
     url_classifier_ = std::make_unique<KidsChromeManagementURLCheckerClient>(
         identity_test_env_.identity_manager(),
-        test_url_loader_factory_.GetSafeWeakWrapper(), "us");
+        test_url_loader_factory_.GetSafeWeakWrapper(), "us",
+        version_info::Channel::UNKNOWN);
   }
 
  protected:

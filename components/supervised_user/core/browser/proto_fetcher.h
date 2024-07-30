@@ -24,6 +24,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
+#include "base/version_info/channel.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/api_access_token_fetcher.h"
@@ -252,7 +253,8 @@ class AbstractProtoFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::string_view payload,
       const FetcherConfig& fetcher_config,
-      const FetcherConfig::PathArgs& args = {});
+      const FetcherConfig::PathArgs& args = {},
+      std::optional<version_info::Channel> channel = std::nullopt);
 
   // Not copyable.
   AbstractProtoFetcher(const AbstractProtoFetcher&) = delete;
@@ -287,6 +289,7 @@ class AbstractProtoFetcher {
   const std::string payload_;
   const FetcherConfig config_;
   const FetcherConfig::PathArgs args_;
+  std::optional<version_info::Channel> channel_;
   std::optional<Metrics> metrics_;
 
   // Entrypoint of the fetch process, which starts with ApiAccessToken access
@@ -316,12 +319,14 @@ class TypedProtoFetcher : public AbstractProtoFetcher {
       std::string_view payload,
       const FetcherConfig& fetcher_config,
       const FetcherConfig::PathArgs& args,
+      std::optional<version_info::Channel> channel,
       Callback callback)
       : AbstractProtoFetcher(identity_manager,
                              url_loader_factory,
                              payload,
                              fetcher_config,
-                             args),
+                             args,
+                             channel),
         callback_(std::move(callback)) {}
 
   virtual ~TypedProtoFetcher() = default;
@@ -368,6 +373,7 @@ class StatusFetcher : public AbstractProtoFetcher {
       std::string_view payload,
       const FetcherConfig& fetcher_config,
       const FetcherConfig::PathArgs& args,
+      std::optional<version_info::Channel> channel,
       Callback callback);
   ~StatusFetcher() override;
 
@@ -393,12 +399,14 @@ class ProtoFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const google::protobuf::MessageLite& request,
       const FetcherConfig& fetcher_config,
-      const FetcherConfig::PathArgs& args = {})
+      const FetcherConfig::PathArgs& args = {},
+      std::optional<version_info::Channel> channel = std::nullopt)
       : identity_manager_(identity_manager),
         url_loader_factory_(url_loader_factory),
         payload_(request.SerializeAsString()),
         config_(fetcher_config),
-        args_(args) {}
+        args_(args),
+        channel_(channel) {}
   virtual ~ProtoFetcher() = default;
 
   // Kicks off the fetching process. The fetcher must not be started before
@@ -407,7 +415,7 @@ class ProtoFetcher {
     CHECK(!fetcher_) << "Only stopped fetcher can be started.";
     fetcher_ = std::make_unique<TypedProtoFetcher<Response>>(
         identity_manager_.get(), url_loader_factory_, payload_, config_, args_,
-        std::move(callback));
+        channel_, std::move(callback));
   }
 
   // Terminates the fetching process. The fetcher must be still operating while
@@ -428,6 +436,7 @@ class ProtoFetcher {
   std::string payload_;
   const FetcherConfig config_;
   const FetcherConfig::PathArgs args_;
+  std::optional<version_info::Channel> channel_;
   std::unique_ptr<TypedProtoFetcher<Response>> fetcher_;
 };
 
@@ -446,12 +455,14 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
       const google::protobuf::MessageLite& request,
       const FetcherConfig& fetcher_config,
       const FetcherConfig::PathArgs& args,
+      std::optional<version_info::Channel> channel,
       const net::BackoffEntry::Policy& backoff_policy)
       : ProtoFetcher<Response>(identity_manager,
                                url_loader_factory,
                                request,
                                fetcher_config,
-                               args),
+                               args,
+                               channel),
         backoff_entry_(&backoff_policy),
         metrics_(OverallMetrics::FromConfig(fetcher_config)) {}
 
@@ -588,7 +599,8 @@ CreateClassifyURLFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const kidsmanagement::ClassifyUrlRequest& request,
-    const FetcherConfig& config = kClassifyUrlConfig);
+    const FetcherConfig& config = kClassifyUrlConfig,
+    version_info::Channel channel = version_info::Channel::UNKNOWN);
 
 // Creates a disposable instance of an access token consumer that will create
 // a new permission request for a given url.
@@ -616,20 +628,31 @@ std::unique_ptr<ProtoFetcher<Response>> CreateTestFetcher(
 //
 // `args` are only relevant if `fetcher_config` uses template path (see
 // supervised_user::FetcherConfig::service_path).
+//
+// `channel` must be specified if `fetcher_config` has
+// `CredentialsRequirement::kBestEffort`.
 template <typename Response>
 std::unique_ptr<ProtoFetcher<Response>> CreateFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const google::protobuf::MessageLite& request,
     const FetcherConfig& fetcher_config,
-    const FetcherConfig::PathArgs& args = {}) {
+    const FetcherConfig::PathArgs& args = {},
+    const std::optional<version_info::Channel> channel = std::nullopt) {
+  CHECK((fetcher_config.access_token_config.credentials_requirement !=
+         AccessTokenConfig::CredentialsRequirement::kBestEffort) ||
+        channel)
+      << "The Chrome channel must be specified for fetchers which can send "
+         "requests without user credentials.";
+
   if (fetcher_config.backoff_policy.has_value()) {
     return std::make_unique<RetryingFetcherImpl<Response>>(
         identity_manager, url_loader_factory, request, fetcher_config, args,
-        *fetcher_config.backoff_policy);
+        channel, *fetcher_config.backoff_policy);
   } else {
     return std::make_unique<ProtoFetcher<Response>>(
-        identity_manager, url_loader_factory, request, fetcher_config, args);
+        identity_manager, url_loader_factory, request, fetcher_config, args,
+        channel);
   }
 }
 

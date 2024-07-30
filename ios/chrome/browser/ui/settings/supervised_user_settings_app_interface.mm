@@ -6,6 +6,7 @@
 
 #import "base/memory/ptr_util.h"
 #import "base/memory/singleton.h"
+#import "base/version_info/channel.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
@@ -229,7 +230,8 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 
   std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
       std::make_unique<supervised_user::KidsChromeManagementURLCheckerClient>(
-          identity_manager, shared_url_loader_factory, /*country=*/"");
+          identity_manager, shared_url_loader_factory, /*country=*/"",
+          version_info::Channel::UNKNOWN);
   supervised_user_service->GetURLFilter()->SetURLCheckerClientForTesting(
       std::move(url_checker_client));
 }

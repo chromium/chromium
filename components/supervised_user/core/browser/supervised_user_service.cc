@@ -161,10 +161,11 @@ SupervisedUserService::SupervisedUserService(
       can_show_first_time_interstitial_banner_(
           can_show_first_time_interstitial_banner) {
   CHECK(url_filter_delegate);
-  std::string country = url_filter_delegate->GetCountryCode();
   std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
       std::make_unique<KidsChromeManagementURLCheckerClient>(
-          identity_manager, url_loader_factory, country);
+          identity_manager, url_loader_factory,
+          url_filter_delegate->GetCountryCode(),
+          url_filter_delegate->GetChannel());
   url_filter_ = std::make_unique<SupervisedUserURLFilter>(
       user_prefs, std::move(url_checker_client),
       std::move(check_webstore_url_callback));
