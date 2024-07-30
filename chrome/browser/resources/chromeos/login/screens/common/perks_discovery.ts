@@ -248,10 +248,11 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   }
 
   private advanceToNextPerk(): void {
-    this.currentPerk++;
-    if (this.currentPerk === this.perksList.length) {
-      this.userActed([UserAction.FINISHED, this.selectedPerks]);
+    if (this.currentPerk === this.perksList.length - 1) {
+      this.userActed([UserAction.FINISHED, Array.from(this.selectedPerks)]);
+      return;
     }
+    this.currentPerk++;
   }
 
   private onNotInterestedClicked(): void {
