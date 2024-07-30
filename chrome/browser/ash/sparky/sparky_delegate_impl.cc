@@ -250,9 +250,24 @@ void SparkyDelegateImpl::Click(int x, int y) {
       host->GetRootTransform(),
       host->GetRootTransformForLocalEventCoordinates());
 
-  // No delay is needed between these events for a basic mouse click.
+  // Other parts of the system can temporarily disable mouse events. If this is
+  // the case, re-enable them for the duration of our calls.
+  auto* cursor = aura::client::GetCursorClient(window);
+  const bool mouse_disabled = !cursor->IsMouseEventsEnabled();
+  if (mouse_disabled) {
+    cursor->EnableMouseEvents();
+  }
+
+  // No delay is needed between these events.
+  //
+  // DeliverEventToSink skips event rewriters, unlike SendEventToSink.
+  // TODO(b/351099209): understand if this is desirable.
   host->DeliverEventToSink(&mouse_pressed);
   host->DeliverEventToSink(&mouse_released);
+
+  if (mouse_disabled) {
+    cursor->DisableMouseEvents();
+  }
 }
 
 void SparkyDelegateImpl::StartObservingCalculators() {
