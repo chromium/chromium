@@ -11398,6 +11398,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="119" label="DeferredFetch"/>
   <int value="120" label="DigitalCredentialsGet"/>
   <int value="121" label="MediaPlaybackWhileNotVisible"/>
+  <int value="122" label="AllScreensCapture"/>
 </enum>
 
 <enum name="FedCmContinueOnPopupResult">

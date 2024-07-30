@@ -585,6 +585,7 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // This timeout of base::Seconds(6) is an initial value and based on the data
   // in Media.MediaDevices.GetAllScreensMedia.Latency, it should be iterated
   // upon.
@@ -599,6 +600,23 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "No media device client available; is this a detached window?",
         UserMediaRequestResult::kContextDestroyed);
+    return promise;
+  }
+
+  const bool capture_allowed_by_permissions_policy = context->IsFeatureEnabled(
+      mojom::blink::PermissionsPolicyFeature::kAllScreensCapture,
+      ReportOptions::kReportOnFailure);
+
+  base::UmaHistogramEnumeration(
+      "Media.Ui.GetAllScreensMedia.AllScreensCapturePolicyResult",
+      capture_allowed_by_permissions_policy
+          ? DisplayCapturePolicyResult::kAllowed
+          : DisplayCapturePolicyResult::kDisallowed);
+
+  if (context->IsIsolatedContext() && !capture_allowed_by_permissions_policy) {
+    resolver->RecordAndThrowDOMException(
+        exception_state, DOMExceptionCode::kNotAllowedError,
+        kFeaturePolicyBlocked, UserMediaRequestResult::kNotAllowedError);
     return promise;
   }
 

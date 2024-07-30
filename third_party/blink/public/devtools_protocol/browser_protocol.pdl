@@ -7964,6 +7964,7 @@ domain Page
   experimental type PermissionsPolicyFeature extends string
     enum
       accelerometer
+      all-screens-capture
       ambient-light-sensor
       attribution-reporting
       autoplay
