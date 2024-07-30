@@ -202,6 +202,9 @@ crbug.com/353650054 [ android ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Failur
 # Flaky failure on Mac AMD ASAN - 3 GPU process crashes instead of 4
 crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
 
+# Flaky failure on Mac release NVIDIA - 3 GPU process crashes instead of 4
+crbug.com/355923591 [ mac release nvidia ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
