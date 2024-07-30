@@ -80,6 +80,7 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
   for (auto i = host_view()->children().rbegin();
        i != host_view()->children().rend(); i++) {
     if (!IsChildIncludedInLayout(*i)) {
+      index--;
       continue;
     }
     // If the next child is the divider, skip it. It only is included in the
