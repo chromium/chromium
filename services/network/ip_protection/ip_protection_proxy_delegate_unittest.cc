@@ -151,8 +151,8 @@ MATCHER_P2(Contain,
            expected_value,
            std::string("headers ") + (negation ? "don't " : "") + "contain '" +
                expected_name + ": " + expected_value + "'") {
-  std::string value;
-  return arg.GetHeader(expected_name, &value) && value == expected_value;
+  std::optional<std::string> value = arg.GetHeader(expected_name);
+  return value && value == expected_value;
 }
 
 struct HeadersReceived {
