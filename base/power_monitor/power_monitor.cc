@@ -77,10 +77,17 @@ bool PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(
 // static
 bool PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(
     PowerStateObserver* obs) {
+  return AddPowerStateObserverAndReturnBatteryPowerStatus(obs) ==
+         PowerStateObserver::BatteryPowerStatus::kBatteryPower;
+}
+
+PowerStateObserver::BatteryPowerStatus
+PowerMonitor::AddPowerStateObserverAndReturnBatteryPowerStatus(
+    PowerStateObserver* obs) {
   PowerMonitor* power_monitor = GetInstance();
-  AutoLock auto_lock(power_monitor->on_battery_power_lock_);
+  AutoLock auto_lock(power_monitor->battery_power_status_lock_);
   power_monitor->power_state_observers_->AddObserver(obs);
-  return power_monitor->on_battery_power_;
+  return power_monitor->battery_power_status_;
 }
 
 // static
@@ -99,9 +106,15 @@ PowerMonitorSource* PowerMonitor::Source() {
 
 bool PowerMonitor::IsOnBatteryPower() {
   DCHECK(IsInitialized());
+  return GetBatteryPowerStatus() ==
+         PowerStateObserver::BatteryPowerStatus::kBatteryPower;
+}
+
+PowerStateObserver::BatteryPowerStatus PowerMonitor::GetBatteryPowerStatus() {
+  DCHECK(IsInitialized());
   PowerMonitor* power_monitor = GetInstance();
-  AutoLock auto_lock(power_monitor->on_battery_power_lock_);
-  return power_monitor->on_battery_power_;
+  AutoLock auto_lock(power_monitor->battery_power_status_lock_);
+  return power_monitor->battery_power_status_;
 }
 
 TimeTicks PowerMonitor::GetLastSystemResumeTime() {
@@ -120,8 +133,9 @@ void PowerMonitor::ShutdownForTesting() {
     power_monitor->last_system_resume_time_ = TimeTicks();
   }
   {
-    AutoLock auto_lock(power_monitor->on_battery_power_lock_);
-    power_monitor->on_battery_power_ = false;
+    AutoLock auto_lock(power_monitor->battery_power_status_lock_);
+    power_monitor->battery_power_status_ =
+        PowerStateObserver::BatteryPowerStatus::kExternalPower;
   }
   {
     AutoLock auto_lock(power_monitor->power_thermal_state_lock_);
@@ -153,15 +167,34 @@ int PowerMonitor::GetRemainingBatteryCapacity() {
 
 void PowerMonitor::NotifyPowerStateChange(bool on_battery_power) {
   DCHECK(IsInitialized());
-  DVLOG(1) << "PowerStateChange: " << (on_battery_power ? "On" : "Off")
-           << " battery";
+  NotifyPowerStateChange(
+      on_battery_power
+          ? PowerStateObserver::BatteryPowerStatus::kBatteryPower
+          : PowerStateObserver::BatteryPowerStatus::kExternalPower);
+}
+
+void PowerMonitor::NotifyPowerStateChange(
+    PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  DCHECK(IsInitialized());
+  if (battery_power_status ==
+      PowerStateObserver::BatteryPowerStatus::kUnknown) {
+    DVLOG(1) << "PowerStateChange: with unknown value";
+  } else {
+    DVLOG(1) << "PowerStateChange: "
+             << (battery_power_status ==
+                         PowerStateObserver::BatteryPowerStatus::kBatteryPower
+                     ? "On"
+                     : "Off")
+             << " battery";
+  }
 
   PowerMonitor* power_monitor = GetInstance();
-  AutoLock auto_lock(power_monitor->on_battery_power_lock_);
-  if (power_monitor->on_battery_power_ != on_battery_power) {
-    power_monitor->on_battery_power_ = on_battery_power;
+  AutoLock auto_lock(power_monitor->battery_power_status_lock_);
+  if (power_monitor->battery_power_status_ != battery_power_status) {
+    power_monitor->battery_power_status_ = battery_power_status;
     GetInstance()->power_state_observers_->Notify(
-        FROM_HERE, &PowerStateObserver::OnPowerStateChange, on_battery_power);
+        FROM_HERE, &PowerStateObserver::OnBatteryPowerStateChanged,
+        battery_power_status);
   }
 }
 
