@@ -39,7 +39,7 @@ import org.chromium.ui.util.TokenHolder;
  * Class coordinating the business logic to draw into app header in desktop windowing mode, ranging
  * from listening the window insets updates, and pushing updates to the tab strip.
  */
-@RequiresApi(VERSION_CODES.R)
+@RequiresApi(VERSION_CODES.VANILLA_ICE_CREAM)
 public class AppHeaderCoordinator
         implements DesktopWindowStateProvider,
                 TopResumedActivityChangedObserver,

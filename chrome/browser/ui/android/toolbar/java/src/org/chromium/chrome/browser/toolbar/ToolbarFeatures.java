@@ -38,7 +38,7 @@ public final class ToolbarFeatures {
         }
         return ChromeFeatureList.sTabStripLayoutOptimization.isEnabled()
                 && isTablet
-                && VERSION.SDK_INT >= VERSION_CODES.R;
+                && VERSION.SDK_INT >= VERSION_CODES.VANILLA_ICE_CREAM;
     }
 
     /** Set the return value for {@link #isTabStripWindowLayoutOptimizationEnabled(boolean)}. */

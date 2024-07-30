@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.BuildConfig;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.util.WindowInsetsUtils;
 
@@ -34,7 +35,7 @@ import java.util.List;
  * insets.
  *
  * <p>This class works only when the criteria is satisfied:
- * <li>1. Android version is at least R.
+ * <li>1. Android version is atLeastV.
  * <li>2. WindowInsets of given type has insets from one side exactly.
  */
 public class InsetsRectProvider implements WindowInsetsConsumer {
@@ -70,7 +71,8 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         mBoundingRects = List.of();
         mInsetObserver = insetObserver;
 
-        assert VERSION.SDK_INT >= VERSION_CODES.R;
+        // TODO (crbug/325351108): Remove the test check once we support Android V testing.
+        assert BuildConfig.IS_FOR_TEST || VERSION.SDK_INT >= VERSION_CODES.VANILLA_ICE_CREAM;
         mInsetObserver.addInsetsConsumer(this);
         if (initialInsets != null) {
             updateWidestUnoccludedRect(initialInsets);
@@ -128,7 +130,8 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     public WindowInsetsCompat onApplyWindowInsets(
             @NonNull View view, @NonNull WindowInsetsCompat windowInsetsCompat) {
         // Ignore the input by version check.
-        if (VERSION.SDK_INT < VERSION_CODES.R) {
+        // TODO (crbug/351389242): Remove the test check once we support Android V testing.
+        if (!BuildConfig.IS_FOR_TEST && VERSION.SDK_INT < VERSION_CODES.VANILLA_ICE_CREAM) {
             return windowInsetsCompat;
         }
 
