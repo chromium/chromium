@@ -236,7 +236,9 @@ base::TimeDelta PostProcessor::GetTTLForPredictedResult(
   std::vector<std::string> ordered_labels;
   if (prediction_result.result_size() > 0 &&
       prediction_result.has_output_config()) {
-    ordered_labels = GetClassifierResults(prediction_result);
+    if (IsClassificationResult(prediction_result)) {
+      ordered_labels = GetClassifierResults(prediction_result);
+    }
     if (!prediction_result.output_config().has_predicted_result_ttl()) {
       LOG(ERROR) << "Prediction result has no `predicted_result_ttl` on its "
                     "`output_config`, returning empty TTL.";

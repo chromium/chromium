@@ -31646,6 +31646,7 @@ Called by update_net_error_codes.py.-->
   <int value="41" label="AndroidHomeModuleRanker"/>
   <int value="45" label="ComposePromotion"/>
   <int value="46" label="UrlVisitResumptionRanker"/>
+  <int value="50" label="MetricsClustering"/>
 </enum>
 
 <enum name="SegmentationPlatformTrainingDataCollectionEvent">

@@ -20,6 +20,7 @@
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
+#include "components/segmentation_platform/embedder/default_model/metrics_clustering.h"
 #include "components/segmentation_platform/embedder/default_model/most_visited_tiles_user.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
@@ -115,7 +116,8 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
           {{"SamplingRate", "1"}}},
          {features::kSegmentationPlatformTabResumptionRanker, {}},
          {features::kSegmentationPlatformAndroidHomeModuleRanker, {}},
-         {features::kSegmentationPlatformURLVisitResumptionRanker, {}}},
+         {features::kSegmentationPlatformURLVisitResumptionRanker, {}},
+         {features::kSegmentationPlatformMetricsClustering, {}}},
         {});
 
     // Creating profile and initialising segmentation service.
@@ -469,6 +471,18 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TabResupmtionRanker) {
                                   PredictionStatus::kSucceeded);
 }
 #endif  //! BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(SegmentationPlatformServiceFactoryTest, MetricsClustering) {
+  InitServiceAndCacheResults(
+      segmentation_platform::MetricsClustering::kMetricsClusteringKey);
+
+  segmentation_platform::PredictionOptions prediction_options =
+      PredictionOptions::ForCached();
+
+  ExpectGetAnnotatedNumericResult(
+      segmentation_platform::MetricsClustering::kMetricsClusteringKey,
+      prediction_options, nullptr, PredictionStatus::kSucceeded);
+}
 
 #if BUILDFLAG(IS_ANDROID)
 // Tests for models in android platform.

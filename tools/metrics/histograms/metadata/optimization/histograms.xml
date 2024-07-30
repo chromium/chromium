@@ -94,6 +94,8 @@ chromium-metrics-reviews@google.com.
       summary="Segmentation: Feed usage in Chrome"/>
   <variant name="SegmentationIosModuleRanker"
       summary="Segmentation: Ios module ranker"/>
+  <variant name="SegmentationMetricsClustering"
+      summary="Segmentation: Metrics based clustering"/>
   <variant name="SegmentationNewTab" summary="Segmentation: New tab page user"/>
   <variant name="SegmentationQueryTiles" summary="Query tiles"/>
   <variant name="SegmentationSearchUser" summary="Segmentation: Search user"/>

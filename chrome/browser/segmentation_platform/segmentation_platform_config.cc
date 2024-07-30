@@ -20,6 +20,7 @@
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/frequent_feature_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
+#include "components/segmentation_platform/embedder/default_model/metrics_clustering.h"
 #include "components/segmentation_platform/embedder/default_model/optimization_target_segmentation_dummy.h"
 #include "components/segmentation_platform/embedder/default_model/password_manager_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/resume_heavy_user_model.h"
@@ -98,9 +99,7 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
 
   return config;
 }
-#endif
 
-#if BUILDFLAG(IS_ANDROID)
 bool IsEnabledContextualPageActions() {
   return base::FeatureList::IsEnabled(features::kContextualPageActions);
 }
@@ -173,6 +172,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(URLVisitResumptionRanker::GetConfig());
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
   configs.emplace_back(DatabaseApiClients::GetConfig());
+  configs.emplace_back(MetricsClustering::GetConfig());
 
 #if BUILDFLAG(ENABLE_COMPOSE)
   configs.emplace_back(ComposePromotion::GetConfig());

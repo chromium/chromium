@@ -118,8 +118,12 @@ void CachedResultWriter::UpdateNewClientResultToPrefs(
       result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
   const proto::PredictionResult* prev_prediction_result =
       prev_client_result ? &prev_client_result->client_result() : nullptr;
-  stats::RecordClassificationResultUpdated(*config, prev_prediction_result,
-                                           client_result.client_result());
+  if (prev_prediction_result &&
+      PostProcessor::IsClassificationResult(*prev_prediction_result) &&
+      PostProcessor::IsClassificationResult(client_result.client_result())) {
+    stats::RecordClassificationResultUpdated(*config, prev_prediction_result,
+                                             client_result.client_result());
+  }
   stats::RecordSegmentSelectionFailure(
       *config, stats::SegmentationSelectionFailureReason::kProtoPrefsUpdated);
   result_prefs_->SaveClientResultToPrefs(config->segmentation_key,
