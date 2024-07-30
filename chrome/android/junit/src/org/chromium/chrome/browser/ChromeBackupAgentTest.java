@@ -51,6 +51,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
@@ -108,6 +109,7 @@ import java.util.stream.Collectors;
         })
 @DisableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
 @EnableFeatures(SigninFeatures.UPDATE_METRICS_SERVICES_STATE_IN_RESTORE)
+@LooperMode(LooperMode.Mode.INSTRUMENTATION_TEST)
 public class ChromeBackupAgentTest {
     @Rule public TemporaryFolder mTempDir = new TemporaryFolder();
 
