@@ -151,6 +151,7 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
           include_end_button_ ? PillButton::Type::kSecondaryWithoutIcon
                               : PillButton::Type::kSecondaryLargeWithoutIcon,
           /*icon=*/nullptr));
+  extend_session_duration_button_->SetUseLabelAsDefaultTooltip(false);
   extend_session_duration_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME));

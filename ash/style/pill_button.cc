@@ -315,7 +315,10 @@ views::PropertyEffects PillButton::UpdateStyleToIndicateDefaultStatus() {
 
 std::u16string PillButton::GetTooltipText(const gfx::Point& p) const {
   const auto& tooltip = views::LabelButton::GetTooltipText(p);
-  return tooltip.empty() ? GetText() : tooltip;
+  if (use_label_as_default_tooltip_ && tooltip.empty()) {
+    return GetText();
+  }
+  return tooltip;
 }
 
 void PillButton::SetBackgroundColor(const SkColor background_color) {
@@ -378,6 +381,11 @@ void PillButton::SetEnableBackgroundBlur(bool enable) {
 
 void PillButton::SetTextWithStringId(int message_id) {
   SetText(l10n_util::GetStringUTF16(message_id));
+}
+
+void PillButton::SetUseLabelAsDefaultTooltip(
+    bool use_label_as_default_tooltip) {
+  use_label_as_default_tooltip_ = use_label_as_default_tooltip;
 }
 
 void PillButton::Init() {
