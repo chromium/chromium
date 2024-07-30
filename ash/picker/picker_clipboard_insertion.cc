@@ -155,24 +155,25 @@ void InsertClipboardDataImpl(aura::Window* intended_window,
 void InsertClipboardData(std::unique_ptr<ui::ClipboardData> data,
                          base::OnceClosure do_web_paste,
                          base::OnceCallback<void(bool)> done_callback) {
-  if (aura::Window* active_window = window_util::GetActiveWindow()) {
-    if (!do_web_paste.is_null()) {
-      // `do_web_paste` needs to be called synchronously. If it is non-null,
-      // we are guaranteed to not be pasting into an ARC window.
-      InsertClipboardDataImpl(active_window, std::move(data),
-                              std::move(do_web_paste),
-                              std::move(done_callback));
-    } else {
-      // Paste asynchronously to ensure ARC windows handle paste events
-      // correctly.
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&InsertClipboardDataImpl, active_window,
-                                    std::move(data), std::move(do_web_paste),
-                                    std::move(done_callback)));
-    }
-  } else {
+  aura::Window* active_window = window_util::GetActiveWindow();
+  if (active_window == nullptr) {
     std::move(done_callback).Run(false);
+    return;
   }
+
+  if (!do_web_paste.is_null()) {
+    // `do_web_paste` needs to be called synchronously. If it is non-null, we
+    // are guaranteed to not be pasting into an ARC window.
+    InsertClipboardDataImpl(active_window, std::move(data),
+                            std::move(do_web_paste), std::move(done_callback));
+    return;
+  }
+
+  // Paste asynchronously to ensure ARC windows handle paste events correctly.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&InsertClipboardDataImpl, active_window, std::move(data),
+                     std::move(do_web_paste), std::move(done_callback)));
 }
 
 }  // namespace ash
