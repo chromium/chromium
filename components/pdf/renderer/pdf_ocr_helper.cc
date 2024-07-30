@@ -5,12 +5,21 @@
 #include "components/pdf/renderer/pdf_ocr_helper.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "content/public/renderer/render_frame.h"
 #include "pdf/pdf_accessibility_image_fetcher.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace pdf {
+
+namespace {
+
+// The delay after which the idle connection to OCR service will be
+// disconnected.
+constexpr base::TimeDelta kIdleDisconnectDelay = base::Minutes(5);
+
+}  // namespace
 
 //
 // PdfOcrRequest
@@ -39,16 +48,13 @@ PdfOcrHelper::PdfOcrHelper(
     ui::AXNodeID root_node_id,
     uint32_t page_count,
     OnOcrDataReceivedCallback callback)
-    : image_fetcher_(image_fetcher),
+    : content::RenderFrameObserver(&render_frame),
+      image_fetcher_(image_fetcher),
       pages_per_batch_(ComputePagesPerBatch(page_count)),
       remaining_page_count_(page_count),
       root_node_id_(root_node_id),
       on_ocr_data_received_callback_(std::move(callback)) {
   CHECK(features::IsPdfOcrEnabled());
-  render_frame.GetBrowserInterfaceBroker().GetInterface(
-      screen_ai_annotator_.BindNewPipeAndPassReceiver());
-  screen_ai_annotator_->SetClientType(
-      screen_ai::mojom::OcrClientType::kPdfViewer);
 }
 
 PdfOcrHelper::~PdfOcrHelper() {
@@ -121,6 +127,19 @@ void PdfOcrHelper::ResetRemainingPageCountForTesting() {
   remaining_page_count_ = 0;
 }
 
+void PdfOcrHelper::MaybeConnectToOcrService() {
+  if (screen_ai_annotator_.is_bound() && screen_ai_annotator_.is_connected()) {
+    return;
+  }
+  if (render_frame()) {
+    render_frame()->GetBrowserInterfaceBroker().GetInterface(
+        screen_ai_annotator_.BindNewPipeAndPassReceiver());
+    screen_ai_annotator_->SetClientType(
+        screen_ai::mojom::OcrClientType::kPdfViewer);
+    screen_ai_annotator_.reset_on_idle_timeout(kIdleDisconnectDelay);
+  }
+}
+
 void PdfOcrHelper::OcrNextImage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (all_requests_.empty()) {
@@ -137,6 +156,7 @@ void PdfOcrHelper::OcrNextImage() {
     return;
   }
 
+  MaybeConnectToOcrService();
   screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
       std::move(bitmap),
       base::BindOnce(&PdfOcrHelper::ReceiveOcrResultsForImage,

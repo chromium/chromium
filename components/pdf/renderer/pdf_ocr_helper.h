@@ -10,6 +10,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/accessibility_structs.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
@@ -64,7 +65,7 @@ struct PdfOcrRequest {
 
 // Manages the connection to the OCR Service via Mojo, and ensures that
 // requests are sent in order and that responses are batched.
-class PdfOcrHelper final {
+class PdfOcrHelper : public content::RenderFrameObserver {
  public:
   using OnOcrDataReceivedCallback =
       base::RepeatingCallback<void(std::vector<PdfOcrRequest> ocr_requests,
@@ -79,7 +80,7 @@ class PdfOcrHelper final {
   PdfOcrHelper(const PdfOcrHelper&) = delete;
   PdfOcrHelper& operator=(const PdfOcrHelper&) = delete;
 
-  ~PdfOcrHelper();
+  ~PdfOcrHelper() override;
 
   // If the OCR Helper is created before the PDF is loaded or reloaded, i.e.
   // before `PdfAccessibilityTree::SetAccessibilityDocInfo` is called,
@@ -94,11 +95,18 @@ class PdfOcrHelper final {
   void ResetRemainingPageCountForTesting();
   uint32_t pages_per_batch_for_testing() const { return pages_per_batch_; }
 
+  // content::RenderFrameObserver:
+  void OnDestruct() override {}
+
  private:
   static uint32_t ComputePagesPerBatch(uint32_t page_count);
   void OcrNextImage();
   void ReceiveOcrResultsForImage(PdfOcrRequest request,
                                  const ui::AXTreeUpdate& tree_update);
+
+  // If `screen_ai_annotator_` is not connected to OCR service and
+  // `render_frame_` is available, tries to connect it to the OCR service.
+  void MaybeConnectToOcrService();
 
   // `image_fetcher_` owns `this`.
   const raw_ptr<chrome_pdf::PdfAccessibilityImageFetcher> image_fetcher_;
