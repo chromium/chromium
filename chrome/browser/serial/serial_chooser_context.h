@@ -101,8 +101,6 @@ class SerialChooserContext
   // KeyedService:
   void Shutdown() override;
 
-  Profile* profile() { return profile_.get(); }
-
  private:
   void EnsurePortManagerConnection();
   void SetUpPortManagerConnection(

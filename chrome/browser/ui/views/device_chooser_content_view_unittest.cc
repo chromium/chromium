@@ -241,30 +241,6 @@ TEST_F(DeviceChooserContentViewTest, BluetoothIsOff) {
   EXPECT_FALSE(table_parent()->GetVisible());
   EXPECT_FALSE(no_options_view()->GetVisible());
   EXPECT_TRUE(adapter_off_view()->GetVisible());
-  EXPECT_FALSE(adapter_unauthorized_view()->GetVisible());
-  EXPECT_FALSE(throbber()->GetVisible());
-  EXPECT_FALSE(throbber_label()->GetVisible());
-  EXPECT_TRUE(re_scan_button()->GetVisible());
-  EXPECT_FALSE(re_scan_button()->GetEnabled());
-}
-
-TEST_F(DeviceChooserContentViewTest, BluetoothIsOnThenOffNoDevices) {
-  controller()->SetBluetoothStatus(
-      FakeBluetoothChooserController::BluetoothStatus::IDLE);
-  content_view()->OnOptionsInitialized();
-  ExpectNoDevicesWithMessageVisible();
-  EXPECT_FALSE(adapter_off_view()->GetVisible());
-  EXPECT_FALSE(throbber()->GetVisible());
-  EXPECT_FALSE(throbber_label()->GetVisible());
-  EXPECT_TRUE(re_scan_button()->GetVisible());
-  EXPECT_TRUE(re_scan_button()->GetEnabled());
-
-  controller()->SetBluetoothStatus(
-      FakeBluetoothChooserController::BluetoothStatus::UNAVAILABLE);
-  EXPECT_FALSE(table_parent()->GetVisible());
-  EXPECT_FALSE(no_options_view()->GetVisible());
-  EXPECT_TRUE(adapter_off_view()->GetVisible());
-  EXPECT_FALSE(adapter_unauthorized_view()->GetVisible());
   EXPECT_FALSE(throbber()->GetVisible());
   EXPECT_FALSE(throbber_label()->GetVisible());
   EXPECT_TRUE(re_scan_button()->GetVisible());

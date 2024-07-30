@@ -107,41 +107,37 @@ DeviceChooserContentView::DeviceChooserContentView(
   no_options_view_ = add_centering_view(std::move(no_options_help));
 
   // Link that explains that Bluetooth must be turned on.
-  if (chooser_controller_->ShouldShowAdapterOffView()) {
-    std::u16string link_text = l10n_util::GetStringUTF16(
-        chooser_controller_->GetTurnAdapterOnLinkTextMessageId());
-    size_t offset = 0;
-    std::u16string text = l10n_util::GetStringFUTF16(
-        chooser_controller_->GetAdapterOffMessageId(), link_text, &offset);
-    auto adapter_off_help = std::make_unique<views::StyledLabel>();
-    adapter_off_help->SetText(text);
-    adapter_off_help->AddStyleRange(
-        gfx::Range(offset, offset + link_text.size()),
-        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            &permissions::ChooserController::OpenAdapterOffHelpUrl,
-            base::Unretained(chooser_controller_.get()))));
-    adapter_off_view_ = add_centering_view(std::move(adapter_off_help));
-  }
+  std::u16string link_text = l10n_util::GetStringUTF16(
+      IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ON_BLUETOOTH_LINK_TEXT);
+  size_t offset = 0;
+  std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ADAPTER_OFF, link_text, &offset);
+  auto adapter_off_help = std::make_unique<views::StyledLabel>();
+  adapter_off_help->SetText(text);
+  adapter_off_help->AddStyleRange(
+      gfx::Range(offset, offset + link_text.size()),
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &permissions::ChooserController::OpenAdapterOffHelpUrl,
+          base::Unretained(chooser_controller_.get()))));
+  adapter_off_view_ = add_centering_view(std::move(adapter_off_help));
 
   // Link that explains that OS Bluetooth permission must be granted.
-  if (chooser_controller_->ShouldShowAdapterUnauthorizedView()) {
-    std::u16string link_text = l10n_util::GetStringUTF16(
-        chooser_controller_->GetAuthorizeBluetoothLinkTextMessageId());
-    std::u16string text = l10n_util::GetStringFUTF16(
-        chooser_controller_->GetBluetoothUnauthorizedMessageId(), link_text);
-    size_t text_end = text.size();
-    auto adapter_unauthorized_help = std::make_unique<views::StyledLabel>();
-    adapter_unauthorized_help->SetHorizontalAlignment(
-        gfx::HorizontalAlignment::ALIGN_CENTER);
-    adapter_unauthorized_help->SetText(text);
-    adapter_unauthorized_help->AddStyleRange(
-        gfx::Range(text_end - link_text.size(), text_end),
-        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            &permissions::ChooserController::OpenPermissionPreferences,
-            base::Unretained(chooser_controller_.get()))));
-    adapter_unauthorized_view_ =
-        add_centering_view(std::move(adapter_unauthorized_help));
-  }
+  link_text = l10n_util::GetStringUTF16(
+      IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK_TEXT);
+  text = l10n_util::GetStringFUTF16(
+      IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH, link_text);
+  size_t text_end = text.size();
+  auto adapter_unauthorized_help = std::make_unique<views::StyledLabel>();
+  adapter_unauthorized_help->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_CENTER);
+  adapter_unauthorized_help->SetText(text);
+  adapter_unauthorized_help->AddStyleRange(
+      gfx::Range(text_end - link_text.size(), text_end),
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &permissions::ChooserController::OpenPermissionPreferences,
+          base::Unretained(chooser_controller_.get()))));
+  adapter_unauthorized_view_ =
+      add_centering_view(std::move(adapter_unauthorized_help));
 
   UpdateTableView();
 }
@@ -228,9 +224,7 @@ void DeviceChooserContentView::OnAdapterEnabledChanged(bool enabled) {
   adapter_enabled_ = enabled;
   UpdateTableView();
 
-  if (re_scan_button_) {
-    ShowReScanButton(enabled);
-  }
+  ShowReScanButton(enabled);
 
   if (GetWidget() && GetWidget()->GetRootView())
     GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
@@ -242,9 +236,7 @@ void DeviceChooserContentView::OnAdapterAuthorizationChanged(bool authorized) {
   adapter_authorized_ = authorized;
   UpdateTableView();
 
-  if (re_scan_button_) {
-    ShowReScanButton(authorized);
-  }
+  ShowReScanButton(authorized);
 }
 
 void DeviceChooserContentView::OnRefreshStateChanged(bool refreshing) {
@@ -389,16 +381,9 @@ void DeviceChooserContentView::UpdateTableView() {
     is_initialized_ = true;
   }
   no_options_view_->SetVisible(RowCount() == 0 && is_initialized_ &&
-                               adapter_enabled_ && adapter_authorized_);
-  if (adapter_off_view_) {
-    adapter_off_view_->SetVisible(!adapter_enabled_ && adapter_authorized_);
-  }
-  if (adapter_unauthorized_view_) {
-    adapter_unauthorized_view_->SetVisible(!adapter_authorized_);
-  }
-  if (!adapter_enabled_ || !adapter_authorized_) {
-    HideThrobber();
-  }
+                               adapter_enabled_);
+  adapter_off_view_->SetVisible(!adapter_enabled_);
+  adapter_unauthorized_view_->SetVisible(!adapter_authorized_);
 }
 
 void DeviceChooserContentView::SelectAllCheckboxChanged() {
