@@ -168,6 +168,24 @@ class ChooserController {
   // Navigate user to preferences in order to acquire Bluetooth permission.
   virtual void OpenPermissionPreferences() const;
 
+  // Return whether the chooser needs to show Bluetooth adapter view.
+  virtual bool ShouldShowAdapterOffView() const;
+
+  // Return the message id for Bluetooth adapter being off.
+  virtual int GetAdapterOffMessageId() const;
+
+  // Return the message id of the link text for turning Bluetooth adapter on.
+  virtual int GetTurnAdapterOnLinkTextMessageId() const;
+
+  // Return whether the chooser needs to show Bluetooth unauthorized view.
+  virtual bool ShouldShowAdapterUnauthorizedView() const;
+
+  // Return the message id for Bluetooth access unauthorized.
+  virtual int GetBluetoothUnauthorizedMessageId() const;
+
+  // Return the label of the link text for authotizing Bluetooth access.
+  virtual int GetAuthorizeBluetoothLinkTextMessageId() const;
+
   // Only one view may be registered at a time.
   void set_view(View* view) { view_ = view; }
   View* view() const { return view_; }
