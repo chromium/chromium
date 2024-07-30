@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.DESCRIPTION_1_ID;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.DESCRIPTION_2_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON_BITMAP;
@@ -163,9 +161,8 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO,
                 new PropertyModel.Builder(AdditionalInfoProperties.ALL_KEYS)
                         .with(
-                                DESCRIPTION_1_ID,
-                                R.string.pix_payment_transaction_exceeding_balance_note)
-                        .with(DESCRIPTION_2_ID, R.string.pix_payment_turn_off_pix_note)
+                                AdditionalInfoProperties.DESCRIPTION_ID,
+                                R.string.pix_payment_consent_note)
                         .with(
                                 SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
                                 () -> mDelegate.showFinancialAccountsManagementSettings(mContext))
