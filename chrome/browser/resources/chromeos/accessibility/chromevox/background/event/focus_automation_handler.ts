@@ -66,6 +66,11 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
   /** Handles active descendant changes. */
   async onActiveDescendantChanged(evt: AutomationEvent): Promise<void> {
     if (!evt.target.activeDescendant) {
+      if (ChromeVoxRange.current?.equals(CursorRange.fromNode(evt.target))) {
+        new Output()
+            .withLocation(ChromeVoxRange.current, undefined, evt.type)
+            .go();
+      }
       return;
     }
 
