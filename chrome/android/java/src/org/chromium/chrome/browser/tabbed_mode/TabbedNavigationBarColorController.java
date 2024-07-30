@@ -258,6 +258,9 @@ class TabbedNavigationBarColorController
         // TODO(crbug.com/40560014): Observe tab loads to restrict black bottom nav to
         // incognito NTP.
 
+        // Ensure that the recorded window navbar color matches the existing color, otherwise there
+        // may be a mismatch and future updates could be filtered out incorrectly.
+        mWindowNavigationBarColor = mWindow.getNavigationBarColor();
         updateNavigationBarColor();
     }
 
