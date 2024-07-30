@@ -1,6 +1,5 @@
 ci/Mac Builder
 ci/Mac Builder (dbg)
-ci/Mac10.15 Tests
 ci/Mac11 Tests
 ci/Mac12 Tests
 ci/ios-m1-simulator

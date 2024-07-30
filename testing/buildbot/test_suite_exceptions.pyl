@@ -372,14 +372,6 @@
           'shards': 12,
         },
       },
-      'Mac10.15 Tests': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 1,
-        },
-      },
       'Mac11 Tests': {
         'swarming': {
           'dimensions': {
@@ -676,14 +668,6 @@
           'shards': 18,
         },
       },
-      'Mac10.15 Tests': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 1,
-        },
-      },
       'Mac11 Tests': {
         'swarming': {
           'dimensions': {
@@ -922,8 +906,6 @@
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
       'ToTLinuxTSan',  # https://crbug.com/368525
-      # TODO(crbug.com/40166003): Enable the suite in 'Mac10.15 Tests' once it's
-      # off CQ.
       'mac-code-coverage', # https://crbug.com/1201386
       'mac11-arm64-rel-tests', # https://crbug.com/1406364
       'mac12-arm64-rel-tests', # https://crbug.com/1406364
@@ -1024,13 +1006,6 @@
         'swarming': {
           'shards': 20,  # crbug.com/1361887
         },
-      },
-      'Mac10.15 Tests': {
-        # crbug.com/1042757
-        'swarming': {
-          'shards': 30,
-        },
-        'experiment_percentage': 100,
       },
       'Mac11 Tests': {
         'ci_only': True,
@@ -4518,8 +4493,6 @@
     },
     'remove_from': [
       'android-pie-arm64-rel',
-      # crbug.com/936540
-      'Mac10.15 Tests',
       # TODO crbug.com/1277277
       'mac14-tests-dbg',
       'Linux - Future (dbg)',  # client.v8.chromium

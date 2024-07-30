@@ -419,7 +419,6 @@ try/mac13-blink-rel
 try/mac13-tests
 try/mac13.arm64-blink-rel
 try/mac13.arm64-skia-alt-blink-rel
-try/mac_chromium_10.15_rel_ng
 try/mac_chromium_11.0_rel_ng
 try/mac_chromium_asan_rel_ng
 try/mac_chromium_compile_dbg_ng
