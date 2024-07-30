@@ -116,7 +116,6 @@ ts_library("library") {
     "//chrome/browser/resources/history:build_ts",
     "//chrome/browser/resources/inline_login:build_ts",
     "//chrome/browser/resources/internals/user_education:build_ts",
-    "//chrome/browser/resources/intro:build_ts",
     "//chrome/browser/resources/lens/overlay:build_ts",
     "//chrome/browser/resources/lens/overlay/search_bubble:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
@@ -172,6 +171,10 @@ ts_library("library") {
       "//chrome/browser/resources/chromeos/kerberos:build_ts",
       "//chrome/browser/resources/dlp_internals:build_ts",
     ]
+  }
+
+  if (is_chromeos_lacros) {
+    visibility += [ "//chrome/browser/resources/intro:build_ts" ]
   }
 
   if (is_chromeos_ash) {

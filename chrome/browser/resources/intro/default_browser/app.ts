@@ -2,38 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://intro/tangible_sync_style_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import type {DefaultBrowserBrowserProxy} from './browser_proxy.js';
 import {DefaultBrowserBrowserProxyImpl} from './browser_proxy.js';
 
-const DefaultBrowserAppElementBase = WebUiListenerMixin(PolymerElement);
+const AppElementBase = WebUiListenerMixinLit(CrLitElement);
 
-export class DefaultBrowserAppElement extends DefaultBrowserAppElementBase {
+export class AppElement extends AppElementBase {
   static get is() {
     return 'default-browser-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      anyButtonClicked_: {
-        type: Boolean,
-        value: false,
-      },
+      anyButtonClicked_: {type: Boolean},
     };
   }
 
-  private anyButtonClicked_: boolean;
+  private anyButtonClicked_: boolean = false;
   private browserProxy_: DefaultBrowserBrowserProxy =
       DefaultBrowserBrowserProxyImpl.getInstance();
 
@@ -43,12 +43,12 @@ export class DefaultBrowserAppElement extends DefaultBrowserAppElementBase {
         'reset-default-browser-buttons', this.resetButtons_.bind(this));
   }
 
-  private onConfirmDefaultBrowserClick_() {
+  protected onConfirmDefaultBrowserClick_() {
     this.anyButtonClicked_ = true;
     this.browserProxy_.setAsDefaultBrowser();
   }
 
-  private onSkipDefaultBrowserClick_() {
+  protected onSkipDefaultBrowserClick_() {
     this.anyButtonClicked_ = true;
     this.browserProxy_.skipDefaultBrowser();
   }
@@ -60,15 +60,15 @@ export class DefaultBrowserAppElement extends DefaultBrowserAppElementBase {
   /**
    * Disable buttons if a button was clicked.
    */
-  private areButtonsDisabled_() {
+  protected areButtonsDisabled_() {
     return this.anyButtonClicked_;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'default-browser-app': DefaultBrowserAppElement;
+    'default-browser-app': AppElement;
   }
 }
 
-customElements.define(DefaultBrowserAppElement.is, DefaultBrowserAppElement);
+customElements.define(AppElement.is, AppElement);

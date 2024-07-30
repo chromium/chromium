@@ -101,11 +101,13 @@ build_webui("build") {
     "signin_shared.css",
     "signin_vars.css",
     "tangible_sync_style_shared.css",
+    "tangible_sync_style_shared_lit.css",
   ]
 
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
