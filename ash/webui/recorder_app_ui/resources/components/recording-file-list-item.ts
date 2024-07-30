@@ -73,7 +73,6 @@ export class RecordingFileListItem extends ReactiveLitElement {
       display: flex;
       flex: 1;
       flex-flow: column;
-      gap: 8px;
       min-width: 0;
     }
 
@@ -85,10 +84,21 @@ export class RecordingFileListItem extends ReactiveLitElement {
       padding-inline-end: 36px;
       text-overflow: ellipsis;
       white-space: nowrap;
+
+      & > .highlight {
+        background-color: var(--cros-sys-highlight_text);
+      }
     }
 
-    span.highlight {
-      background-color: var(--cros-sys-highlight_text);
+    #description {
+      -webkit-box-orient: vertical;
+      color: var(--cros-sys-on_surface_variant);
+      display: -webkit-box;
+      font: var(--cros-body-2-font);
+      -webkit-line-clamp: 2;
+      margin-top: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     #timeline {
@@ -103,6 +113,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
       flex-flow: row;
       font: var(--cros-body-2-font);
       gap: 24px;
+      margin-top: 8px;
 
       & > span:first-child {
         flex: 1;
@@ -222,6 +233,13 @@ export class RecordingFileListItem extends ReactiveLitElement {
     </div>`;
   }
 
+  private renderDescription(description: string) {
+    if (description.length === 0) {
+      return nothing;
+    }
+    return html`<div id="description">${description}</div>`;
+  }
+
   private renderRecordingTimeline(recording: RecordingMetadata) {
     const recordingDurationDisplay = formatDuration({
       milliseconds: recording.durationMs,
@@ -270,6 +288,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
             </cra-icon-button>
             <div id="recording-info">
               ${this.renderTitle(this.recording.title, this.searchHighlight)}
+              ${this.renderDescription(this.recording.description)}
               ${this.renderRecordingTimeline(this.recording)}
             </div>
           </cros-card>
