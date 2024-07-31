@@ -200,6 +200,10 @@ class CONTENT_EXPORT AttributionReport {
     return reporting_origin_;
   }
 
+  // For null aggregatable reports, this is the same as
+  // `AttributionInfo::context_origin` since there is no attributed source.
+  const attribution_reporting::SuitableOrigin& GetSourceOrigin() const;
+
   void set_id(Id id) { id_ = id; }
 
   void set_report_time(base::Time report_time);

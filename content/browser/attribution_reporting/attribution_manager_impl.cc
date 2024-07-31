@@ -549,23 +549,10 @@ ScopedUseInMemoryStorageForTesting::~ScopedUseInMemoryStorageForTesting() {
 
 bool AttributionManagerImpl::IsReportAllowed(
     const AttributionReport& report) const {
-  const attribution_reporting::SuitableOrigin* source_origin = absl::visit(
-      base::Overloaded{
-          [](const AttributionReport::EventLevelData& data) {
-            return &data.source_origin;
-          },
-          [](const AttributionReport::AggregatableAttributionData& data) {
-            return &data.source_origin;
-          },
-          [&](const AttributionReport::NullAggregatableData&) {
-            return &report.attribution_info().context_origin;
-          },
-      },
-      report.data());
   return IsOperationAllowed(
       *storage_partition_,
       ContentBrowserClient::AttributionReportingOperation::kReport,
-      /*rfh=*/nullptr, &**source_origin,
+      /*rfh=*/nullptr, &*report.GetSourceOrigin(),
       &*report.attribution_info().context_origin, &*report.reporting_origin());
 }
 
