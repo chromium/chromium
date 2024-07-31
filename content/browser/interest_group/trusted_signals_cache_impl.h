@@ -412,10 +412,18 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // CompressionGroupData. Queues any newly created fetch. After calling, the
   // caller must associate the returned CompressionGroupData with its
   // CacheEntry.
+  //
+  // `interest_group_owner_if_scoring_signals` is only needed for scoring
+  // signals fetches. For bidding signals, the `script_owner` of `fetch_key` is
+  // the `interest_group_owner`, but for scoring signals, it's not, and
+  // compression groups need to be split by interest group owner, to protect
+  // against cross-origin size leaks due to compression.
   scoped_refptr<TrustedSignalsCacheImpl::CompressionGroupData>
   FindOrCreateCompressionGroupDataAndQueueFetch(
       const FetchKey& fetch_key,
-      const url::Origin& joining_origin);
+      const url::Origin& joining_origin,
+      base::optional_ref<const url::Origin>
+          interest_group_owner_if_scoring_signals);
 
   // Starts the corresponding queued network fetch.
   void StartFetch(FetchMap::iterator fetch_it);

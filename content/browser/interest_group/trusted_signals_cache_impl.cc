@@ -125,8 +125,37 @@ struct TrustedSignalsCacheImpl::Fetch {
     int compression_group_id = -1;
   };
 
-  // Map of joining origin to the corresponding compression group.
-  using CompressionGroupMap = std::map<url::Origin, CompressionGroup>;
+  // Key used to distinguish compression group. If two *CacheEntries share a
+  // FetchKey, whether or not they share a CompressionGroupKey as well
+  // determines if they use different compression groups, or use different
+  // partitions within a compression group.
+  struct CompressionGroupKey {
+    // `interest_group_owner_if_scoring_signals` is only needed for scoring
+    // signals fetches. For BiddingCacheEntries, it's the same for everything
+    // that shares the Fetch, so is not needed.
+    CompressionGroupKey(const url::Origin& joining_origin,
+                        base::optional_ref<const url::Origin>
+                            interest_group_owner_if_scoring_signals)
+        : joining_origin(joining_origin),
+          interest_group_owner_if_scoring_signals(
+              interest_group_owner_if_scoring_signals.CopyAsOptional()) {}
+
+    CompressionGroupKey(CompressionGroupKey&&) = default;
+
+    CompressionGroupKey& operator=(CompressionGroupKey&&) = default;
+
+    bool operator<(const CompressionGroupKey& other) const {
+      return std::tie(joining_origin, interest_group_owner_if_scoring_signals) <
+             std::tie(other.joining_origin,
+                      other.interest_group_owner_if_scoring_signals);
+    }
+
+    url::Origin joining_origin;
+
+    std::optional<url::Origin> interest_group_owner_if_scoring_signals;
+  };
+
+  using CompressionGroupMap = std::map<CompressionGroupKey, CompressionGroup>;
   CompressionGroupMap compression_groups;
 
   // Timer to start request. At all points in time, either this should be
@@ -613,8 +642,8 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
 
   scoped_refptr<CompressionGroupData> compression_group_data =
       FindOrCreateCompressionGroupDataAndQueueFetch(
-          cache_entry_it->first.fetch_key,
-          cache_entry_it->first.joining_origin);
+          cache_entry_it->first.fetch_key, cache_entry_it->first.joining_origin,
+          /*interest_group_owner_if_scoring_signals=*/std::nullopt);
 
   // The only thing left to do is set up pointers so objects can look up each
   // other and return the result. When it's time to send a request, the Fetch
@@ -691,8 +720,8 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
 
   scoped_refptr<CompressionGroupData> compression_group_data =
       FindOrCreateCompressionGroupDataAndQueueFetch(
-          cache_entry_it->first.fetch_key,
-          cache_entry_it->first.joining_origin);
+          cache_entry_it->first.fetch_key, cache_entry_it->first.joining_origin,
+          interest_group_owner);
 
   // The only thing left to do is set up pointers so objects can look up each
   // other and return the result. When it's time to send a request, the Fetch
@@ -715,7 +744,9 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
 scoped_refptr<TrustedSignalsCacheImpl::CompressionGroupData>
 TrustedSignalsCacheImpl::FindOrCreateCompressionGroupDataAndQueueFetch(
     const FetchKey& fetch_key,
-    const url::Origin& joining_origin) {
+    const url::Origin& joining_origin,
+    base::optional_ref<const url::Origin>
+        interest_group_owner_if_scoring_signals) {
   // If there are any Fetches with the correct FetchKey, check if the last one
   // is still pending. If so, reuse it. Otherwise, will need to create a new
   // Fetch. Don't need to check the others because multimaps insert in FIFO
@@ -761,7 +792,9 @@ TrustedSignalsCacheImpl::FindOrCreateCompressionGroupDataAndQueueFetch(
   // Now that we have a matching Fetch, check if there's an existing compression
   // group that can be reused.
   auto [compression_group_it, new_element_created] =
-      fetch->compression_groups.try_emplace(joining_origin);
+      fetch->compression_groups.try_emplace(
+          {joining_origin,
+           interest_group_owner_if_scoring_signals.CopyAsOptional()});
 
   // Return existing CompressionGroupData if there's already a matching
   // compression group.

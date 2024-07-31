@@ -809,10 +809,10 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.back().params2.trusted_signals_url =
           GURL("https://seller.test/signals2");
 
-      // TODO(crbug.com/333445540): Make this case use different partitions.
       out.emplace_back(CreateDefaultTestCase());
       out.back().description = "Different interest group owners";
-      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().request_relation =
+          RequestRelation::kDifferentCompressionGroups;
       out.back().params2.interest_group_owner =
           url::Origin::Create(GURL("https://other.bidder.test/"));
 
