@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_util.h"
+#include "media/base/mock_media_log.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
@@ -35,6 +36,7 @@
 using base::test::RunClosure;
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::HasSubstr;
 using ::testing::Return;
 using ::testing::WithArgs;
 
@@ -140,6 +142,10 @@ MATCHER_P2(MatchesEncoderInfo,
   return arg.implementation_name == "VaapiVideoEncodeAccelerator" &&
          arg.supports_native_handle && !arg.has_trusted_rate_controller &&
          arg.is_hardware_accelerated && !arg.supports_simulcast;
+}
+
+MATCHER(ContainsTooManyEncoderInstances, "") {
+  return CONTAINS_STRING(arg, "Too many encoders are allocated");
 }
 
 class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
@@ -265,7 +271,6 @@ class VaapiVideoEncodeAcceleratorTest
     // where it will be used and destroyed on the encoder thread. Therefore, we
     // detach the VaapiWrapper from the construction sequence just for testing.
     mock_vaapi_wrapper_->sequence_checker_.DetachFromSequence();
-    ResetEncoder();
   }
 
   void ResetEncoder() {
@@ -340,6 +345,10 @@ class VaapiVideoEncodeAcceleratorTest
       return false;
     return encoder_->Initialize(config, &client_,
                                 std::make_unique<media::NullMediaLog>());
+  }
+
+  static constexpr int GetMaxNumOfEncoderInstances() {
+    return VaapiVideoEncodeAccelerator::kMaxNumOfInstances;
   }
 
   void InitializeSequenceForVP9(const VideoEncodeAccelerator::Config& config)
@@ -681,7 +690,7 @@ class VaapiVideoEncodeAcceleratorTest
     encoder_->Encode(std::move(frame), /*force_keyframe=*/false);
     run_loop.Run();
   }
-
+  using Config = VideoEncodeAccelerator::Config;
   size_t output_buffer_size_ = 0;
   std::vector<VASurfaceID> va_vpp_dest_surface_ids_;
   std::vector<std::vector<VASurfaceID>> va_encode_surface_ids_;
@@ -720,26 +729,25 @@ struct VaapiVideoEncodeAcceleratorTestParam {
 };
 
 TEST_P(VaapiVideoEncodeAcceleratorTest, Initialize) {
+  ResetEncoder();
   const uint8_t num_of_spatial_layers = GetParam().num_of_spatial_layers;
   const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
 
-  VideoEncodeAccelerator::Config config = DefaultVideoEncodeAcceleratorConfig();
+  Config config = DefaultVideoEncodeAcceleratorConfig();
   config.inter_layer_pred = inter_layer_pred;
   const uint8_t num_of_temporal_layers = GetParam().num_of_temporal_layers;
   config.spatial_layers =
       GetDefaultSVCLayers(num_of_spatial_layers, num_of_temporal_layers);
 
   for (const VideoPixelFormat format : {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12}) {
-    for (const VideoEncodeAccelerator::Config::StorageType storage_type :
-         {VideoEncodeAccelerator::Config::StorageType::kShmem,
-          VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer}) {
+    for (const Config::StorageType storage_type :
+         {Config::StorageType::kShmem, Config::StorageType::kGpuMemoryBuffer}) {
       for (const VideoCodecProfile profile :
            {H264PROFILE_MAIN, VP9PROFILE_PROFILE0}) {
         config.input_format = format;
         config.storage_type = storage_type;
         config.output_profile = profile;
-        if (storage_type ==
-                VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer &&
+        if (storage_type == Config::StorageType::kGpuMemoryBuffer &&
             format != PIXEL_FORMAT_NV12) {
           // VaapiVEA doesn't support native input mode for non-NV12 format.
           EXPECT_EQ(InitializeVideoEncodeAccelerator(config), false);
@@ -758,13 +766,14 @@ TEST_P(VaapiVideoEncodeAcceleratorTest, Initialize) {
 // This test verifies VP9 single stream and temporal layer encoding in non
 // native input mode.
 TEST_P(VaapiVideoEncodeAcceleratorTest, EncodeVP9WithSingleSpatialLayer) {
+  ResetEncoder();
   if (GetParam().num_of_spatial_layers > 1u)
     GTEST_SKIP() << "Test only meant for single spatial layer";
 
-  VideoEncodeAccelerator::Config config = DefaultVideoEncodeAcceleratorConfig();
+  Config config = DefaultVideoEncodeAcceleratorConfig();
   const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
   config.inter_layer_pred = inter_layer_pred;
-  VideoEncodeAccelerator::Config::SpatialLayer spatial_layer;
+  Config::SpatialLayer spatial_layer;
   spatial_layer.width = kDefaultEncodeSize.width();
   spatial_layer.height = kDefaultEncodeSize.height();
   spatial_layer.bitrate_bps = kDefaultBitrateBps;
@@ -781,23 +790,80 @@ TEST_P(VaapiVideoEncodeAcceleratorTest, EncodeVP9WithSingleSpatialLayer) {
 
 // This test verifies VP9 multiple spaital layers encoding in native input mode.
 TEST_P(VaapiVideoEncodeAcceleratorTest, EncodeVP9WithMultipleSpatialLayers) {
+  ResetEncoder();
   const uint8_t num_of_spatial_layers = GetParam().num_of_spatial_layers;
   if (num_of_spatial_layers <= 1)
     GTEST_SKIP() << "Test only meant for multiple spatial layers configuration";
 
   const uint8_t num_of_temporal_layers = GetParam().num_of_temporal_layers;
-  VideoEncodeAccelerator::Config config = DefaultVideoEncodeAcceleratorConfig();
+  Config config = DefaultVideoEncodeAcceleratorConfig();
   const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
   config.inter_layer_pred = inter_layer_pred;
   config.input_format = PIXEL_FORMAT_NV12;
-  config.storage_type =
-      VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
+  config.storage_type = Config::StorageType::kGpuMemoryBuffer;
   config.spatial_layers =
       GetDefaultSVCLayers(num_of_spatial_layers, num_of_temporal_layers);
   SetDefaultMocksBehavior(config);
 
   InitializeSequenceForVP9(config);
   EncodeSequenceForVP9MultipleSpatialLayers(num_of_spatial_layers);
+}
+
+// This test verifies Initialize() fails with correct corresponding error
+// logging when the max number of encoder instances is reached. Once it happens,
+// the encoder fails the rest of the Initialize() sequence, which requires
+// setting up new |encoder_| and |vaapi_wrapper_|s to succeed. So this test
+// creates and stores encoder instances within the threshold number without
+// initializing them.
+TEST_F(VaapiVideoEncodeAcceleratorTest, TooManyEncoderInstances) {
+  Config config = DefaultVideoEncodeAcceleratorConfig();
+  constexpr int kMaxNumOfInstances = GetMaxNumOfEncoderInstances();
+
+  std::vector<std::unique_ptr<VaapiVideoEncodeAccelerator>> encoders(
+      kMaxNumOfInstances);
+  for (int i = 0; i <= kMaxNumOfInstances; i++) {
+    auto encoder = std::make_unique<VaapiVideoEncodeAccelerator>();
+    auto media_log = std::make_unique<MockMediaLog>();
+    if (i == kMaxNumOfInstances) {
+      EXPECT_MEDIA_LOG_ON(*media_log, ContainsTooManyEncoderInstances());
+      EXPECT_FALSE(encoder->Initialize(config, &client_, std::move(media_log)));
+    } else {
+      encoders[i] = std::move(encoder);
+    }
+  }
+}
+
+// This test verifies Initialize() fails when the encoder is already
+// Initialize()d.
+TEST_F(VaapiVideoEncodeAcceleratorTest, AttemptedInitialization) {
+  ResetEncoder();
+  Config config = DefaultVideoEncodeAcceleratorConfig();
+  EXPECT_TRUE(InitializeVideoEncodeAccelerator(config));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(InitializeVideoEncodeAccelerator(config));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(VaapiVideoEncodeAcceleratorTest, InitializeWithUnsupportedConfig) {
+  const Bitrate kVariableBitrate = Bitrate::VariableBitrate(0u, 123456u);
+  const Config unsupported_configs[] = {
+      // VaapiVEA does not support HEVC encoding.
+      Config(PIXEL_FORMAT_NV12, kDefaultEncodeSize, HEVCPROFILE_MAIN,
+             kDefaultBitrate, kDefaultFramerate, Config::StorageType::kShmem,
+             Config::ContentType::kCamera),
+      // VaapiVEA only supports variable bitrate with H264 encoding.
+      Config(PIXEL_FORMAT_NV12, kDefaultEncodeSize, VP9PROFILE_PROFILE0,
+             kVariableBitrate, kDefaultFramerate, Config::StorageType::kShmem,
+             Config::ContentType::kCamera),
+      // VaapiVEA does not support PIXEL_FORMAT_YV12.
+      Config(PIXEL_FORMAT_YV12, kDefaultEncodeSize, VP9PROFILE_PROFILE0,
+             kDefaultBitrate, kDefaultFramerate, Config::StorageType::kShmem,
+             Config::ContentType::kCamera)};
+
+  for (const auto& config : unsupported_configs) {
+    ResetEncoder();
+    EXPECT_FALSE(InitializeVideoEncodeAccelerator(config));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
