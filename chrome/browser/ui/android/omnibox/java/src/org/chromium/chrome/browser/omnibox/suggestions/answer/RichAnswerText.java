@@ -8,7 +8,6 @@ import android.content.Context;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.MetricAffectingSpan;
-import android.text.style.TextAppearanceSpan;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StyleRes;
@@ -20,6 +19,7 @@ import org.chromium.components.omnibox.AnswerDataProto.FormattedString.Formatted
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
+import org.chromium.ui.text.DownloadableFontTextAppearanceSpan;
 
 import java.util.List;
 
@@ -213,7 +213,7 @@ class RichAnswerText implements AnswerText {
                                 .TextAppearance_TextLarge_Primary;
         if (answerType != AnswerType.ANSWER_TYPE_DICTIONARY
                 && answerType != AnswerType.ANSWER_TYPE_FINANCE) {
-            return new TextAppearanceSpan(context, largeRes);
+            return new DownloadableFontTextAppearanceSpan(context, largeRes);
         }
 
         // TODO(b/327497146): skip color reversal when original data source is proto backend, which
@@ -229,9 +229,9 @@ class RichAnswerText implements AnswerText {
                                         .TextAppearance_OmniboxAnswerDescriptionPositive
                                 : org.chromium.chrome.browser.omnibox.R.style
                                         .TextAppearance_OmniboxAnswerDescriptionNegative;
-                yield new TextAppearanceSpan(context, styleResource);
+                yield new DownloadableFontTextAppearanceSpan(context, styleResource);
             }
-            default -> new TextAppearanceSpan(context, largeRes);
+            default -> new DownloadableFontTextAppearanceSpan(context, largeRes);
                 // TODO(b/327497146): handle equivalent of
                 // AnswerTextType.SUGGESTION_SECONDARY_TEXT_MEDIUM
         };
@@ -250,7 +250,7 @@ class RichAnswerText implements AnswerText {
                                 .TextAppearance_TextLarge_Secondary
                         : org.chromium.chrome.browser.omnibox.R.style
                                 .TextAppearance_TextMedium_Secondary;
-        return new TextAppearanceSpan(mContext, res);
+        return new DownloadableFontTextAppearanceSpan(mContext, res);
     }
 
     private static int getMaxLinesForAnswerType(AnswerType answerType) {
