@@ -700,14 +700,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrintPreview.ManagePrinters" units="units"
-    expires_after="2020-02-23">
-  <owner>thestig@chromium.org</owner>
-  <summary>
-    Count the number of requests received to show the manage printers dialog.
-  </summary>
-</histogram>
-
 <histogram name="PrintPreview.NumberOfPrinters" units="units"
     expires_after="2024-12-08">
   <owner>thestig@chromium.org</owner>
@@ -801,15 +793,6 @@ chromium-metrics-reviews@google.com.
   <owner>thestig@chromium.org</owner>
   <summary>
     Actions performed by the user interacting with print settings UI elements.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.RegeneratePreviewRequest.BeforeFirstData"
-    units="units" expires_after="2020-02-23">
-  <owner>thestig@chromium.org</owner>
-  <summary>
-    The number of times regenerate preview requests received before the first
-    preview data is available.
   </summary>
 </histogram>
 
