@@ -36,7 +36,6 @@ from .protocol import (BaseProtocolPart,
                        FedCMProtocolPart,
                        VirtualSensorProtocolPart,
                        DevicePostureProtocolPart,
-                       StorageProtocolPart,
                        merge_dicts)
 
 from webdriver.client import Session
@@ -444,13 +443,6 @@ class WebDriverDevicePostureProtocolPart(DevicePostureProtocolPart):
     def clear_device_posture(self):
         return self.webdriver.send_session_command("DELETE", "deviceposture")
 
-class WebDriverStorageProtocolPart(StorageProtocolPart):
-    def setup(self):
-        self.webdriver = self.parent.webdriver
-
-    def run_bounce_tracking_mitigations(self):
-        return self.webdriver.send_session_command("DELETE", "storage/run_bounce_tracking_mitigations")
-
 class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
                   WebDriverTestharnessProtocolPart,
@@ -470,8 +462,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverFedCMProtocolPart,
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
-                  WebDriverDevicePostureProtocolPart,
-                  WebDriverStorageProtocolPart]
+                  WebDriverDevicePostureProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)
