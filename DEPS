@@ -446,7 +446,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libavif
   # and whatever else without interference from each other.
-  'libavif_revision': '227293d51f5b9de39975f9add2c5fe01c5835448',
+  'libavif_revision': 'bb24db03cd99befe09c87b602e36f24d75a980d1',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling crabbyavif
   # and whatever else without interference from each other.
