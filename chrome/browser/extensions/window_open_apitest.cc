@@ -97,8 +97,9 @@ bool WaitForTabsPopupsApps(Browser* browser,
   int num_popups_seen = 0;
   int num_app_popups_seen = 0;
   for (Browser* b : *BrowserList::GetInstance()) {
-    if (b == browser)
+    if (b == browser) {
       continue;
+    }
 
     EXPECT_TRUE(b->is_type_popup() || b->is_type_app_popup());
     if (b->is_type_popup())
