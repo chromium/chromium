@@ -37,11 +37,19 @@ class SavedTabGroupModel {
   SavedTabGroupModel& operator=(const SavedTabGroupModel& other) = delete;
   ~SavedTabGroupModel();
 
-  // Accessor for the underlying storage vector.
+  // Accessor for the underlying storage vector. Prefer the methods below to
+  // distinguish between the saved and shared tab groups.
   const std::vector<SavedTabGroup>& saved_tab_groups() const {
     return saved_tab_groups_;
   }
-  std::vector<SavedTabGroup> saved_tab_groups() { return saved_tab_groups_; }
+
+  // Returns saved tab groups (which are not shared). The returned pointers can
+  // be invalidated on any model's mutation.
+  std::vector<const SavedTabGroup*> GetSavedTabGroupsOnly() const;
+
+  // Returns shared tab groups. The returned pointers can be invalidated on any
+  // model's mutation.
+  std::vector<const SavedTabGroup*> GetSharedTabGroupsOnly() const;
 
   bool is_loaded() { return is_loaded_; }
 

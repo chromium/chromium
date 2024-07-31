@@ -9,13 +9,25 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/protocol/saved_tab_group_specifics.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace tab_groups {
 class SavedTabGroupModel;
+
+MATCHER_P2(HasSpecificsSavedTabGroup, title, color, "") {
+  return arg.group().title() == title && arg.group().color() == color;
+}
+
+MATCHER_P2(HasSpecificsSavedTab, title, url, "") {
+  return arg.tab().title() == title && arg.tab().url() == url;
+}
 
 // Checks that a tab or group with a particular uuid exists in the model.
 class SavedTabOrGroupExistsChecker : public StatusChangeChecker,
@@ -181,6 +193,25 @@ class TabOrderChecker : public StatusChangeChecker,
 
   raw_ptr<SavedTabGroupModel> const model_;
 };
+
+// A helper class that waits for the SAVED_TAB_GROUP entities on the FakeServer
+// to match a given GMock matcher.
+class ServerSavedTabGroupMatchChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  using Matcher =
+      testing::Matcher<std::vector<sync_pb::SavedTabGroupSpecifics>>;
+
+  explicit ServerSavedTabGroupMatchChecker(const Matcher& matcher);
+  ~ServerSavedTabGroupMatchChecker() override;
+
+  // fake_server::FakeServerMatchStatusChecker overrides.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  const Matcher matcher_;
+};
+
 }  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SAVED_TAB_GROUPS_HELPER_H_

@@ -34,8 +34,16 @@
 
 namespace tab_groups {
 
+namespace {
+
 using testing::IsEmpty;
 using testing::Not;
+using testing::Pointee;
+using testing::UnorderedElementsAre;
+
+MATCHER_P(HasGroupId, guid, "") {
+  return arg.saved_guid() == guid;
+}
 
 // Serves to test the functions in SavedTabGroupModelObserver.
 class SavedTabGroupModelObserverTest
@@ -77,6 +85,11 @@ class SavedTabGroupModelObserverTest
     retrieved_group_.emplace_back(*saved_tab_group_model_->Get(group_guid));
     retrieved_index_ =
         saved_tab_group_model_->GetIndexOf(group_guid).value_or(-1);
+  }
+
+  void SavedTabGroupSharedStateUpdatedLocally(
+      const base::Uuid& group_guid) override {
+    SavedTabGroupUpdatedLocally(group_guid, /*tab_guid=*/std::nullopt);
   }
 
   void SavedTabGroupAddedFromSync(const base::Uuid& guid) override {
@@ -503,6 +516,24 @@ TEST_P(SavedTabGroupModelTest, MoveElement) {
     EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_2_));
     EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_3_));
   }
+}
+
+TEST_P(SavedTabGroupModelTest, ShouldDistinguishSavedAndSharedGroups) {
+  const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
+  saved_tab_group_model_->OnGroupOpenedInTabStrip(
+      id_1_, test::GenerateRandomTabGroupID());
+  saved_tab_group_model_->MakeTabGroupShared(group->local_group_id().value(),
+                                             "collaboration");
+
+  ASSERT_TRUE(saved_tab_group_model_->Get(id_1_)->is_shared_tab_group());
+  ASSERT_FALSE(saved_tab_group_model_->Get(id_2_)->is_shared_tab_group());
+  ASSERT_FALSE(saved_tab_group_model_->Get(id_3_)->is_shared_tab_group());
+
+  EXPECT_THAT(saved_tab_group_model_->GetSavedTabGroupsOnly(),
+              UnorderedElementsAre(Pointee(HasGroupId(id_2_)),
+                                   Pointee(HasGroupId(id_3_))));
+  EXPECT_THAT(saved_tab_group_model_->GetSharedTabGroupsOnly(),
+              UnorderedElementsAre(Pointee(HasGroupId(id_1_))));
 }
 
 TEST_P(SavedTabGroupModelTest, LoadStoredEntriesPopulatesModel) {
@@ -1414,5 +1445,7 @@ INSTANTIATE_TEST_SUITE_P(SavedTabGroupModel,
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupModel,
                          SavedTabGroupModelObserverTest,
                          testing::Bool());
+
+}  // namespace
 
 }  // namespace tab_groups

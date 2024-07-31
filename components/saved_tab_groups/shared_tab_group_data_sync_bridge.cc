@@ -393,20 +393,17 @@ SharedTabGroupDataSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
 
   // Iterate over all the shared groups and tabs to find corresponding entities
   // for commit.
-  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
-    if (!group.is_shared_tab_group()) {
-      continue;
-    }
-    CHECK(group.collaboration_id().has_value());
+  for (const SavedTabGroup* group : model_->GetSharedTabGroupsOnly()) {
+    CHECK(group->collaboration_id().has_value());
 
-    if (parsed_guids.contains(group.saved_guid())) {
-      AddEntryToBatch(batch.get(), SharedTabGroupToSpecifics(group),
-                      group.collaboration_id().value());
+    if (parsed_guids.contains(group->saved_guid())) {
+      AddEntryToBatch(batch.get(), SharedTabGroupToSpecifics(*group),
+                      group->collaboration_id().value());
     }
-    for (const SavedTabGroupTab& tab : group.saved_tabs()) {
+    for (const SavedTabGroupTab& tab : group->saved_tabs()) {
       if (parsed_guids.contains(tab.saved_tab_guid())) {
         AddEntryToBatch(batch.get(), SharedTabGroupTabToSpecifics(tab),
-                        group.collaboration_id().value());
+                        group->collaboration_id().value());
       }
     }
   }
@@ -417,17 +414,13 @@ std::unique_ptr<syncer::DataBatch>
 SharedTabGroupDataSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
-    if (!group.is_shared_tab_group()) {
-      continue;
-    }
-
-    CHECK(group.collaboration_id().has_value());
-    AddEntryToBatch(batch.get(), SharedTabGroupToSpecifics(group),
-                    group.collaboration_id().value());
-    for (const SavedTabGroupTab& tab : group.saved_tabs()) {
+  for (const SavedTabGroup* group : model_->GetSharedTabGroupsOnly()) {
+    CHECK(group->collaboration_id().has_value());
+    AddEntryToBatch(batch.get(), SharedTabGroupToSpecifics(*group),
+                    group->collaboration_id().value());
+    for (const SavedTabGroupTab& tab : group->saved_tabs()) {
       AddEntryToBatch(batch.get(), SharedTabGroupTabToSpecifics(tab),
-                      group.collaboration_id().value());
+                      group->collaboration_id().value());
     }
   }
   return batch;
@@ -472,13 +465,9 @@ void SharedTabGroupDataSyncBridge::ApplyDisableSyncChanges(
   // removing them from within the same loop would modify the same underlying
   // storage.
   std::map<base::Uuid, std::vector<base::Uuid>> group_and_tabs_to_close_locally;
-  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
-    if (!group.is_shared_tab_group()) {
-      continue;
-    }
-
+  for (const SavedTabGroup* group : model_->GetSharedTabGroupsOnly()) {
     std::vector<base::Uuid> tabs_to_close_locally;
-    for (const SavedTabGroupTab& tab : group.saved_tabs()) {
+    for (const SavedTabGroupTab& tab : group->saved_tabs()) {
       tabs_to_close_locally.emplace_back(tab.saved_tab_guid());
     }
 
@@ -487,7 +476,7 @@ void SharedTabGroupDataSyncBridge::ApplyDisableSyncChanges(
     // would left open. It's safer to explicitly close all the groups explicitly
     // (the model will just ignore it if they don't exist anymore), hence keep
     // an empty group as well.
-    group_and_tabs_to_close_locally[group.saved_guid()] =
+    group_and_tabs_to_close_locally[group->saved_guid()] =
         std::move(tabs_to_close_locally);
   }
 
@@ -779,13 +768,10 @@ void SharedTabGroupDataSyncBridge::DeleteDataFromLocalStorage(
     return;
   }
 
-  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
-    if (!group.ContainsTab(guid)) {
-      continue;
-    }
-
-    model_->RemoveTabFromGroupFromSync(group.saved_guid(), guid);
-    return;
+  if (const SavedTabGroup* group_containing_tab =
+          model_->GetGroupContainingTab(guid)) {
+    model_->RemoveTabFromGroupFromSync(group_containing_tab->saved_guid(),
+                                       guid);
   }
 }
 

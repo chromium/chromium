@@ -43,6 +43,11 @@ class SavedTabGroupModelObserver {
       const base::Uuid& group_guid,
       const std::optional<base::Uuid>& tab_guid) {}
 
+  // Called whenever the tab group has changed its shared state (e.g. after
+  // transitioning from saved to shared tab group).
+  virtual void SavedTabGroupSharedStateUpdatedLocally(
+      const base::Uuid& group_guid) {}
+
   // Called when the order of tabs in an open saved tab group are changed in the
   // tabstrip.
   virtual void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid) {
