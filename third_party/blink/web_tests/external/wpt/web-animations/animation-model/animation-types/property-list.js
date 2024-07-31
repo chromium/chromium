@@ -19,6 +19,12 @@ const gCSSProperties1 = {
       { type: 'discrete', options: [ [ 'flex-start', 'flex-end' ] ] }
     ]
   },
+  'appearance': {
+    // https://drafts.csswg.org/css-ui/#appearance-switching
+    types: [
+      { type: 'discrete' , options: [ [ 'auto', 'none' ] ] }
+    ]
+  },
   'backface-visibility': {
     // https://drafts.csswg.org/css-transforms/#propdef-backface-visibility
     types: [
@@ -1249,6 +1255,24 @@ const gCSSProperties2 = {
       { type: 'discrete', options: [ [ 'auto', 'smooth' ] ] }
     ]
   },
+  'scroll-snap-align': {
+    // https://drafts.csswg.org/css-scroll-snap/#propdef-scroll-snap-align
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'start' ]] }
+    ]
+  },
+  'scroll-snap-stop': {
+    // https://drafts.csswg.org/css-scroll-snap/#propdef-scroll-snap-stop
+    types: [
+      { type: 'discrete', options: [ [ 'normal', 'always' ]] }
+    ]
+  },
+  'scroll-snap-type': {
+    // https://drafts.csswg.org/css-scroll-snap/#propdef-scroll-snap-type
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'x mandatory' ]] }
+    ]
+  },
   'scrollbar-color': {
     // https://drafts.csswg.org/css-scrollbars/#propdef-scrollbar-color
     types: [ 'colorPair' ]
@@ -1291,6 +1315,10 @@ const gCSSProperties2 = {
     // https://svgwg.org/svg2-draft/painting.html#StrokeProperty
     types: [
     ]
+  },
+  'stroke-color': {
+    // https://drafts.fxtf.org/fill-stroke-3/#propdef-stroke-color
+    types: [ 'color' ]
   },
   'stroke-dasharray': {
     // https://svgwg.org/svg2-draft/painting.html#StrokeDasharrayProperty

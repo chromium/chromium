@@ -2592,6 +2592,9 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-backgrounds/background-clip/clip-text-animated-text.html [ Failure ]
+[ Mac11 ] external/wpt/css/css-masking/animations/mask-border-outset-interpolation.html [ Failure Timeout ]
+virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-animated-text.html [ Failure ]
 crbug.com/356436572 external/wpt/css/css-box/margin-trim/block-container-block-end-collapsed-margins.html [ Failure ]
 crbug.com/356436572 external/wpt/css/css-box/margin-trim/block-container-block-end-self-collapsing-item-has-larger-block-end.html [ Failure ]
 crbug.com/356436572 external/wpt/css/css-box/margin-trim/block-container-block-end-self-collapsing-item-has-larger-block-start.html [ Failure ]
