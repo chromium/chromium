@@ -15,20 +15,38 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/serial/serial_blocklist.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/serial/serial_chooser_histograms.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/common/webui_url_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 
+using ::device::BluetoothAdapter;
+using ::device::BluetoothAdapterFactory;
 using ::device::mojom::SerialPortType;
 
 bool FilterMatchesPort(const blink::mojom::SerialPortFilter& filter,
@@ -87,8 +105,12 @@ SerialChooserController::SerialChooserController(
       SerialChooserContextFactory::GetForProfile(profile)->AsWeakPtr();
   DCHECK(chooser_context_);
 
-  chooser_context_->GetPortManager()->GetDevices(base::BindOnce(
-      &SerialChooserController::OnGetDevices, weak_factory_.GetWeakPtr()));
+  // Post `GetDevices` to be run later after the view is set in the current
+  // sequence, so that it will have a valid view when running `GetDevices`.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&SerialChooserController::GetDevices,
+                                weak_factory_.GetWeakPtr()));
+
   observation_.Observe(chooser_context_.get());
 }
 
@@ -101,6 +123,33 @@ const device::mojom::SerialPortInfo& SerialChooserController::GetPortForTest(
     size_t index) const {
   CHECK_LT(index, ports_.size());
   return *ports_[index];
+}
+
+void SerialChooserController::GetDevices() {
+  CHECK(view());
+  if (IsWirelessSerialPortOnly()) {
+    if (!adapter_) {
+      BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
+          &SerialChooserController::OnGetAdapter, weak_factory_.GetWeakPtr(),
+          base::BindOnce(&SerialChooserController::GetDevices,
+                         weak_factory_.GetWeakPtr())));
+      return;
+    }
+
+    if (adapter_->GetOsPermissionStatus() !=
+        device::BluetoothAdapter::PermissionStatus::kAllowed) {
+      view()->OnAdapterAuthorizationChanged(false);
+      return;
+    }
+
+    if (!adapter_->IsPowered()) {
+      view()->OnAdapterEnabledChanged(false);
+      return;
+    }
+  }
+
+  chooser_context_->GetPortManager()->GetDevices(base::BindOnce(
+      &SerialChooserController::OnGetDevices, weak_factory_.GetWeakPtr()));
 }
 
 bool SerialChooserController::ShouldShowHelpButton() const {
@@ -200,6 +249,29 @@ void SerialChooserController::Cancel() {}
 
 void SerialChooserController::Close() {}
 
+// TODO(crbug.com/355570625): Shared impl with ChromeBluetoothChooserController.
+void SerialChooserController::OpenAdapterOffHelpUrl() const {
+  CHECK(chooser_context_);
+  Profile* profile = chooser_context_->profile();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Chrome OS can directly link to the OS setting to turn on the adapter.
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      profile, chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
+#else
+  // For other operating systems, show a help center page in a tab.
+  chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile);
+  CHECK(browser_displayer.browser());
+  browser_displayer.browser()->OpenURL(
+      content::OpenURLParams(GURL(chrome::kBluetoothAdapterOffHelpURL),
+                             content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+#endif
+}
+
 void SerialChooserController::OpenHelpCenterUrl() const {
   auto* rfh = initiator_document_.AsRenderFrameHostIfValid();
   auto* web_contents = rfh && rfh->IsActive()
@@ -214,6 +286,48 @@ void SerialChooserController::OpenHelpCenterUrl() const {
           WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
+}
+
+void SerialChooserController::OpenPermissionPreferences() const {
+#if BUILDFLAG(IS_MAC)
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kPrivacySecurity_Bluetooth);
+#else
+  NOTREACHED_NORETURN();
+#endif
+}
+
+bool SerialChooserController::ShouldShowAdapterOffView() const {
+  return true;
+}
+
+int SerialChooserController::GetAdapterOffMessageId() const {
+  return IDS_SERIAL_DEVICE_CHOOSER_ADAPTER_OFF;
+}
+
+int SerialChooserController::GetTurnAdapterOnLinkTextMessageId() const {
+  return IDS_SERIAL_DEVICE_CHOOSER_TURN_ON_BLUETOOTH_LINK_TEXT;
+}
+
+bool SerialChooserController::ShouldShowAdapterUnauthorizedView() const {
+  return true;
+}
+
+int SerialChooserController::GetBluetoothUnauthorizedMessageId() const {
+  return IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH;
+}
+
+int SerialChooserController::GetAuthorizeBluetoothLinkTextMessageId() const {
+  return IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK_TEXT;
+}
+
+void SerialChooserController::AdapterPoweredChanged(BluetoothAdapter* adapter,
+                                                    bool powered) {
+  CHECK(view());
+  view()->OnAdapterEnabledChanged(powered);
+  if (powered) {
+    GetDevices();
+  }
 }
 
 void SerialChooserController::OnPortAdded(
@@ -250,6 +364,7 @@ void SerialChooserController::OnGetDevices(
               return port1->path.BaseName() < port2->path.BaseName();
             });
 
+  ports_.clear();
   for (auto& port : ports) {
     if (DisplayDevice(*port))
       ports_.push_back(std::move(port));
@@ -323,4 +438,33 @@ void SerialChooserController::RunCallback(
 
   UMA_HISTOGRAM_ENUMERATION("Permissions.Serial.ChooserClosed", outcome);
   std::move(callback_).Run(std::move(port));
+}
+
+void SerialChooserController::OnGetAdapter(
+    base::OnceClosure callback,
+    scoped_refptr<BluetoothAdapter> adapter) {
+  CHECK(adapter);
+  adapter_ = std::move(adapter);
+  adapter_observation_.Observe(adapter_.get());
+  std::move(callback).Run();
+}
+
+bool SerialChooserController::IsWirelessSerialPortOnly() {
+  if (allowed_bluetooth_service_class_ids_.empty()) {
+    return false;
+  }
+
+  // The system's wired and wireless serial ports can be shown if there is no
+  // filter.
+  if (filters_.empty()) {
+    return false;
+  }
+
+  // Check if all the filters are meant for serial port from Bluetooth device.
+  for (const auto& filter : filters_) {
+    if (!filter->bluetooth_service_class_id) {
+      return false;
+    }
+  }
+  return true;
 }

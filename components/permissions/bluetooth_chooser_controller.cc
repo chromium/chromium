@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -249,6 +250,30 @@ void BluetoothChooserController::ClearAllDevices() {
   devices_.clear();
   device_id_to_name_map_.clear();
   device_name_counts_.clear();
+}
+
+bool BluetoothChooserController::ShouldShowAdapterOffView() const {
+  return true;
+}
+
+int BluetoothChooserController::GetAdapterOffMessageId() const {
+  return IDS_BLUETOOTH_DEVICE_CHOOSER_ADAPTER_OFF;
+}
+
+int BluetoothChooserController::GetTurnAdapterOnLinkTextMessageId() const {
+  return IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ON_BLUETOOTH_LINK_TEXT;
+}
+
+bool BluetoothChooserController::ShouldShowAdapterUnauthorizedView() const {
+  return true;
+}
+
+int BluetoothChooserController::GetBluetoothUnauthorizedMessageId() const {
+  return IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH;
+}
+
+int BluetoothChooserController::GetAuthorizeBluetoothLinkTextMessageId() const {
+  return IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK_TEXT;
 }
 
 }  // namespace permissions
