@@ -26,4 +26,13 @@ void BocaAppHandler::GetWindowsTabsList(GetWindowsTabsListCallback callback) {
   tab_info_collector_.GetWindowTabInfo(std::move(callback));
 }
 
+void BocaAppHandler::ListCourses(const std::string& teacher_id,
+                                 ListCoursesCallback callback) {
+  class_room_page_handler_.ListCourses(teacher_id, std::move(callback));
+}
+
+void BocaAppHandler::ListStudents(const std::string& course_id,
+                                  ListStudentsCallback callback) {
+  class_room_page_handler_.ListStudents(course_id, std::move(callback));
+}
 }  // namespace ash

@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/boca/classroom/classroom_page_handler_impl.h"
+#include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 
+#include "base/command_line.h"
 #include "base/test/mock_callback.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/test_util.h"
@@ -25,7 +23,6 @@
 namespace ash {
 namespace {
 
-using ::ash::boca::classroom::mojom::ClassroomPageHandler;
 using ::net::test_server::BasicHttpResponse;
 using ::net::test_server::HttpRequest;
 using ::net::test_server::HttpResponse;
@@ -62,22 +59,14 @@ class TestRequestHandler {
 class ClassroomPageHandlerImplTest : public testing::Test {
  public:
   ClassroomPageHandlerImplTest()
-      : profile_manager_(
-            TestingProfileManager(TestingBrowserProcess::GetGlobal())),
-        url_loader_factory_(
+      : url_loader_factory_(
             base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
                 /*network_service=*/nullptr,
                 /*is_trusted=*/true)) {}
 
   void SetUp() override {
-    ASSERT_TRUE(profile_manager_.SetUp());
-
-    classroom_handler_ = std::make_unique<ClassroomPageHandlerImpl>(
-        mojo::PendingReceiver<ClassroomPageHandler>(),
-        profile_manager_.CreateTestingProfile("profile@example.com",
-                                              /*is_main_profile=*/true,
-                                              url_loader_factory_),
-        MakeRequestSender());
+    classroom_handler_ =
+        std::make_unique<ClassroomPageHandlerImpl>(MakeRequestSender());
 
     test_server_.RegisterRequestHandler(
         base::BindRepeating(&TestRequestHandler::HandleRequest,
@@ -110,7 +99,6 @@ class ClassroomPageHandlerImplTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::IO};
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<google_apis::RequestSender> request_sender_;
-  TestingProfileManager profile_manager_;
   scoped_refptr<network::TestSharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<GaiaUrlsOverriderForTesting> gaia_urls_overrider_;
   testing::StrictMock<TestRequestHandler> request_handler_;
@@ -136,14 +124,13 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllCourses) {
               ]
             })"))));
 
-  std::vector<boca::classroom::mojom::CoursePtr> response;
-  base::MockCallback<ClassroomPageHandlerImpl::ListCoursesCallback> callback;
+  std::vector<mojom::CoursePtr> response;
+  base::MockCallback<ListCoursesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<boca::classroom::mojom::CoursePtr> courses) {
-            response = std::move(courses);
-          }));
+      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+        response = std::move(courses);
+      }));
 
   base::RunLoop run_loop;
   classroom_handler()->ListCourses(
@@ -162,14 +149,13 @@ TEST_F(ClassroomPageHandlerImplTest, ListCoursesOnHttpError) {
   EXPECT_CALL(request_handler(), HandleRequest(testing::_))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  std::vector<boca::classroom::mojom::CoursePtr> response;
-  base::MockCallback<ClassroomPageHandlerImpl::ListCoursesCallback> callback;
+  std::vector<mojom::CoursePtr> response;
+  base::MockCallback<ListCoursesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<boca::classroom::mojom::CoursePtr> courses) {
-            response = std::move(courses);
-          }));
+      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+        response = std::move(courses);
+      }));
 
   base::RunLoop run_loop;
   classroom_handler()->ListCourses(
@@ -216,14 +202,13 @@ TEST_F(ClassroomPageHandlerImplTest, ListCoursesMultiplePages) {
               ]
             })"))));
 
-  std::vector<boca::classroom::mojom::CoursePtr> response;
-  base::MockCallback<ClassroomPageHandlerImpl::ListCoursesCallback> callback;
+  std::vector<mojom::CoursePtr> response;
+  base::MockCallback<ListCoursesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<boca::classroom::mojom::CoursePtr> courses) {
-            response = std::move(courses);
-          }));
+      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+        response = std::move(courses);
+      }));
 
   base::RunLoop run_loop;
   classroom_handler()->ListCourses(
@@ -251,15 +236,13 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllStudents) {
               ]
             })"))));
 
-  std::vector<boca::classroom::mojom::CoursePtr> course_response;
-  base::MockCallback<ClassroomPageHandlerImpl::ListCoursesCallback>
-      course_callback;
+  std::vector<mojom::CoursePtr> course_response;
+  base::MockCallback<ListCoursesCallback> course_callback;
   EXPECT_CALL(course_callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<boca::classroom::mojom::CoursePtr> courses) {
-            course_response = std::move(courses);
-          }));
+      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+        course_response = std::move(courses);
+      }));
 
   base::RunLoop course_run_loop;
   classroom_handler()->ListCourses(
@@ -293,14 +276,13 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllStudents) {
           ]
         })"))));
 
-  std::vector<boca::classroom::mojom::StudentPtr> response;
-  base::MockCallback<ClassroomPageHandlerImpl::ListStudentsCallback> callback;
+  std::vector<mojom::StudentPtr> response;
+  base::MockCallback<ListStudentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<boca::classroom::mojom::StudentPtr> students) {
-            response = std::move(students);
-          }));
+      .WillOnce(testing::Invoke([&](std::vector<mojom::StudentPtr> students) {
+        response = std::move(students);
+      }));
 
   base::RunLoop run_loop;
   classroom_handler()->ListStudents(
@@ -331,15 +313,13 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsOnHttpError) {
               ]
             })"))));
 
-  std::vector<boca::classroom::mojom::CoursePtr> course_response;
-  base::MockCallback<ClassroomPageHandlerImpl::ListCoursesCallback>
-      course_callback;
+  std::vector<mojom::CoursePtr> course_response;
+  base::MockCallback<ListCoursesCallback> course_callback;
   EXPECT_CALL(course_callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<boca::classroom::mojom::CoursePtr> courses) {
-            course_response = std::move(courses);
-          }));
+      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+        course_response = std::move(courses);
+      }));
 
   base::RunLoop course_run_loop;
   classroom_handler()->ListCourses(
@@ -350,14 +330,13 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsOnHttpError) {
   EXPECT_CALL(request_handler(), HandleRequest(testing::_))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  std::vector<boca::classroom::mojom::StudentPtr> response;
-  base::MockCallback<ClassroomPageHandlerImpl::ListStudentsCallback> callback;
+  std::vector<mojom::StudentPtr> response;
+  base::MockCallback<ListStudentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<boca::classroom::mojom::StudentPtr> students) {
-            response = std::move(students);
-          }));
+      .WillOnce(testing::Invoke([&](std::vector<mojom::StudentPtr> students) {
+        response = std::move(students);
+      }));
 
   base::RunLoop run_loop;
   classroom_handler()->ListStudents(
@@ -382,15 +361,13 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsMultiplePages) {
               ]
             })"))));
 
-  std::vector<boca::classroom::mojom::CoursePtr> course_response;
-  base::MockCallback<ClassroomPageHandlerImpl::ListCoursesCallback>
-      course_callback;
+  std::vector<mojom::CoursePtr> course_response;
+  base::MockCallback<ListCoursesCallback> course_callback;
   EXPECT_CALL(course_callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<boca::classroom::mojom::CoursePtr> courses) {
-            course_response = std::move(courses);
-          }));
+      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+        course_response = std::move(courses);
+      }));
 
   base::RunLoop course_run_loop;
   classroom_handler()->ListCourses(
@@ -457,14 +434,13 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsMultiplePages) {
             ]
             })"))));
 
-  std::vector<boca::classroom::mojom::StudentPtr> response;
-  base::MockCallback<ClassroomPageHandlerImpl::ListStudentsCallback> callback;
+  std::vector<mojom::StudentPtr> response;
+  base::MockCallback<ListStudentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<boca::classroom::mojom::StudentPtr> students) {
-            response = std::move(students);
-          }));
+      .WillOnce(testing::Invoke([&](std::vector<mojom::StudentPtr> students) {
+        response = std::move(students);
+      }));
 
   base::RunLoop run_loop;
   classroom_handler()->ListStudents(
@@ -492,15 +468,13 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsWithInvalidCourseId) {
               ]
             })"))));
 
-  std::vector<boca::classroom::mojom::CoursePtr> course_response;
-  base::MockCallback<ClassroomPageHandlerImpl::ListCoursesCallback>
-      course_callback;
+  std::vector<mojom::CoursePtr> course_response;
+  base::MockCallback<ListCoursesCallback> course_callback;
   EXPECT_CALL(course_callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<boca::classroom::mojom::CoursePtr> courses) {
-            course_response = std::move(courses);
-          }));
+      .WillOnce(testing::Invoke([&](std::vector<mojom::CoursePtr> courses) {
+        course_response = std::move(courses);
+      }));
 
   base::RunLoop course_run_loop;
   classroom_handler()->ListCourses(
@@ -508,14 +482,13 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsWithInvalidCourseId) {
                                                         course_callback.Get()));
   course_run_loop.Run();
 
-  std::vector<boca::classroom::mojom::StudentPtr> response;
-  base::MockCallback<ClassroomPageHandlerImpl::ListStudentsCallback> callback;
+  std::vector<mojom::StudentPtr> response;
+  base::MockCallback<ListStudentsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<boca::classroom::mojom::StudentPtr> students) {
-            response = std::move(students);
-          }));
+      .WillOnce(testing::Invoke([&](std::vector<mojom::StudentPtr> students) {
+        response = std::move(students);
+      }));
 
   base::RunLoop run_loop;
   classroom_handler()->ListStudents(

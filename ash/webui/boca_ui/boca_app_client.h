@@ -36,15 +36,15 @@ class BocaAppClient {
 
     // Notifies when bundle updated. In the event of session started with a
     // bundle configured, both events will be fired.
-    virtual void OnBundleUpdated(const boca::Bundle& bundle);
+    virtual void OnBundleUpdated(const ::boca::Bundle& bundle);
 
     // Notifies when caption producer's config updated.
     virtual void OnProducerCaptionConfigUpdated(
-        const boca::CaptionsConfig& config);
+        const ::boca::CaptionsConfig& config);
 
     // Notifies when caption consumer's config updated.
     virtual void OnConsumerCaptionConfigUpdated(
-        const boca::CaptionsConfig& config);
+        const ::boca::CaptionsConfig& config);
   };
 
   BocaAppClient(const BocaAppClient&) = delete;

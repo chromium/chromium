@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/boca/classroom/classroom_page_handler_impl.h"
+#include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 
+#include "ash/webui/boca_ui/boca_app_client.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/boca/classroom/classroom.mojom.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/classroom/classroom_api_courses_response_types.h"
@@ -57,22 +55,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }  // namespace
 
 ClassroomPageHandlerImpl::ClassroomPageHandlerImpl(
-    mojo::PendingReceiver<boca::classroom::mojom::ClassroomPageHandler>
-        receiver,
-    Profile* profile,
     std::unique_ptr<google_apis::RequestSender> sender)
-    : receiver_(this, std::move(receiver)),
-      profile_(profile),
-      sender_(std::move(sender)),
-      weak_factory_(this) {}
+    : sender_(std::move(sender)), weak_factory_(this) {}
 
-ClassroomPageHandlerImpl::ClassroomPageHandlerImpl(
-    mojo::PendingReceiver<boca::classroom::mojom::ClassroomPageHandler>
-        receiver,
-    Profile* profile)
-    : ClassroomPageHandlerImpl(std::move(receiver),
-                               std::move(profile),
-                               CreateRequestSender(profile)) {}
+ClassroomPageHandlerImpl::ClassroomPageHandlerImpl()
+    : ClassroomPageHandlerImpl(CreateRequestSender()) {}
 
 ClassroomPageHandlerImpl::~ClassroomPageHandlerImpl() = default;
 
@@ -116,8 +103,7 @@ void ClassroomPageHandlerImpl::OnListCoursesFetched(
   }
 
   for (const auto& item : result.value()->items()) {
-    boca::classroom::mojom::CoursePtr course =
-        boca::classroom::mojom::Course::New(item->id(), item->name());
+    mojom::CoursePtr course = mojom::Course::New(item->id(), item->name());
     fetched_courses->push_back(std::move(course));
     valid_course_ids_.insert(item->id());
   }
@@ -154,13 +140,10 @@ void ClassroomPageHandlerImpl::OnListStudentsFetched(
   }
 
   for (const auto& item : result.value()->items()) {
-    boca::classroom::mojom::StudentPtr student =
-        boca::classroom::mojom::Student::New(
-            boca::classroom::mojom::UserProfile::New(
-                item->profile().id(),
-                boca::classroom::mojom::Name::New(
-                    item->profile().name().full_name()),
-                item->profile().email_address()));
+    mojom::StudentPtr student = mojom::Student::New(mojom::UserProfile::New(
+        item->profile().id(),
+        mojom::Name::New(item->profile().name().full_name()),
+        item->profile().email_address()));
 
     fetched_students->push_back(std::move(student));
   }
@@ -175,11 +158,11 @@ void ClassroomPageHandlerImpl::OnListStudentsFetched(
 
 // static
 std::unique_ptr<google_apis::RequestSender>
-ClassroomPageHandlerImpl::CreateRequestSender(Profile* profile) {
+ClassroomPageHandlerImpl::CreateRequestSender() {
   std::vector<std::string> scopes = {
       GaiaConstants::kClassroomReadOnlyRostersOAuth2Scope};
-  auto url_loader_factory = profile->GetURLLoaderFactory();
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  auto url_loader_factory = BocaAppClient::Get()->GetURLLoaderFactory();
+  auto* identity_manager = BocaAppClient::Get()->GetIdentityManager();
   auto auth_service = std::make_unique<google_apis::AuthService>(
       identity_manager,
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),

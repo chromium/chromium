@@ -1,6 +1,11 @@
 include_rules = [
   "+chromeos/grit/chromeos_boca_app_bundle_resources.h",
   "+chromeos/grit/chromeos_boca_app_bundle_resources_map.h",
+  "+google_apis",
+  "+google_apis/classroom",
+  "+google_apis/common",
+  "+components/signin/public/identity_manager",
+  "+components/signin/public/base"
 ]
 
 specific_include_rules = {
