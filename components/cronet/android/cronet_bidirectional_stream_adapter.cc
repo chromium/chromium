@@ -185,12 +185,8 @@ jboolean CronetBidirectionalStreamAdapter::ReadData(
     jint jlimit) {
   DCHECK_LT(jposition, jlimit);
 
-  void* data = env->GetDirectBufferAddress(jbyte_buffer);
-  if (!data)
-    return JNI_FALSE;
-
   scoped_refptr<IOBufferWithByteBuffer> read_buffer(
-      new IOBufferWithByteBuffer(env, jbyte_buffer, data, jposition, jlimit));
+      new IOBufferWithByteBuffer(env, jbyte_buffer, jposition, jlimit));
 
   int remaining_capacity = jlimit - jposition;
 
