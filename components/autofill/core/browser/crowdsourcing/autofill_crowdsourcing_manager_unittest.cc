@@ -317,10 +317,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   // Validate if the API key is in the request headers.
   network::TestURLLoaderFactory::PendingRequest* request =
       url_loader_factory().GetPendingRequest(0);
-  std::string api_key_header_value;
-  EXPECT_TRUE(request->request.headers.GetHeader("X-Goog-Api-Key",
-                                                 &api_key_header_value));
-  EXPECT_EQ(api_key_header_value, "dummykey");
+  EXPECT_EQ(request->request.headers.GetHeader("X-Goog-Api-Key"), "dummykey");
 
   // Request with id 1.
   std::vector<AutofillUploadContents> upload_contents_1 = EncodeUploadRequest(
@@ -502,19 +499,11 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
   }
 
   // Verify API key header.
-  {
-    std::string header_value;
-    EXPECT_TRUE(
-        request->request.headers.GetHeader("X-Goog-Api-Key", &header_value));
-    EXPECT_EQ(header_value, "dummykey");
-  }
+  EXPECT_EQ(request->request.headers.GetHeader("X-Goog-Api-Key"), "dummykey");
   // Verify binary response header.
-  {
-    std::string header_value;
-    ASSERT_TRUE(request->request.headers.GetHeader(
-        "X-Goog-Encode-Response-If-Executable", &header_value));
-    EXPECT_EQ(header_value, "base64");
-  }
+  EXPECT_EQ(request->request.headers.GetHeader(
+                "X-Goog-Encode-Response-If-Executable"),
+            "base64");
 
   // Verify response.
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
@@ -567,26 +556,14 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
       "https://content-autofill.googleapis.com/v1/pages:get?alt=proto"};
   // Verify API key header.
   EXPECT_EQ(request->request.url, expected_url);
-  {
-    std::string header_value;
-    EXPECT_TRUE(
-        request->request.headers.GetHeader("X-Goog-Api-Key", &header_value));
-    EXPECT_EQ(header_value, "dummykey");
-  }
+  EXPECT_EQ(request->request.headers.GetHeader("X-Goog-Api-Key"), "dummykey");
   // Verify Content-Type header.
-  {
-    std::string header_value;
-    ASSERT_TRUE(
-        request->request.headers.GetHeader("Content-Type", &header_value));
-    EXPECT_EQ(header_value, "application/x-protobuf");
-  }
+  EXPECT_EQ(request->request.headers.GetHeader("Content-Type"),
+            "application/x-protobuf");
   // Verify binary response header.
-  {
-    std::string header_value;
-    ASSERT_TRUE(request->request.headers.GetHeader(
-        "X-Goog-Encode-Response-If-Executable", &header_value));
-    EXPECT_EQ(header_value, "base64");
-  }
+  EXPECT_EQ(request->request.headers.GetHeader(
+                "X-Goog-Encode-Response-If-Executable"),
+            "base64");
   // Verify content of the POST body data.
   {
     AutofillPageResourceQueryRequest query_request;
@@ -662,10 +639,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
   const std::string expected_url =
       "https://content-autofill.googleapis.com/v1/forms:vote?alt=proto";
   EXPECT_EQ(request->request.url, expected_url);
-  std::string api_key_header_value;
-  EXPECT_TRUE(request->request.headers.GetHeader("X-Goog-Api-Key",
-                                                 &api_key_header_value));
-  EXPECT_EQ(api_key_header_value, "dummykey");
+  EXPECT_EQ(request->request.headers.GetHeader("X-Goog-Api-Key"), "dummykey");
 
   // Assert some of the fields within the uploaded proto to make sure it was
   // filled with something else than default data.
