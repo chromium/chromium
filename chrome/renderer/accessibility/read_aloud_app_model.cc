@@ -48,6 +48,10 @@ bool ReadAloudAppModel::IsHighlightOn() {
          static_cast<int>(read_anything::mojom::HighlightGranularity::kOn);
 }
 
+void ReadAloudAppModel::ResetGranularityIndex() {
+  processed_granularity_index_ = 0;
+}
+
 void ReadAloudAppModel::InitAXPositionWithNode(ui::AXNode* ax_node) {
   // If instance is Null or Empty, create the next AxPosition
   if (ax_node != nullptr && (!ax_position_ || ax_position_->IsNullPosition())) {

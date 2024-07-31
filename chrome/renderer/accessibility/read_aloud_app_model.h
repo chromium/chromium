@@ -64,6 +64,8 @@ class ReadAloudAppModel {
   // where this isn't needed.
   void InitAXPositionWithNode(ui::AXNode* ax_node);
 
+  void ResetGranularityIndex();
+
   // Returns a list of AXNodeIds representing the next nodes that should be
   // spoken and highlighted with Read Aloud.
   // This defaults to returning the first granularity until

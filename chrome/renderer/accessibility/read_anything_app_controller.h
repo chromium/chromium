@@ -193,7 +193,6 @@ class ReadAnythingAppController
                          ui::AXNodeID focus_node_id,
                          int focus_offset) const;
   void OnCollapseSelection() const;
-  void OnRestartReadAloud();
   bool IsGoogleDocs() const;
   bool IsReadAloudEnabled() const;
   bool IsChromeOsAsh() const;
@@ -261,6 +260,8 @@ class ReadAnythingAppController
   // TODO(crbug.com/40927698): We should be able to use AXPosition in a way
   // where this isn't needed.
   void InitAXPositionWithNode(const ui::AXNodeID& starting_node_id);
+
+  void ResetGranularityIndex();
 
   // Returns a list of AXNodeIds representing the next nodes that should be
   // spoken and highlighted with Read Aloud.

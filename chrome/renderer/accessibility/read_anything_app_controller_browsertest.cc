@@ -424,7 +424,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void OnCollapseSelection() { controller_->OnCollapseSelection(); }
 
-  void OnRestartReadAloud() { controller_->OnRestartReadAloud(); }
+  void ResetGranularityIndex() { controller_->ResetGranularityIndex(); }
 
   bool HasTree(ui::AXTreeID tree_id) {
     return controller_->model_.ContainsTree(tree_id);
@@ -2893,9 +2893,61 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ((int)next_node_ids.size(), 1);
   EXPECT_EQ(next_node_ids[0], static_text3.id);
 
-  // After reset and then init, we should get the first sentence again.
-  OnRestartReadAloud();
+  // After reset and before an init, the current text should be empty.
+  ResetReadAloudState();
+  std::vector<ui::AXNodeID> after_reset_ids = GetCurrentText();
+  EXPECT_EQ((int)after_reset_ids.size(), 0);
+
+  // After an init, we should get the first sentence again.
   InitAXPosition(update.nodes[0].id);
+  after_reset_ids = GetCurrentText();
+  EXPECT_EQ((int)after_reset_ids.size(), 1);
+  EXPECT_EQ(after_reset_ids[0], static_text1.id);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetCurrentText_AfterResetGranularityIndex_StartsOver) {
+  std::u16string sentence1 = u"I've got the wind in my hair. ";
+  std::u16string sentence2 = u"And a gleam in my eyes. ";
+  std::u16string sentence3 = u"And an endless horizon. ";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  std::vector<ui::AXNodeID> next_node_ids = GetCurrentText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text1.id);
+
+  // Move to the next sentence.
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text2.id);
+
+  // If we init without restarting we should just go to the next sentence.
+  InitAXPosition(update.nodes[0].id);
+  next_node_ids = MoveToNextGranularityAndGetText();
+  EXPECT_EQ((int)next_node_ids.size(), 1);
+  EXPECT_EQ(next_node_ids[0], static_text3.id);
+
+  // After reset, we should get the first sentence again.
+  ResetGranularityIndex();
   std::vector<ui::AXNodeID> after_reset_ids = GetCurrentText();
   EXPECT_EQ((int)after_reset_ids.size(), 1);
   EXPECT_EQ(after_reset_ids[0], static_text1.id);

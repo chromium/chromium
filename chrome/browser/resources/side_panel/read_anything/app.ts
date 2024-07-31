@@ -1428,7 +1428,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       let playedFromSelection = false;
       if (hasSelection) {
         this.synth.cancel();
-        chrome.readingMode.onRestartReadAloud();
         this.resetToDefaultWordBoundaryState();
         playedFromSelection = this.playFromSelection();
       }
@@ -1591,7 +1590,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Iterate through the page from the beginning until we get to the
     // selection. This is so clicking previous works before the selection and
     // so the previous highlights are properly set.
-    this.initializeSpeechTree();
+    chrome.readingMode.resetGranularityIndex();
 
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.

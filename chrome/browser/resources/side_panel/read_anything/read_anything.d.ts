@@ -220,10 +220,6 @@ declare namespace chrome {
     // by clicking.
     function onCollapseSelection(): void;
 
-    // Called when we are restarting read aloud after we've already started
-    // playing speech.
-    function onRestartReadAloud(): void;
-
     // Set the content. Used by tests only.
     // SnapshotLite is a data structure which resembles an AXTreeUpdate. E.g.:
     //   const axTree = {
@@ -330,6 +326,9 @@ declare namespace chrome {
     // words to be used by word highlighting. This allows text to be traversed
     // more quickly after speech begins.
     function preprocessTextForSpeech(): void;
+
+    // Resets the granularity index.
+    function resetGranularityIndex(): void;
 
     // Increments the processed_granularity_index_ in ReadAnythingAppModel,
     // effectively updating ReadAloud's state of the current granularity to

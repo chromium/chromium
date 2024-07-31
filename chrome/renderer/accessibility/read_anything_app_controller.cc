@@ -30,6 +30,7 @@
 #include "gin/dictionary.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "read_anything_app_controller.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -554,10 +555,6 @@ void ReadAnythingAppController::RecordNumSelections() {
   model_.set_num_selections(0);
 }
 
-void ReadAnythingAppController::OnRestartReadAloud() {
-  read_aloud_model_.ResetReadAloudState();
-}
-
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   // Cancel any running draw timers.
   post_user_entry_draw_timer_.Stop();
@@ -896,6 +893,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SetLanguageForTesting)
       .SetMethod("initAxPositionWithNode",
                  &ReadAnythingAppController::InitAXPositionWithNode)
+      .SetMethod("resetGranularityIndex",
+                 &ReadAnythingAppController::ResetGranularityIndex)
       .SetMethod("getCurrentTextStartIndex",
                  &ReadAnythingAppController::GetCurrentTextStartIndex)
       .SetMethod("getHighlightStartIndex",
@@ -925,8 +924,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SendGetVoicePackInfoRequest)
       .SetMethod("sendInstallVoicePackRequest",
                  &ReadAnythingAppController::SendInstallVoicePackRequest)
-      .SetMethod("onRestartReadAloud",
-                 &ReadAnythingAppController::OnRestartReadAloud)
       .SetMethod("getNodeIdForCurrentSegmentIndex",
                  &ReadAnythingAppController::GetNodeIdForCurrentSegmentIndex)
       .SetMethod("getNextWordHighlightLength",
@@ -1617,6 +1614,9 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
 
 void ReadAnythingAppController::OnCollapseSelection() const {
   page_handler_->OnCollapseSelection();
+}
+void ReadAnythingAppController::ResetGranularityIndex() {
+  read_aloud_model_.ResetGranularityIndex();
 }
 void ReadAnythingAppController::InitAXPositionWithNode(
     const ui::AXNodeID& starting_node_id) {
