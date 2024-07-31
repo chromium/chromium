@@ -272,6 +272,12 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
                             callback.onResult(isRestrictedContent);
                         });
             }
+
+            @Override
+            public void needsRestrictedContentBlocking(@NonNull final Callback<Boolean> callback) {
+                // TODO(https://crbug.com/355528479): invoke the callback once the business logic is
+                // updated to use the callback response value.
+            }
         }
 
         @Override
