@@ -8,6 +8,7 @@
 #import "components/saved_tab_groups/mock_tab_group_sync_service.h"
 #import "components/saved_tab_groups/saved_tab_group.h"
 #import "components/saved_tab_groups/saved_tab_group_test_utils.h"
+#import "components/saved_tab_groups/types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
@@ -32,6 +33,7 @@ const char* kSelectTabGroupsUMA = "MobileTabGridSelectTabGroups";
 @interface FakeTabGroupsPanelConsumer : NSObject <TabGroupsPanelConsumer>
 @property(nonatomic, readonly, copy) NSArray<TabGroupsPanelItem*>* items;
 @property(nonatomic, readonly) NSUInteger populateItemsCallCount;
+@property(nonatomic, readonly) NSUInteger reconfigureItemCallCount;
 @end
 
 @implementation FakeTabGroupsPanelConsumer
@@ -41,6 +43,10 @@ const char* kSelectTabGroupsUMA = "MobileTabGridSelectTabGroups";
 - (void)populateItems:(NSArray<TabGroupsPanelItem*>*)items {
   _items = [items copy];
   _populateItemsCallCount++;
+}
+
+- (void)reconfigureItem:(TabGroupsPanelItem*)item {
+  _reconfigureItemCallCount++;
 }
 
 @end
@@ -415,4 +421,35 @@ TEST_F(TabGroupsPanelMediatorTest, PopulatesSortedGroups) {
   EXPECT_EQ(consumer.items.count, 2u);
   EXPECT_EQ(consumer.items[0].savedTabGroupID, group_2.saved_guid());
   EXPECT_EQ(consumer.items[1].savedTabGroupID, group_1.saved_guid());
+}
+
+// Tests that the consumer is asked to reconfigure an item when the observer
+// notifies a group update.
+TEST_F(TabGroupsPanelMediatorTest, UpdateGroup) {
+  tab_groups::TabGroupSyncService::Observer* observer = nullptr;
+  EXPECT_CALL(tab_group_sync_service_, AddObserver(_))
+      .WillOnce(SaveArg<0>(&observer));
+  TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
+      initWithTabGroupSyncService:&tab_group_sync_service_
+              regularWebStateList:&web_state_list_
+                    faviconLoader:nullptr
+                 disabledByPolicy:NO];
+  EXPECT_NE(observer, nullptr);
+  // Set a consumer.
+  FakeTabGroupsPanelConsumer* consumer =
+      [[FakeTabGroupsPanelConsumer alloc] init];
+  mediator.consumer = consumer;
+  // Set a saved tab group.
+  tab_groups::SavedTabGroup group = tab_groups::test::CreateTestSavedTabGroup();
+  std::vector<tab_groups::SavedTabGroup> groups = {group};
+  EXPECT_CALL(tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(groups));
+  observer->OnInitialized();
+  EXPECT_EQ(consumer.items.count, 1u);
+  EXPECT_EQ(consumer.reconfigureItemCallCount, 0u);
+
+  observer->OnTabGroupUpdated(group, tab_groups::TriggerSource::REMOTE);
+
+  EXPECT_EQ(consumer.items.count, 1u);
+  EXPECT_EQ(consumer.reconfigureItemCallCount, 1u);
 }

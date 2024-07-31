@@ -258,8 +258,7 @@ NSString* CreationText(base::Time creation_date) {
 - (void)tabGroupSyncServiceTabGroupUpdated:
             (const tab_groups::SavedTabGroup&)group
                                 fromSource:(tab_groups::TriggerSource)source {
-  // TODO(crbug.com/353479040): Just reconfigure the group that changed.
-  [self populateItemsFromService];
+  [self reconfigureGroup:group];
 }
 
 - (void)tabGroupSyncServiceLocalTabGroupRemoved:
@@ -304,10 +303,20 @@ NSString* CreationText(base::Time creation_date) {
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
 
-// Reads the TabGroupSync
+// Reads the TabGroupSyncService data, prepares it, and feeds it to the
+// consumer.
 - (void)populateItemsFromService {
   if (_serviceInitialized) {
     [_consumer populateItems:CreateItems(_tabGroupSyncService->GetAllGroups())];
+  }
+}
+
+// Tells the consumer to reload the given group.
+- (void)reconfigureGroup:(const tab_groups::SavedTabGroup&)group {
+  if (_serviceInitialized) {
+    TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc] init];
+    item.savedTabGroupID = group.saved_guid();
+    [_consumer reconfigureItem:item];
   }
 }
 

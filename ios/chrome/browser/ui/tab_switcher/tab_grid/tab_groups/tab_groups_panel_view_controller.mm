@@ -171,6 +171,15 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
   }
 }
 
+- (void)reconfigureItem:(TabGroupsPanelItem*)item {
+  TabGroupsPanelSnapshot* snapshot = [_dataSource snapshot];
+  if ([snapshot indexOfItemIdentifier:item] == NSNotFound) {
+    return;
+  }
+  [snapshot reconfigureItemsWithIdentifiers:@[ item ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
 #pragma mark UICollectionViewDelegate
 
 - (void)collectionView:(UICollectionView*)collectionView
