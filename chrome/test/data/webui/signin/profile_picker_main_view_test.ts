@@ -44,6 +44,28 @@ declare global {
 
 customElements.define(NavigationElement.is, NavigationElement);
 
+/**
+ * @param n Indicates the desired number of profiles.
+ */
+function generateProfilesList(n: number): ProfileState[] {
+  return Array(n)
+      .fill(0)
+      .map((_x, i) => i % 2 === 0)
+      .map((sync, i) => ({
+             profilePath: `profilePath${i}`,
+             localProfileName: `profile${i}`,
+             isSyncing: sync,
+             needsSignin: false,
+             gaiaName: sync ? `User${i}` : '',
+             userName: sync ? `User${i}@gmail.com` : '',
+             avatarIcon: `AvatarUrl-${i}`,
+             avatarBadge: i % 4 === 0 ? `cr:domain` : ``,
+             // <if expr="chromeos_lacros">
+             isPrimaryLacrosProfile: false,
+             // </if>
+           }));
+}
+
 suite('ProfilePickerMainViewTest', function() {
   let mainViewElement: ProfilePickerMainViewElement;
   let browserProxy: TestManageProfilesBrowserProxy;
@@ -74,28 +96,6 @@ suite('ProfilePickerMainViewTest', function() {
     resetPolicies();
     resetTest();
   });
-
-  /**
-   * @param n Indicates the desired number of profiles.
-   */
-  function generateProfilesList(n: number): ProfileState[] {
-    return Array(n)
-        .fill(0)
-        .map((_x, i) => i % 2 === 0)
-        .map((sync, i) => ({
-               profilePath: `profilePath${i}`,
-               localProfileName: `profile${i}`,
-               isSyncing: sync,
-               needsSignin: false,
-               gaiaName: sync ? `User${i}` : '',
-               userName: sync ? `User${i}@gmail.com` : '',
-               avatarIcon: `AvatarUrl-${i}`,
-               avatarBadge: i % 4 === 0 ? `cr:domain` : ``,
-               // <if expr="chromeos_lacros">
-               isPrimaryLacrosProfile: false,
-               // </if>
-             }));
-  }
 
   async function simulateProfilesListChanged(profiles: ProfileState[]) {
     webUIListenerCallback('profiles-list-changed', [...profiles]);
@@ -302,6 +302,40 @@ suite('ProfilePickerMainViewTest', function() {
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
   });
+});
+
+suite('ProfilePickerProfilesReorderingTest', function() {
+  let mainViewElement: ProfilePickerMainViewElement;
+  let browserProxy: TestManageProfilesBrowserProxy;
+
+  setup(function() {
+    browserProxy = new TestManageProfilesBrowserProxy();
+    ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
+    loadTimeData.overrideValues({
+      profilesReorderingEnabled: true,
+    });
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    mainViewElement = document.createElement('profile-picker-main-view');
+    document.body.appendChild(mainViewElement);
+  });
+
+  // Sets up the profile picker with the reorder functionality and creates
+  // profiles.
+  async function setupProfileReorderingTest(numberOfProfiles: number) {
+    // Activates the profile reordering feature.
+    loadTimeData.overrideValues({profilesReorderingEnabled: true});
+
+    // Remove transition duration to avoid waiting during tests.
+    mainViewElement.setDraggingTransitionDurationForTesting(0);
+
+    // Create the profiles and push them to the main profile picker view.
+    const profiles = generateProfilesList(numberOfProfiles);
+    webUIListenerCallback('profiles-list-changed', [...profiles]);
+
+    // Await for the profiles to be rendered before proceeding.
+    await microtasksFinished();
+  }
 
   // This function makes sure that the test data is valid and consistent.
   function checkTestData(
@@ -385,19 +419,6 @@ suite('ProfilePickerMainViewTest', function() {
           return profile.localProfileName;
         }),
         profileNames, errorMessage);
-  }
-
-  // Sets up the profile picker with the reorder functionality and creates
-  // profiles.
-  async function setupProfileReorderingTest(numberOfProfiles: number) {
-    // Activates the profile reordering feature.
-    loadTimeData.overrideValues({profilesReorderingEnabled: true});
-
-    // Remove transition duration to avoid waiting during tests.
-    mainViewElement.setDraggingTransitionDurationForTesting(0);
-
-    // Create the profiles and push them to the main profile picker view.
-    await simulateProfilesListChanged(generateProfilesList(numberOfProfiles));
   }
 
   // This test function simulates drag event cycles.
