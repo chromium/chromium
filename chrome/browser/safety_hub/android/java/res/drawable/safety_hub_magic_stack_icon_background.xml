@@ -10,7 +10,7 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:shape="rectangle"
-    app:surfaceElevation="@dimen/default_elevation_1"
+    app:surfaceElevation="@dimen/tab_resumption_module_icon_background_color_elevation"
     tools:ignore="UnusedResources">
     <corners android:radius="@dimen/safety_hub_magic_stack_icon_corner_radius"/>
 </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
