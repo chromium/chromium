@@ -224,7 +224,7 @@
 <translation id="1830308660060964064">«<ph name="ITEM_TITLE" />» տարրն ապամրացվեց</translation>
 <translation id="1831565490995294689">Սեղմեք՝ <ph name="APP_TO_OPEN" /> հավելվածը բացելու համար։</translation>
 <translation id="1838895407229022812">Գիշերային ռեժիմն անջատված է</translation>
-<translation id="1854180393107901205">Դադարեցնել հեռարձակումը</translation>
+<translation id="1854180393107901205">Կանգնեցնել հեռարձակումը</translation>
 <translation id="1862077610023398675">Թաքցնել կառավարման տարրերը</translation>
 <translation id="1862380676329487333">Թարմացնել և դուրս գալ</translation>
 <translation id="1864454756846565995">USB-C սարք (հետևի միացք)</translation>
@@ -922,7 +922,7 @@
 <translation id="4578906031062871102">Կարգավորումների ընտրացանկը բացված է</translation>
 <translation id="458210817642223147">Տեսագրել GIF</translation>
 <translation id="4582666543382004902">Թեժ կետն անջատվել է՝ Wi-Fi-ն օգտագործելու համար։ Թեժ կետն օգտագործելու համար անջատեք Wi-Fi-ը։</translation>
-<translation id="4585337515783392668">Դադարեցնել հեռարձակումը անհայտ սարքին</translation>
+<translation id="4585337515783392668">Կանգնեցնել հեռարձակումը անհայտ սարքին</translation>
 <translation id="4596144739579517758">Մուգ թեման անջատված է</translation>
 <translation id="4596442969149038771"><ph name="USER" /> օգտատերը կիսվել է</translation>
 <translation id="4611292653554630842">Մուտք</translation>

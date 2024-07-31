@@ -688,7 +688,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4611811151908969241">Sakrij opciju Opozovi praćenje <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Pretražujete pomoću Google-a</translation>
 <translation id="4616391354457235490">Opozovi</translation>
-<translation id="4619564267100705184">Potvrdite svoj identitet</translation>
+<translation id="4619564267100705184">Potvrdite identitet</translation>
 <translation id="4619615317237390068">Kartice sa drugih uređaja</translation>
 <translation id="4620246317052452550">Pročitane stranice</translation>
 <translation id="4620845369664293551">Ovu stranicu možete da delite ovde.</translation>
@@ -1016,7 +1016,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6219550825416862075">Dobro došli nazad</translation>
 <translation id="6219688215832490856">Nikad ne prevodi</translation>
 <translation id="6223816392543092032">Imaćete obeleživače, istoriju, lozinke i druga podešavanja na svim uređajima.</translation>
-<translation id="6224759905509595045">Potvrdite svoj identitet…</translation>
+<translation id="6224759905509595045">Potvrdite identitet…</translation>
 <translation id="6229318421047648685">Zahtevaj sajt za računar</translation>
 <translation id="6229719094394196779">Uštedite vreme, kucajte manje</translation>
 <translation id="6231782223312638214">Predloženo</translation>
@@ -1241,7 +1241,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7346909386216857016">Važi</translation>
 <translation id="734758817008927353">Opcije za čuvanje kartice</translation>
 <translation id="7352651011704765696">Došlo je do greške</translation>
-<translation id="7353432112255316844">Potvrdite svoj identitet</translation>
+<translation id="7353432112255316844">Potvrdite identitet</translation>
 <translation id="7367530036083223701">Bezbedno pristupajte lozinkama sa početnog ekrana pomoću vidžeta Menadžer lozinki.</translation>
 <translation id="7380220816562673297">Za sada lozinke možete da delite samo sa članovima porodice. <ph name="BEGIN_LINK" />Napravite grupu za porodicu<ph name="END_LINK" /> sa najviše 6 članova i dobijte više iz proizvoda i pretplata u svim Google uslugama.</translation>
 <translation id="739101637685146669">Koji URL želite da obeležite?</translation>

@@ -688,7 +688,7 @@
 <translation id="4611811151908969241">Сакриј опцију Опозови праћење <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Претражујете помоћу Google-а</translation>
 <translation id="4616391354457235490">Опозови</translation>
-<translation id="4619564267100705184">Потврдите свој идентитет</translation>
+<translation id="4619564267100705184">Потврдите идентитет</translation>
 <translation id="4619615317237390068">Картице са других уређаја</translation>
 <translation id="4620246317052452550">Прочитане странице</translation>
 <translation id="4620845369664293551">Ову страницу можете да делите овде.</translation>
@@ -1016,7 +1016,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6219550825416862075">Добро дошли назад</translation>
 <translation id="6219688215832490856">Никад не преводи</translation>
 <translation id="6223816392543092032">Имаћете обележиваче, историју, лозинке и друга подешавања на свим уређајима.</translation>
-<translation id="6224759905509595045">Потврдите свој идентитет…</translation>
+<translation id="6224759905509595045">Потврдите идентитет…</translation>
 <translation id="6229318421047648685">Захтевај сајт за рачунар</translation>
 <translation id="6229719094394196779">Уштедите време, куцајте мање</translation>
 <translation id="6231782223312638214">Предложено</translation>
@@ -1241,7 +1241,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7346909386216857016">Важи</translation>
 <translation id="734758817008927353">Опције за чување картице</translation>
 <translation id="7352651011704765696">Дошло је до грешке</translation>
-<translation id="7353432112255316844">Потврдите свој идентитет</translation>
+<translation id="7353432112255316844">Потврдите идентитет</translation>
 <translation id="7367530036083223701">Безбедно приступајте лозинкама са почетног екрана помоћу виџета Менаџер лозинки.</translation>
 <translation id="7380220816562673297">За сада лозинке можете да делите само са члановима породице. <ph name="BEGIN_LINK" />Направите групу за породицу<ph name="END_LINK" /> са највише 6 чланова и добијте више из производа и претплата у свим Google услугама.</translation>
 <translation id="739101637685146669">Који URL желите да обележите?</translation>

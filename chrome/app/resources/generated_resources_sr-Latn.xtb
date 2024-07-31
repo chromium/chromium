@@ -3246,7 +3246,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3393554941209044235">Chrome analiza dokumenata</translation>
 <translation id="3393582007140394275">Prebacivanje ekrana nije uspelo.</translation>
 <translation id="3394850431319394743">Dozvoljena upotreba identifikatora za puštanje zaštićenog sadržaja</translation>
-<translation id="3396442984945202128">Potvrdite svoj identitet</translation>
+<translation id="3396442984945202128">Potvrdite identitet</translation>
 <translation id="3396800784455899911">Ako kliknete na dugme „Prihvati i nastavi“, prihvatate gorenavedenu obradu za ove Google usluge.</translation>
 <translation id="339722927132407568">Zaustavlja se</translation>
 <translation id="3398899528308712018">Predlog grupe kartica</translation>
@@ -4898,7 +4898,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4617001782309103936">Prekratko</translation>
 <translation id="4617270414136722281">Opcije dodataka</translation>
 <translation id="4617880081511131945">Uspostavljanje veze nije uspelo</translation>
-<translation id="4619564267100705184">Potvrdite svoj identitet</translation>
+<translation id="4619564267100705184">Potvrdite identitet</translation>
 <translation id="4619615317237390068">Kartice sa drugih uređaja</translation>
 <translation id="4620757807254334872">miš</translation>
 <translation id="4620809267248568679">Dodatak primenjuje ovo podešavanje.</translation>
@@ -9882,7 +9882,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
     <ph name="BEGIN_PARAGRAPH2" />Dodatnu pomoć potražite na: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8386091599636877289">Smernice nisu pronađene.</translation>
 <translation id="8387361103813440603">Nije im dozvoljeno da vide vašu lokaciju</translation>
-<translation id="8387617938027387193">Potvrdite svoj identitet</translation>
+<translation id="8387617938027387193">Potvrdite identitet</translation>
 <translation id="8388770971141403598">Sekundarni profili nisu podržani</translation>
 <translation id="8389492867173948260">Dozvolite da ovaj dodatak čita i menja sve podatke na veb-sajtovima koje posećujete:</translation>
 <translation id="8390392581097975659">Instalira se softver za skener</translation>
