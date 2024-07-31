@@ -20,6 +20,8 @@ import android.os.Process;
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
+import org.jni_zero.JniType;
 
 import org.chromium.build.BuildConfig;
 
@@ -77,9 +79,6 @@ public class BuildInfo {
     /** Result of PackageManager.getInstallerPackageName(). Never null, but may be "". */
     public final String installerPackageName;
 
-    /** The versionCode of Play Services (for crash reporting). */
-    public final String gmsVersionCode;
-
     /** Formatted ABI string (for crash reporting). */
     public final String abiString;
 
@@ -113,6 +112,9 @@ public class BuildInfo {
     @GuardedBy("mCertLock")
     private String mHostSigningCertSha256;
 
+    /** The versionCode of Play Services. Can be overridden in tests. */
+    private String mGmsVersionCode;
+
     private Object mCertLock = new Object();
 
     private static class Holder {
@@ -127,6 +129,11 @@ public class BuildInfo {
     @CalledByNative
     private static String lazyGetHostSigningCertSha256() {
         return BuildInfo.getInstance().getHostSigningCertSha256();
+    }
+
+    @CalledByNativeForTesting
+    private static void setGmsVersionCodeForTest(@JniType("std::string") String gmsVersionCode) {
+        getInstance().mGmsVersionCode = gmsVersionCode;
     }
 
     /** Returns a serialized string array of all properties of this class. */
@@ -148,7 +155,7 @@ public class BuildInfo {
             String.valueOf(versionCode),
             versionName,
             androidBuildFingerprint,
-            gmsVersionCode,
+            mGmsVersionCode,
             installerPackageName,
             abiString,
             customThemes,
@@ -213,7 +220,7 @@ public class BuildInfo {
 
     /** The versionCode of Play Services. */
     public String getGmsVersionCode() {
-        return gmsVersionCode;
+        return mGmsVersionCode;
     }
 
     private BuildInfo() {
@@ -310,7 +317,7 @@ public class BuildInfo {
         installerPackageName = nullToEmpty(pm.getInstallerPackageName(appInstalledPackageName));
 
         PackageInfo gmsPackageInfo = PackageUtils.getPackageInfo("com.google.android.gms", 0);
-        gmsVersionCode =
+        mGmsVersionCode =
                 gmsPackageInfo != null
                         ? String.valueOf(packageVersionCode(gmsPackageInfo))
                         : "gms versionCode not available.";

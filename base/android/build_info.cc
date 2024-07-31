@@ -95,6 +95,14 @@ BuildInfo::BuildInfo(const std::vector<std::string>& params)
 
 BuildInfo::~BuildInfo() = default;
 
+void BuildInfo::set_gms_version_code_for_test(
+    const std::string& gms_version_code) {
+  // This leaks the string, just like production code.
+  gms_version_code_ = strdup(gms_version_code.c_str());
+  Java_BuildInfo_setGmsVersionCodeForTest(AttachCurrentThread(),
+                                          gms_version_code);
+}
+
 std::string BuildInfo::host_signing_cert_sha256() {
   JNIEnv* env = AttachCurrentThread();
   return base::android::ConvertJavaStringToUTF8(

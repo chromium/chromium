@@ -88,6 +88,8 @@ class BASE_EXPORT BuildInfo {
     return gms_version_code_;
   }
 
+  void set_gms_version_code_for_test(const std::string& gms_version_code);
+
   // The package name of the host app which has loaded WebView, retrieved from
   // the application context. In the context of the SDK Runtime, the package
   // name of the app that owns this particular instance of the SDK Runtime will
@@ -199,7 +201,8 @@ class BASE_EXPORT BuildInfo {
   const char* const package_version_code_;
   const char* const package_version_name_;
   const char* const android_build_fp_;
-  const char* const gms_version_code_;
+  // Can be overridden in tests.
+  const char* gms_version_code_ = nullptr;
   const char* const installer_package_name_;
   const char* const abi_name_;
   const char* const custom_themes_;
