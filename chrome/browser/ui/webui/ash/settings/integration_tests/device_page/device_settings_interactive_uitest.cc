@@ -9,6 +9,7 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/system/brightness_control_delegate.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/strings/stringprintf.h"
@@ -1078,6 +1079,111 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsBrightnessInteractiveUiTest,
       Log("Waiting for toggle to be checked again"),
       WaitForToggleState(webcontents_id_, kKeyboardAmbientLightSensorToggle,
                          true));
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceSettingsBrightnessInteractiveUiTest,
+                       AdjustDisplayBrightness) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeDisplaySliderExists);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(AmbientLightSensorStateObserver,
+                                      kAmbientLightSensorEnabledState);
+
+  const DeepQuery kAmbientLightSensorToggle{
+      "os-settings-ui",     "os-settings-main",
+      "#mainPageContainer", "settings-device-page",
+      "settings-display",   "cr-toggle#autoBrightnessToggle",
+  };
+
+  const DeepQuery kDisplaySlider{
+      "os-settings-ui",       "os-settings-main", "#mainPageContainer",
+      "settings-device-page", "settings-display", "#brightnessSlider",
+  };
+
+  // Lambda function to get the current brightness.
+  auto get_display_brightness = [](double* out_brightness) {
+    base::RunLoop run_loop;
+    Shell::Get()->brightness_control_delegate()->GetBrightnessPercent(
+        base::BindOnce(
+            [](double* out_brightness, base::RunLoop* run_loop,
+               std::optional<double> brightness) {
+              *out_brightness = brightness.value_or(0.0);
+              run_loop->Quit();
+            },
+            out_brightness, &run_loop));
+    run_loop.Run();
+  };
+
+  double initial_brightness;
+  get_display_brightness(&initial_brightness);
+
+  StateChange fake_brightness_slider_exists;
+  fake_brightness_slider_exists.type = StateChange::Type::kExists;
+  fake_brightness_slider_exists.event = kFakeDisplaySliderExists;
+  fake_brightness_slider_exists.where = kDisplaySlider;
+
+  // Set device to have an ambient light sensor.
+  chromeos::FakePowerManagerClient::Get()->set_has_ambient_light_sensor(true);
+
+  RunTestSequence(
+      Log("Opening OS settings system web app"),
+      LaunchSettingsApp(webcontents_id_,
+                        chromeos::settings::mojom::kDisplaySubpagePath),
+
+      Log("Verifying ambient light sensor state"),
+      ObserveState(kAmbientLightSensorEnabledState,
+                   std::make_unique<AmbientLightSensorStateObserver>(
+                       chromeos::PowerManagerClient::Get())),
+      WaitForState(kAmbientLightSensorEnabledState, true),
+      WaitForElementExists(webcontents_id_, kDisplayPageQuery),
+      ExecuteJsAt(
+          webcontents_id_, kDisplayPageQuery,
+          "(display_page) => { if (display_page) { "
+          "display_page.selectedDisplay = {"
+          "  isInternal: true"
+          "};"
+          "display_page.notifyPath('selectedDisplay.isInternal', true); "
+          "}}"),
+
+      Log("Waiting for the ambient light sensor toggle to exist"),
+      WaitForElementExists(webcontents_id_, kAmbientLightSensorToggle),
+
+      Log("Waiting for display brightness slider to exist"),
+      WaitForElementExists(webcontents_id_, kDisplaySlider),
+
+      Log("Waiting for the toggle to be checked"),
+      WaitForToggleState(webcontents_id_, kAmbientLightSensorToggle, true),
+
+      Log("Move display brightness slider towards right"),
+      FocusElement(kDisplaySlider),
+      SendAccelerator(
+          webcontents_id_,
+          ui::Accelerator{ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE}),
+
+      Log("Waiting for display brighntess slider to be changed"),
+      WaitForStateChange(webcontents_id_, fake_brightness_slider_exists),
+
+      Log("Waiting for ambient light sensor to be disabled"),
+      WaitForState(kAmbientLightSensorEnabledState, false),
+
+      Log("Waiting for toggle to be unchecked"),
+      WaitForToggleState(webcontents_id_, kAmbientLightSensorToggle, false));
+
+  double current_brightness;
+  get_display_brightness(&current_brightness);
+  // Current brightness should be greater than initial brightness.
+  EXPECT_GE(current_brightness, initial_brightness);
+  initial_brightness = current_brightness;
+
+  RunTestSequence(
+      Log("Move display brightness slider to left"),
+      SendAccelerator(
+          webcontents_id_,
+          ui::Accelerator{ui::KeyboardCode::VKEY_LEFT, ui::EF_NONE}),
+      Log("Waiting for brighntess slider to be changed"),
+      WaitForStateChange(webcontents_id_, fake_brightness_slider_exists));
+
+  get_display_brightness(&current_brightness);
+  // Current brightness should be less than initial brighntess.
+  EXPECT_LE(current_brightness, initial_brightness);
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSettingsBrightnessInteractiveUiTest,
