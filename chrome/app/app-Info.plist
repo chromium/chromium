@@ -395,57 +395,6 @@
 				</array>
 			</dict>
 		</dict>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.movie</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>WebM media</string>
-			<key>UTTypeIconFile</key>
-			<string>document.icns</string>
-			<key>UTTypeIdentifier</key>
-			<string>org.webmproject.webm</string>
-			<key>UTTypeReferenceURL</key>
-			<string>https://www.webmproject.org/docs/container/</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>webm</string>
-				</array>
-				<key>public.mime-type</key>
-				<array>
-					<string>video/webm</string>
-					<string>audio/webm</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.image</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>WebP image</string>
-			<key>UTTypeIconFile</key>
-			<string>document.icns</string>
-			<key>UTTypeIdentifier</key>
-			<string>org.webmproject.webp</string>
-			<key>UTTypeReferenceURL</key>
-			<string>https://developers.google.com/speed/webp/docs/riff_container</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>webp</string>
-				</array>
-				<key>public.mime-type</key>
-				<array>
-					<string>image/webp</string>
-				</array>
-			</dict>
-		</dict>
 	</array>
 	<key>NSUserNotificationAlertStyle</key>
 	<string>banner</string>
