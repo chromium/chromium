@@ -59,6 +59,8 @@ const char kGuestUserName[] = "$guest";
 
 const char kSupervisedUserDomain[] = "locally-managed.localhost";
 
+const char kArcKioskDomain[] = "arc-kiosk-apps.device-local.localhost";
+
 std::string CanonicalizeUserID(const std::string& user_id) {
   if (user_id == kGuestUserName)
     return user_id;

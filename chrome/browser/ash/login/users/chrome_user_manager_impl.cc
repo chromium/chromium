@@ -479,6 +479,17 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
     }
   }
 
+  // Persist the new list of device local accounts in a pref. These accounts
+  // will be loaded in LoadDeviceLocalAccounts() on the next reboot regardless
+  // of whether they still exist in kAccountsPrefDeviceLocalAccounts, allowing
+  // us to clean up associated data if they disappear from policy.
+  ScopedListPrefUpdate prefs_device_local_accounts_update(
+      GetLocalState(), prefs::kDeviceLocalAccountsWithSavedData);
+  prefs_device_local_accounts_update->clear();
+  for (const auto& account : device_local_accounts) {
+    prefs_device_local_accounts_update->Append(account.user_id);
+  }
+
   // If the list of device local accounts has not changed, return.
   if (device_local_accounts.size() == old_accounts.size()) {
     bool changed = false;
@@ -491,17 +502,6 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
     if (!changed) {
       return false;
     }
-  }
-
-  // Persist the new list of device local accounts in a pref. These accounts
-  // will be loaded in LoadDeviceLocalAccounts() on the next reboot regardless
-  // of whether they still exist in kAccountsPrefDeviceLocalAccounts, allowing
-  // us to clean up associated data if they disappear from policy.
-  ScopedListPrefUpdate prefs_device_local_accounts_update(
-      GetLocalState(), prefs::kDeviceLocalAccountsWithSavedData);
-  prefs_device_local_accounts_update->clear();
-  for (const auto& account : device_local_accounts) {
-    prefs_device_local_accounts_update->Append(account.user_id);
   }
 
   // Remove the old device local accounts from the user list.
