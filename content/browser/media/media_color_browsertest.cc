@@ -56,63 +56,31 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, GbrpVp9) {
   RunGBRPTest("vp9.mp4");
 }
 
-// Fuchsia doesn't able to playback 4:4:4 av1.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_GbrpAv1 DISABLED_GbrpAv1
-#else
-#define MAYBE_GbrpAv1 GbrpAv1
-#endif
-IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_GbrpAv1) {
+// Fuchsia isn't able to playback 4:4:4 av1.
+#if !BUILDFLAG(IS_FUCHSIA)
+IN_PROC_BROWSER_TEST_F(MediaColorTest, GbrpAv1) {
   RunGBRPTest("av1.mp4");
 }
-
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-
-// This test fails on Android: http://crbug.com/938320
-// It also fails on ChromeOS https://crbug.com/938618
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_Yuv420pH264 DISABLED_Yuv420pH264
-#else
-#define MAYBE_Yuv420pH264 Yuv420pH264
 #endif
-IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv420pH264) {
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
+IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pH264) {
   RunBlackWhiteTest("yuv420p.mp4");
 }
 
-// This test fails on Android: http://crbug.com/647818
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_Yuvj420pH264 DISABLED_Yuvj420pH264
-#else
-#define MAYBE_Yuvj420pH264 Yuvj420pH264
-#endif
-IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuvj420pH264) {
+IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuvj420pH264) {
   RunBlackWhiteTest("yuvj420p.mp4");
 }
 
-// This fails on ChromeOS: http://crbug.com/647400,
-// This fails on Android: http://crbug.com/938320,
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_Yuv420pRec709H264 DISABLED_Yuv420pRec709H264
-#else
-#define MAYBE_Yuv420pRec709H264 Yuv420pRec709H264
-#endif
-IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv420pRec709H264) {
+IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pRec709H264) {
   RunBlackWhiteTest("yuv420p_rec709.mp4");
 }
 
-// Android doesn't support 10bpc.
-// This test flakes on mac: http://crbug.com/810908
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
-#define MAYBE_Yuv420pHighBitDepth DISABLED_Yuv420pHighBitDepth
-#else
-#define MAYBE_Yuv420pHighBitDepth Yuv420pHighBitDepth
-#endif
-IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv420pHighBitDepth) {
+IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pHighBitDepth) {
   RunBlackWhiteTest("yuv420p_hi10p.mp4");
 }
 
-// Android devices usually only support baseline, main and high.
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv422pH264) {
   RunBlackWhiteTest("yuv422p.mp4");
 }
@@ -127,7 +95,8 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv444pH264) {
 IN_PROC_BROWSER_TEST_F(MediaColorTest, GbrpH264) {
   RunGBRPTest("h264.mp4");
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
 }  // namespace content
