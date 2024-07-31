@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//extensions/buildflags/buildflags.gni")
-
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("search") {
@@ -76,15 +74,11 @@ source_set("search") {
       "//components/policy:policy_code_generate",
       "//components/policy/core/common",
       "//components/sync_preferences",
+      "//extensions/browser",
+      "//extensions/common",
       "//mojo/public/cpp/bindings",
       "//ui/base",
       "//ui/gfx:color_utils",
     ]
-    if (enable_extensions) {
-      deps += [
-        "//extensions/browser",
-        "//extensions/common",
-      ]
-    }
   }
 }

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//extensions/buildflags/buildflags.gni")
-
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 import("//build/config/ui.gni")
@@ -136,6 +134,8 @@ source_set("toolbar") {
     "//components/vector_icons",
     "//components/zoom",
     "//content/public/browser",
+    "//extensions/browser/api/feedback_private",
+    "//extensions/common",
     "//media",
     "//third_party/abseil-cpp:absl",
     "//ui/accessibility:ax_base",
@@ -149,12 +149,6 @@ source_set("toolbar") {
     "//ui/gfx/geometry:geometry_skia",
     "//ui/native_theme",
   ]
-  if (enable_extensions) {
-    deps += [
-      "//extensions/browser/api/feedback_private",
-      "//extensions/common",
-    ]
-  }
   if (enable_webui_tab_strip) {
     sources += [
       "webui_tab_counter_button.cc",
