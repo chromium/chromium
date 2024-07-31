@@ -83,6 +83,10 @@ inline constexpr char kHomePage[] = "homepage";
 // A boolean specifying whether HTTPS-Only Mode is enabled by the user.
 inline constexpr char kHttpsOnlyModeEnabled[] = "https_only_mode_enabled";
 
+// A boolean specifying whether HTTPS-First Mode is enabled in Balanced Mode.
+inline constexpr char kHttpsFirstBalancedMode[] =
+    "https_first_balanced_mode_enabled";
+
 // A boolean specifying whether HTTPS-First Mode (aka "HTTPS-Only Mode") is
 // enabled in Incognito Mode.
 inline constexpr char kHttpsFirstModeIncognito[] =

@@ -354,6 +354,7 @@ enum {
   kMahiNudgeShownCount = 100294,
   kAccessibilityMagnifierFollowsChromeVox = 100295,
   kKeyboardHasSplitModifierKeyboard = 100296,
+  kHttpsFirstBalancedMode = 100297,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1532,6 +1533,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {promos_prefs::kDesktopToiOSAddressPromoOptOut,
      {syncable_prefs_ids::kDesktopToiOSAddressPromoOptOut, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kHttpsFirstBalancedMode,
+     {syncable_prefs_ids::kHttpsFirstBalancedMode, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 });
