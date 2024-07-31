@@ -686,9 +686,9 @@ network::ResourceRequest ConstructProxyRequest(
   // Don't send cookies or HTTP authentication to the proxy server.
   proxy_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
 
-  std::string accept_header_value = network::kDefaultAcceptHeaderValue;
-  resource_request.headers.GetHeader(net::HttpRequestHeaders::kAccept,
-                                     &accept_header_value);
+  std::string accept_header_value =
+      resource_request.headers.GetHeader(net::HttpRequestHeaders::kAccept)
+          .value_or(network::kDefaultAcceptHeaderValue);
   proxy_request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                   accept_header_value);
   proxy_request.headers.SetHeader(net::HttpRequestHeaders::kCacheControl,

@@ -608,11 +608,9 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyRequestCopiesAcceptHeader) {
   request->headers.SetHeader(net::HttpRequestHeaders::kAccept, "text/html");
   CreateLoaderAndRun(std::move(request));
 
-  std::string accept_header_value;
-  ASSERT_THAT(url_handler().request()->headers.GetHeader(
-                  net::HttpRequestHeaders::kAccept, &accept_header_value),
-              IsTrue());
-  EXPECT_THAT(accept_header_value, Eq("text/html"));
+  EXPECT_THAT(url_handler().request()->headers.GetHeader(
+                  net::HttpRequestHeaders::kAccept),
+              testing::Optional(std::string("text/html")));
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyRequestDisablesCaching) {
@@ -628,12 +626,9 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyRequestDisablesCaching) {
   request->url = GURL("isolated-app://" + kDevWebBundleId + "/foo/bar.html");
   CreateLoaderAndRun(std::move(request));
 
-  std::string cache_control_header_value;
-  ASSERT_THAT(
-      url_handler().request()->headers.GetHeader(
-          net::HttpRequestHeaders::kCacheControl, &cache_control_header_value),
-      IsTrue());
-  EXPECT_THAT(cache_control_header_value, Eq("no-cache"));
+  EXPECT_THAT(url_handler().request()->headers.GetHeader(
+                  net::HttpRequestHeaders::kCacheControl),
+              testing::Optional(std::string("no-cache")));
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyRequestDefaultsToAcceptingAll) {
@@ -649,11 +644,9 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyRequestDefaultsToAcceptingAll) {
   request->url = GURL("isolated-app://" + kDevWebBundleId + "/foo/bar.html");
   CreateLoaderAndRun(std::move(request));
 
-  std::string accept_header_value;
-  ASSERT_THAT(url_handler().request()->headers.GetHeader(
-                  net::HttpRequestHeaders::kAccept, &accept_header_value),
-              IsTrue());
-  EXPECT_THAT(accept_header_value, Eq("*/*"));
+  EXPECT_THAT(url_handler().request()->headers.GetHeader(
+                  net::HttpRequestHeaders::kAccept),
+              testing::Optional(std::string("*/*")));
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
