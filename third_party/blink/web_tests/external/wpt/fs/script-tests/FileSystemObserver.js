@@ -151,3 +151,120 @@ directory_test(async (t, root_dir) => {
     }
   }
 }, 'Events outside the watch scope are not sent to the observer\'s callback');
+
+directory_test(async (t, root_dir) => {
+  const dir =
+      await root_dir.getDirectoryHandle(getUniqueName(), {create: true});
+
+  const scope_test = new ScopeTest(t, dir);
+  const watched_handle = await scope_test.watched_handle();
+
+  for (const recursive of [false, true]) {
+    for await (const src of scope_test.in_scope_paths(recursive)) {
+      for await (const dest of scope_test.in_scope_paths(recursive)) {
+        const file = await src.createHandle();
+
+        const observer = new CollectingFileSystemObserver(t, root_dir);
+        await observer.observe([watched_handle], {recursive});
+
+        // Move `file`.
+        await file.move(dest.parentHandle(), dest.fileName());
+
+        // Expect one "moved" event to happen on `file`.
+        const records = await observer.getRecords();
+        await assert_records_equal(
+            watched_handle, records, [movedEvent(
+                                         file, dest.relativePathComponents(),
+                                         src.relativePathComponents())]);
+
+        observer.disconnect();
+      }
+    }
+  }
+}, 'Moving a file through FileSystemFileHandle.move is reported as a "moved" event if destination and source are in scope');
+
+directory_test(async (t, root_dir) => {
+  const dir =
+      await root_dir.getDirectoryHandle(getUniqueName(), {create: true});
+
+  const scope_test = new ScopeTest(t, dir);
+  const watched_handle = await scope_test.watched_handle();
+
+  for (const recursive of [false, true]) {
+    for await (const src of scope_test.out_of_scope_paths(recursive)) {
+      for await (const dest of scope_test.out_of_scope_paths(recursive)) {
+        const file = await src.createHandle();
+
+        const observer = new CollectingFileSystemObserver(t, root_dir);
+        await observer.observe([watched_handle], {recursive});
+
+        // Move `file`.
+        await file.move(dest.parentHandle(), dest.fileName());
+
+        // Expect the observer to not receive any events.
+        const records = await observer.getRecords();
+        await assert_records_equal(watched_handle, records, []);
+      }
+    }
+  }
+}, 'Moving a file through FileSystemFileHandle.move is not reported if destination and source are not in scope');
+
+directory_test(async (t, root_dir) => {
+  const dir =
+      await root_dir.getDirectoryHandle(getUniqueName(), {create: true});
+
+  const scope_test = new ScopeTest(t, dir);
+  const watched_handle = await scope_test.watched_handle();
+
+  for (const recursive of [false, true]) {
+    for await (const src of scope_test.out_of_scope_paths(recursive)) {
+      for await (const dest of scope_test.in_scope_paths(recursive)) {
+        const file = await src.createHandle();
+
+        const observer = new CollectingFileSystemObserver(t, root_dir);
+        await observer.observe([watched_handle], {recursive});
+
+        // Move `file`.
+        await file.move(dest.parentHandle(), dest.fileName());
+
+        // Expect one "appeared" event to happen on `file`.
+        const records = await observer.getRecords();
+        await assert_records_equal(
+            watched_handle, records,
+            [appearedEvent(file, dest.relativePathComponents())]);
+      }
+    }
+  }
+}, 'Moving a file through FileSystemFileHandle.move is reported as a "appeared" event if only destination is in scope');
+
+directory_test(async (t, root_dir) => {
+  const dir =
+      await root_dir.getDirectoryHandle(getUniqueName(), {create: true});
+
+  const scope_test = new ScopeTest(t, dir);
+  const watched_handle = await scope_test.watched_handle();
+
+  for (const recursive of [false, true]) {
+    for await (const src of scope_test.in_scope_paths(recursive)) {
+      for await (const dest of scope_test.out_of_scope_paths(recursive)) {
+        // These both point to the same underlying file entry initially until
+        // move is called on `fileToMove`. `file` is kept so that we have a
+        // handle that still points at the source file entry.
+        const file = await src.createHandle();
+        const fileToMove = await src.createHandle();
+
+        const observer = new CollectingFileSystemObserver(t, root_dir);
+        await observer.observe([watched_handle], {recursive});
+
+        // Move `fileToMove`.
+        await fileToMove.move(dest.parentHandle(), dest.fileName());
+
+        // Expect one "disappeared" event to happen on `file`.
+        const records = await observer.getRecords();
+        await assert_records_equal(
+            watched_handle, records,
+            [disappearedEvent(file, src.relativePathComponents())]);
+      }
+    }
+  }
+}, 'Moving a file through FileSystemFileHandle.move is reported as a "disappeared" event if only source is in scope');

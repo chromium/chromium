@@ -140,3 +140,13 @@ function appearedEvent(changedHandle, relativePathComponents) {
 function disappearedEvent(changedHandle, relativePathComponents) {
   return {type: 'disappeared', changedHandle, relativePathComponents};
 }
+
+function movedEvent(
+    changedHandle, relativePathComponents, relativePathMovedFrom) {
+  return {
+    type: 'moved',
+    changedHandle,
+    relativePathComponents,
+    relativePathMovedFrom
+  };
+}
