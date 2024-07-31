@@ -462,9 +462,7 @@ class BrowserViewDataProtectionTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kEnableWatermarkView,
-         data_controls::kEnableScreenshotProtection},
-        {});
+        {data_controls::kEnableScreenshotProtection}, {});
 
     // Set a DM token since the enterprise real-time URL service expects one.
     policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));

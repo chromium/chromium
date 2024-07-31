@@ -951,10 +951,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_web_view_->set_is_primary_web_contents_for_window(true);
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-  if (base::FeatureList::IsEnabled(features::kEnableWatermarkView)) {
-    watermark_view_ = contents_container->AddChildView(
-        std::make_unique<enterprise_watermark::WatermarkView>());
-  }
+  watermark_view_ = contents_container->AddChildView(
+      std::make_unique<enterprise_watermark::WatermarkView>());
 #endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(

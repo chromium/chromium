@@ -34,7 +34,8 @@ It was not split
 This is another very long line that should be split up into multiple lines
 )";
 
-class WatermarkBrowserTestBase : public UiBrowserTest {
+class WatermarkBrowserTest : public UiBrowserTest,
+                             public testing::WithParamInterface<const char*> {
  public:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -76,29 +77,7 @@ class WatermarkBrowserTestBase : public UiBrowserTest {
   base::test::ScopedFeatureList scoped_features_;
 };
 
-class WatermarkBrowserTest : public WatermarkBrowserTestBase,
-                             public testing::WithParamInterface<const char*> {
- public:
-  WatermarkBrowserTest() {
-    scoped_features_.InitAndEnableFeature(features::kEnableWatermarkView);
-  }
-};
-
-class WatermarkDisabledBrowserTest : public WatermarkBrowserTestBase {
- public:
-  WatermarkDisabledBrowserTest() {
-    scoped_features_.InitAndDisableFeature(features::kEnableWatermarkView);
-  }
-};
-
 }  // namespace
-
-IN_PROC_BROWSER_TEST_F(WatermarkDisabledBrowserTest,
-                       NoWatermarkShownAfterNavigation) {
-  NavigateToTestPage();
-  ASSERT_FALSE(SetWatermark(kMultilingualWatermarkMessage));
-  ShowAndVerifyUi();
-}
 
 IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest, WatermarkShownAfterNavigation) {
   NavigateToTestPage();
