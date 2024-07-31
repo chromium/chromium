@@ -302,10 +302,8 @@ TEST_F(GaiaAuthFetcherTest,
   std::string body = GetRequestBodyAsString(&received_requests_.at(0));
   EXPECT_TRUE(
       base::Contains(body, "bound_token_registration_jwt=registration_jwt"));
-  std::string header;
-  EXPECT_TRUE(
-      received_requests_.at(0).headers.GetHeader(kVersionListHeader, &header));
-  EXPECT_EQ(header, "version_list");
+  EXPECT_THAT(received_requests_.at(0).headers.GetHeader(kVersionListHeader),
+              testing::Optional(std::string("version_list")));
   EXPECT_TRUE(auth.HasPendingFetch());
 
   auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK,
@@ -364,9 +362,9 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
 
   const network::ResourceRequest& request0 = received_requests_.at(0);
   EXPECT_EQ("POST", request0.method);
-  std::string header;
-  request0.headers.GetHeader("Authorization", &header);
-  EXPECT_EQ("MultiBearer id1:token1,id2:token2", header);
+  EXPECT_THAT(
+      request0.headers.GetHeader("Authorization"),
+      testing::Optional(std::string("MultiBearer id1:token1,id2:token2")));
   EXPECT_EQ("source=ChromiumBrowser&reuseCookies=0&externalCcResult=cc_result",
             request0.url.query());
 

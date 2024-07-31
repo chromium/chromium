@@ -125,12 +125,10 @@ class SigninHeaderHelperTest : public testing::Test {
       const char* header_name,
       const std::string& expected_request) {
     bool expected_result = !expected_request.empty();
-    std::string request;
-    EXPECT_EQ(headers.GetHeader(header_name, &request), expected_result)
-        << header_name << ": " << request;
-    if (expected_result) {
-      EXPECT_EQ(expected_request, request);
-    }
+    EXPECT_THAT(headers.GetHeader(header_name),
+                testing::Conditional(expected_result,
+                                     testing::Optional(expected_request),
+                                     std::nullopt));
   }
 
   void CheckMirrorHeaderRequest(const GURL& url,
@@ -724,10 +722,9 @@ TEST_F(SigninHeaderHelperTest, TestIgnoreMirrorHeaderNonEligibleURLs) {
       /*is_child_account=*/Tribool::kUnknown, account_consistency_,
       cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
       false /* force_account_consistency */);
-  std::string header;
-  EXPECT_TRUE(request_adapter.GetFinalHeaders().GetHeader(
-      kChromeConnectedHeader, &header));
-  EXPECT_EQ(fake_header, header);
+  EXPECT_THAT(
+      request_adapter.GetFinalHeaders().GetHeader(kChromeConnectedHeader),
+      testing::Optional(fake_header));
 }
 
 TEST_F(SigninHeaderHelperTest, TestInvalidManageAccountsParams) {

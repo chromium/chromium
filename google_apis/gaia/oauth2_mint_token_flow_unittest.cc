@@ -428,9 +428,8 @@ TEST_F(OAuth2MintTokenFlowTest, CreateAuthorizationHeaderValue) {
 TEST_F(OAuth2MintTokenFlowTest, CreateApiCallHeaders) {
   CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
   net::HttpRequestHeaders headers = flow_->CreateApiCallHeaders();
-  std::string header_value;
-  ASSERT_TRUE(headers.GetHeader("X-OAuth-Client-ID", &header_value));
-  EXPECT_EQ(header_value, kClientId);
+  EXPECT_THAT(headers.GetHeader("X-OAuth-Client-ID"),
+              testing::Optional(kClientId));
 }
 
 TEST_F(OAuth2MintTokenFlowTest,

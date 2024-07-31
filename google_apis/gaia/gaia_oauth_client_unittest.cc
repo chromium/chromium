@@ -513,14 +513,10 @@ TEST_F(GaiaOAuthClientTest, GetAccountCapabilities) {
                               {"capability1", "capability2", "capability3"}, 1,
                               &delegate);
 
-  std::string actual_authorization_header;
-  EXPECT_TRUE(injector.GetRequestHeaders().GetHeader(
-      "Authorization", &actual_authorization_header));
-  EXPECT_EQ(actual_authorization_header, "Bearer some_token");
-  std::string actual_method_override_header;
-  EXPECT_TRUE(injector.GetRequestHeaders().GetHeader(
-      "X-HTTP-Method-Override", &actual_method_override_header));
-  EXPECT_EQ(actual_method_override_header, "GET");
+  EXPECT_THAT(injector.GetRequestHeaders().GetHeader("Authorization"),
+              testing::Optional(std::string("Bearer some_token")));
+  EXPECT_THAT(injector.GetRequestHeaders().GetHeader("X-HTTP-Method-Override"),
+              testing::Optional(std::string("GET")));
   EXPECT_EQ(injector.GetUploadData(),
             "names=capability1&names=capability2&names=capability3");
 
