@@ -1905,23 +1905,6 @@ TEST_F(PaymentsAutofillTableTest,
 }
 
 TEST_F(PaymentsAutofillTableTest,
-       PaymentInstrument_DoesNotStorePaymentInstrumentWithoutDetails) {
-  // Add a payment instrument without details to the table.
-  sync_pb::PaymentInstrument payment_instrument;
-  payment_instrument.set_instrument_id(1234);
-  std::vector<sync_pb::PaymentInstrument> payment_instruments{
-      payment_instrument};
-  table_->SetPaymentInstruments(payment_instruments);
-
-  // Attempt to retrieve the payment instruments.
-  std::vector<sync_pb::PaymentInstrument> payment_instruments_from_table;
-  table_->GetPaymentInstruments(payment_instruments_from_table);
-
-  // Check that no payment instruments were retrieved.
-  EXPECT_TRUE(payment_instruments_from_table.empty());
-}
-
-TEST_F(PaymentsAutofillTableTest,
        PaymentInstrument_SetPaymentInstrumentsOverwritesExistingValues) {
   // Add the first payment instrument to the table.
   sync_pb::PaymentInstrument payment_instrument_1 =

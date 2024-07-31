@@ -1489,3 +1489,23 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion129ToCurrent) {
     EXPECT_TRUE(connection.DoesColumnExist("token_service", "binding_key"));
   }
 }
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion130ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_130.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(130, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("generic_payment_instruments",
+                                           "payment_instrument_type"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("generic_payment_instruments",
+                                            "payment_instrument_type"));
+  }
+}

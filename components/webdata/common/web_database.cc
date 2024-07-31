@@ -42,9 +42,10 @@ void LogInitResult(WebDatabaseInitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 128 changes the primary key of 'plus_addresses', and thus is no
-// longer compatible with version 127.
-const int kCompatibleVersionNumber = 128;
+// Version 131 drops the 'payment_instrument_type' column of
+// 'generic_payment_instruments', and thus is no longer compatible with version
+// 130.
+const int kCompatibleVersionNumber = 131;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.

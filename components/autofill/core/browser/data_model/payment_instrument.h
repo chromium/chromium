@@ -33,14 +33,6 @@ class PaymentInstrument {
     kMaxValue = kPix,
   };
 
-  // This value represents the type of instrument_detail in the payment
-  // instrument's proto. Values are persisted, don't change or re-use them.
-  enum class PaymentInstrumentType {
-    kUnknown = 0,
-    kBankAccount = 1,
-    kIban = 2,
-  };
-
   PaymentInstrument(int64_t instrument_id,
                     std::u16string_view nickname,
                     const GURL& display_icon_url,

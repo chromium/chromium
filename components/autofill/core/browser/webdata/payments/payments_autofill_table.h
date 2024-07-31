@@ -341,9 +341,6 @@ struct ServerCvc {
 //                      as eWallets.
 //
 //   instrument_id      The server-generated ID for the payment instrument.
-//   payment_instrument_type
-//                      An enum indicating the type of details associated with
-//                      the payment instrument.
 //   serialized_value_encrypted
 //                      A byte-encoded representation of the payment
 //                      instrument's protobuf, encrypted.
@@ -591,6 +588,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   MigrateToVersion124AndDeletePaymentInstrumentRelatedTablesAndAddMaskedBankAccountTable();
   bool MigrateToVersion125DeleteFullServerCardsTable();
   bool MigrateToVersion129AddGenericPaymentInstrumentsTable();
+  bool MigrateToVersion131RemoveGenericPaymentInstrumentTypeColumn();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.

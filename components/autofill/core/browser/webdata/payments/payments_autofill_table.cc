@@ -238,13 +238,11 @@ constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
 constexpr std::string_view kGenericPaymentInstrumentsTable =
     "generic_payment_instruments";
 // kInstrumentId = "instrument_id"
-constexpr std::string_view kPaymentInstrumentType = "payment_instrument_type";
 constexpr std::string_view kSerializedValueEncrypted =
     "serialized_value_encrypted";
 constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
     kGenericPaymentInstrumentsColumnNamesAndTypes = {
         {kInstrumentId, "INTEGER PRIMARY KEY NOT NULL"},
-        {kPaymentInstrumentType, "INTEGER NOT NULL DEFAULT 0"},
         {kSerializedValueEncrypted, "VARCHAR NOT NULL"}};
 
 void BindEncryptedStringToColumn(sql::Statement* s,
@@ -345,24 +343,12 @@ void BindVirtualCardUsageDataToStatement(
   s.BindString16(3, *virtual_card_usage_data.virtual_card_last_four());
 }
 
-PaymentInstrument::PaymentInstrumentType GetPaymentInstrumentType(
-    sync_pb::PaymentInstrument payment_instrument) {
-  if (payment_instrument.has_bank_account()) {
-    return PaymentInstrument::PaymentInstrumentType::kBankAccount;
-  } else if (payment_instrument.has_iban()) {
-    return PaymentInstrument::PaymentInstrumentType::kIban;
-  }
-  return PaymentInstrument::PaymentInstrumentType::kUnknown;
-}
-
 void BindPaymentInstrumentToStatement(
     const sync_pb::PaymentInstrument& payment_instrument,
     sql::Statement* s,
     const AutofillTableEncryptor& encryptor) {
   int index = 0;
   s->BindInt64(index++, payment_instrument.instrument_id());
-  s->BindInt(index++,
-             static_cast<int>(GetPaymentInstrumentType(payment_instrument)));
   BindEncryptedStringToColumn(
       s, index++, payment_instrument.SerializeAsString(), encryptor);
 }
@@ -591,6 +577,9 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 129:
       *update_compatible_version = false;
       return MigrateToVersion129AddGenericPaymentInstrumentsTable();
+    case 131:
+      *update_compatible_version = true;
+      return MigrateToVersion131RemoveGenericPaymentInstrumentTypeColumn();
   }
   return true;
 }
@@ -1834,16 +1823,10 @@ bool PaymentsAutofillTable::SetPaymentInstruments(
 
   // Insert the new values.
   sql::Statement insert;
-  InsertBuilder(
-      db_, insert, kGenericPaymentInstrumentsTable,
-      {kInstrumentId, kPaymentInstrumentType, kSerializedValueEncrypted});
+  InsertBuilder(db_, insert, kGenericPaymentInstrumentsTable,
+                {kInstrumentId, kSerializedValueEncrypted});
   for (const sync_pb::PaymentInstrument& payment_instrument :
        payment_instruments) {
-    // Don't store unknown payment instruments in the table.
-    if (GetPaymentInstrumentType(payment_instrument) ==
-        PaymentInstrument::PaymentInstrumentType::kUnknown) {
-      continue;
-    }
     BindPaymentInstrumentToStatement(payment_instrument, &insert,
                                      *autofill_table_encryptor_);
     insert.Run();
@@ -1858,14 +1841,12 @@ bool PaymentsAutofillTable::GetPaymentInstruments(
   payment_instruments.clear();
 
   sql::Statement s;
-  SelectBuilder(
-      db_, s, kGenericPaymentInstrumentsTable,
-      {kInstrumentId, kPaymentInstrumentType, kSerializedValueEncrypted});
+  SelectBuilder(db_, s, kGenericPaymentInstrumentsTable,
+                {kInstrumentId, kSerializedValueEncrypted});
 
   while (s.Step()) {
     int index = 0;
     int64_t instrument_id = s.ColumnInt64(index++);
-    int payment_instrument_type = s.ColumnInt(index++);
     auto serialized_value =
         DecryptStringFromColumn(s, index++, *autofill_table_encryptor_);
     sync_pb::PaymentInstrument payment_instrument;
@@ -1875,7 +1856,7 @@ bool PaymentsAutofillTable::GetPaymentInstruments(
       DLOG(WARNING)
           << "Instrument dropped: Failed to deserialize AUTOFILL model type "
              "sync_pb::PaymentInstrument with id = "
-          << instrument_id << " and type = " << payment_instrument_type;
+          << instrument_id;
     }
   }
 
@@ -2148,6 +2129,14 @@ bool PaymentsAutofillTable::
     MigrateToVersion129AddGenericPaymentInstrumentsTable() {
   return CreateTable(db_, kGenericPaymentInstrumentsTable,
                      kGenericPaymentInstrumentsColumnNamesAndTypes);
+}
+
+bool PaymentsAutofillTable::
+    MigrateToVersion131RemoveGenericPaymentInstrumentTypeColumn() {
+  return !DoesColumnExist(db_, kGenericPaymentInstrumentsTable,
+                          "payment_instrument_type") ||
+         DropColumn(db_, kGenericPaymentInstrumentsTable,
+                    "payment_instrument_type");
 }
 
 void PaymentsAutofillTable::AddMaskedCreditCards(
