@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"
+#include "base/observer_list.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -108,6 +109,21 @@ void PickerPreviewBubbleController::CloseBubble() {
   }
   bubble_view_->Close();
   OnWidgetDestroying(bubble_view_->GetWidget());
+  for (auto& observer : observers_) {
+    observer.OnPreviewBubbleVisibilityChanged(false);
+  }
+}
+
+bool PickerPreviewBubbleController::IsBubbleVisible() const {
+  return bubble_view_ != nullptr;
+}
+
+void PickerPreviewBubbleController::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PickerPreviewBubbleController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void PickerPreviewBubbleController::OnWidgetDestroying(views::Widget* widget) {
@@ -186,8 +202,13 @@ void PickerPreviewBubbleController::CreateBubbleWidget(
 }
 
 void PickerPreviewBubbleController::ShowBubble() {
-  if (bubble_view_ != nullptr) {
-    bubble_view_->GetWidget()->Show();
+  if (bubble_view_ == nullptr) {
+    return;
+  }
+
+  bubble_view_->GetWidget()->Show();
+  for (auto& observer : observers_) {
+    observer.OnPreviewBubbleVisibilityChanged(true);
   }
 }
 

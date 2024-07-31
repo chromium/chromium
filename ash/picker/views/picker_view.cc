@@ -36,6 +36,7 @@
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -47,6 +48,7 @@
 #include "build/branding_buildflags.h"
 #include "chromeos/ash/grit/ash_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -251,6 +253,7 @@ PickerView::PickerView(PickerViewDelegate* delegate,
   key_event_handler_.SetActivePseudoFocusHandler(this);
 
   pseudo_focused_view_tracker_.SetTrackEntireViewHierarchy(true);
+  preview_bubble_observation_.Observe(&preview_controller_);
 }
 
 PickerView::~PickerView() = default;
@@ -258,8 +261,9 @@ PickerView::~PickerView() = default;
 bool PickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   switch (accelerator.key_code()) {
     case ui::VKEY_ESCAPE:
-      // Close the submenu if it's active.
-      if (submenu_controller_.GetSubmenuView() != nullptr) {
+      if (preview_controller_.IsBubbleVisible()) {
+        preview_controller_.CloseBubble();
+      } else if (submenu_controller_.GetSubmenuView() != nullptr) {
         submenu_controller_.Close();
       } else if (auto* widget = GetWidget()) {
         // Otherwise, close the Picker widget.
@@ -462,6 +466,16 @@ bool PickerView::AdvancePseudoFocus(PickerPseudoFocusDirection direction) {
   SetPseudoFocusedView(GetNextPickerPseudoFocusableView(
       GetPseudoFocusedView(), direction, /*should_loop=*/true));
   return true;
+}
+
+void PickerView::OnPreviewBubbleVisibilityChanged(bool visible) {
+  if (views::Widget* widget = GetWidget()) {
+    // When the bubble is visible, turn off hiding the cursor on Esc key.
+    // If the cursor hides on Esc, the preview bubble is closed due to its
+    // OnMouseExit event handler, before PickerView has a chance to handle the
+    // Esc key.
+    widget->GetNativeWindow()->SetProperty(ash::kShowCursorOnKeypress, visible);
+  }
 }
 
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,

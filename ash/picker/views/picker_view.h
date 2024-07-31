@@ -58,7 +58,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
                               public PickerZeroStateViewDelegate,
                               public PickerSearchResultsViewDelegate,
                               public PickerEmojiBarViewDelegate,
-                              public PickerPseudoFocusHandler {
+                              public PickerPseudoFocusHandler,
+                              public PickerPreviewBubbleController::Observer {
   METADATA_HEADER(PickerView, views::WidgetDelegateView)
 
  public:
@@ -111,6 +112,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   bool MovePseudoFocusRight() override;
   bool AdvancePseudoFocus(PickerPseudoFocusDirection direction) override;
 
+  // PickerPreviewBubbleController::Observer:
+  void OnPreviewBubbleVisibilityChanged(bool visible) override;
+
   // Returns the target bounds for this Picker view. The target bounds try to
   // vertically align `search_field_view_` with `anchor_bounds`. `anchor_bounds`
   // and returned bounds should be in screen coordinates.
@@ -119,6 +123,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
   PickerSubmenuController& submenu_controller_for_testing() {
     return submenu_controller_;
+  }
+  PickerPreviewBubbleController& preview_controller_for_testing() {
+    return preview_controller_;
   }
 
   PickerSearchFieldView& search_field_view_for_testing() {
@@ -243,6 +250,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // This timer is running iff the first set of results for the current search
   // have not been published yet.
   base::OneShotTimer clear_results_timer_;
+
+  base::ScopedObservation<PickerPreviewBubbleController,
+                          PickerPreviewBubbleController::Observer>
+      preview_bubble_observation_{this};
 
   base::WeakPtrFactory<PickerView> weak_ptr_factory_{this};
 };

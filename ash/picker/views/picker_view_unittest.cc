@@ -21,6 +21,8 @@
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_preview_bubble.h"
+#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/picker/views/picker_search_bar_textfield.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
@@ -43,6 +45,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -114,6 +117,29 @@ auto ContainsEvent(const metrics::structured::Event& event) {
       Property("metric values", &metrics::structured::Event::metric_values,
                Eq(std::ref(event.metric_values())))));
 }
+
+class PickerPreviewBubbleVisibleWaiter
+    : public PickerPreviewBubbleController::Observer {
+ public:
+  void Wait(PickerPreviewBubbleController* preview_controller) {
+    if (!preview_controller->IsBubbleVisible()) {
+      preview_bubble_observation_.Observe(preview_controller);
+      run_loop_.Run();
+    }
+  }
+
+  void OnPreviewBubbleVisibilityChanged(bool visible) override {
+    if (visible) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  base::ScopedObservation<PickerPreviewBubbleController,
+                          PickerPreviewBubbleController::Observer>
+      preview_bubble_observation_{this};
+};
 
 class PickerViewTest : public AshTestBase {
  public:
@@ -1788,7 +1814,7 @@ TEST_F(PickerViewTest, LeftArrowKeyClosesSubmenu) {
   EXPECT_EQ(submenu_controller.GetSubmenuView(), nullptr);
 }
 
-TEST_F(PickerViewTest, PressingEscClosesSubmenu) {
+TEST_F(PickerViewTest, PressingEscClosesSubmenuThenWidget) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results = {PickerSearchResult::NewWindow(
           PickerSearchResult::NewWindowData::Type::kDoc)},
@@ -1805,6 +1831,38 @@ TEST_F(PickerViewTest, PressingEscClosesSubmenu) {
       .Wait();
   EXPECT_EQ(submenu_controller.GetSubmenuView(), nullptr);
   EXPECT_FALSE(widget->IsClosed());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
+
+  views::test::WidgetDestroyedWaiter(widget.get()).Wait();
+}
+
+TEST_F(PickerViewTest, PressingEscClosesPreviewThenWidget) {
+  // TODO: b/353592243 - This test breaks when the item with preview is the
+  // first item. Remove the extra Text result once it's fixed.
+  FakePickerViewDelegate delegate({
+      .zero_state_suggested_results =
+          {
+              PickerSearchResult::Text(u"a"),
+              PickerSearchResult::LocalFile(u"a", /*file_path=*/{}),
+          },
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  PickerPreviewBubbleController& preview_controller =
+      GetPickerViewFromWidget(*widget)->preview_controller_for_testing();
+  PickerPreviewBubbleVisibleWaiter().Wait(&preview_controller);
+  EXPECT_TRUE(preview_controller.IsBubbleVisible());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
+
+  EXPECT_FALSE(preview_controller.IsBubbleVisible());
+  EXPECT_FALSE(widget->IsClosed());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
+
+  views::test::WidgetDestroyedWaiter(widget.get()).Wait();
 }
 
 TEST_F(PickerViewTest, KeyEventsNavigateWithinSubmenu) {
