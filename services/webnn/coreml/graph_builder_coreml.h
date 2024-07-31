@@ -220,7 +220,9 @@ class GraphBuilderCoreml {
       const mojom::ElementWiseBinary::Kind kind,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-  AddOperationForElementwiseUnary(const mojom::ElementWiseUnary& operation,
+  AddOperationForElementwiseUnary(mojom::ElementWiseUnary::Kind kind,
+                                  uint64_t input_operand_id,
+                                  uint64_t output_operand_id,
                                   CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForElu(
       const mojom::Elu& operation,

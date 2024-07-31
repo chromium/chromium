@@ -777,8 +777,10 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kElementWiseUnary: {
+        const mojom::ElementWiseUnaryPtr& op =
+            operation->get_element_wise_unary();
         RETURN_IF_ERROR(AddOperationForElementwiseUnary(
-            *operation->get_element_wise_unary(), block));
+            op->kind, op->input_operand_id, op->output_operand_id, block));
         break;
       }
       case mojom::Operation::Tag::kElu: {
@@ -1621,73 +1623,83 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
 
 base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForElementwiseUnary(
-    const mojom::ElementWiseUnary& operation,
+    mojom::ElementWiseUnary::Kind kind,
+    uint64_t input_operand_id,
+    uint64_t output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
-  const OperandInfo& input_operand_info =
-      GetOperandInfo(operation.input_operand_id);
+  const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   const CoreML::Specification::MILSpec::DataType input_data_type =
       input_operand_info.mil_data_type;
 
-  std::string operand_op_name = OpKindToString(operation.kind);
+  std::string_view input_name = GetOperandInfo(input_operand_id).coreml_name;
 
-  switch (operation.kind) {
+  std::string operand_op_name = OpKindToString(kind);
+
+  switch (kind) {
     case mojom::ElementWiseUnary::Kind::kAbs: {
       CHECK(kFloatDataTypes.contains(input_data_type) ||
             input_data_type ==
                 CoreML::Specification::MILSpec::DataType::INT32 ||
             input_data_type == CoreML::Specification::MILSpec::DataType::INT8);
       return AddUnaryOperation(SupportedDataType::kFloatsAndInt32,
-                               kOpAbsTypeName, operation, block,
-                               operand_op_name);
+                               kOpAbsTypeName, input_operand_id,
+                               output_operand_id, block, operand_op_name);
     }
     case mojom::ElementWiseUnary::Kind::kCast: {
-      return AddOperationForCast(operation.input_operand_id,
-                                 operation.output_operand_id, block);
+      return AddOperationForCast(input_operand_id, output_operand_id, block);
     }
     case mojom::ElementWiseUnary::Kind::kCeil: {
       CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpCeilTypeName,
-                               operation, block, operand_op_name);
+                               input_operand_id, output_operand_id, block,
+                               operand_op_name);
     }
     case mojom::ElementWiseUnary::Kind::kCos: {
       CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpCosTypeName,
-                               operation, block, operand_op_name);
+                               input_operand_id, output_operand_id, block,
+                               operand_op_name);
     }
     case mojom::ElementWiseUnary::Kind::kExp: {
       CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpExpTypeName,
-                               operation, block, operand_op_name);
+                               input_operand_id, output_operand_id, block,
+                               operand_op_name);
     }
     case mojom::ElementWiseUnary::Kind::kFloor: {
       CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpFloorTypeName,
-                               operation, block, operand_op_name);
+                               input_operand_id, output_operand_id, block,
+                               operand_op_name);
     }
     case mojom::ElementWiseUnary::Kind::kIdentity: {
       return AddUnaryOperation(SupportedDataType::kFloatsAndInt32,
-                               kOpIdentityTypeName, operation, block,
-                               operand_op_name);
+                               kOpIdentityTypeName, input_operand_id,
+                               output_operand_id, block, operand_op_name);
     }
     case mojom::ElementWiseUnary::Kind::kSin: {
       CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpSinTypeName,
-                               operation, block, operand_op_name);
+                               input_operand_id, output_operand_id, block,
+                               operand_op_name);
     }
     case mojom::ElementWiseUnary::Kind::kTan: {
       CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpTanTypeName,
-                               operation, block, operand_op_name);
+                               input_operand_id, output_operand_id, block,
+                               operand_op_name);
     }
     case mojom::ElementWiseUnary::Kind::kErf: {
       CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpErfTypeName,
-                               operation, block, operand_op_name);
+                               input_operand_id, output_operand_id, block,
+                               operand_op_name);
     }
     case mojom::ElementWiseUnary::Kind::kSqrt: {
       CHECK(kFloatDataTypes.contains(input_data_type));
       return AddUnaryOperation(SupportedDataType::kFloats, kOpSqrtTypeName,
-                               operation, block, operand_op_name);
+                               input_operand_id, output_operand_id, block,
+                               operand_op_name);
     }
     case mojom::ElementWiseUnary::Kind::kReciprocal: {
       CHECK(kFloatDataTypes.contains(input_data_type));
@@ -1696,9 +1708,9 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
       // reciprocal(4) returning  0.24999 rather than 0.25.
       // In order to return expected results similar to other platforms,
       // set epsilon to 0.
-      return AddUnaryFloatsOperationWithEpsilon(kOpReciprocalTypeName,
-                                                operation, /*epsilon=*/0, block,
-                                                operand_op_name);
+      return AddUnaryFloatsOperationWithEpsilon(
+          kOpReciprocalTypeName, input_name, input_data_type, output_operand_id,
+          /*epsilon=*/0, block, operand_op_name);
     }
     case mojom::ElementWiseUnary::Kind::kLog: {
       CHECK(kFloatDataTypes.contains(input_data_type));
@@ -1707,9 +1719,9 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
       // in different result compared to other platforms.
       // In order to return expected results compatible with other
       // platforms, set epsilon to 0.
-      return AddUnaryFloatsOperationWithEpsilon(kOpLogTypeName, operation,
-                                                /*epsilon=*/0, block,
-                                                operand_op_name);
+      return AddUnaryFloatsOperationWithEpsilon(
+          kOpLogTypeName, input_name, input_data_type, output_operand_id,
+          /*epsilon=*/0, block, operand_op_name);
     }
     case mojom::ElementWiseUnary::Kind::kNeg: {
       CHECK(kFloatDataTypes.contains(input_data_type) ||
@@ -1742,9 +1754,9 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
       RETURN_IF_ERROR(AddInternalConstantWithValue(negative_one_operand_id,
                                                    negative_one_value, block));
       return AddOperationForElementwiseBinary(
-          /*lhs_operand_id=*/operation.input_operand_id,
+          /*lhs_operand_id=*/input_operand_id,
           /*rhs_operand_id=*/negative_one_operand_id,
-          /*output_operand_id=*/operation.output_operand_id,
+          /*output_operand_id=*/output_operand_id,
           mojom::ElementWiseBinary::Kind::kMul, block);
     }
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
@@ -1754,7 +1766,7 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
                        GenerateInternalOperandInfo(
                            CoreML::Specification::MILSpec::DataType::BOOL,
                            input_operand_info.dimensions));
-      RETURN_IF_ERROR(AddOperationForCast(operation.input_operand_id,
+      RETURN_IF_ERROR(AddOperationForCast(input_operand_id,
                                           cast_to_bool_operand_id, block));
       ASSIGN_OR_RETURN(uint64_t logical_not_output_operand_id,
                        GenerateInternalOperandInfo(
@@ -1763,7 +1775,7 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
       AddUnaryOperation(kOpLogicalNot, cast_to_bool_operand_id,
                         logical_not_output_operand_id, block);
       return AddOperationForCast(logical_not_output_operand_id,
-                                 operation.output_operand_id, block);
+                                 output_operand_id, block);
     }
   }
 }
@@ -2357,9 +2369,39 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
     const mojom::Reduce& operation,
     CoreML::Specification::MILSpec::Block& block) {
-  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
+  // Special handling for 0D reduction or empty axes, neither is supported by
+  // CoreML reduction. When input is 0D or when `axes` is empty, values are not
+  // reduced, but reduction function is applied to individual input values.
+  if (input_operand_info.dimensions.empty() || operation.axes.empty()) {
+    switch (operation.kind) {
+      case mojom::Reduce::Kind::kL1:
+      case mojom::Reduce::Kind::kL2:
+      case mojom::Reduce::Kind::kLogSumExp:
+      case mojom::Reduce::Kind::kMax:
+      case mojom::Reduce::Kind::kMean:
+      case mojom::Reduce::Kind::kMin:
+      case mojom::Reduce::Kind::kProduct:
+      case mojom::Reduce::Kind::kSum:
+        // Applying each of these reductions to a scalar value is a no-op.
+        // TODO: crbug.com/356190937 - Further optimize away the identity node.
+        return AddUnaryOperation(
+            SupportedDataType::kFloatsAndInt32, kOpIdentityTypeName,
+            operation.input_operand_id, operation.output_operand_id, block,
+            ops::kIdentity);
+      case mojom::Reduce::Kind::kLogSum:
+        return AddOperationForElementwiseUnary(
+            mojom::ElementWiseUnary::Kind::kLog, operation.input_operand_id,
+            operation.output_operand_id, block);
+      case mojom::Reduce::Kind::kSumSquare:
+        return AddOperationForElementwiseBinary(
+            operation.input_operand_id, operation.input_operand_id,
+            operation.output_operand_id, mojom::ElementWiseBinary::Kind::kMul,
+            block);
+    }
+  }
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
 
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
@@ -2420,9 +2462,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
   }
 
   static constexpr char kParamAxes[] = "axes";
-  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
 
   std::vector<int32_t> axes;
+
   base::ranges::transform(
       operation.axes, std::back_inserter(axes),
       [](uint32_t val) { return base::checked_cast<int32_t>(val); });
@@ -2431,6 +2473,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
       {{kParamAxes, Create1DTensorImmediateValue<int32_t>(axes)},
        {kOpParamKeepDims,
         CreateScalarImmediateValue(operation.keep_dimensions)}});
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
 }
 

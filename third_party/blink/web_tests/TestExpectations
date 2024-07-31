@@ -7455,13 +7455,6 @@ crbug.com/345118873 external/wpt/webdriver/tests/classic/get_active_element/get.
 
 crbug.com/331836147 [ Debug Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-first-in-tree-order.html [ Failure Pass ]
 
-crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/reduction.https.any.html?cpu [ Skip Timeout ]
-crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?cpu [ Skip Timeout ]
-crbug.com/345499788 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduction.https.any.html?gpu [ Skip Timeout ]
-crbug.com/345499788 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?gpu [ Skip Timeout ]
-crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduction.https.any.html?npu [ Skip Timeout ]
-crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?npu [ Skip Timeout ]
-
 # Not working tests at the timing of adding virtual/prerender2-fallback-prefetch-spec-rules
 crbug.com/346751886 virtual/prerender2-fallback-prefetch-spec-rules/http/tests/inspector-protocol/prerender/prerender-ua-override.js [ Failure ]
 

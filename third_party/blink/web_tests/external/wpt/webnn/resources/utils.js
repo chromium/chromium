@@ -524,6 +524,29 @@ const getExpectedDataTypeOfSingleOutput = (expectedOutput) => {
   return dataType;
 };
 
+const getReducedElementCount =
+    (graphResources) => {
+      const args = graphResources.operators[0].arguments;
+      const inputShape = graphResources.inputs[args[0][Object.keys(args[0])[0]]]
+                             .descriptor.dimensions;
+      const rank = inputShape.length;
+      const options =
+          args.length === 2 ? {...args[1][Object.keys(args[1])[0]]} : {};
+      let sizes;
+
+      if (options && options.axes) {
+        sizes = options.axes.map(
+            (axis) => axis < 0 ? inputShape[axis + rank] : inputShape[axis]);
+      } else {
+        sizes = inputShape;
+      }
+
+      return sizes.length ?
+          sizes.reduce(
+              (accumulator, currentValue) => accumulator * currentValue) :
+          1;
+    }
+
 const webnn_conformance_test =
     (buildGraphAndComputeFunc, toleranceFunc, testResources) => {
       promise_test(async () => {
