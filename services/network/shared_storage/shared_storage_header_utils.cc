@@ -54,16 +54,17 @@ StringToSharedStorageHeaderParamType(std::string_view param_str) {
 }
 
 bool GetSecSharedStorageWritableHeader(const net::HttpRequestHeaders& headers) {
-  std::string value;
-  if (!headers.GetHeader(kSecSharedStorageWritableHeader, &value)) {
+  std::optional<std::string> value =
+      headers.GetHeader(kSecSharedStorageWritableHeader);
+  if (!value) {
     return false;
   }
   std::optional<net::structured_headers::Item> item =
-      net::structured_headers::ParseBareItem(value);
+      net::structured_headers::ParseBareItem(*value);
   if (!item || !item->is_boolean() || !item->GetBoolean()) {
     // We only expect the value "?1", which parses to boolean true.
     // TODO(cammie): Log a histogram to see if this ever happens.
-    LOG(ERROR) << "Unexpected value '" << value << "' found for '"
+    LOG(ERROR) << "Unexpected value '" << *value << "' found for '"
                << kSecSharedStorageWritableHeader << "' header.";
     return false;
   }

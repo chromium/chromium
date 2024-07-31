@@ -24,6 +24,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -162,10 +163,9 @@ class SharedStorageURLLoaderFactoryProxyTest
     EXPECT_EQ(request.url, observed_request.url);
 
     // Verify the accept kAcceptJavascript header.
-    std::string observed_accept_header;
-    EXPECT_TRUE(observed_request.headers.GetHeader(
-        net::HttpRequestHeaders::kAccept, &observed_accept_header));
-    EXPECT_EQ(kAcceptJavascript, observed_accept_header);
+    EXPECT_THAT(
+        observed_request.headers.GetHeader(net::HttpRequestHeaders::kAccept),
+        testing::Optional(std::string(kAcceptJavascript)));
 
     if (IsContextOriginDataOrigin()) {
       // The accept kAcceptJavascript header should be the only header.
@@ -175,11 +175,10 @@ class SharedStorageURLLoaderFactoryProxyTest
       // kSecSharedStorageDataOriginHeader should be present.
       EXPECT_EQ(2u, observed_request.headers.GetHeaderVector().size());
 
-      std::string observed_data_origin_header;
-      EXPECT_TRUE(observed_request.headers.GetHeader(
-          kSecSharedStorageDataOriginHeader, &observed_data_origin_header));
-      EXPECT_EQ(url::Origin::Create(GURL(kCrossOriginScriptUrl)).Serialize(),
-                observed_data_origin_header);
+      EXPECT_THAT(
+          observed_request.headers.GetHeader(kSecSharedStorageDataOriginHeader),
+          testing::Optional(
+              url::Origin::Create(GURL(kCrossOriginScriptUrl)).Serialize()));
     }
 
     // The request should include credentials, and should not follow redirects.
