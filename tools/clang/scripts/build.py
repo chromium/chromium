@@ -474,28 +474,6 @@ def BuildZStd():
   return extra_cmake_flags, extra_cflags
 
 
-def DownloadRPMalloc():
-  """Download rpmalloc."""
-  rpmalloc_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'rpmalloc')
-  if os.path.exists(rpmalloc_dir):
-    RmTree(rpmalloc_dir)
-
-  # Using rpmalloc bc1923f rather than the latest release (1.4.1) because
-  # it contains the fix for https://github.com/mjansson/rpmalloc/pull/186
-  # which would cause lld to deadlock.
-  # The zip file was created and uploaded as follows:
-  # $ mkdir rpmalloc
-  # $ curl -L https://github.com/mjansson/rpmalloc/archive/bc1923f436539327707b08ef9751a7a87bdd9d2f.tar.gz \
-  #     | tar -C rpmalloc --strip-components=1 -xzf -
-  # $ GZIP=-9 tar vzcf rpmalloc-bc1923f.tgz rpmalloc
-  # $ gsutil.py cp -n -a public-read rpmalloc-bc1923f.tgz \
-  #     gs://chromium-browser-clang/tools/
-  zip_name = 'rpmalloc-bc1923f.tgz'
-  DownloadAndUnpack(CDS_URL + '/tools/' + zip_name, LLVM_BUILD_TOOLS_DIR)
-  rpmalloc_dir = rpmalloc_dir.replace('\\', '/')
-  return rpmalloc_dir
-
-
 def DownloadPinnedClang():
   PINNED_CLANG_VERSION = 'llvmorg-17-init-16420-g0c545a44-1'
   DownloadAndUnpackPackage('clang', PINNED_CLANG_DIR, GetDefaultHostOs(),
@@ -907,8 +885,7 @@ def main():
     ldflags.append('-LIBPATH:' + zlib_dir)
 
     # Use rpmalloc. For faster ThinLTO linking.
-    rpmalloc_dir = DownloadRPMalloc()
-    base_cmake_args.append('-DLLVM_INTEGRATED_CRT_ALLOC=' + rpmalloc_dir)
+    base_cmake_args.append('-DLLVM_ENABLE_RPMALLOC=ON')
 
     # Set a sysroot to make the build more hermetic.
     base_cmake_args.append('-DLLVM_WINSYSROOT="%s"' %
