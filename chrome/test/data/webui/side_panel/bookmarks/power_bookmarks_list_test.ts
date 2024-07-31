@@ -471,7 +471,9 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertTrue(!!folder);
 
     assertEquals(
-        '(1)', powerBookmarksList.getBookmarkDescriptionForTests(folder));
+        '(1)',
+        getPowerBookmarksRowElement('5')?.getBookmarkDescriptionForTests(
+            folder));
   });
 
   test('SetsExpandedDescription', () => {
@@ -483,7 +485,9 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertTrue(!!folder);
 
     assertEquals(
-        'child', powerBookmarksList.getBookmarkDescriptionForTests(folder));
+        'child',
+        getPowerBookmarksRowElement('4')?.getBookmarkDescriptionForTests(
+            folder));
   });
 
   test('SetsExpandedSearchResultDescription', async () => {
@@ -499,7 +503,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     assertEquals(
         'child - All Bookmarks',
-        powerBookmarksList.getBookmarkDescriptionForTests(folder));
+        getPowerBookmarksRowElement('4')?.getBookmarkDescriptionForTests(
+            folder));
   });
 
   test('RenamesBookmark', async () => {

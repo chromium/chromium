@@ -7,37 +7,38 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PowerBookmarkRowElement} from './power_bookmark_row.ts';
 
 export function getHtml(this: PowerBookmarkRowElement) {
+  const { id, url, title, children } = this.bookmark || {};
   const urlListItem = html`
 <cr-url-list-item id="crUrlListItem"
     role="listitem"
     .size="${this.listItemSize}"
-    .url="${this.bookmark?.url}"
-    .imageUrls="${this.imageUrls}"
-    .count="${this.bookmark?.children?.length}"
-    .title="${this.bookmark?.title}"
-    .description="${this.description}"
+    .url="${url}"
+    .imageUrls="${this.getBookmarkImageUrls_(this.bookmark)}"
+    .count="${children?.length}"
+    .title="${title}"
+    .description="${this.getBookmarkDescription_(this.bookmark)}"
     .descriptionMeta="${this.getBookmarkDescriptionMeta_(this.bookmark)}"
-    .itemAriaLabel="${this.rowAriaLabel}"
+    .itemAriaLabel="${this.getBookmarkA11yLabel_(url,title)}"
     .itemAriaDescription="${this.getBookmarkA11yDescription_(this.bookmark)}"
     @click="${this.onRowClicked_}"
     @auxclick="${this.onRowClicked_}"
     @contextmenu="${this.onContextMenu_}"
-    ?forceHover="${this.forceHover}">
+    ?forceHover="${this.getBookmarkForceHover_(this.bookmark)}">
 
   ${this.hasCheckbox ? html`
-    <cr-checkbox id="checkbox" slot="prefix" ?hidden="${!this.hasCheckbox}"
-        ?checked="${this.checkboxChecked}"
+    <cr-checkbox id="checkbox" slot="prefix"
+        ?checked="${this.isCheckboxChecked_()}"
         @checked-changed="${this.onCheckboxChange_}"
-        ?disabled="${this.checkboxDisabled}">
+        ?disabled="${!this.canEdit_(this.bookmark)}">
       $i18n{checkboxA11yLabel}
     </cr-checkbox>` : ''}
 
-  ${this.hasInput ? html`
-    <cr-input slot="content" id="input" .value="${this.bookmark?.title}"
+  ${this.renamingItem_(id) ? html`
+    <cr-input slot="content" id="input" .value="${title}"
         class="stroked"
         @change="${this.onInputChange_}" @blur="${this.onInputBlur_}"
         @keydown="${this.onInputKeyDown_}"
-        .ariaLabel="${this.rowAriaLabel}"
+        .ariaLabel="${this.getBookmarkA11yLabel_(url,title)}"
         .ariaDescription="${this.getBookmarkA11yDescription_(this.bookmark)}">
     </cr-input>` : ''}
 
@@ -58,19 +59,20 @@ export function getHtml(this: PowerBookmarkRowElement) {
     <cr-icon-button slot="suffix" .ironIcon="${this.trailingIcon}"
         ?hidden="${!this.trailingIcon}" @click="${this.onTrailingIconClicked_}"
         .title="${this.trailingIconTooltip}"
-        .ariaLabel="${this.trailingIconAriaLabel}"></cr-icon-button>
+        .ariaLabel="${this.getBookmarkMenuA11yLabel_(url, title!)}">
+    </cr-icon-button>
   ` : ''}
 
   ${this.isBookmarksBar_() ? html`
     <iron-icon slot="folder-icon" icon="bookmarks:bookmarks-bar"></iron-icon>
   ` :''}
 
-  ${this.isShoppingCollection ? html`
+  ${this.isShoppingCollection_(this.bookmark) ? html`
     <iron-icon slot="folder-icon" icon="bookmarks:shopping-collection">
         </iron-icon>` : ''}
 </cr-url-list-item>`;
 
-return (this.bookmark?.children && this.bookmark.children.length > 0 &&
+return (children && children.length > 0 &&
     this.bookmarksTreeViewEnabled && this.compact) ? html`
 <cr-expand-button no-hover id="expandButton">${urlListItem}
     </cr-expand-button>` : urlListItem;
