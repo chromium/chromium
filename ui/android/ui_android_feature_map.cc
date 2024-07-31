@@ -23,6 +23,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kMirrorBackForwardGesturesInRTL,
     &ui::kReportAllAvailablePointerTypes,
     &ui::kRequireLeadingInTextViewWithLeading,
+    &ui::kSelectFileOpenDocument,
 };
 
 // static

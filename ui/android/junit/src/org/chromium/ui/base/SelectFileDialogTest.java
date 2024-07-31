@@ -43,13 +43,14 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowMimeTypeMap;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.FileUtils;
 import org.chromium.base.FileUtilsJni;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.permissions.PermissionCallback;
 
@@ -59,13 +60,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /** Tests logic in the SelectFileDialog class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures({
+    UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION,
+    UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT
+})
 @LooperMode(LooperMode.Mode.PAUSED)
 public class SelectFileDialogTest {
     // A callback that fires when the file selection pipeline shuts down as a result of an action.
@@ -80,10 +83,6 @@ public class SelectFileDialogTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         PostTask.setPrenativeThreadPoolExecutorForTesting(mExecutor);
-
-        Map<String, Boolean> featureMap = new HashMap<>();
-        featureMap.put(UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION, false);
-        FeatureList.setTestFeatures(featureMap);
     }
 
     private void runAllAsyncTasks() {
@@ -249,6 +248,12 @@ public class SelectFileDialogTest {
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
         selectFileDialog.resetFileSelectionAttempts();
+    }
+
+    @Test
+    @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
+    public void testMimeTypesWithExternalPickerOpenDocument() throws Exception {
+        testMimeTypesWithExternalPicker();
     }
 
     @Test
