@@ -501,8 +501,8 @@ base::span<PhysicalOofPositionedNode>
 PhysicalFragment::OutOfFlowPositionedDescendants() const {
   if (!HasOutOfFlowPositionedDescendants())
     return base::span<PhysicalOofPositionedNode>();
-  return {oof_data_->oof_positioned_descendants.data(),
-          oof_data_->oof_positioned_descendants.size()};
+  return {oof_data_->OofPositionedDescendants().data(),
+          oof_data_->OofPositionedDescendants().size()};
 }
 
 const FragmentedOofData* PhysicalFragment::GetFragmentedOofData() const {
@@ -543,14 +543,14 @@ PhysicalFragment::OofData* PhysicalFragment::OofDataFromBuilder(
     if (!oof_data) {
       oof_data = MakeGarbageCollected<OofData>();
     }
-    oof_data->oof_positioned_descendants.reserve(
+    oof_data->OofPositionedDescendants().reserve(
         builder->oof_positioned_descendants_.size());
     for (const auto& descendant : builder->oof_positioned_descendants_) {
       OofInlineContainer<PhysicalOffset> inline_container(
           descendant.inline_container.container,
           converter.ToPhysical(descendant.inline_container.relative_offset,
                                PhysicalSize()));
-      oof_data->oof_positioned_descendants.emplace_back(
+      oof_data->OofPositionedDescendants().emplace_back(
           descendant.Node(),
           descendant.static_position.ConvertToPhysical(converter),
           descendant.requires_content_before_breaking,
@@ -563,7 +563,7 @@ PhysicalFragment::OofData* PhysicalFragment::OofDataFromBuilder(
     if (!oof_data) {
       oof_data = MakeGarbageCollected<OofData>();
     }
-    oof_data->anchor_query.SetFromLogical(*anchor_query, converter);
+    oof_data->AnchorQuery().SetFromLogical(*anchor_query, converter);
   }
 
   return oof_data;
@@ -635,7 +635,7 @@ void PhysicalFragment::ClearOofData() {
   if (!oof_data_)
     return;
   if (HasAnchorQuery())
-    oof_data_->oof_positioned_descendants.clear();
+    oof_data_->OofPositionedDescendants().clear();
   else
     oof_data_ = nullptr;
 }
@@ -1034,8 +1034,8 @@ bool PhysicalFragment::DependsOnPercentageBlockSize(
 }
 
 void PhysicalFragment::OofData::Trace(Visitor* visitor) const {
-  visitor->Trace(oof_positioned_descendants);
-  visitor->Trace(anchor_query);
+  visitor->Trace(oof_positioned_descendants_);
+  PhysicalAnchorQuery::Trace(visitor);
 }
 
 std::ostream& operator<<(std::ostream& out, const PhysicalFragment& fragment) {

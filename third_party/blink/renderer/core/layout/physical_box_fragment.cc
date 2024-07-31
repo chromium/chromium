@@ -840,7 +840,7 @@ void PhysicalBoxFragment::MutableForOofFragmentation::Merge(
       fragment_.oof_data_ = MakeGarbageCollected<OofData>();
     }
     for (auto entry : *query) {
-      fragment_.oof_data_->anchor_query.insert(entry.key, entry.value);
+      fragment_.oof_data_->AnchorQuery().insert(entry.key, entry.value);
     }
   }
 
