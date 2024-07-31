@@ -28,6 +28,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_info.h"
+#include "net/http/http_server_properties.h"
 #include "net/http/http_stream_factory_test_util.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_group.h"
@@ -455,6 +456,10 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
 
   SSLConfigService* ssl_config_service() {
     return session_deps_.ssl_config_service.get();
+  }
+
+  HttpServerProperties* http_server_properties() {
+    return http_network_session_->http_server_properties();
   }
 
   SpdySessionPool* spdy_session_pool() {
@@ -1653,6 +1658,150 @@ TEST_F(HttpStreamPoolJobTest, SpdyMatchingIpSessionVerifyDomainFailed) {
   RunUntilIdle();
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
   ASSERT_EQ(pool().TotalActiveStreamCount(), 2u);
+}
+
+TEST_F(HttpStreamPoolJobTest, ThrottleAttemptForSpdyBlockSecondAttempt) {
+  constexpr std::string_view kDestination = "https://a.test";
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester1;
+  requester1.set_destination(kDestination).RequestStream(pool());
+
+  StreamRequester requester2;
+  requester2.set_destination(kDestination).RequestStream(pool());
+
+  // Set the destination is known to support HTTP/2.
+  HttpStreamKey stream_key = requester1.GetStreamKey();
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(),
+      /*supports_spdy=*/true);
+
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  auto data = std::make_unique<SequencedSocketData>(reads, writes);
+  socket_factory()->AddSocketDataProvider(data.get());
+  auto ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(ssl.get());
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  // There should be only one in-flight attempt because attempts are throttled.
+  Group& group = pool().GetOrCreateGroupForTesting(requester1.GetStreamKey());
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 1u);
+
+  RunUntilIdle();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolJobTest, ThrottleAttemptForSpdyDelayPassedHttp2) {
+  constexpr std::string_view kDestination = "https://a.test";
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester1;
+  requester1.set_destination(kDestination).RequestStream(pool());
+
+  StreamRequester requester2;
+  requester2.set_destination(kDestination).RequestStream(pool());
+
+  // Set the destination is known to support HTTP/2.
+  HttpStreamKey stream_key = requester1.GetStreamKey();
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(),
+      /*supports_spdy=*/true);
+
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockConnectCompleter connect_completer1;
+  auto data1 = std::make_unique<SequencedSocketData>(reads, writes);
+  data1->set_connect_data(MockConnect(&connect_completer1));
+  socket_factory()->AddSocketDataProvider(data1.get());
+  auto ssl1 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl1->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(ssl1.get());
+
+  MockConnectCompleter connect_completer2;
+  auto data2 = std::make_unique<SequencedSocketData>(reads, writes);
+  data2->set_connect_data(MockConnect(&connect_completer2));
+  socket_factory()->AddSocketDataProvider(data2.get());
+  auto ssl2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl2->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(ssl2.get());
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  // There should be only one in-flight attempt because attempts are throttled.
+  Group& group = pool().GetOrCreateGroupForTesting(requester1.GetStreamKey());
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 1u);
+
+  FastForwardBy(Job::kSpdyThrottleDelay);
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 2u);
+
+  connect_completer1.Complete(OK);
+  RunUntilIdle();
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 0u);
+
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolJobTest, ThrottleAttemptForSpdyDelayPassedHttp1) {
+  constexpr std::string_view kDestination = "https://a.test";
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester1;
+  requester1.set_destination(kDestination).RequestStream(pool());
+
+  StreamRequester requester2;
+  requester2.set_destination(kDestination).RequestStream(pool());
+
+  // Set the destination is known to support HTTP/2.
+  HttpStreamKey stream_key = requester1.GetStreamKey();
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(),
+      /*supports_spdy=*/true);
+
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  MockConnectCompleter connect_completer1;
+  auto data1 = std::make_unique<SequencedSocketData>(reads, writes);
+  data1->set_connect_data(MockConnect(&connect_completer1));
+  socket_factory()->AddSocketDataProvider(data1.get());
+  auto ssl1 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(ssl1.get());
+
+  MockConnectCompleter connect_completer2;
+  auto data2 = std::make_unique<SequencedSocketData>(reads, writes);
+  data2->set_connect_data(MockConnect(&connect_completer2));
+  socket_factory()->AddSocketDataProvider(data2.get());
+  auto ssl2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(ssl2.get());
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  // There should be only one in-flight attempt because attempts are throttled.
+  Group& group = pool().GetOrCreateGroupForTesting(requester1.GetStreamKey());
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 1u);
+
+  FastForwardBy(Job::kSpdyThrottleDelay);
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 2u);
+
+  connect_completer1.Complete(OK);
+  RunUntilIdle();
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 1u);
+
+  connect_completer2.Complete(OK);
+  RunUntilIdle();
+
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
 }
 
 }  // namespace net

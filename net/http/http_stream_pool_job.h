@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/priority_queue.h"
@@ -40,6 +41,11 @@ class HttpStreamPool::Job
     : public HostResolver::ServiceEndpointRequest::Delegate,
       public TlsStreamAttempt::SSLConfigProvider {
  public:
+  // Time to delay connection attempts more than one when the destination is
+  // known to support HTTP/2, to avoid unnecessary socket connection
+  // establishments. See https://crbug.com/718576
+  static constexpr base::TimeDelta kSpdyThrottleDelay = base::Milliseconds(300);
+
   // `group` must outlive `this`.
   Job(Group* group, NetLog* net_log);
 
@@ -172,8 +178,12 @@ class HttpStreamPool::Job
   void MaybeAttemptConnection(
       std::optional<size_t> max_attempts = std::nullopt);
 
+  // Returns true when connection attempts should be throttled because there is
+  // an in-flight attempt and the destination is known to support HTTP/2.
+  bool ShouldThrottleAttemptForSpdy();
+
   std::optional<IPEndPoint> GetIPEndPointToAttempt();
-  std::optional<IPEndPoint> FindUnattemptedIPEndPoint(
+  std::optional<IPEndPoint> FindPreferredIPEndpoint(
       const std::vector<IPEndPoint>& ip_endpoints);
 
   // Calculate the failure kind to notify requests of failure. Used to call
@@ -208,6 +218,8 @@ class HttpStreamPool::Job
 
   void HandleAttemptFailure(std::unique_ptr<InFlightAttempt> in_flight_attempt,
                             int rv);
+
+  void OnSpdyThrottleDelayPassed();
 
   void MaybeComplete();
 
@@ -266,6 +278,9 @@ class HttpStreamPool::Job
       in_flight_attempts_;
   // The number of in-flight attempts that are treated as slow.
   size_t slow_attempt_count_ = 0;
+
+  base::OneShotTimer spdy_throttle_timer_;
+  bool spdy_throttle_delay_passed_ = false;
 
   // When true, try to use IPv6 for the next attempt first.
   bool prefer_ipv6_ = true;

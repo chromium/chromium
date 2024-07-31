@@ -208,6 +208,15 @@ void HttpStreamPool::Job::CancelRequests(int error) {
 }
 
 size_t HttpStreamPool::Job::PendingRequestCount() const {
+  // When SPDY throttle delay passed, treat all in-flight attempts as non-slow,
+  // to avoid attempting connections more than requested.
+  // TODO(crbug.com/346835898): This behavior is tricky. Figure out a better
+  // way to handle this situation.
+  if (spdy_throttle_delay_passed_) {
+    CHECK_GE(requests_.size(), in_flight_attempts_.size());
+    return requests_.size() - in_flight_attempts_.size();
+  }
+
   CHECK_GE(in_flight_attempts_.size(), slow_attempt_count_);
   size_t non_slow_attempts = in_flight_attempts_.size() - slow_attempt_count_;
   // The number of in-flight, non-slow attempts could be larger than the number
@@ -371,8 +380,9 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
   }
 
   // TODO(crbug.com/346835898): Ensure that we don't attempt connections when
-  // failing.
+  // failing or creating HttpStream on top of a SPDY session.
   CHECK(!is_failing_);
+  CHECK(!spdy_session_);
 
   std::optional<IPEndPoint> ip_endpoint = GetIPEndPointToAttempt();
   if (!ip_endpoint.has_value()) {
@@ -387,6 +397,10 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
   // and allowed.
   size_t num_attempts = 0;
   while (PendingRequestCount() > 0 && !group_->ReachedMaxStreamLimit()) {
+    if (ShouldThrottleAttemptForSpdy()) {
+      break;
+    }
+
     // If we can't attempt connection due to the pool's limit, try to close an
     // idle stream in the pool.
     if (pool()->ReachedMaxStreamLimit()) {
@@ -437,6 +451,39 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
   }
 }
 
+bool HttpStreamPool::Job::ShouldThrottleAttemptForSpdy() {
+  if (!http_network_session()->http_server_properties()->GetSupportsSpdy(
+          stream_key().destination(),
+          stream_key().network_anonymization_key())) {
+    return false;
+  }
+
+  CHECK(UsingTls());
+
+  // The first attempt should not be blocked.
+  if (in_flight_attempts_.empty()) {
+    return false;
+  }
+
+  if (spdy_throttle_delay_passed_) {
+    return false;
+  }
+
+  CHECK(!spdy_session_);
+
+  // TODO(crbug.com/346835898): Consider throttling less aggressively (e.g.
+  // allow TCP handshake but throttle TLS handshake) so that endpoints we've
+  // used HTTP/2 on aren't penalised on slow or lossy connections.
+
+  if (!spdy_throttle_timer_.IsRunning()) {
+    spdy_throttle_timer_.Start(FROM_HERE, kSpdyThrottleDelay,
+                               base::BindOnce(&Job::OnSpdyThrottleDelayPassed,
+                                              base::Unretained(this)));
+  }
+
+  return true;
+}
+
 std::optional<IPEndPoint> HttpStreamPool::Job::GetIPEndPointToAttempt() {
   CHECK(service_endpoint_request_);
   if (service_endpoint_request_->GetEndpointResults().empty()) {
@@ -446,8 +493,8 @@ std::optional<IPEndPoint> HttpStreamPool::Job::GetIPEndPointToAttempt() {
   // Look for an IPEndPoint from the preferred address family first.
   for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
     std::optional<IPEndPoint> ip_endpoint =
-        prefer_ipv6_ ? FindUnattemptedIPEndPoint(endpoint.ipv6_endpoints)
-                     : FindUnattemptedIPEndPoint(endpoint.ipv4_endpoints);
+        prefer_ipv6_ ? FindPreferredIPEndpoint(endpoint.ipv6_endpoints)
+                     : FindPreferredIPEndpoint(endpoint.ipv4_endpoints);
     if (ip_endpoint.has_value()) {
       return ip_endpoint;
     }
@@ -457,8 +504,8 @@ std::optional<IPEndPoint> HttpStreamPool::Job::GetIPEndPointToAttempt() {
   // another address family.
   for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
     std::optional<IPEndPoint> ip_endpoint =
-        prefer_ipv6_ ? FindUnattemptedIPEndPoint(endpoint.ipv4_endpoints)
-                     : FindUnattemptedIPEndPoint(endpoint.ipv6_endpoints);
+        prefer_ipv6_ ? FindPreferredIPEndpoint(endpoint.ipv4_endpoints)
+                     : FindPreferredIPEndpoint(endpoint.ipv6_endpoints);
     if (ip_endpoint.has_value()) {
       return ip_endpoint;
     }
@@ -467,16 +514,27 @@ std::optional<IPEndPoint> HttpStreamPool::Job::GetIPEndPointToAttempt() {
   return std::nullopt;
 }
 
-std::optional<IPEndPoint> HttpStreamPool::Job::FindUnattemptedIPEndPoint(
+std::optional<IPEndPoint> HttpStreamPool::Job::FindPreferredIPEndpoint(
     const std::vector<IPEndPoint>& ip_endpoints) {
+  // Prefer the first unattempted endpoint in `ip_endpoints`. Allow to use
+  // the first slow endpoint when SPDY throttle delay passed.
+
+  std::optional<IPEndPoint> slow_endpoint;
   for (const auto& ip_endpoint : ip_endpoints) {
     if (base::Contains(failed_ip_endpoints_, ip_endpoint)) {
       continue;
     }
     if (base::Contains(slow_ip_endpoints_, ip_endpoint)) {
+      if (!slow_endpoint.has_value()) {
+        slow_endpoint = ip_endpoint;
+      }
       continue;
     }
     return ip_endpoint;
+  }
+
+  if (spdy_throttle_delay_passed_) {
+    return slow_endpoint;
   }
   return std::nullopt;
 }
@@ -649,6 +707,8 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
       in_flight_attempt->attempt->ReleaseStreamSocket();
   CHECK(stream_socket);
 
+  spdy_throttle_timer_.Stop();
+
   if (stream_socket->GetNegotiatedProtocol() == NextProto::kProtoHTTP2) {
     CHECK(!spdy_session_pool()->FindAvailableSession(
         group_->spdy_session_key(), enable_ip_based_pooling_,
@@ -725,6 +785,12 @@ void HttpStreamPool::Job::HandleAttemptFailure(
     in_flight_attempt.reset();
     MaybeAttemptConnection();
   }
+}
+
+void HttpStreamPool::Job::OnSpdyThrottleDelayPassed() {
+  CHECK(!spdy_throttle_delay_passed_);
+  spdy_throttle_delay_passed_ = true;
+  MaybeAttemptConnection();
 }
 
 void HttpStreamPool::Job::MaybeComplete() {
