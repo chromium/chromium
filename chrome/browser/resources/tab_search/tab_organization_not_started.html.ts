@@ -21,17 +21,23 @@ export function getHtml(this: TabOrganizationNotStartedElement) {
     <div class="tab-organization-body">
       ${this.getBody_()}
       ${this.showFre ? html`
-        <table class="bullet-list">
+<table class="bullet-list">
           <tr>
-            <td><cr-icon icon="tab-search:plant"></cr-icon></td>
+            <td>
+              <cr-icon icon="tab-search:plant" aria-hidden="true"></cr-icon>
+            </td>
             <td>$i18n{notStartedBodyFREBullet1}</td>
           </tr>
           <tr>
-            <td><cr-icon icon="tab-search:google"></cr-icon></td>
+            <td>
+              <cr-icon icon="tab-search:google" aria-hidden="true"></cr-icon>
+            </td>
             <td>$i18n{notStartedBodyFREBullet2}</td>
           </tr>
           <tr>
-            <td><cr-icon icon="tab-search:frame"></cr-icon></td>
+            <td>
+              <cr-icon icon="tab-search:frame" aria-hidden="true"></cr-icon>
+            </td>
             <td>$i18n{notStartedBodyFREBullet3}</td>
           </tr>
         </table>
