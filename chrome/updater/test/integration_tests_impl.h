@@ -487,8 +487,8 @@ void ExpectProxyPacScriptRequest(ScopedServer* test_server);
 void ExpectKSAdminResult(UpdaterScope scope,
                          bool elevate,
                          const std::map<std::string, std::string>& switches,
-                         const std::optional<std::string>& want_stdout,
-                         const std::optional<int>& want_exit_code);
+                         std::optional<std::string> want_stdout,
+                         std::optional<int> want_exit_code);
 
 // Expect ksadmin to fetch the specified tag for the specified product
 // ID, including fetching the empty tag if no tag is specified, or to
@@ -511,7 +511,7 @@ void ExpectKSAdminFetchTag(UpdaterScope scope,
                            const std::string& product_id,
                            const base::FilePath& xc_path,
                            std::optional<UpdaterScope> store_flag,
-                           const std::optional<std::string>& want_tag);
+                           std::optional<std::string> want_tag);
 
 #endif  // BUILDFLAG(IS_MAC)
 

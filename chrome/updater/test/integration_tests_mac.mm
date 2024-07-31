@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/apple/bridging.h"
@@ -500,8 +501,8 @@ void ExpectPrepareToRunBundleSuccess(const base::FilePath& bundle_path) {
 void ExpectKSAdminResult(UpdaterScope scope,
                          bool elevate,
                          const std::map<std::string, std::string>& switches,
-                         const std::optional<std::string>& want_stdout,
-                         const std::optional<int>& want_exit_code) {
+                         std::optional<std::string> want_stdout,
+                         std::optional<int> want_exit_code) {
   const std::optional<base::FilePath> ksadmin_path = GetKSAdminPath(scope);
   ASSERT_TRUE(ksadmin_path && !ksadmin_path->empty());
   ASSERT_TRUE(base::PathExists(*ksadmin_path));
@@ -511,7 +512,8 @@ void ExpectKSAdminResult(UpdaterScope scope,
     command_line.AppendSwitchASCII(key, value);
   }
 
-  ExpectCliResult(command_line, elevate, want_stdout, want_exit_code);
+  ExpectCliResult(command_line, elevate, std::move(want_stdout),
+                  want_exit_code);
 }
 
 void ExpectKSAdminFetchTag(UpdaterScope scope,
@@ -519,7 +521,7 @@ void ExpectKSAdminFetchTag(UpdaterScope scope,
                            const std::string& product_id,
                            const base::FilePath& xc_path,
                            std::optional<UpdaterScope> store_flag,
-                           const std::optional<std::string>& want_tag) {
+                           std::optional<std::string> want_tag) {
   std::map<std::string, std::string> switches;
   switches["--print-tag"] = "";
   switches["--productid"] = product_id;
@@ -537,11 +539,13 @@ void ExpectKSAdminFetchTag(UpdaterScope scope,
     }
   }
 
-  ExpectKSAdminResult(scope, elevate, switches,
-                      want_tag
-                          ? std::make_optional(base::StrCat({*want_tag, "\n"}))
-                          : std::nullopt,
-                      want_tag ? EXIT_SUCCESS : EXIT_FAILURE);
+  int want_exit = EXIT_FAILURE;
+  if (want_tag) {
+    *want_tag = base::StrCat({*want_tag, "\n"});
+    want_exit = EXIT_SUCCESS;
+  }
+
+  ExpectKSAdminResult(scope, elevate, switches, std::move(want_tag), want_exit);
 }
 
 }  // namespace updater::test
