@@ -448,6 +448,15 @@ void PerformAttributeSetCEReactionsReflectTypeStringOrNull(
       info, content_attribute, interface_name, attribute_name);
 }
 
+CORE_EXPORT void CountWebDXFeature(v8::Isolate* isolate, WebDXFeature feature) {
+  v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+  ScriptState* current_script_state =
+      ScriptState::From(isolate, current_context);
+  ExecutionContext* current_execution_context =
+      ToExecutionContext(current_script_state);
+  UseCounter::CountWebDXFeature(current_execution_context, feature);
+}
+
 }  // namespace bindings
 
 }  // namespace blink
