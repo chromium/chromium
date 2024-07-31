@@ -2837,26 +2837,26 @@ void InputDeviceSettingsControllerImpl::OnDeviceNotificationImageDownloaded(
     const DeviceImage& device_image) {
   if (auto* kb = FindKeyboard(id); kb != nullptr) {
     notification_controller_->NotifyKeyboardFirstTimeConnected(
-        *kb, device_image.gfx_image());
+        *kb, device_image.gfx_image_skia());
     return;
   }
 
   if (auto* mouse = FindMouse(id); mouse != nullptr) {
     notification_controller_->NotifyMouseFirstTimeConnected(
-        *mouse, device_image.gfx_image());
+        *mouse, device_image.gfx_image_skia());
     return;
   }
 
   if (auto* touchpad = FindTouchpad(id); touchpad != nullptr) {
     notification_controller_->NotifyTouchpadFirstTimeConnected(
-        *touchpad, device_image.gfx_image());
+        *touchpad, device_image.gfx_image_skia());
     return;
   }
 
   if (auto* graphics_tablet = FindGraphicsTablet(id);
       graphics_tablet != nullptr) {
     notification_controller_->NotifyGraphicsTabletFirstTimeConnected(
-        *graphics_tablet, device_image.gfx_image());
+        *graphics_tablet, device_image.gfx_image_skia());
     return;
   }
 }

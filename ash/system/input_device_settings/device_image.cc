@@ -19,17 +19,15 @@ DeviceImage::DeviceImage(const std::string& device_key,
 
 DeviceImage::DeviceImage(const std::string& device_key,
                          const gfx::ImageSkia& image)
-    : device_key_(device_key) {
-  if (!image.isNull()) {
-    const SkBitmap bitmap = *image.bitmap();
+    : device_key_(device_key), image_(image) {
+  if (!image_.isNull()) {
+    const SkBitmap bitmap = *image_.bitmap();
     data_url_ = webui::GetBitmapDataUrl(bitmap);
-    // Convert image to a gfx::Image for display in notifications.
-    image_ = gfx::Image::CreateFrom1xBitmap(bitmap);
   }
 }
 
 bool DeviceImage::IsValid() const {
-  return !data_url_.empty() || !image_.IsEmpty();
+  return !data_url_.empty() || !image_.isNull();
 }
 
 }  // namespace ash

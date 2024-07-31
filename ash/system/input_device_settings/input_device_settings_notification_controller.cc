@@ -44,6 +44,9 @@
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep_default.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -52,6 +55,28 @@ namespace ash {
 
 namespace {
 
+// Needs to stay in sync with `kLargeImageMaxHeight` declared in
+// ui/message_center/views/notification_view_md.cc.
+const int kMaxNotificationHeight = 218;
+
+int CalculateScaledWidth(int width, int height) {
+  return (kMaxNotificationHeight * width) / height;
+}
+
+gfx::Image ResizeImage(gfx::ImageSkia image) {
+  const SkBitmap bitmap = *image.bitmap();
+  SkBitmap bitmap5x =
+      skia::ImageOperations::Resize(bitmap, skia::ImageOperations::RESIZE_BEST,
+                                    5 * bitmap.width(), 5 * bitmap.height());
+  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFromBitmap(bitmap5x, 5.0);
+  if (image_skia.height() > kMaxNotificationHeight) {
+    image_skia = gfx::ImageSkiaOperations::CreateResizedImage(
+        image_skia, skia::ImageOperations::RESIZE_BEST,
+        gfx::Size(CalculateScaledWidth(image_skia.width(), image_skia.height()),
+                  kMaxNotificationHeight));
+  }
+  return gfx::Image(image_skia);
+}
 // A nudge/tutorial will not be shown if it already been shown 3 times, or if 24
 // hours have not yet passed since it was last shown.
 constexpr int kNudgeMaxShownCount = 3;
@@ -598,7 +623,7 @@ void InputDeviceSettingsNotificationController::
 
 void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
     const mojom::Mouse& mouse,
-    const gfx::Image& device_image) {
+    const gfx::ImageSkia& device_image) {
   if (!IsActiveUserSession() || !mouse.is_external) {
     return;
   }
@@ -639,7 +664,7 @@ void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
 void InputDeviceSettingsNotificationController::
     NotifyGraphicsTabletFirstTimeConnected(
         const mojom::GraphicsTablet& graphics_tablet,
-        const gfx::Image& device_image) {
+        const gfx::ImageSkia& device_image) {
   if (!IsActiveUserSession()) {
     return;
   }
@@ -822,7 +847,7 @@ void InputDeviceSettingsNotificationController::
 
 void InputDeviceSettingsNotificationController::
     NotifyKeyboardFirstTimeConnected(const mojom::Keyboard& keyboard,
-                                     const gfx::Image& device_image) {
+                                     const gfx::ImageSkia& device_image) {
   if (!IsActiveUserSession() || !keyboard.is_external) {
     return;
   }
@@ -849,7 +874,7 @@ void InputDeviceSettingsNotificationController::
 
 void InputDeviceSettingsNotificationController::
     NotifyTouchpadFirstTimeConnected(const mojom::Touchpad& touchpad,
-                                     const gfx::Image& device_image) {
+                                     const gfx::ImageSkia& device_image) {
   if (!IsActiveUserSession() || !touchpad.is_external) {
     return;
   }
@@ -933,7 +958,7 @@ void InputDeviceSettingsNotificationController::
 
 void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
     const mojom::Mouse& mouse,
-    const gfx::Image& device_image) {
+    const gfx::ImageSkia& device_image) {
   const auto peripheral_name = base::UTF8ToUTF16(mouse.name);
   const auto notification_id = GetMouseNotificationID(mouse.id);
   const auto message =
@@ -943,8 +968,8 @@ void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
                 peripheral_name)
           : GetBatteryLevelMessage(*mouse.battery_info);
   message_center::RichNotificationData rich_notification_data;
-  if (!device_image.IsEmpty()) {
-    rich_notification_data.image = device_image;
+  if (!device_image.isNull()) {
+    rich_notification_data.image = ResizeImage(device_image);
   }
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
@@ -966,7 +991,7 @@ void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
 
 void InputDeviceSettingsNotificationController::
     ShowKeyboardSettingsNotification(const mojom::Keyboard& keyboard,
-                                     const gfx::Image& device_image) {
+                                     const gfx::ImageSkia& device_image) {
   const auto peripheral_name = base::UTF8ToUTF16(keyboard.name);
   const auto notification_id = GetWelcomeExperienceNotificationId(
       kKeyboardNotificationPrefix, keyboard.id);
@@ -977,8 +1002,8 @@ void InputDeviceSettingsNotificationController::
                 peripheral_name)
           : GetBatteryLevelMessage(*keyboard.battery_info);
   message_center::RichNotificationData rich_notification_data;
-  if (!device_image.IsEmpty()) {
-    rich_notification_data.image = device_image;
+  if (!device_image.isNull()) {
+    rich_notification_data.image = ResizeImage(device_image);
   }
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
@@ -1000,7 +1025,7 @@ void InputDeviceSettingsNotificationController::
 
 void InputDeviceSettingsNotificationController::
     ShowTouchpadSettingsNotification(const mojom::Touchpad& touchpad,
-                                     const gfx::Image& device_image) {
+                                     const gfx::ImageSkia& device_image) {
   const auto peripheral_name = base::UTF8ToUTF16(touchpad.name);
   const auto message =
       touchpad.battery_info.is_null()
@@ -1011,8 +1036,8 @@ void InputDeviceSettingsNotificationController::
   const auto notification_id = GetWelcomeExperienceNotificationId(
       kTouchpadNotificationPrefix, touchpad.id);
   message_center::RichNotificationData rich_notification_data;
-  if (!device_image.IsEmpty()) {
-    rich_notification_data.image = device_image;
+  if (!device_image.isNull()) {
+    rich_notification_data.image = ResizeImage(device_image);
   }
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
@@ -1035,7 +1060,7 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     NotifyGraphicsTabletIsCustomizable(
         const mojom::GraphicsTablet& graphics_tablet,
-        const gfx::Image& device_image) {
+        const gfx::ImageSkia& device_image) {
   const auto peripheral_name = base::UTF8ToUTF16(graphics_tablet.name);
   const auto message =
       graphics_tablet.battery_info.is_null()
@@ -1046,8 +1071,8 @@ void InputDeviceSettingsNotificationController::
   const auto notification_id =
       GetGraphicsTabletNotificationID(graphics_tablet.id);
   message_center::RichNotificationData rich_notification_data;
-  if (!device_image.IsEmpty()) {
-    rich_notification_data.image = device_image;
+  if (!device_image.isNull()) {
+    rich_notification_data.image = ResizeImage(device_image);
   }
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));

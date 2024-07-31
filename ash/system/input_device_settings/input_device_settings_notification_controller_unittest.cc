@@ -128,35 +128,37 @@ class InputDeviceSettingsNotificationControllerTest : public AshTestBase {
   }
 
   void NotifyMouseIsCustomizable(const mojom::Mouse& mouse,
-                                 gfx::Image image = gfx::Image()) {
+                                 gfx::ImageSkia image = gfx::ImageSkia()) {
     controller()->NotifyMouseIsCustomizable(mouse, image);
   }
 
   void NotifyMouseFirstTimeConnected(const mojom::Mouse& mouse,
-                                     gfx::Image image = gfx::Image()) {
+                                     gfx::ImageSkia image = gfx::ImageSkia()) {
     controller()->NotifyMouseFirstTimeConnected(mouse, image);
   }
 
-  void NotifyTouchpadFirstTimeConnected(const mojom::Touchpad& touchpad,
-                                        gfx::Image image = gfx::Image()) {
+  void NotifyTouchpadFirstTimeConnected(
+      const mojom::Touchpad& touchpad,
+      gfx::ImageSkia image = gfx::ImageSkia()) {
     controller()->NotifyTouchpadFirstTimeConnected(touchpad, image);
   }
 
   void NotifyGraphicsTabletIsCustomizable(
       const mojom::GraphicsTablet& graphics_tablet,
-      gfx::Image image = gfx::Image()) {
+      gfx::ImageSkia image = gfx::ImageSkia()) {
     controller()->NotifyGraphicsTabletIsCustomizable(graphics_tablet, image);
   }
 
   void NotifyGraphicsTabletFirstTimeConnected(
       const mojom::GraphicsTablet& graphics_tablet,
-      gfx::Image image = gfx::Image()) {
+      gfx::ImageSkia image = gfx::ImageSkia()) {
     controller()->NotifyGraphicsTabletFirstTimeConnected(graphics_tablet,
                                                          image);
   }
 
-  void NotifyKeyboardFirstTimeConnected(const mojom::Keyboard& keyboard,
-                                        gfx::Image image = gfx::Image()) {
+  void NotifyKeyboardFirstTimeConnected(
+      const mojom::Keyboard& keyboard,
+      gfx::ImageSkia image = gfx::ImageSkia()) {
     controller()->NotifyKeyboardFirstTimeConnected(keyboard, image);
   }
 
@@ -978,7 +980,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
 
   NotifyMouseFirstTimeConnected(
       *mojom_mouse,
-      gfx::test::CreateImage(/*width=*/300, /*height=*/300, SK_ColorRED));
+      gfx::test::CreateImageSkia(/*width=*/300, /*height=*/300, SK_ColorRED));
   EXPECT_EQ(expected_notification_count++,
             message_center()->NotificationCount());
   const auto* notification = message_center()->FindVisibleNotificationById(
