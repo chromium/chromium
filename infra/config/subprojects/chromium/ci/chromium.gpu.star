@@ -43,6 +43,7 @@ consoles.console_view(
 
 ci.gpu.linux_builder(
     name = "Android Release (Nexus 5X)",
+    # TODO(crbug.com/355671260): Disable on branch when removed from CQ.
     branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -87,9 +88,9 @@ ci.gpu.linux_builder(
 
 ci.gpu.linux_builder(
     name = "Android Release (Pixel 2)",
-    description_html = "Runs GPU tests on Pixel 2 phones",
-    # TODO(crbug.com/355671260): Enable on branch once stable
+    # TODO(crbug.com/355671260): Enable on branch when protmoted to CQ.
     # branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Runs GPU tests on Pixel 2 phones",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -124,8 +125,6 @@ ci.gpu.linux_builder(
             "android_fastbuild",
         ],
     ),
-    # TODO(crbug.com/355671260): Enable gardener once stable
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "Android",
         short_name = "P2",
