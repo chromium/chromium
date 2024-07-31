@@ -21,64 +21,13 @@
 
 namespace blink {
 
-namespace {
-
-class FeedbackReceiverImpl : public FeedbackReceiver {
- public:
-  FeedbackReceiverImpl(RTCRtpTransport* rtc_rtp_transport,
-                       scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : rtc_rtp_transport_(rtc_rtp_transport),
-        task_runner_(std::move(task_runner)) {}
-
-  void OnFeedback(webrtc::TransportPacketsFeedback feedback) override {
-    // Called on a WebRTC thread.
-    CHECK(!task_runner_->RunsTasksInCurrentSequence());
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &FeedbackReceiverImpl::OnFeedbackOnDestinationTaskRunner,
-            WrapRefCounted(this), feedback));
-  }
-
-  void OnFeedbackOnDestinationTaskRunner(
-      webrtc::TransportPacketsFeedback feedback) {
-    CHECK(task_runner_->RunsTasksInCurrentSequence());
-    if (rtc_rtp_transport_) {
-      rtc_rtp_transport_->OnFeedback(feedback);
-    }
-  }
-
-  void OnSentPacket(webrtc::SentPacket sp) override {
-    // Called on a WebRTC thread.
-    CHECK(!task_runner_->RunsTasksInCurrentSequence());
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &FeedbackReceiverImpl::OnSentPacketOnDestinationTaskRunner,
-            WrapRefCounted(this), sp));
-  }
-
-  void OnSentPacketOnDestinationTaskRunner(webrtc::SentPacket sp) {
-    CHECK(task_runner_->RunsTasksInCurrentSequence());
-    if (rtc_rtp_transport_) {
-      rtc_rtp_transport_->OnSentPacket(sp);
-    }
-  }
-
- private:
-  WeakPersistent<RTCRtpTransport> rtc_rtp_transport_;
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-};
-
-}  // namespace
-
 void RTCRtpTransport::Register(webrtc::NetworkControllerInterface* controller) {
   InterceptingNetworkController* intercepting_controller =
       static_cast<InterceptingNetworkController*>(controller);
   intercepting_controller->SetFeedbackReceiver(
-      base::MakeRefCounted<FeedbackReceiverImpl>(
-          this, To<LocalDOMWindow>(GetExecutionContext())
-                    ->GetTaskRunner(TaskType::kInternalMedia)));
+      MakeCrossThreadWeakHandle(this),
+      To<LocalDOMWindow>(GetExecutionContext())
+          ->GetTaskRunner(TaskType::kInternalMedia));
 }
 
 webrtc::NetworkControlUpdate RTCRtpTransport::OnFeedback(
