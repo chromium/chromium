@@ -14424,6 +14424,21 @@
             ]
         }
     ],
+    "NotificationLimit": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NotificationLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "NotificationOneTapUnsubscribe": [
         {
             "platforms": [
