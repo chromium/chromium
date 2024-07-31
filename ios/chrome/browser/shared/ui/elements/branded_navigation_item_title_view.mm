@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
+#import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/public/provider/chrome/browser/font/font_api.h"

@@ -6,8 +6,8 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
