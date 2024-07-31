@@ -31,19 +31,6 @@ Tile* TilesWithResourceIterator::GetCurrent() {
   return AtEnd() ? nullptr : tile_iterator_->GetCurrent();
 }
 
-PrioritizedTile* TilesWithResourceIterator::GetCurrentAsPrioritizedTile() {
-  if (prioritized_tile_)
-    return &*prioritized_tile_;
-  Tile* tile = GetCurrent();
-  if (!tile)
-    return nullptr;
-  PictureLayerTiling* tiling = CurrentPictureLayerTiling();
-  prioritized_tile_ = tiling->MakePrioritizedTile(
-      tile, tiling->ComputePriorityRectTypeForTile(tile),
-      tiling->IsTileOccluded(tile));
-  return &*prioritized_tile_;
-}
-
 bool TilesWithResourceIterator::IsCurrentTileOccluded() {
   Tile* tile = GetCurrent();
   return tile && tile->tiling()->IsTileOccluded(tile);
@@ -52,7 +39,6 @@ bool TilesWithResourceIterator::IsCurrentTileOccluded() {
 void TilesWithResourceIterator::Next() {
   if (AtEnd())
     return;
-  prioritized_tile_.reset();
   DCHECK(tile_iterator_);
   tile_iterator_->Next();
   if (FindNextInTileIterator())
