@@ -196,6 +196,8 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
         if args_attr in mixin:
             formatter.open_scope("'{}': [".format(args_attr))
             for a in mixin[args_attr]:
+                if type(a) == type(struct()):
+                    a = a.pyl_arg_value
                 formatter.add_line("'{}',".format(a))
             formatter.close_scope("],")
 

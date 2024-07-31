@@ -681,7 +681,7 @@ targets.legacy_basic_suite(
             ],
             args = [
                 "--browser=cros-chrome",
-                "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
+                targets.magic_args.CROS_TELEMETRY_REMOTE,
                 "--xvfb",
                 # 3 is arbitrary, but if we're having more than 3 of these tests
                 # fail in a single shard, then something is probably wrong, so fail
@@ -700,7 +700,7 @@ targets.legacy_basic_suite(
             args = [
                 "--jobs=1",
                 "--browser=cros-chrome",
-                "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
+                targets.magic_args.CROS_TELEMETRY_REMOTE,
                 # 3 is arbitrary, but if we're having more than 3 of these tests
                 # fail in a single shard, then something is probably wrong, so fail
                 # fast.
@@ -2286,8 +2286,8 @@ targets.legacy_basic_suite(
                 "gpu_integration_test_common_args",
             ],
             args = [
-                "$$MAGIC_SUBSTITUTION_GPUExpectedVendorId",
-                "$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId",
+                targets.magic_args.GPU_EXPECTED_VENDOR_ID,
+                targets.magic_args.GPU_EXPECTED_DEVICE_ID,
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--force_high_performance_gpu",
             ],
@@ -2310,7 +2310,7 @@ targets.legacy_basic_suite(
             ],
             chromeos_args = [
                 "--stop-ui",
-                "$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile",
+                targets.magic_args.CROS_GTEST_FILTER_FILE,
             ],
             desktop_args = [
                 "--use-gpu-in-tests",
@@ -2346,7 +2346,7 @@ targets.legacy_basic_suite(
         "gl_tests_validating": targets.legacy_test_config(
             chromeos_args = [
                 "--stop-ui",
-                "$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile",
+                targets.magic_args.CROS_GTEST_FILTER_FILE,
             ],
             desktop_args = [
                 "--use-gpu-in-tests",
@@ -2918,8 +2918,8 @@ targets.legacy_basic_suite(
                 "gpu_integration_test_common_args",
             ],
             args = [
-                "$$MAGIC_SUBSTITUTION_GPUExpectedVendorId",
-                "$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId",
+                targets.magic_args.GPU_EXPECTED_VENDOR_ID,
+                targets.magic_args.GPU_EXPECTED_DEVICE_ID,
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--force_high_performance_gpu",
             ],
@@ -3434,7 +3434,7 @@ targets.legacy_basic_suite(
             ],
             args = [
                 "--webgl-conformance-version=2.0.1",
-                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu",
             ],
@@ -3486,7 +3486,7 @@ targets.legacy_basic_suite(
             ],
             args = [
                 "--webgl-conformance-version=2.0.1",
-                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
             ],
@@ -3522,7 +3522,7 @@ targets.legacy_basic_suite(
             ],
             args = [
                 "--webgl-conformance-version=2.0.1",
-                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--use-cmd-decoder=validating --force_high_performance_gpu",
             ],
@@ -3545,7 +3545,7 @@ targets.legacy_basic_suite(
             args = [
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu",
-                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
             ],
             swarming = targets.swarming(
                 shards = 2,
@@ -3564,7 +3564,7 @@ targets.legacy_basic_suite(
             args = [
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--use-gl=angle --use-angle=d3d9 --use-cmd-decoder=passthrough --force_high_performance_gpu",
-                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
             ],
             swarming = targets.swarming(
                 shards = 2,
@@ -3597,7 +3597,7 @@ targets.legacy_basic_suite(
             args = [
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu",
-                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
             ],
             swarming = targets.swarming(
                 shards = 2,
@@ -3616,7 +3616,7 @@ targets.legacy_basic_suite(
             args = [
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
-                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
             ],
             swarming = targets.swarming(
                 shards = 6,
@@ -3635,7 +3635,7 @@ targets.legacy_basic_suite(
             args = [
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu --enable-features=SkiaGraphite",
-                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
             ],
             swarming = targets.swarming(
                 shards = 3,
@@ -3715,7 +3715,7 @@ targets.legacy_basic_suite(
             args = [
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--force_high_performance_gpu",
-                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
             ],
             swarming = targets.swarming(
                 shards = 2,
@@ -3740,7 +3740,7 @@ targets.legacy_basic_suite(
             args = [
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--use-cmd-decoder=validating --force_high_performance_gpu",
-                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
             ],
             swarming = targets.swarming(
                 shards = 2,

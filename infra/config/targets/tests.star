@@ -2395,7 +2395,7 @@ targets.tests.gpu_telemetry_test(
     ],
     args = [
         "--webgl-conformance-version=2.0.1",
-        "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+        targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
         # On dual-GPU devices we want the high-performance GPU to be active
         "--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite",
     ],
@@ -2409,7 +2409,7 @@ targets.tests.gpu_telemetry_test(
     ],
     args = [
         "--webgl-conformance-version=2.0.1",
-        "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+        targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
         # On dual-GPU devices we want the high-performance GPU to be active
         "--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu",
     ],
@@ -2439,7 +2439,7 @@ targets.tests.gpu_telemetry_test(
     ],
     args = [
         "--webgl-conformance-version=2.0.1",
-        "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+        targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
         # On dual-GPU devices we want the high-performance GPU to be active
         "--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite",
         "--enable-metal-debug-layers",
@@ -2479,7 +2479,7 @@ targets.tests.gpu_telemetry_test(
     args = [
         # On dual-GPU devices we want the high-performance GPU to be active
         "--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite",
-        "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+        targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
     ],
 )
 
@@ -2516,7 +2516,7 @@ targets.tests.gpu_telemetry_test(
     args = [
         # On dual-GPU devices we want the high-performance GPU to be active
         "--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL --disable-features=SkiaGraphite",
-        "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+        targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
         "--enable-metal-debug-layers",
     ],
 )
@@ -2530,7 +2530,7 @@ targets.tests.gpu_telemetry_test(
     args = [
         # On dual-GPU devices we want the high-performance GPU to be active
         "--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite",
-        "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+        targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
         "--enable-metal-debug-layers",
     ],
 )

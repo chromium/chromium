@@ -14,23 +14,44 @@ _builder_defaults = args_lib.defaults(
     mixins = [],
 )
 
+_browser_config = enums.enum(
+    ANDROID_CHROMIUM = "android-chromium",
+    CROS_CHROME = "cros-chrome",
+    DEBUG = "debug",
+    DEBUG_X64 = "debug_x64",
+    LACROS_CHROME = "lacros-chrome",
+    RELEASE = "release",
+    RELEASE_X64 = "release_x64",
+    WEB_ENGINE_SHELL = "web-engine-shell",
+)
+
 # TODO: crbug.com/40258588 - Add support for remaining OS types
 _os_type = enums.enum(
     ANDROID = "android",
+    CROS = "chromeos",
+    FUCHSIA = "fuchsia",
+    LACROS = "lacros",
+    LINUX = "linux",
+    MAC = "mac",
+    WINDOWS = "win",
 )
 
 _settings_defaults = args_lib.defaults(
+    browser_config = None,
     os_type = None,
     use_swarming = True,
 )
 
 def _settings(
         *,
+        browser_config = args_lib.DEFAULT,
         os_type = args_lib.DEFAULT,
         use_swarming = args_lib.DEFAULT):
     """Settings that control the expansions of tests for a builder.
 
     Args:
+        browser_config: One of the values from targets.browser_config that
+            indicates the configuration of the browser to execute the test with.
         os_type: One of the values from targets.os_type that indicates the OS
             type that the tests target. Supports a module-level default.
         use_swarming: Whether tests for the builder should be swarmed. Supports
@@ -40,16 +61,21 @@ def _settings(
         A struct that can be passed to the targets_setting argument of the
         builder to control the expansion of tests for the builder.
     """
+    browser_config = _settings_defaults.get_value("browser_config", browser_config)
+    if browser_config and browser_config not in _browser_config.values:
+        fail("unknown browser_config: {}".format(browser_config))
     os_type = _settings_defaults.get_value("os_type", os_type)
     if os_type and os_type not in _os_type.values:
         fail("unknown os_type: {}".format(os_type))
     use_swarming = _settings_defaults.get_value("use_swarming", use_swarming)
     return struct(
+        browser_config = browser_config,
         os_type = os_type,
         use_swarming = use_swarming,
 
         # Computed properties
         is_android = os_type == _os_type.ANDROID,
+        is_fuchsia = os_type == _os_type.FUCHSIA,
     )
 
 def _create_compile_target(*, name):
@@ -494,6 +520,7 @@ common = struct(
     builder_defaults = _builder_defaults,
     settings = _settings,
     settings_defaults = _settings_defaults,
+    browser_config = _browser_config,
     os_type = _os_type,
     merge = _merge,
     remove = _remove,

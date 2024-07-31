@@ -632,15 +632,15 @@ targets.mixin(
 targets.mixin(
     name = "gpu_integration_test_common_args",
     args = [
-        "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
+        targets.magic_args.GPU_PARALLEL_JOBS,
     ],
     android_args = [
-        "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
+        targets.magic_args.GPU_TELEMETRY_NO_ROOT_FOR_UNROOTED_DEVICES,
         # See crbug.com/333414298 for context on why this is necessary.
         "--initial-find-device-attempts=3",
     ],
     chromeos_args = [
-        "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
+        targets.magic_args.CROS_TELEMETRY_REMOTE,
     ],
     # TODO(crbug.com/40862371): having --xvfb and --no-xvfb is confusing.
     lacros_args = [

@@ -8,6 +8,7 @@ load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
 load("./args.star", "args")
 load("./targets-internal/common.star", _targets_common = "common")
+load("./targets-internal/magic_args.star", _targets_magic_args = "magic_args")
 load("./targets-internal/nodes.star", _targets_nodes = "nodes")
 load("./targets-internal/pyl-generators.star", "register_pyl_generators")
 load("./targets-internal/test-types/gpu_telemetry_test.star", "gpu_telemetry_test")
@@ -755,4 +756,5 @@ targets = struct(
     resultdb = _resultdb,
     swarming = _targets_common.swarming,
     skylab = _skylab,
+    magic_args = _targets_magic_args,
 )

@@ -15,6 +15,8 @@ the differentiation can be done programmatically.
 
 import collections
 
+# LINT.IfChange
+
 MAGIC_SUBSTITUTION_PREFIX = '$$MAGIC_SUBSTITUTION_'
 
 GpuDevice = collections.namedtuple('GpuDevice', ['vendor', 'device'])
@@ -346,6 +348,7 @@ def GPUWebGLRuntimeFile(test_config, _, tester_config):
       f'../../content/test/data/gpu/{suite}_{chosen_os}_runtimes.json')
   return [f'--read-abbreviated-json-results-from={runtime_filepath}']
 
+# LINT.ThenChange(//infra/config/lib/targets-internal/magic_args.star)
 
 def TestOnlySubstitution(_, __, ___):
   """Magic substitution used for unittests."""
