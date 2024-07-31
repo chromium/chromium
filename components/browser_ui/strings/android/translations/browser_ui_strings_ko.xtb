@@ -172,6 +172,7 @@
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3859306556332390985">앞으로 탐색</translation>
 <translation id="3895926599014793903">확대/축소 강제 사용</translation>
+<translation id="3905475044299942653">많은 알림 중지</translation>
 <translation id="3908288065506437185">시크릿 모드에서 서드 파티 쿠키 차단</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">일부 기능이 작동하지 않을 수 있습니다. 관련 사이트에서는 계속 서드 파티 쿠키를 사용할 수 있습니다.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916"><ph name="WEBSITE" />의 쿠키 및 기타 사이트 데이터가 삭제됩니다.</translation>
 <translation id="5723967018671998714">시크릿 모드에서는 타사 쿠키가 차단됨</translation>
 <translation id="5740126560802162366">사이트에서 기기에 데이터를 저장할 수 있습니다.</translation>
+<translation id="5749085587985334212">안전 확인 숨기기</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> 차단됨</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5844448279347999754">사용 설정하면 사이트에서 클립보드에 저장된 텍스트 및 이미지 확인을 요청할 수 있습니다. 사용 중지하면 사이트에서 클립보드에 저장된 텍스트나 이미지를 확인할 수 없습니다.</translation>

@@ -113,6 +113,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1346748346194534595">Dreta</translation>
 <translation id="1350494136075914725">En curs · Canvia a la pestanya</translation>
 <translation id="1351937230027495976">Replega el menú</translation>
+<translation id="1352537790882153971">Pots monitorar el so del teu micròfon que surt pels auriculars amb cable. Tanca el tauler per aturar-ho.</translation>
 <translation id="1360220746312242196">Quan cerquis una pàgina, ves a la coincidència anterior per cercar</translation>
 <translation id="1360788414852622716">S'està desactivant el perfil. Aquest procés pot tardar uns minuts.</translation>
 <translation id="1364382257761975320">Per desbloquejar el Chromebook, utilitza l'empremta digital</translation>
@@ -199,6 +200,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1677507110654891115">La funció <ph name="FEATURE_NAME" /> no està connectada.</translation>
 <translation id="1677582821739292812">Algú està mirant la teva pantalla</translation>
 <translation id="1679841710523778799">Augmenta la brillantor</translation>
+<translation id="1680659827022803830">Controls de videotrucada</translation>
 <translation id="169515659049020177">Maj</translation>
 <translation id="1698080062160024910">Temporitzador de: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adreça IPv6: <ph name="ADDRESS" /></translation>
@@ -246,6 +248,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1862077610023398675">Amaga els controls</translation>
 <translation id="1862380676329487333">Actualitza i tanca la sessió</translation>
 <translation id="1864454756846565995">Dispositiu USB-C (port posterior)</translation>
+<translation id="1867566089293859645">Els canvis s'aplicaran la propera vegada que iniciïs la sessió. Actualitza-ho en qualsevol moment a Configuració &gt; Preferències del sistema &gt; Arrencada.</translation>
 <translation id="1869497990620230175">Fitxers ràpids</translation>
 <translation id="1871023081802165724">Reprodueix el contingut multimèdia</translation>
 <translation id="1871915835366697861">No disponible per a aquest joc</translation>
@@ -254,6 +257,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1882897271359938046">S'està replicant <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloqueja amb l'empremta digital</translation>
 <translation id="1894024878080591367">Configura per jugar amb el teclat</translation>
+<translation id="1896383923047738322">Personalitza el teclat</translation>
 <translation id="1904997243703671177">En desactivar el Bluetooth, <ph name="DEVICE_COUNT" /> dispositius externs es desconnectaran del teu dispositiu <ph name="DEVICE_TYPE" />, inclosos:</translation>
 <translation id="1908992311423394684">Instal·lació nova</translation>
 <translation id="1915307458270490472">Penja</translation>
@@ -280,7 +284,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1986150224850161328">Assegura't que el telèfon i el Chromebook estiguin connectats a la mateixa xarxa i torna-ho a provar. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">No es pot capturar contingut</translation>
 <translation id="1990046457226896323">S'han baixat els fitxers de veu</translation>
-<translation id="1993072747612765854">Obtén més informació sobre l'última actualització de: <ph name="SYSTEM_APP_NAME" /></translation>
+<translation id="1993072747612765854">Obtén més informació sobre la darrera actualització de <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1996162290124031907">Ves a la pestanya següent</translation>
 <translation id="1998100899771863792">Escriptori actual</translation>
 <translation id="2001444736072756133">Cerca <ph name="CATEGORY" />, fitxers, aplicacions i més.</translation>
@@ -289,6 +293,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2018630726571919839">Explica'm un acudit</translation>
 <translation id="2021864487439853900">Fes clic per desbloquejar</translation>
 <translation id="2034971124472263449">Desa igualment</translation>
+<translation id="2041220428661959602">Nivell de bateria: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="204259843076055848">La drecera <ph name="SIX_PACK_KEY_NAME" /> està desactivada en aquest moment</translation>
 <translation id="2049240716062114887">El nom de l'escriptori s'ha canviat a <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -388,6 +393,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2453860139492968684">Finalitza</translation>
 <translation id="2455994958736234930">Afegeix www. i .com a la barra d'adreces i, a continuació, obre el lloc web</translation>
 <translation id="2456008742792828469">Calendari, <ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="246052086404491029">Amplia els detalls</translation>
 <translation id="2465145153332031561">Estat de la bateria: <ph name="BATTERY_HEALTH_PERCENTAGE" />%; recompte de cicles: <ph name="CYCLE_COUNT" />.</translation>
 <translation id="2473177541599297363">Confirma la resolució</translation>
 <translation id="2475982808118771221">S'ha produït un error</translation>
@@ -630,6 +636,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Vols activar la funció de dictat?</translation>
 <translation id="3394432020929931914">, desplegat</translation>
+<translation id="3401474642070997151">Per personalitzar els suggeriments, fes clic amb el botó dret en un suggeriment o mantén-lo premut</translation>
 <translation id="3405101454990027959">Activa l'accés al micròfon</translation>
 <translation id="3409584356742878290">Mostra o amaga l'inspector d'eines per a desenvolupadors</translation>
 <translation id="3410336247007142655">Mostra la configuració del tema fosc</translation>
@@ -749,6 +756,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3756485814916578707">S'està emetent la pantalla</translation>
 <translation id="3765841382945324995">La drecera <ph name="SIX_PACK_KEY_NAME" /> s'ha actualitzat de <ph name="OLD_SHORTCUT" /> a<ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Editat avui</translation>
+<translation id="3772109172035555611">Personalitza el TrackPoint</translation>
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
 <translation id="3779139509281456663">S'estan connectant els <ph name="NAME" /></translation>
 <translation id="3781910048497807059">Mou el focus a la subfinestra anterior</translation>
@@ -796,11 +804,13 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3953130726459169782">Encara no hi ha cap tasca completada.</translation>
 <translation id="3958714870339660776">Tot el dia</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
+<translation id="3963124517343721543">Obre les teves finestres i pestanyes anteriors perquè et resulti fàcil continuar des d'on ho havies deixat. També veuràs suggeriments personalitzats de coses a fer a continuació.</translation>
 <translation id="3969043077941541451">Desactivada</translation>
 <translation id="3970324493235864154">Consulta les notificacions del telèfon</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="397726367135689299">És possible que la càrrega de la bateria sigui poc fiable.</translation>
 <translation id="3977512764614765090">La bateria s'està carregant i està a un <ph name="PERCENTAGE" />%.</translation>
+<translation id="397808938113646171">S'ha esgotat el temps. Ben fet!</translation>
 <translation id="3982013579989864579">Vols canviar la sortida d'àudio?</translation>
 <translation id="3984536049089846927">Pàgina següent</translation>
 <translation id="3986082989454912832">Respon</translation>
@@ -825,6 +835,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="404437169852192935">Les actualitzacions han finalitzat</translation>
 <translation id="4049230407053723315">Configuració ràpida</translation>
 <translation id="4057003836560082631">Pestanya <ph name="INDEX" /> de <ph name="TOTAL_COUNT" /> del navegador. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
+<translation id="4059696795118403455">Per veure suggeriments personalitzats de coses a fer a continuació, prem la tecla de visió general</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{No en una app}other{No en # apps}}</translation>
 <translation id="4066027111132117168">Activada (<ph name="REMAINING_TIME" />)</translation>
 <translation id="4069532248403319695">Obre la pàgina Baixades</translation>
@@ -963,6 +974,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4544483149666270818">Selecciona la finestra que vols gravar</translation>
 <translation id="4545950850562423083">Desa la pàgina actual com a adreça d'interès</translation>
 <translation id="4548482551627849548">Mou la finestra activa a l'escriptori de l'esquerra</translation>
+<translation id="4552748006424994716">Per evitar l'eco, pots escoltar el teu micròfon només a través d'auriculars amb cable.</translation>
 <translation id="4560576029703263363">Activat</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Oculta la contrasenya</translation>
@@ -990,6 +1002,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomanació d'aplicació</translation>
 <translation id="4649019912155580914">L'has editat</translation>
 <translation id="4654916960643280876">S'ha marcat la casella de selecció de <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />).</translation>
+<translation id="465686131535918331">Pots personalitzar la configuració per a <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="4657775630156561295">El suggeriment següent se suprimirà permanentment de l'historial de suggeriments del teu compte:
 
 <ph name="QUERY" /></translation>
@@ -1031,6 +1044,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4778095205580009397">L'Assistent de Google no està disponible en les sessions de demostració.</translation>
 <translation id="4789348252524569426">No es poden instal·lar els fitxers de parla. Cal actualitzar el dispositiu. Reinicia'l i torna-ho a provar.</translation>
 <translation id="478959186716341421">S'està emetent</translation>
+<translation id="4798403412327076414">La propera vegada que iniciïs la sessió, veuràs les finestres i les aplicacions obertes anteriorment</translation>
 <translation id="4798622944000246716">La teva xarxa mòbil no admet el punt d'accés Wi-Fi</translation>
 <translation id="4798888871844665150">L'element copiat ja és al porta-retalls. Utilitza <ph name="SHORTCUT_KEY_NAME" />+V per veure'l.</translation>
 <translation id="479989351350248267">cerca</translation>
@@ -1380,6 +1394,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5982119059638483922">Prem Fn+Cerca o Maj per cancel·lar.</translation>
 <translation id="5983567367406220847">A causa de la inactivitat, el punt d'accés Wi‐Fi s'ha desactivat.</translation>
 <translation id="598407983968395253">Utilitza la plantilla</translation>
+<translation id="5986723678596105470">Uneix-me amb Google Meet</translation>
 <translation id="598882571027504733">Per obtenir l'actualització, reinicia Chromebook amb el teclat connectat.</translation>
 <translation id="5998374579424866922">Desactiva els controls del joc</translation>
 <translation id="6000279412553873020">Tecles, botons i més</translation>
@@ -1395,6 +1410,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, gestionada per l'administrador</translation>
 <translation id="6027518778343897451">El dia <ph name="CURRENT_MONTH_DAY" /> no hi ha cap esdeveniment. Prem Retorn per obrir Google Calendar al navegador.</translation>
 <translation id="6030495522958826102">El menú s'ha mogut a l'extrem inferior esquerre de la pantalla.</translation>
+<translation id="6030608926359652298">Personalitza el ratolí tàctil</translation>
 <translation id="6032620807120418574">Fes clic en qualsevol lloc per gravar la pantalla completa</translation>
 <translation id="6040071906258664830">Grava el micròfon <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Tanca</translation>
@@ -1449,6 +1465,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6185696379715117369">Re Pàg</translation>
 <translation id="619335566042889110">Carrega completament ara</translation>
 <translation id="6193431488227440296">Desenvolupament</translation>
+<translation id="6196214354688969799">Look d'estudi</translation>
 <translation id="6199775032047436064">Torna a carregar la pàgina actual</translation>
 <translation id="6200515304866777730">No compatible amb l'aplicació</translation>
 <translation id="6210042900243040400">Connecta <ph name="NAME" />, desat anteriorment a <ph name="EMAIL" /></translation>
@@ -2057,6 +2074,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8443879455002739353">"Copia"</translation>
 <translation id="8444246603146515890">L'escriptori <ph name="DESK_TITILE" /> està activat</translation>
 <translation id="8446884382197647889">Més informació</translation>
+<translation id="8452090802952003258">Escolta el so del teu micròfon</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" />+V</translation>
 <translation id="8462305545768648477">Tanca Escolta la selecció</translation>
 <translation id="8468806060683421065">venç el dia <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2115,6 +2133,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8683506306463609433">Traça del rendiment activa</translation>
 <translation id="8703634754197148428">Inicia la gravació. Quan la gravació hagi començat, prem Alt+Maj+L per navegar fins al prestatge i trobar el botó per aturar-la.</translation>
 <translation id="8704155109538237473">Posa el focus a la finestra d'imatge sobre imatge</translation>
+<translation id="8708657523363087260">Commuta l'efecte local</translation>
 <translation id="870917907284186124">Activa/Desactiva el dictat (escriu amb la veu)</translation>
 <translation id="8711169534266271368">Opcions de Tauler de joc</translation>
 <translation id="8712637175834984815">Entesos</translation>
@@ -2146,6 +2165,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Ajuda"</translation>
+<translation id="8813531681893371930">Connecta uns auriculars amb cable</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8815390544836110344">Prem la drecera de captura de pantalla, Ctrl més Maj i la tecla del mode de visió general</translation>
 <translation id="881757059229893486">Configuració dels mètodes d'introducció de text</translation>
@@ -2243,6 +2263,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="9192133205265227850">Fes servir "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">S'està emetent contingut en un receptor desconegut</translation>
 <translation id="9194617393863864469">Inicia la sessió amb un altre usuari...</translation>
+<translation id="9195857219954068558">El Chromebook s'ha actualitzat. Obre les finestres i les aplicacions anteriors.</translation>
 <translation id="9195990613383871904">Demà</translation>
 <translation id="9198992156681343238">La resolució de la pantalla <ph name="DISPLAY_NAME" /> ha canviat a <ph name="RESOLUTION" />. Fes clic a Confirma per conservar els canvis. La configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Connecta els <ph name="NAME" /> a aquest Chromebook</translation>

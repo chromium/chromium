@@ -172,6 +172,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">前进</translation>
 <translation id="3895926599014793903">强制启用缩放功能</translation>
+<translation id="3905475044299942653">停止发送大量通知</translation>
 <translation id="3908288065506437185">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">某些功能可能无法正常运行。相关网站仍然可以使用第三方 Cookie。</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">此操作会删除 <ph name="WEBSITE" /> 的 Cookie 和其他网站数据</translation>
 <translation id="5723967018671998714">已阻止无痕模式下的第三方 Cookie</translation>
 <translation id="5740126560802162366">网站可将数据保存在您的设备上</translation>
+<translation id="5749085587985334212">隐藏安全检查</translation>
 <translation id="5771720122942595109">已禁用“<ph name="PERMISSION_1" />”权限</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5844448279347999754">开启此设置后，网站可以请求查看保存到剪贴板中的文字和图片。关闭此设置后，网站无法查看保存到剪贴板中的文字或图片。</translation>

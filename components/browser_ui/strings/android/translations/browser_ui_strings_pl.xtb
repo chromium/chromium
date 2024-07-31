@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="3859306556332390985">Przewiń do przodu</translation>
 <translation id="3895926599014793903">Wymuś powiększenie</translation>
+<translation id="3905475044299942653">Zatrzymaj wiele powiadomień</translation>
 <translation id="3908288065506437185">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Niektóre funkcje mogą nie działać prawidłowo. Powiązane witryny mogą nadal używać plików cookie innych firm.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Spowoduje to usunięcie plików cookie i innych danych witryny <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Pliki cookie innych firm są blokowane w trybie incognito</translation>
 <translation id="5740126560802162366">Witryny mogą zapisywać dane na Twoim urządzeniu</translation>
+<translation id="5749085587985334212">Ukryj kontrolę zabezpieczeń</translation>
 <translation id="5771720122942595109">Zablokowane: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
 <translation id="5844448279347999754">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do tekstu i obrazów zapisanych w schowku. Gdy jest wyłączona, strony nie mają dostępu do tekstu ani obrazów zapisanych w schowku.</translation>

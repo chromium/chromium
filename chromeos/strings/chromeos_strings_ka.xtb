@@ -178,6 +178,7 @@
 <translation id="1827738518074806965">ხელოვნების გალერეა</translation>
 <translation id="1836553715834333258">სისტემის ფერი</translation>
 <translation id="183675228220305365">რეალისტური</translation>
+<translation id="1837537071599385610">მოთხოვნების შექმნის სახელმძღვანელო</translation>
 <translation id="1838374766361614909">ძიების გასუფთავება</translation>
 <translation id="1840474674287087346">დესკტოპის ფერი</translation>
 <translation id="184095011128924488">შემოქმედებითი</translation>
@@ -192,6 +193,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">პეპლები</translation>
 <translation id="188114911237521550">მუქი რეჟიმის გამორთვა</translation>
+<translation id="1884794756658039602">შეიტყვეთ მეტი სპიკერის ლეიბლების შესახებ.</translation>
 <translation id="1885577615937958993">მედიის წინ გადახვევა</translation>
 <translation id="1887850431809612466">აპარატურის ვერსია</translation>
 <translation id="189221451253258459">ნეონური მწვანე</translation>
@@ -238,6 +240,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">დღეს</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ფოტო</translation>
+<translation id="2156072344042480449">თქვენი ბოლო 2 მოთხოვნა. ამ მოთხოვნების გამოყენება მხოლოდ ამ გვერდზე ყოფნისას შეგიძლიათ.</translation>
 <translation id="2157660087437850958">emoji-ს ამომრჩევი</translation>
 <translation id="2157959690810728433">რიგშია</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ხელახლა ცდა</translation>
@@ -318,6 +321,8 @@
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> სხვა</translation>
 <translation id="2561093647892030937">ლიმონები</translation>
 <translation id="2570743873672969996">გაშვებულია <ph name="TEST_NAME" /> ტესტი...</translation>
+<translation id="2575552334616524665">ამის ჩართვა შეგიძლიათ პარამეტრებში ან <ph name="THREE_DOTS_MENU_ICON" /> მენიუში</translation>
+<translation id="2576253868710695442">ეს მეხსიერების 2 გბაიტს დაიკავებს</translation>
 <translation id="2584547424703650812">გაბრწყინებული პეიზაჟები</translation>
 <translation id="2584559707064218956">დასაყენებლად გადადით პარამეტრებზე</translation>
 <translation id="2586146417912237930">ლურჯი და ინდიგო</translation>
@@ -334,6 +339,7 @@
 <translation id="2645380101799517405">მართვის საშუალებები</translation>
 <translation id="2652403576514495859">კარნახის ჩართვა ან გადართვა</translation>
 <translation id="2653659639078652383">გაგზავნა</translation>
+<translation id="2653807227758181366">აღწერეთ სასურველი ფონი ან გამოიყენეთ შაბლონური მოთხოვნა</translation>
 <translation id="2654647726140493436">არ გამორთოთ <ph name="DEVICE_TYPE" /> ან არ გამოაერთოთ <ph name="DEVICE_TYPE" />-ის ელკვების კაბელი განახლების მიმდინარეობისას</translation>
 <translation id="2656001153562991489">ექსკლუზიურად Chromebook Plus-ისთვის</translation>
 <translation id="2665671725390405060">გამოთქმის მოსმენა</translation>
@@ -378,6 +384,7 @@
 <translation id="3017079585324758401">ფონი</translation>
 <translation id="3027578600144895987">კამერის დახურვა</translation>
 <translation id="3031560714565892478">მოწყობილობა არის ვიდეოკამერა.</translation>
+<translation id="3042927241478734594">გსურთ ჩაწერიდან გასვლა?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> მა</translation>
 <translation id="3056720590588772262">საბოლოო წერტილი</translation>
 <translation id="3060579846059757016">კონტურები</translation>
@@ -410,6 +417,9 @@
 <translation id="3199982728237701504">დოკუმენტების მიმწოდი (ორმხრივი)</translation>
 <translation id="3201315366910775591">გაზიარებულ ალბომები შეიძლება განახლდეს სხვების მიერ</translation>
 <translation id="3211671540163313381">კლავიშთა დანიშვნის D-pad</translation>
+<translation id="3224812403568276799">თუ ამას დაუშვებთ, რეკორდერი გამოიყენებს აუდიოს გაფართოებულ ანალიზს, რომ ავტომატურად ამოიცნოს სხვადასხვა ხმები და მიანიჭოს მათ ზოგადი ლეიბლები, როგორიცაა სპიკერი 1 და სპიკერი 2.
+
+ამის გამორთვა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="3226405216343213872">მიმდინარეობს სკანერების ძიება</translation>
 <translation id="3226657629376379887">განლაგებასთან დაკავშირებული მოქმედებების მენიუ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />-ის მნიშვნელობის გაყოფა <ph name="CONVERSION_RATE" />-ზე</translation>
@@ -473,6 +483,7 @@
 <translation id="3577473026931028326">წარმოიქმნა შეფერხება. ცადეთ ხელახლა.</translation>
 <translation id="357889014807611375">ლიმიტირებული Wi-Fi</translation>
 <translation id="3583278742022654445">სიგნალის სიმძლავრე სუსტია. ცადეთ Wi-Fi სიგნალის წყაროსთან მიახლოება.</translation>
+<translation id="3588034708467091142">დარწმუნდით, რომ დაკავშირებული ხართ ინტერნეტთან და ცადეთ ხელახლა.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> არის <ph name="APN_NAME" />-ის მომხმარებელზე მორგებული სახელი.</translation>
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
 <translation id="3600339377155080675">ეკრანის არეკვლა</translation>
@@ -553,6 +564,7 @@
 <translation id="404928562651467259">გაფრთხილება</translation>
 <translation id="4050208988451295487">რამდენიმე ვარიანტი:</translation>
 <translation id="4054683689023980771">მიმდინარეობს სურათის ჩამოტვირთვა</translation>
+<translation id="4059839844193047929">თუ დატოვებთ ამ გვერდს, თქვენი მიმდინარე ჩაწერის პროცესი დასრულდება</translation>
 <translation id="4063039537646912479">ცისფერი</translation>
 <translation id="4070799384363688067">ანიმე</translation>
 <translation id="4086271957099059213">მართვის კიდევ ერთი საშუალების შექმნა</translation>
@@ -606,6 +618,7 @@
 <translation id="4310735698903592804">Google-ის ხელოვნური ინტელექტის მიერ უზრუნველყოფილი ბოლოდროინდელი ფონები</translation>
 <translation id="4320904097188876154">ნეონური ვარდისფერი</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> კლავიში დაჭერილია</translation>
+<translation id="4334293042716981313">შეგიძლიათ, <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />საკუთარი მოთხოვნაც დაწეროთ<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">კლავიში</translation>
 <translation id="4361257691546579041">APN-ის ტიპია „ნაგულისხმევი“.</translation>
 <translation id="437294888293595148">ყველა მალსახმობის გადაყენება</translation>
@@ -626,6 +639,7 @@
 <translation id="4429881212383817840">Kerberos ბილეთის მოქმედების ვადა მალე იწურება</translation>
 <translation id="4431821876790500265">ანგარიშის ნახვა</translation>
 <translation id="4443192710976771874">წითელი</translation>
+<translation id="4447592701292766824">ამ კონტენტის შეჯამება ვერ შეიქმნება</translation>
 <translation id="4448096106102522892">კუნძული</translation>
 <translation id="445059817448385655">ძველი პაროლი</translation>
 <translation id="4453205916657964690">ქვექსელის ნიღაბი</translation>
@@ -652,9 +666,11 @@
 <translation id="456077979087158257">ქალაქის პეიზაჟი</translation>
 <translation id="4561801978359312462">SIM-ბარათი განბლოკილია</translation>
 <translation id="4562494484721939086">მომსახურება არ არის</translation>
+<translation id="4570558255126759859">ჩამოიტვირთოს Gemini-ს მოდელი ჩანაწერების შეჯამებისთვის?</translation>
 <translation id="4573777384450697571">ვერ მოხერხდა — სერტიფიკატს მოქმედების ვადა გაუვიდა</translation>
 <translation id="458794348635939462">ჰოსტების გარდაქმნა ვერ მოხერხდა</translation>
 <translation id="4593212453765072419">საჭიროა პროქსი-სერვერის ავტორიზაცია</translation>
+<translation id="4594021849294327751">ტრანსკრიპტის შექმნა</translation>
 <translation id="4609350030397390689">კლავიატურის სიკაშკაშის დაკლება</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> / <ph name="TOTAL_PAGE_NUMBER" />. გთხოვთ დააჭიროთ შეყვანის ღილაკს ამ ბეჭდვის დავალების გასაუქმებლად.</translation>
 <translation id="463791356324567266">მიმდინარეობს სკანირების გაუქმება...</translation>
@@ -727,6 +743,7 @@
 <translation id="4981003703840817201">ლურჯი და ვარდისფერი</translation>
 <translation id="498186245079027698">შეამოწმეთ სკანერი და ცადეთ ხელახლა. დარწმუნდით, რომ ადგილობრივი მეხსიერება საკმარისია სკანირებული ფაილების შესანახად.</translation>
 <translation id="4982627662315910959">მალსახმობი მიუწვდომელია. დააჭირეთ ახალ მალსახმობს shift-ისა და კიდევ ერთი მოდიფიკატორი კლავიშის (ctrl, alt ან <ph name="META_KEY" />) მეშვეობით.</translation>
+<translation id="4983216687482551672">Chromebook აუდიო</translation>
 <translation id="4985509611418653372">გაშვება</translation>
 <translation id="4987769320337599931">ქსელის დაცვა</translation>
 <translation id="4988526792673242964">გვერდები</translation>
@@ -768,6 +785,7 @@
 <translation id="5220549459260334974">ჩამოიტვირთა <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">გამოსვლა</translation>
 <translation id="522307662484862935">არ დაერთოს ელფოსტის მისამართი</translation>
+<translation id="5223226274641517059">ჩაწერისას ნაჩვენები იქნება მყისიერი ტრანსკრიფცია. ამის გამორთვა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="5226879510707344687">ტრანსკრიპტის ექსპორტი</translation>
 <translation id="5227902338748591677">მუქი თემის განრიგი</translation>
 <translation id="5229344016299762883">სრულეკრანიანი რეჟიმიდან გასვლა</translation>
@@ -791,6 +809,7 @@
 <translation id="5315873049536339193">მოწმობა</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5318334351163689047">წარუმატებელი TCP მოთხოვნები</translation>
+<translation id="53196409393069519">გსურთ ტრანსკრიფციის ჩართვა?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">ახლავე აირჩიეთ ახალი</translation>
 <translation id="5333530671332546086">პორტალის მდგომარეობა უცნობია</translation>
@@ -849,6 +868,7 @@
 <translation id="5680504961595602662">სიურრეალისტური <ph name="SURREAL_LANDSCAPE" /> და <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">ალუბლები</translation>
 <translation id="5691511426247308406">ოჯახი</translation>
+<translation id="5692395212036914927">ჩანაწერის შეჯამება და სახელის შექმნა</translation>
 <translation id="5695599963893094957">აკრიფეთ ნებისმიერი კლავიში თქვენს კლავიატურაზე. ერთდროულად მაქსიმუმ 4 კლავიშზე დაჭერა შეგიძლიათ.</translation>
 <translation id="5701381305118179107">ცენტრირება</translation>
 <translation id="5703716265115423771">ხმის დაწევა</translation>
@@ -891,6 +911,7 @@
 <translation id="5928411637936685857">წაშლის ღილაკი „<ph name="ACCELERATOR_INFO" />“-ისთვის.</translation>
 <translation id="5930669310554144537">ზღაპრულად ლამაზი პეიზაჟი</translation>
 <translation id="5931523347251946569">ფაილი ვერ მოიძებნა</translation>
+<translation id="5938286923316838007">ამ კონტენტისთვის ჩაწერილი სახელები ვერ შეიქმნება</translation>
 <translation id="5939518447894949180">გადატვირთვა</translation>
 <translation id="594552776027197022">გასაღებთა შემთხვევითი წყვილის შექმნა</translation>
 <translation id="5946538341867151940">ინტერნეტთან დაკავშირებული არ ხართ. თუ მობილური ოპერატორი გირჩევთ მორგებულ APN-ს, მის შესახებ ინფორმაციის მისათითებლად აირჩიეთ „+ ახალი APN“</translation>
@@ -929,6 +950,7 @@
 <translation id="6113701710518389813">ისარი ზემოთ</translation>
 <translation id="6116005346231504406">მართვის პირველი საშუალების შექმნა</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> სხვა ალბომი</translation>
+<translation id="6120815036186828722">მიმდინარეობს საუბრის მოსმენა…</translation>
 <translation id="6122191549521593678">ონლაინ</translation>
 <translation id="6122277663991249694">ChromeOS-ის შეყვანის მეთოდის სერვისი</translation>
 <translation id="6127426868813166163">თეთრი</translation>
@@ -973,9 +995,11 @@
 <translation id="6327262166342360252">ეს ფონი შეიქმნა ხელოვნური ინტელექტით, შემდეგი ტექსტის გამოყენებით: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">ავტომატური მუქი თემა</translation>
 <translation id="6340526405444716530">პერსონალიზება</translation>
+<translation id="6348252528297699679">მდებარეობის გამორთვა შეგიძლიათ აქ: პარამეტრები &gt; კონფიდენციალურობა და უსაფრთხოება &gt; კონფიდენციალურობის მართვის პარამეტრები &gt; მდებარეობაზე წვდომა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">მომხმარებლის სახელი და პაროლი</translation>
 <translation id="6352210854422428614">სხვა პლანეტა</translation>
 <translation id="6359706544163531585">ღია თემის გათიშვა</translation>
+<translation id="6359919876285606596">ეს ქმედება სამუდამოა და მისი დაბრუნება შეუძლებელია</translation>
 <translation id="636850387210749493">ორგანიზაციის რეგისტრაცია</translation>
 <translation id="6373461326814131011">ტბორი</translation>
 <translation id="6379086450106841622">სენსორული ეკრანი</translation>
@@ -1084,6 +1108,7 @@
 <translation id="6910312834584889076">სკანერის თავსახური გახსნილია. დააფარეთ თავსახური და ცადეთ ხელახლა.</translation>
 <translation id="6911383237894364323">მედიასერვერებთან დაკავშირება ვერ მოხერხდა</translation>
 <translation id="6930597342185648547">ფოტოს შესახებ</translation>
+<translation id="6939667434404433010">ჩანაწერის სახელის ძიება</translation>
 <translation id="6939766318048400022">კაფე</translation>
 <translation id="6943893908656559156">დისტანციური იდენტობა (არასავალდებულო)</translation>
 <translation id="6953137545147683679">ოქროსფერი</translation>
@@ -1156,6 +1181,7 @@
 <translation id="7212547870105584639">მართეთ ქსელის APN-ის პარამეტრები. APN ამყარებს კავშირს ფიჭურ ქსელსა და ინტერნეტს შორის. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">გარე მოწყობილობებში ჩაშენებული პროგრამული უზრუნველყოფის განახლებები</translation>
 <translation id="7216409898977639127">ფიჭური ქსელის პროვაიდერი</translation>
+<translation id="7223952304612664117">ამ მოქმედების საშუალებით სისტემის სერვისები გამოიყენებს მდებარეობის სიზუსტეს, მდებარეობის დადგენის მიზნით. მდებარეობის სიზუსტე იყენებს ინფორმაციას უსადენო სიგნალებისა და სენსორების შესახებ, რათა დაადგინოს მოწყობილობის მდებარეობა.</translation>
 <translation id="7233782086689993269">მალსახმობი აღდგენილია</translation>
 <translation id="725133483556299729">აირჩიეთ ელფოსტის მისამართი</translation>
 <translation id="7255187042098209569">ვარდისფერი და იისფერი</translation>
@@ -1189,6 +1215,8 @@
 <translation id="7359657277149375382">ფაილის ტიპი</translation>
 <translation id="73631062356239394">დიაგნოსტიკური მონაცემების გაზიარება</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378170410161264436">რეკორდერს შეუძლია, შექმნას ტრანსკრიპტები ისეთი ჩანაწერებისთვის, რომლებშიც გამოყენებულია მეტყველება.
+ჩამოტვირთეთ ტრანსკრიფციის მოდელი (100 მბაიტამდე) აღნიშნული ტრანსკრიპტების მისაღებად.</translation>
 <translation id="7384004438856720753">სასახლე</translation>
 <translation id="7388959671917308825">ჩაშენებული სენსორული პანელი</translation>
 <translation id="7397270852490618635">ღია თემის გამორთვა</translation>
@@ -1204,6 +1232,7 @@
 <translation id="7487067081878637334">ტექნოლოგია</translation>
 <translation id="7490813197707563893">MAC მისამართი</translation>
 <translation id="7497215489070763236">სერვერის CA სერტიფიკატი</translation>
+<translation id="7500205272584643581">ნებას დართავთ რეკორდერს, აღმოაჩინოს და დაასათაუროს დინამიკები?</translation>
 <translation id="7501957181231305652">ან</translation>
 <translation id="7502658306369382406">IPv6 მისამართი</translation>
 <translation id="7507061649493508884">აყვავებული <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
@@ -1226,6 +1255,7 @@
 <translation id="7613724632293948900">გადაადგილება შეგიძლიათ მაუსის ან ისრიანი კლავიშების მეშვეობით.</translation>
 <translation id="7618774594543487847">ნეიტრალური</translation>
 <translation id="7620771111601174153">შეიტყვეთ მეტი დახმარების ცენტრში</translation>
+<translation id="7625095758347640998">AI ფონი</translation>
 <translation id="763165478673169849">ბოლო გადაყენების დრო</translation>
 <translation id="7633068090678117093">ფონური სურათი</translation>
 <translation id="763873111564339966">ინდიგო</translation>
@@ -1391,6 +1421,7 @@
 <translation id="8498220429738806196">ტრაფიკის მთვლელები</translation>
 <translation id="8503813439785031346">მომხმარებლის სახელი</translation>
 <translation id="8503836310948963452">კიდევ რამდენიმე წუთიც...</translation>
+<translation id="8505011850330200833">Gemini-ს მოდელს სჭირდება მეხსიერების 2 გბაიტი, რომ დაამუშაოს ტრანსკრიპტები და შექმნას შეჯამებები</translation>
 <translation id="8508640263392900755">APN-ის დეტალები</translation>
 <translation id="8522687886059337719">ამიერიდან წვდომა გაქვთ ახალ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ფონებსა<ph name="END_LINK_WALLPAPER_SUBPAGE" /> და <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ეკრანმზოგზე<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
@@ -1418,6 +1449,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ამ ფუნქციის სამართავად გამოიყენეთ კლავიშები მარცხნივ ან მარჯვნივ მიმართული ისრებით.</translation>
 <translation id="8712637175834984815">კარგი</translation>
 <translation id="871560550817059752">ვერ მოხერხდა — მელანი გაუთავდა</translation>
+<translation id="8721554916373590179">შაბლონური მოთხოვნები</translation>
 <translation id="8723108084122415655">არანაგულისხმევი ქსელი აღემატება რეაგირების დროის ზღვარს</translation>
 <translation id="8725066075913043281">ხელახლა სცადეთ</translation>
 <translation id="8726019395068607495">გაჩერდა — პრინტერის კარი ღიაა</translation>
@@ -1427,6 +1459,7 @@
 <translation id="8749478549112817787">კამერის ფონი</translation>
 <translation id="8755946156089753497">კოშკი</translation>
 <translation id="8756235582947991808">ხელოვნური ინტელექტის დახმარებით შექმნის წესი და სხვა რამდენიმე გასათვალისწინებელი საკითხი</translation>
+<translation id="8760616037557661287">წინა მოთხოვნები</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ალბომი</translation>
 <translation id="8775713578693478175">მოდემის APN</translation>
@@ -1490,6 +1523,8 @@
 <translation id="9025198690966128418">პირად მოწყობილობად გამოყენება</translation>
 <translation id="902638246363752736">კლავიატურის პარამეტრები</translation>
 <translation id="9028832514430399253">ჩართეთ გადამრთველი, ეკრანმზოგის ვარიანტები რომ აირჩიოთ</translation>
+<translation id="9030883440316693822">გსურთ ჩანაწერის წაშლა?</translation>
+<translation id="9036971622563146214">შედეგები</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9045842401566197375">წიგნები</translation>
 <translation id="9049868303458988905">APN-ის შენახვის ღილაკი ახლა ჩართულია</translation>

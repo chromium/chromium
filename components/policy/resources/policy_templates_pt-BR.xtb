@@ -465,6 +465,11 @@ Se a política for definida como "Desativada" ou não for definida, as configura
       Observe que esta é uma política temporária para permitir que os usuários gerenciados continuem usando atalhos legados descontinuados. Esta política será descontinuada quando os atalhos personalizados ficarem disponíveis.</translation>
 <translation id="1361661842732478894">Mostrar o botão "Página inicial" na barra de ferramentas</translation>
 <translation id="1363275621236827384">Permitir consultas no Servidor Quirks para perfis de hardware</translation>
+<translation id="1363839375295535439">Se a política for ativada ou não for definida, permite que o sandbox do LPAC seja ativado para serviços de impressão sempre que a configuração do sistema permitir.
+
+Se ela for desativada, a segurança do <ph name="PRODUCT_NAME" /> será prejudicada, já que os serviços usados para impressão poderão ser executados em uma configuração de sandbox mais fraca.
+
+Só desative a política se houver problemas de compatibilidade com softwares de terceiros que impedem que os serviços de impressão funcionem corretamente no sandbox de LPAC.</translation>
 <translation id="1369698103169067223">Os Glanceables não estão ativados para os usuários.</translation>
 <translation id="1371626834351873151">A redução do user agent vai ser ativada para todas as origens.</translation>
 <translation id="1371851989348083665">Permitir o uso do <ph name="ASSISTANT_PRODUCT_NAME" /> na Web</translation>
@@ -896,6 +901,25 @@ do usuário para chamar a API.</translation>
       Se a política não for definida, o tamanho de cache padrão será usado e será possível mudá-lo com a sinalização "--media-cache-size".</translation>
 <translation id="1648816843164517573">Lista de nomes que contornarão a verificação de política HSTS</translation>
 <translation id="1651197070942919276">Não permitir que o dispositivo execute máquinas virtuais</translation>
+<translation id="1651216316133158002">Essa política permite que os administradores especifiquem apps que funcionam como gerenciadores padrão das respectivas extensões de arquivo
+no <ph name="PRODUCT_OS_NAME" /> e que os usuários não podem mudar.
+
+Para todas as extensões de arquivo não especificadas na política, os usuários podem definir os próprios padrões do
+fluxo de trabalho comum.
+
+Especifique apps do Chrome pelos IDs deles, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />,
+apps da Web pelo URL usado na <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, como<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />,
+apps Android pelo nome de pacote, como<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />,
+apps da Web do sistema
+pelo nome no formato snake case, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" /> e
+tarefas virtuais pelo nome designado, prefixado por
+<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX" />, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE" />.
+Apps Isolados da Web pelo ID do pacote da Web, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ISOLATED_WEB_APP_EXAMPLE" />.
+
+Os apps PRECISAM ser declarados no manifesto como gerenciadores de extensões de arquivo especificadas para que
+o item da política entre em vigor. A política NÃO amplia os recursos atuais do app.
+
+Caso a política seja deixada sem definição, é possível que o <ph name="PRODUCT_OS_NAME" /> selecione gerenciadores padrão de acordo com a lógica interna.</translation>
 <translation id="1651810147727432656">Bloquear a permissão para gerenciamento de janelas nesses sites</translation>
 <translation id="1654087023995670109">Aplicar o modo visitante do navegador</translation>
 <translation id="1655229863189977773">Define o tamanho do cache de disco em bytes</translation>
@@ -1498,6 +1522,7 @@ Normalmente, essa política fica desativada como defesa contra phishing.</transl
 <translation id="2082205219176343977">Configurar a versão mínima permitida do Chrome para o dispositivo.</translation>
 <translation id="20838788335877967">Desativar relatórios sobre informações de identificação do usuário</translation>
 <translation id="208566302163036794">Bloquear recursos desativados</translation>
+<translation id="2086040449830622332">Ativar o sandbox de impressão de LPAC</translation>
 <translation id="208623333578980446">Permitir wake locks de tela para gerenciamento de energia</translation>
 <translation id="2089541797660774692">Ativar os relatórios de nuvem do navegador gerenciado</translation>
 <translation id="2090712407517297305">Uma página do histórico do Chrome organizada em grupos ficará visível em chrome://history/grouped.</translation>
@@ -1831,6 +1856,15 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="2290270645214705008">Se esta política for definida como "Desativada", o serviço de host de acesso remoto não poderá ser iniciado nem configurado para aceitar conexões de entrada.  Esta política não afeta situações de suporte remoto.
 
           Esta política não terá efeito se for definida como "Ativada", deixada vazia ou sem definição.</translation>
+<translation id="2292482441027364457">A definição da política estabelece quais identificadores de aplicativo do <ph name="PRODUCT_OS_NAME" /> são mostrados como apps fixados na barra de acesso rápido, e eles não podem ser editados pelos usuários.
+
+Especifique os apps do Chrome pelos IDs deles (como pjkljhegncpnkpknbcohdijeoejaedia),
+apps Android pelo nome do pacote (como com.google.android.gm),
+apps da Web pelo URL usado na <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (como https://google.com.br/maps) e
+apps da Web do sistema pelo nome em formato snake case, (como <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />).
+Apps Isolados da Web pelo ID do pacote da Web, como <ph name="PINNED_LAUNCHER_APPS_POLICY_ISOLATED_WEB_APP_EXAMPLE" />.
+
+Se a política for deixada sem definição, os usuários poderão mudar a lista de apps fixados no acesso rápido.</translation>
 <translation id="229322770310505679">Ativar o conceito de grupos atômicos de política</translation>
 <translation id="22941467117331786">Se a política for definida como verdadeira, um botão grande e vermelho para sair da conta será exibido na bandeja do sistema em sessões ativas em que a tela não esteja bloqueada.
 
@@ -2479,6 +2513,11 @@ Se a política não for definida, a <ph name="BLOCK_POPUPS_POLICY_NAME" /> será
 <translation id="2801378553855965587">Desativar a integração com o <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
 <translation id="2805707493867224476">Permitir que todos os sites exibam pop-ups</translation>
 <translation id="2806804577787377637">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />.</translation>
+<translation id="2815701930753942156">Esta política especifica uma lista de intervalos semanais durante os quais o dispositivo <ph name="PRODUCT_OS_NAME" /> não pode ser usado. As sessões em andamento serão fechadas, e o login será bloqueado.
+
+Não é possível usar intervalos sobrepostos.
+
+Os dispositivos <ph name="PRODUCT_OS_NAME" /> vão usar o fuso horário do sistema para aplicar esses intervalos.</translation>
 <translation id="2816964824289752181">Ativar a <ph name="DESK_API_NAME" /> para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros</translation>
 <translation id="2818074121667686266">Se a política for definida como ativada ou não for definida, o usuário receberá uma solicitação para acesso de captura de áudio, exceto para URLs configurados na lista AudioCaptureAllowedUrls.
 
@@ -3118,6 +3157,7 @@ Se a política for definida como "Desativada", os arquivos baixados não serão 
 Essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Baixar o link". Essas restrições não se aplicam às opções de salvar ou fazer o download da página atualmente em exibição nem de salvar como PDF nas opções de impressão.
 
 No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="3296560797994110772">Os atalhos com a tecla de pesquisa[3] são enviados primeiro para o app antes de serem processados pelo SO.</translation>
 <translation id="3300441638895109781">Atualizar automaticamente o fluxo de autenticação no ChromeOS</translation>
 <translation id="3300784749135986828">Ativar ou desativar a <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Ativar extensão de insights</translation>
@@ -3617,6 +3657,7 @@ incluir as duas opções em certificados RSA destinados a HTTPS.</translation>
       * <ph name="PRINTERS_ALLOW_ALL" /> (valor 2) exibe todas as impressoras.
 
       Se a política não é definida, <ph name="PRINTERS_ALLOW_ALL" /> é colocada em uso.</translation>
+<translation id="3686607051786495544">Desativar o sandbox de LPAC para serviços de impressão</translation>
 <translation id="3695204334462456702">Destinos de protocolo que não precisam de configuração (mDNS e DNS-SD) (descontinuado)</translation>
 <translation id="3695706037816556327">Ação na remoção do token de segurança (por exemplo, um cartão inteligente) do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3696134803170884851">Desativar sons de carregamento</translation>
@@ -3935,6 +3976,7 @@ Observação: leia mais sobre as políticas de mitigação de processos em https
 <translation id="3962445567482559878">Usa o modo EDU da experiência de integração do Assistente</translation>
 <translation id="396261881101930204">Ocultar do usuário as recomendações de mídia</translation>
 <translation id="3964298692570794635">Permitir conteúdo não seguro nesses sites</translation>
+<translation id="3965027062205390679">Ativar a exibição da tela inicial do Gemini durante o fluxo de login</translation>
 <translation id="3965339130942650562">Tempo limite até que a saída do usuário ocioso seja executada</translation>
 <translation id="396536755218079668">Usuários supervisionados</translation>
 <translation id="3968218878014278212">Permitir que o Eche seja ativado.</translation>
@@ -4442,6 +4484,13 @@ Se a política não for definida, a <ph name="ASK_GEOLOCATION_POLICY_NAME" /> se
 <translation id="4313767483634435271">Endereço MAC designado da base para o dispositivo</translation>
 <translation id="4314538398999793073">Desativar a consulta CNAME ao negociar a autenticação do Kerberos</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
+<translation id="43213511254881626">Esta política controla se o gerenciador de senhas integrado pode excluir senhas não descriptografáveis do banco de dados. Isso é necessário para restaurar a funcionalidade completa do gerenciador de senhas integrado, mas pode incluir uma perda permanente de dados. Se for possível corrigir os valores de senhas não descriptografáveis para que possam ser descriptografados, geralmente será necessário que o usuário realize ações complexas.
+
+Se a política for ativada ou não for definida, as senhas não descriptografáveis salvas no Gerenciador de senhas integrado do usuário serão perdidas. As senhas que ainda estiverem em um estado funcional não serão modificadas.
+
+Se a política for desativada, os dados do gerenciador de senhas dos usuários vão continuar intactos, mas a funcionalidade será interrompida.
+
+Se a política for definida, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4322842393287974810">Permitir que o aplicativo de quiosque aberto automaticamente com zero de atraso controle a versão do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Ativar atestado remoto para proteção de conteúdo</translation>
 <translation id="4325690621216251241">Adicionar um botão de logout à bandeja do sistema</translation>
@@ -5032,6 +5081,13 @@ Esta política não tem suporte a expressões regulares. No entanto, os subdomí
 No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="4777573685807338095">Esta política controla se a tela inicial do Gemini será mostrada ao usuário durante o primeiro fluxo de login.
+
+      Se for definida como desativada, a tela inicial do Gemini não será mostrada.
+
+      Se estiver ativada, a tela inicial desse recurso será mostrada.
+
+      Se não for definida, a tela inicial do Gemini será ignorada para usuários gerenciados por empresas e mostrada para usuários não gerenciados.</translation>
 <translation id="4783415902268741066">Permitir mostrar a página de resultados mais recente do mecanismo de pesquisa padrão em um painel lateral do navegador</translation>
 <translation id="4786784434769279324">Ações a serem executadas quando o computador estiver inativo</translation>
 <translation id="4787763197941188108">Modifica o tamanho da página para impressão padrão.
@@ -5159,6 +5215,17 @@ Se a política for definida como "2", o nível de Economia de memória será ext
 Se a política for deixada sem definição, o usuário final poderá controlar essa configuração em chrome://settings/performance.</translation>
 <translation id="489803897780524242">Parâmetro que controla o posicionamento do termo de pesquisa para o provedor de pesquisa padrão</translation>
 <translation id="4899708173828500852">Ativar Navegação segura</translation>
+<translation id="490231389914389892">Esta política controla o comportamento do atalho no <ph name="PRODUCT_OS_NAME" />.
+
+Se a política for deixada sem definição ou for definida como <ph name="NORMAL_SYSTEM_PRIORITY" />, todos os atalhos do sistema <ph name="PRODUCT_OS_NAME" /> serão ativados como esperado.
+
+Se a política for definida como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, uma lista predeterminada de atalhos da tecla de acesso rápido nunca vai ativar um atalho.
+
+Se a política for definida como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, uma lista predeterminada de atalhos da tecla de acesso rápido nunca vai ativar um atalho enquanto um app estiver em tela cheia.
+
+Se a política for definida como <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTCUTS" />, os atalhos com a tecla de pesquisa[3] serão enviados para os apps e não serão consumidos pelo SO.
+
+Se a política for definida como <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTCUTS_FULLSCREEN_ONLY" />, os atalhos com a tecla de pesquisa[3] serão enviados para os apps e não serão consumidos pelo SO, mas apenas quando o app em foco estiver em tela cheia.</translation>
 <translation id="4906194810004762807">Taxa de atualização da Política de dispositivos</translation>
 <translation id="49093841899738146">Se a política for definida como "Ativada", o <ph name="PRODUCT_NAME" /> poderá coletar logs de eventos WebRTC em Serviços do Google (por exemplo, no Hangouts Meet) e fazer upload deles para o Google. Esses registros contêm informações de diagnóstico que são úteis para depurar problemas com chamadas de áudio ou videochamadas no <ph name="PRODUCT_NAME" />, como o horário e o tamanho de pacotes RTP, feedback sobre congestionamento na rede e metadados sobre o tempo e a qualidade de frames de áudio e vídeo. Esses registros não têm conteúdo de áudio ou vídeo da chamada. Com um código de sessão, o Google pode associar esses registros a outros coletados pelo próprio serviço do Google. Isso é feito para facilitar a depuração.
 
@@ -5338,6 +5405,7 @@ Esta política só é eficaz quando a máquina está registrada na <ph name="CLO
 <translation id="504116558738617678">Mostrar alertas de pouco espaço no disco apenas quando o dispositivo não tiver gerenciamento ou quando houver apenas um usuário</translation>
 <translation id="5041315457555330432">Permitir que o <ph name="PRODUCT_NAME" /> se conecte apenas a dispositivos em endereços IP particulares, a menos que o recurso CastAllowAllIPs esteja ativado.</translation>
 <translation id="504689994545234073">Ativar o armazenamento local de arquivos do usuário</translation>
+<translation id="5048890362473520096">Ativar o sandbox de LPAC para serviços de impressão</translation>
 <translation id="5055474681190962362">Dia do mês [1-31] em que a reinicialização acontecerá, interpretado no fuso horário local do dispositivo. Usado apenas quando "frequency" for definido como "MONTHLY". Caso seja maior que o número máximo de dias de um mês específico, o último dia do mês será usado.</translation>
 <translation id="5056708224511062314">Lupa desativada</translation>
 <translation id="5058573563327660283">Selecionar a estratégia usada para liberar espaço em disco durante a limpeza automática (obsoleta)</translation>
@@ -5768,6 +5836,11 @@ As contas gerenciadas não podem participar nem criar um grupo familiar. Por iss
       Se a propriedade <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> for definida em uma solicitação <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, todas as superfícies de tela serão capturadas automaticamente sem precisar de permissão explícita do usuário.
       Se a política não for definida, a propriedade <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> não ficará disponível para nenhum aplicativo da Web.
 Para melhorar a privacidade, a partir da versão 116 do <ph name="PRODUCT_NAME" />, esta política não vai mais oferecer suporte para atualização dinâmica. O usuário poderá ter certeza de que nenhuma outra página será capaz de capturar as telas após o login, caso isso não possa ser feito no início da sessão.</translation>
+<translation id="5351946114524094311">Se esta política for definida, todos os tipos de dados especificados serão excluídos da sincronização, tanto para a <ph name="CHROME_SYNC_NAME" /> quanto para a sincronização de perfil de roaming. Isso pode ajudar a reduzir o tamanho do perfil de roaming ou limitar o tipo de dado que será enviado por upload aos servidores da <ph name="CHROME_SYNC_NAME" />.
+
+      Atualmente, os tipos de dados para esta política são: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "productComparison", "readingList", "savedTabGroups", "tabs", "themes", "typedUrls" e "wifiConfigurations". Esses nomes diferenciam letras maiúsculas de minúsculas.
+
+      Observações: a atualização dinâmica de políticas está disponível apenas na versão 123 e mais recentes do <ph name="PRODUCT_NAME" />. Desativar a opção "autofill" também desativa "payments". "typedUrls" refere-se a todo o histórico de navegação.</translation>
 <translation id="5361167871898066799">Controlar o recurso de correção automática no teclado físico</translation>
 <translation id="5361708558735884308">A definição da política concede acesso aos URLs listados, como exceções à <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulte a descrição da política para saber o formato das entradas dessa lista. Por exemplo, se a <ph name="URL_BLOCKLIST_POLICY_NAME" /> for definida como "*", todas as solicitações serão bloqueadas, e você poderá usar a política para permitir o acesso a uma lista de URLs limitada. Ela pode servir para abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos usando o formato especificado em https://support.google.com/chrome/a?p=url_blocklist_filter_format. O filtro mais específico determina se um URL vai ser bloqueado ou permitido. A política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política tem um limite de 1.000 entradas.
 
@@ -6215,6 +6288,7 @@ Esta política afeta os fluxos de autenticação da tela de bloqueio e de login.
 <translation id="5676740747107495269">Exibir opções de acessibilidade no menu da bandeja do sistema, na tela de login</translation>
 <translation id="5679540979548648200">Impede que os usuários deste dispositivo usem sideload com adb e forçará um Powerwash se o sideload já tiver sido ativado</translation>
 <translation id="5681258683432554972">Configuração padrão de pop-ups</translation>
+<translation id="5683494457096171405">Os atalhos com a tecla de pesquisa[3] são enviados primeiro ao app antes de serem processados pelo SO apenas quando o app em foco está em tela cheia.</translation>
 <translation id="5684501593989438324">Ativar a hotword do Google Assistente</translation>
 <translation id="5688951037082618146">Mostrar selos da empresa em todos os dispositivos</translation>
 <translation id="5689430183304951538">Tamanho da página de impressão padrão</translation>
@@ -7252,6 +7326,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
       contas não gerenciadas.</translation>
 <translation id="6401669939808766804">Fazer logout do usuário</translation>
 <translation id="640244877779556713">Permitir sugestão de emojis</translation>
+<translation id="6402928885627067154">Especificar intervalos semanais em que os dispositivos ChromeOS não podem ser usados</translation>
 <translation id="6403114173011456561">Controla o teclado virtual de toque, agindo como uma política complementar à <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Se o teclado virtual de acessibilidade estiver ativado, esta política não terá efeito.
@@ -7268,6 +7343,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="640827304541402854">Desativar travessia de firewall do host de acesso remoto</translation>
 <translation id="6410847321564585975">Lista de permissões de relatórios de atividade do site</translation>
 <translation id="6412352702230183710">Permitir apenas hosts de mensagens nativas no nível do sistema</translation>
+<translation id="6412793408912788345">Mostrar a tela inicial do Gemini durante o login</translation>
 <translation id="6416506846917150119">Desativar a escrita preditiva do teclado físico quando os usuários digitarem</translation>
 <translation id="6416916931494972926">Ativar os relatórios de telemetria do Kiosk Vision.</translation>
 <translation id="6417265370957905582">Google Assistente</translation>
@@ -8588,6 +8664,7 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
 
 No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7317472245305274219">Controle se a criação de chaves de acesso usará as Chaves do iCloud por padrão.</translation>
+<translation id="7318503436349210241">Ativada: o zoom do CSS está em conformidade com a especificação padrão.</translation>
 <translation id="7322825363493984512">A senha para autenticação de serviços do sistema para o proxy remoto da Web.</translation>
 <translation id="7323773727263636287">Ativar o recurso de acessibilidade de correção de cor.
 
@@ -10535,6 +10612,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
       Se esta política for definida como "Desativada", os usuários não poderão usar a depuração remota.</translation>
 <translation id="8870995142109792885">Ativar o localizador de plug-ins</translation>
 <translation id="8871974300055371298">Configurações de conteúdo</translation>
+<translation id="8872029059067980702">Não mostrar a tela inicial do Gemini durante o login</translation>
 <translation id="8872402969096027761">Ativar o recurso de acessibilidade de clique automático na tela de login.
 
           Esse recurso permite clicar automaticamente quando o cursor do mouse para, sem que o usuário precise pressionar fisicamente os botões do mouse ou do touchpad.

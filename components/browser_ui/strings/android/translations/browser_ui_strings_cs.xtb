@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Zpět</translation>
 <translation id="3859306556332390985">Přetočit dopředu</translation>
 <translation id="3895926599014793903">Vynutit aktivaci přiblížení</translation>
+<translation id="3905475044299942653">Zastavit spousty oznámení</translation>
 <translation id="3908288065506437185">V anonymním režimu blokovat soubory cookie třetích stran</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Některé funkce mohou být omezeny. Související weby mohou soubory cookie třetích stran používat i nadále.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Touto akcí smažete soubory cookie a další data webu <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Soubory cookie třetích stran jsou v anonymním režimu blokovány</translation>
 <translation id="5740126560802162366">Weby mohou ukládat data na vašem zařízení</translation>
+<translation id="5749085587985334212">Skrýt bezpečnostní kontrolu</translation>
 <translation id="5771720122942595109">Oprávnění <ph name="PERMISSION_1" /> je zablokováno</translation>
 <translation id="5804241973901381774">Oprávnění</translation>
 <translation id="5844448279347999754">Když je tato možnost zapnutá, weby mohou žádat o zobrazení textu a obrázků uložených do schránky. Když je vypnutá, weby k textům ani obrázkům uloženým do schránky nemají přístup.</translation>

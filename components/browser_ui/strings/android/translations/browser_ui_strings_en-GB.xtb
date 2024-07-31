@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Back</translation>
 <translation id="3859306556332390985">Seek forward</translation>
 <translation id="3895926599014793903">Force enable zoom</translation>
+<translation id="3905475044299942653">Stop lots of notifications</translation>
 <translation id="3908288065506437185">Block third-party cookies in Incognito mode</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Some features may not work. Related sites can still use third-party cookies.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">This deletes cookies and other site data for <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Third-party cookies are blocked in Incognito mode</translation>
 <translation id="5740126560802162366">Sites can save data on your device</translation>
+<translation id="5749085587985334212">Hide Safety Check</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blocked</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5844448279347999754">When on, sites can ask to see text and images saved to your clipboard. When off, sites can't see text or images saved to your clipboard.</translation>

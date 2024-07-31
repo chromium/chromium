@@ -152,6 +152,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> चुना गया टैब बंद करें}one{<ph name="TABS_COUNT_MANY" /> चुने गए टैब बंद करें}other{<ph name="TABS_COUNT_MANY" /> चुने गए टैब बंद करें}}</translation>
 <translation id="8398929769197326728">नया फ़ोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">सेटिंग</translation>
+<translation id="870736955561925754">क्या टैब बंद करके ग्रुप मिटाना है?</translation>
 <translation id="8714939927607906138">कम कीमत</translation>
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8730999928494395583">इन गुप्त टैब में की गई आपकी गतिविधि को इस डिवाइस से हटा दिया जाएगा</translation>

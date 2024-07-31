@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Перайсці ўперад</translation>
 <translation id="3895926599014793903">Прымусовае ўключэнне павелічэння</translation>
+<translation id="3905475044299942653">Выяўлена адпраўка вялікай колькасці апавяшчэнняў</translation>
 <translation id="3908288065506437185">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Некаторыя функцыі могуць не працаваць. Пры гэтым звязаныя сайты па-ранейшаму могуць выкарыстоўваць староннія файлы cookie.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Будуць выдалены файлы cookie і іншыя даныя сайта <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">У рэжыме інкогніта староннія файлы cookie блакіруюцца</translation>
 <translation id="5740126560802162366">Сайты могуць захоўваць даныя на вашай прыладзе</translation>
+<translation id="5749085587985334212">Схаваць праверку бяспекі</translation>
 <translation id="5771720122942595109">Заблакіравана: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Дазволы</translation>
 <translation id="5844448279347999754">Калі гэты параметр уключаны, сайты могуць запытваць дазвол на прагляд тэксту і відарысаў, захаваных у буфер абмену. Калі параметр выключаны, сайты не могуць праглядаць тэкст і відарысы ў буферы абмену.</translation>

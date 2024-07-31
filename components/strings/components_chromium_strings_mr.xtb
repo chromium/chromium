@@ -29,6 +29,8 @@
           वर जा आणि तुमचे कॉन्फिगरेशन "प्रॉक्सी नाही" किंवा "प्रत्यक्ष" वर सेट केल्याचे सुनिश्चित करा.</translation>
 <translation id="6549378540556750549">Chromium हे इतर <ph name="BEGIN_LINK_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_OSS" /> द्वारेदेखील तयार करण्यात आले आहे.</translation>
 <translation id="6613594504749178791">तुम्ही पुढल्या वेळी Chromium रीलाँच कराल तोपर्यंत तुमचे बदल प्रभावी होतील.</translation>
+<translation id="691026815377248078">पेअर करणे पुढे सुरू ठेवण्यासाठी, Chromium ला ब्लूटूथ ॲक्सेस करण्याची 
+ आवश्यकता आहे. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="7681937895330411637">Chromium हे <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> मुक्त स्रोत प्रोजेक्टद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="7861509383340276692">Chromium मेनू &gt;
           <ph name="SETTINGS_TITLE" />

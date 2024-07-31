@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="3859306556332390985">Kelaa eteenpäin</translation>
 <translation id="3895926599014793903">Ota zoomaus käyttöön</translation>
+<translation id="3905475044299942653">Estä useat ilmoitukset</translation>
 <translation id="3908288065506437185">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Kaikki ominaisuudet eivät välttämättä toimi. Aiheeseen liittyvät sivustot voivat edelleen käyttää kolmannen osapuolen evästeitä.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Tämä poistaa evästeet ja muun sivustodatan täällä: <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Kolmannen osapuolen evästeet estetään incognito-tilassa</translation>
 <translation id="5740126560802162366">Sivustot voivat tallentaa dataa laitteellesi</translation>
+<translation id="5749085587985334212">Piilota turvatarkistus</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> estetty</translation>
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5844448279347999754">Kun tämä on päällä, sivustot voivat pyytää leikepöydälle tallennettujen tekstien ja kuvien näkemistä. Kun tämä on pois päältä, sivustot eivät näe leikepöydälle tallennettuja tekstejä tai kuvia.</translation>

@@ -19,6 +19,7 @@
 <translation id="1082920045291562218">Share with summary feedback sheet closed</translation>
 <translation id="1089606299949659462">Review complete!</translation>
 <translation id="1094555143448724771">To see tabs from your other devices, sync your tabs and history</translation>
+<translation id="1095142578254888918">Notifications not allowed for <ph name="SITE_NAME" /></translation>
 <translation id="1095761715416917775">Make sure that you can always access your sync data</translation>
 <translation id="1100066534610197918">Open in new tab in group</translation>
 <translation id="1103142993930332957">Help improve Chrome?</translation>
@@ -30,6 +31,7 @@
 <translation id="1126696498560056882">Manage accounts on this device</translation>
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
 <translation id="1129510026454351943">Details: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="1135018701024399762">Incognito mode keeps your browsing private from others who use your device</translation>
 <translation id="1142732900304639782">Don’t offer to translate these sites</translation>
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />.</translation>
@@ -75,6 +77,7 @@
 <translation id="1327257854815634930">Navigation history is opened</translation>
 <translation id="1331212799747679585">Chrome can’t update. More options</translation>
 <translation id="1332501820983677155">Google Chrome feature shortcuts</translation>
+<translation id="1333491156693005331">Checked recently</translation>
 <translation id="1344653310988386453">Include link to highlight</translation>
 <translation id="1347468774581902829">Manage activity</translation>
 <translation id="1355088659320425659">History and tabs</translation>
@@ -96,6 +99,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> download prevented because file already exists.</translation>
+<translation id="1413446866325418126">Save data in your Google Account</translation>
 <translation id="1414981605391750300">Contacting Google. This may take a minute…</translation>
 <translation id="1416550906796893042">Application version</translation>
 <translation id="1428770807407000502">Turn off sync?</translation>
@@ -117,6 +121,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1513814250881909472">Sync to get your tabs from your other devices</translation>
 <translation id="1513858653616922153">Delete password</translation>
 <translation id="1521774566618522728">Active today</translation>
+<translation id="153446405401665083">New version of Chrome is available</translation>
 <translation id="1544084554881119930">Payment methods and addresses won't be encrypted. Browsing history from Chrome won't sync.
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">To manage your Google Account, tap the 'Manage account' button</translation>
@@ -136,6 +141,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">You are viewing an offline copy of this page from <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">History</translation>
+<translation id="1645262572857218659">Sign in with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1657932388559784161">Page insights bottom sheet is closed</translation>
 <translation id="1670399744444387456">Basic</translation>
 <translation id="1671236975893690980">Download pending...</translation>
@@ -151,6 +157,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1724977129262658800">Unlock to edit your password</translation>
 <translation id="1726477445370128854">You can browse and search faster when Chrome preloads pages that it thinks you might visit</translation>
 <translation id="1728803206919861584">Save passkey outside Incognito?</translation>
+<translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site recently sent a lot of notifications}other{# sites recently sent a lot of notifications}}</translation>
 <translation id="1749561566933687563">Sync your bookmarks</translation>
 <translation id="1750238553597293878">Keep using the passwords in your Google Account</translation>
 <translation id="1750259112639922169">Tab group – <ph name="TAB_COUNT" /> tabs</translation>
@@ -173,6 +180,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Find in page</translation>
 <translation id="1832459821645506983">Yes, I’m in</translation>
+<translation id="1845958458910716240">To protect your data, let Chrome remove permissions from sites that you haven't visited recently</translation>
 <translation id="185383612275551373">Sync to get the most relevant content from Google</translation>
 <translation id="1871098866036088250">Open in Chrome browser</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
@@ -183,6 +191,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1900260903084164610">By continuing, you agree to the <ph name="BEGIN_TOS_LINK" />Terms of Service<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">The URLs that you visit are saved to your Google Account</translation>
 <translation id="1910950723001426294">List of sharing options is closed.</translation>
+<translation id="191726024256261717">Review permissions</translation>
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>
 <translation id="1922362554271624559">Suggested languages</translation>
 <translation id="1924255092154549435">Tab is expanded</translation>
@@ -213,6 +222,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it. You can't change this setting because you have Advanced Protection enabled.</translation>
 <translation id="2056878612599315956">Site paused</translation>
+<translation id="2063047797624276601">Your organisation turned on Enhanced Safe Browsing</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download failed}other{# downloads failed}}</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2079545284768500474">Undo</translation>
@@ -229,10 +239,12 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2139186145475833000">Add to Home screen</translation>
 <translation id="2139414603196655536">Your activity in Page insights is saved in your Google Account. <ph name="BEGIN_LINK" />Learn how to manage this<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Based on your usage</translation>
+<translation id="2145315049852051678">Chrome regularly checks to make sure that your browser has the safest settings. We'll let you know if anything needs review.</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2155214902713132423">This verification method isn’t available for this device. Pick a different option on your other device.</translation>
 <translation id="2158408438301413340">Chrome couldn’t check all passwords</translation>
 <translation id="2163089732491971196">To use and save Chrome data in your Google Account, enter your passphrase</translation>
+<translation id="2166228530126694506">Version <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Image descriptions are off</translation>
 <translation id="2172905120685242547">Close window?</translation>
 <translation id="2173302385160625112">Check your Internet connection</translation>
@@ -269,6 +281,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2362083820973145409">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Opens settings.</translation>
 <translation id="2364539095045928896">Close button to close privacy notice of Page Insights Hub.</translation>
+<translation id="2385605401818128172">You can review sites that send a lot of notifications and stop them from sending more in the future</translation>
 <translation id="2386938421315164605">Hide and unhide topics</translation>
 <translation id="2390510615457643724">Do you want to download <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> again?</translation>
 <translation id="2395004545133500011">Share with summary sheet opened</translation>
@@ -283,6 +296,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2450083983707403292">Do you want to start downloading <ph name="FILE_NAME" /> again?</translation>
 <translation id="2453860139492968684">Finish</translation>
 <translation id="2461822463642141190">Current</translation>
+<translation id="2468444275314013497">Your browser looks good</translation>
 <translation id="2472163211318554013">Sign in to get the most out of Chrome</translation>
 <translation id="247737702124049222">Image descriptions are on</translation>
 <translation id="2479148705183875116">Go to Settings</translation>
@@ -303,6 +317,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2536728043171574184">Viewing an offline copy of this page</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="254973855621628293">Passwords saved to this device</translation>
+<translation id="2560519950693256002">Recently checked passwords saved to <ph name="USERNAME" /></translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2567545343356994513">Faster, proactive protection against dangerous websites, downloads and extensions</translation>
 <translation id="2569733278091928697">You’ll be able to easily manage media controls, Incognito sessions, downloads and more</translation>
@@ -321,6 +336,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2612676031748830579">Card number</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> invited you to access a shared item.</translation>
 <translation id="2625189173221582860">Password copied</translation>
+<translation id="2630630219780173487">You can stop these sites from sending future notifications</translation>
 <translation id="2634393460268044753">Sends the URLs of sites you visit and a small sample of page content, downloads, extension activity and system information to Google Safe Browsing to check if they're harmful.</translation>
 <translation id="2642087927315268160">Sign-in bottom sheet is closed.</translation>
 <translation id="2643064289437760082">You can always delete ads measurement data by deleting your browsing data</translation>
@@ -332,6 +348,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="265156376773362237">Standard preloading</translation>
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2656405586795711023">Web apps</translation>
+<translation id="2664252182805397291">View sites</translation>
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
 <translation id="2673169232805572412">If a site tries to steal your password, or when you download a harmful file, Chrome may send URLs including bits of page content to Google</translation>
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
@@ -355,6 +372,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2800066122460699237">The tab <ph name="TAB_TITLE" /> will be closed</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">View and manage saved passwords in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
+<translation id="2819849308549746319">Unsubscribe all</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">Clipboard contents hidden</translation>
 <translation id="2834884592945939112">Settings, Google Account error</translation>
@@ -395,6 +413,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2951071800649516099">Add pages to your reading list for later</translation>
 <translation id="2956070106555335453">Summary</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> unread page}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> unread pages}}</translation>
+<translation id="2972109037780336501">Automatically remove permissions</translation>
 <translation id="2976550651269220761">Some of your Chrome data hasn't been saved in your Google Account yet.\nTry waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="2977350910003566746">Sorting by last opened</translation>
 <translation id="297771753501244313">Sort by last opened</translation>
@@ -434,12 +453,14 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Announcements</translation>
+<translation id="3130190865225163362">To protect your privacy, permissions were removed from some sites</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
 <translation id="3158667104057012316">Sorting by manual order</translation>
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
 <translation id="316694332262407393">Chrome is already running here.</translation>
 <translation id="3167258285411721858">You can request the mobile site for <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 password and other items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{# passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Ads measurement</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208584281581115441">Check now</translation>
@@ -501,6 +522,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3507132249039706973">Standard protection is on</translation>
 <translation id="3509330069915219067">Offline. Chrome can’t check for updates.</translation>
 <translation id="3513704683820682405">Augmented Reality</translation>
+<translation id="3516053221628030540">Go to Google Play</translation>
 <translation id="3518985090088779359">Accept &amp; continue</translation>
 <translation id="3521388823983121502">Can't continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3522247891732774234">Update available. More options</translation>
@@ -565,6 +587,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads deleted</translation>
 <translation id="3819183753496523827">You're offline. Check your Internet connection and try again.</translation>
 <translation id="3823019343150397277">IBAN</translation>
+<translation id="38243391581572867">Lens is not available on this account.</translation>
 <translation id="3830886834687455630">Update Google Play services to check your passwords</translation>
 <translation id="3845098929839618392">Open in Incognito tab</translation>
 <translation id="3847319713229060696">Help improve security on the web for everyone</translation>
@@ -606,6 +629,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="405399507749852140">Get alerts if the price drops on any site</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4062305924942672200">Legal information</translation>
+<translation id="4070897657850712662">{NUM_SITES,plural, =1{About 1 notification a day}other{About # notifications a day}}</translation>
 <translation id="4072805772816336153">Try again later</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084712963632273211">From <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />delivered by Google<ph name="END_DEEMPHASIZED" /></translation>
@@ -682,6 +706,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4430277756566635951"><ph name="EMAIL" /> currently selected. Choose an account.</translation>
 <translation id="4452411734226507615">Close <ph name="TAB_TITLE" /> tab</translation>
 <translation id="4452548195519783679">Bookmarked to <ph name="FOLDER_NAME" /></translation>
+<translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 bookmark}other{# bookmarks}}</translation>
 <translation id="4461614516424362539">When you link another device with a QR code, it can use this phone as a security key. If you remove it, you’ll have to scan a QR code to link it again.</translation>
 <translation id="4478161224666880173">You can use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> account on this site. To continue, sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installing <ph name="MODULE" /> for Chrome…</translation>
@@ -805,6 +830,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4950924971025849764">When you’re signed into the same Google Account, other devices can use this phone as a security key.</translation>
 <translation id="4957722034734105353">Learn more...</translation>
 <translation id="4961107849584082341">Translate this page to any language</translation>
+<translation id="4964614743143953889">Chrome warns you about unsafe sites and downloads</translation>
 <translation id="496607651705915226">To save and use new passwords in your Google Account, update Google Play services</translation>
 <translation id="4971735654804503942">Faster, proactive protection against dangerous websites, downloads and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.</translation>
 <translation id="4971753085054504448">Try searching for something else or open full Chrome history to see more results.</translation>
@@ -857,6 +883,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5210286577605176222">Jump to the previous tab</translation>
 <translation id="5210365745912300556">Close tab</translation>
 <translation id="5215957675041756913">Control your data and account</translation>
+<translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and more <ph name="SEPARATOR" /> Chrome removed these permissions because you haven't visited recently</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5226378907213531272">You’ll unlock your screen every time you use the car</translation>
 <translation id="5227554086496586518">Tap to see search results</translation>
@@ -876,6 +903,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5319359161174645648">Google recommends Chrome</translation>
 <translation id="5320351714793324716">If you allow cookies, Chrome may use them when preloading.</translation>
 <translation id="5326921373682845375">Because the preloaded pages are encrypted, and the site linking to the pages is a Google site, Google servers don’t receive new information when privately preloading these pages.</translation>
+<translation id="5328542107300944283">Use with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Permission requests</translation>
 <translation id="534580735623577507">No sites from the <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
@@ -926,7 +954,9 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5596627076506792578">More options</translation>
 <translation id="5599455543593328020">Incognito mode</translation>
 <translation id="5601180634394228718">For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Save in account</translation>
 <translation id="5614625640221885312">Sign in to get your bookmarks, passwords and more on all your devices</translation>
+<translation id="5619633276517849615">Your organisation turned on Safe Browsing</translation>
 <translation id="5620163320393916465">No saved passwords</translation>
 <translation id="5620928963363755975">Find your files and pages in Downloads from the More Options button</translation>
 <translation id="562289928968387744">Manage reactions</translation>
@@ -989,6 +1019,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5869522115854928033">Saved passwords</translation>
 <translation id="587735546353481577">To follow a site, go to the site, open the Chrome menu and tap Follow.</translation>
 <translation id="5879072387416556377">Get better suggestions</translation>
+<translation id="5885378508678660271">Notifications <ph name="SEPARATOR" /> Chrome removed these permissions because this site is dangerous</translation>
 <translation id="5899667542927581604">No passkeys sheet was closed</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5919204609460789179">Update <ph name="PRODUCT_NAME" /> to start sync</translation>
@@ -1001,9 +1032,12 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5958275228015807058">Find your files and pages in Downloads</translation>
 <translation id="5958994127112619898">Simplify page</translation>
 <translation id="5962718611393537961">Tap to collapse</translation>
+<translation id="5964180026566797835">Can't check passwords</translation>
 <translation id="5964869237734432770">Stop image descriptions</translation>
 <translation id="5977976211062815271">On this device</translation>
+<translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 page on your reading list}other{# pages on your reading list}}</translation>
 <translation id="5979084224081478209">Check passwords</translation>
+<translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> Chrome removed these permissions because you haven't visited recently</translation>
 <translation id="5995726099713306770">Download page again?</translation>
 <translation id="6000066717592683814">Keep Google</translation>
 <translation id="6000203700195075278">Refollow</translation>
@@ -1018,6 +1052,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6040939430773295212">Repetitive</translation>
 <translation id="604124094241169006">Automatic</translation>
 <translation id="6042308850641462728">More</translation>
+<translation id="6043971473594955894">{NUM_SITES,plural, =1{Permissions reviewed for 1 site}other{Permissions reviewed for {NUM_SITES} sites}}</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> download failed due to an unknown error.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Control your stories and activity here</translation>
@@ -1058,8 +1093,10 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6233974827872475843">Save the passwords on this device in your Google Account by turning on sync</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6251449557817521191">View your Chrome history here</translation>
+<translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 item is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{# items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="6254139308321626268">You're viewing a PDF file</translation>
 <translation id="6255794742848779505">We're changing how passwords are saved on this device</translation>
+<translation id="6255809143828972562">With tools from Chrome, you can browse safely and stay in control</translation>
 <translation id="6264376385120300461">Download anyway</translation>
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
 <translation id="6277722725779679269">Couldn’t update track price</translation>
@@ -1185,6 +1222,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6785476624617658922">Chrome and Chrome OS additional Terms of Service</translation>
 <translation id="6795633245022906657">Quickly open a new tab. To edit this shortcut, go to Settings.</translation>
 <translation id="6802555630140434547">The window will be closed</translation>
+<translation id="6803791793483522764">Review notifications</translation>
 <translation id="6811034713472274749">Page is ready to view</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Images, 1 image in list}other{Images, # images in list}}</translation>
 <translation id="6813446258015311409">Sign in to Chrome, opened.</translation>
@@ -1209,9 +1247,13 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6867400383614725881">New Incognito tab</translation>
 <translation id="686899695320434745">Addresses aren't encrypted with your passphrase. This lets you use them in other Google services.</translation>
 <translation id="6869056123412990582">computer</translation>
+<translation id="6880903702195291049">Permissions look good</translation>
 <translation id="6882836635272038266">Standard protection against websites, downloads and extensions that are known to be dangerous.</translation>
 <translation id="6883204995689174413">Share</translation>
+<translation id="6883906387682976294">Unsubscribe notifications from this site</translation>
 <translation id="688398477366397178">Let websites know the languages that you speak. They'll show content in those languages, when possible.</translation>
+<translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 password}other{# passwords}}</translation>
+<translation id="688730033107341407">After you sign out, your bookmarks, passwords and more in your Google Account will be removed from this device.</translation>
 <translation id="688738109438487280">Add existing data to <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Unlock to copy your password</translation>
 <translation id="6896758677409633944">Copy</translation>
@@ -1219,10 +1261,12 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6900532703269623216">Enhanced protection</translation>
 <translation id="6903907808598579934">Turn on sync</translation>
 <translation id="6906448540340261898">Make sure that you can always use the passwords in your Google Account</translation>
+<translation id="6908230663105268638">Notifications allowed for <ph name="SITE_NAME" /></translation>
 <translation id="6908998565271542516">Option to approve or not approve a website opened at full height</translation>
 <translation id="6909589135458168665">Preload pages</translation>
 <translation id="6910211073230771657">Deleted</translation>
 <translation id="6918398787259831832">If this issue keeps happening, <ph name="BEGIN_LINK" />get more information<ph name="END_LINK" /> from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome removed these permissions because you haven't visited recently</translation>
 <translation id="6929224077895306814">All security codes saved on your device and in your Google Account will be deleted</translation>
 <translation id="6937524809504266803">Personalisation and linking</translation>
 <translation id="6937876069006524083">Nickname (optional)</translation>
@@ -1280,11 +1324,13 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7177466738963138057">You can change this later in Settings</translation>
 <translation id="7177873915659574692">Can't create QR code. URL is more than <ph name="CHARACTER_LIMIT" /> characters.</translation>
 <translation id="7180611975245234373">Refresh</translation>
+<translation id="7182051712900867547">Use a different account</translation>
 <translation id="7183517696921903380">App filter sheet is opened.</translation>
 <translation id="7183693674623539380">Tab group – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Control how browsing history is used with your other data across Google services</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
+<translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{You should change this now}other{You should change these now}}</translation>
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>
 <translation id="7205672015775254816">Content by Google for young minds – off</translation>
 <translation id="7207760545532569765">Restore <ph name="TAB_COUNT" /> tabs as new background tabs.</translation>
@@ -1306,12 +1352,14 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7293429513719260019">Select language</translation>
 <translation id="729975465115245577">Your device doesn’t have an app to store the passwords file.</translation>
 <translation id="7304072650267745798">Your Android device may include a similar setting. If this setting is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites that you visit and apps that you use.</translation>
+<translation id="7304806746406660416">{PASSWORDS_COUNT,plural, =1{1 password is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{# passwords are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7304873321153398381">Offline. Chrome can’t check your passwords.</translation>
 <translation id="7313188324932846546">Tap to set up sync</translation>
 <translation id="7324354302972299151">Send a 'Do Not Track' request</translation>
 <translation id="7332075081379534664">Sign-in succeeded</translation>
 <translation id="7333041109965360609">Unsubscribed from notifications</translation>
 <translation id="7333232495927792353">Sync to get the most relevant content from Google</translation>
+<translation id="7336259382292148213">Notifications look good</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7340958967809483333">Options for Discover</translation>
 <translation id="7352339641508007922">Drag to take a long screenshot</translation>
@@ -1365,6 +1413,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="752220631458524187">Disconnect when you’ve finished</translation>
 <translation id="7523960634226602883">Search with your camera using Google Lens</translation>
 <translation id="752731652852882757">Block while using Incognito</translation>
+<translation id="7554643625247105821">Can't check Chrome version</translation>
 <translation id="7557508262441527045">Signed out</translation>
 <translation id="7577900504646297215">Manage interests</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> file downloaded}other{<ph name="FILES_DOWNLOADED_MANY" /> files downloaded}}</translation>
@@ -1380,6 +1429,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7612989789287281429">Signing you in…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> download failed due to network failures.</translation>
 <translation id="7626032353295482388">Welcome to Chrome</translation>
+<translation id="7628417132421583481">Go to Password Manager</translation>
 <translation id="7630202231528827509">Provider URL</translation>
 <translation id="7638584964844754484">Incorrect passphrase</translation>
 <translation id="7646772052135772216">Password sync isn't working</translation>
@@ -1459,6 +1509,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7975379999046275268">Preview page <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Warns you if you use a password that has been compromised in a data breach.</translation>
 <translation id="7986497153528221272">To view passwords, first set a screen lock on your device</translation>
+<translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome removed these permissions because you haven't visited recently</translation>
 <translation id="7995059495660416932">You'll see content when it becomes available</translation>
 <translation id="799576009106109668">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
 <translation id="8001245658307297681">You're viewing a local file</translation>
@@ -1527,19 +1578,23 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8261506727792406068">Delete</translation>
 <translation id="82619448491672958">See other tabs</translation>
 <translation id="8265018477030547118">Only on this device</translation>
+<translation id="8266753737658117282">Continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Download location</translation>
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8282297628636750033">Apply Dark theme to sites, when possible</translation>
+<translation id="8282950411412455249">Go to security settings</translation>
 <translation id="829672787777123339">Connecting to your device…</translation>
 <translation id="8310344678080805313">Standard tabs</translation>
 <translation id="831192587911042850">Adds the current web site to the list of web sites that you are following.</translation>
 <translation id="8333340769932050274">You can block topics that you don't want to be shared with sites. Chrome also auto-deletes your topics that are older than four weeks. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="8342727528718219152">Chrome will let you know about sites that may be sending too many notifications</translation>
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8348430946834215779">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it</translation>
 <translation id="8354977102499939946">Quickly search with your voice. To edit this shortcut, go to Settings.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads restored</translation>
 <translation id="8368001212524806591">Track price</translation>
 <translation id="8378850197701296741">You have bookmarks, history and other settings from <ph name="FROM_ACCOUNT" />.</translation>
+<translation id="8382640928718131148">Tabs that you haven't used for <ph name="DAYS_INACTIVE" /> days are moved here and closed after <ph name="DAYS_ARCHIVED" /> days. You can change this at any time in <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Verify that it’s you</translation>
 <translation id="8393700583063109961">Send message</translation>
 <translation id="8394720698884623075">Checks URLs with a list of unsafe sites stored in Chrome</translation>
@@ -1561,6 +1616,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8443209985646068659">Chrome can’t update</translation>
 <translation id="8445448999790540984">Can’t export passwords</translation>
 <translation id="8446884382197647889">Learn More</translation>
+<translation id="8449781591250785734">{NUM_SITES,plural, =1{Permissions removed from 1 site}other{Permissions removed from # sites}}</translation>
 <translation id="8453310803815879010">Start Dino game</translation>
 <translation id="8455675988389029454">Get your bookmarks, passwords and more on all your devices</translation>
 <translation id="84594714173170813">Keep using the Chrome data in your Google Account</translation>
@@ -1630,10 +1686,12 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="879027982257117598">For example, if you visit a site that sells long-distance running shoes, the site might decide that you’re interested in running marathons. Later, if you visit a different site, that site can show you an ad for running shoes suggested by the first site.</translation>
 <translation id="8798449543960971550">Read</translation>
 <translation id="8803526663383843427">When on</translation>
+<translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Item saved in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{Items saved in your Google Account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8812260976093120287">On some websites, you can pay with above supported payment apps on your device.</translation>
 <translation id="8816556050903368450">Including link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Preview tab content is not viewable.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8828624021816895617">Chrome automatically removes permissions from abusive and unused sites</translation>
 <translation id="8835786707922974220">Make sure that you can always access your saved passwords</translation>
 <translation id="883806473910249246">An error occurred while downloading the content.</translation>
 <translation id="8840953339110955557">This page may differ from the online version.</translation>
@@ -1644,9 +1702,11 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="885480114717186641">You can request the desktop site for <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Get descriptions</translation>
 <translation id="8856931513242997049">Notification permission flow closed</translation>
+<translation id="8863714995118816041">Permissions allowed again for <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Chrome data in your account</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
 <translation id="8909135823018751308">Share…</translation>
+<translation id="8913846853471054995">{NUM_SITES,plural, =1{Notifications not allowed for 1 site}other{Notifications not allowed for {NUM_SITES} sites}}</translation>
 <translation id="8921980840204105660">Sync to get your bookmarks from your other devices</translation>
 <translation id="8922289737868596582">Download pages from the More Options button to use them offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -1700,12 +1760,15 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9108808586816295166">Secure DNS may not be available all the time</translation>
 <translation id="9131209053278896908">Blocked sites appear here</translation>
 <translation id="9133397713400217035">Explore offline</translation>
+<translation id="9143389653531441385">Sign up with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Sign in again</translation>
+<translation id="9157212632995922070">Choose an account to continue on <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Share content only</translation>
 <translation id="9159716826369098114">Restore tab group of <ph name="TAB_COUNT" /> tabs as a new background tab group.</translation>
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
 <translation id="918419812064856259">Chrome Beta</translation>
 <translation id="9190276265094487094">You’ll have your history on all your synced devices so that you can continue what you were doing</translation>
+<translation id="9191906083913361689">You can also view and manage these items in your bookmarks, reading list or Password Manager</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>
 <translation id="9204021776105550328">Deleting</translation>
 <translation id="9204836675896933765">1 file left</translation>

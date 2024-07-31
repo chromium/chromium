@@ -3,6 +3,7 @@
 <translationbundle lang="ja">
 <translation id="1016765312371154165">Chrome は正しく終了しませんでした。</translation>
 <translation id="130631256467250065">変更内容は、次回のデバイスの起動時に反映されます。</translation>
+<translation id="1516530951338665275">Google Chrome でペアリングを続行するには、Bluetooth へのアクセスが必要です。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1635457557763038537">変更内容は次に Chrome を再起動したときに有効になります。</translation>
 <translation id="2399868464369312507">Google Chrome がお支払い方法を編集しようとしています。</translation>
 <translation id="2447485272386224171">Chrome はオープンソース プロジェクト <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> やその他の<ph name="BEGIN_LINK_OSS" />オープンソース ソフトウェア<ph name="END_LINK_OSS" />によって実現しました。</translation>

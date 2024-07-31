@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Артқа</translation>
 <translation id="3859306556332390985">Алға</translation>
 <translation id="3895926599014793903">Масштабтауды мәжбүрлі түрде қосу</translation>
+<translation id="3905475044299942653">Тым көп хабарландыруды тоқтату</translation>
 <translation id="3908288065506437185">Инкогнито режимінде үшінші тарап cookie файлдарын бөгеу</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Кейбір мүмкіндіктер жұмыс істемеуі мүмкін. Қатысты сайттарда әлі де үшінші тарап cookie файлдары пайдаланылуы мүмкін.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916"><ph name="WEBSITE" /> арналған cookie файлдары мен басқа да сайт деректері өшіріледі.</translation>
 <translation id="5723967018671998714">Үшінші тараптың cookie файлдары инкогнито режимінде блокталған.</translation>
 <translation id="5740126560802162366">Сайттар деректерді құрылғыңызда сақтай алады.</translation>
+<translation id="5749085587985334212">Қауіпсіздік тексерісін жасыру</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> үшін тыйым салынған.</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
 <translation id="5844448279347999754">Қосылса, сайттар буферге сақталған мәтін мен суреттерді көруге рұқсат сұрай алады. Өшірілсе, көре алмайды.</translation>

@@ -55,6 +55,7 @@
 <translation id="1089439967362294234">Փոխել գաղտնաբառը</translation>
 <translation id="1089599132348386324">Դուք ցանկացած ժամանակ Chrome-ի կարգավորումներում կարող եք փոխել ձեր ընտրությունը։</translation>
 <translation id="1090629319939036170">VR ընտրացանկ</translation>
+<translation id="1091543275053148479">Այցելությունների մասին տվյալները, այդ թվում՝ պատմությունն ու գաղտնաբառերը հնարավոր է դիտել և կառավարել</translation>
 <translation id="1091779689406092804">սքրինշոթները</translation>
 <translation id="1094777233105318927">Տեղեկություններ ձեր դիտարկիչի, օպերացիոն համակարգի, սարքի, տեղադրված ծրագրերի և ֆայլերի մասին</translation>
 <translation id="1096545575934602868">Այս դաշտը չպետք է ունենա ավելի քան <ph name="MAX_ITEMS_LIMIT" /> գրառում: Ավել գրառումները կհեռացվեն:</translation>
@@ -243,6 +244,7 @@
 <translation id="1413809658975081374">Գաղտնիության սխալ</translation>
 <translation id="1414134146594747368">Նախադպրոցական կրթություն</translation>
 <translation id="1419305130220238697">«Կառավարել ներբեռնումները Chrome-ում» կոճակ․ ակտիվացրեք՝ Chrome-ում ձեր ներբեռնած ֆայլերը կառավարելու համար</translation>
+<translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />՝ զուգակցումը թույլատրելու համար</translation>
 <translation id="1422930527989633628">Կարող է հայցել մոտակա Bluetooth սարքերը հայտնաբերելու թույլտվություն</translation>
 <translation id="1426410128494586442">Այո</translation>
 <translation id="1427192966110103169">Տնային լողավազաններ, սաունաներ և սպա</translation>
@@ -483,10 +485,9 @@
 <translation id="1848640291751752317">ներբեռնումները</translation>
 <translation id="1848982255014129637">Ֆոտոթուղթ (գերփայլուն)</translation>
 <translation id="1853392626017747777">Վիրտուալ քարտի գրանցման պատուհանը փակված է</translation>
-<translation id="1854180393107901205">Դադարեցնել հեռարձակումը</translation>
+<translation id="1854180393107901205">Կանգնեցնել հեռարձակումը</translation>
 <translation id="1855370856221982654">Բռնցքամարտ</translation>
 <translation id="1862788842908766795">Աշխատանք գործադիր կառավարման և մենեջմենթի ոլորտում</translation>
-<translation id="1863047423483329595">Հետագծման արգելափակումը ժամանակավորապես անհասանելի է։ Քանի դեռ Chrome-ը թարմացնում է այս գործառույթը, կայքերը կարող են ժամանակավորապես օգտագործել երրորդ կողմի քուքիներ, եթե չարգելափակեք դրանք։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1863257867908022953">Դարակ 12</translation>
 <translation id="1864927262126810325">Աղբյուրը՝ <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Մալուխային և արբանյակային հեռուստատեսության մատակարարներ</translation>
@@ -665,6 +666,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 հասցե}one{# հասցե}other{# հասցե}}</translation>
 <translation id="2187317261103489799">Որոշել (կանխադրված)</translation>
 <translation id="2188375229972301266">Մի քանի անցք ներքևում</translation>
+<translation id="2194856509914051091">Կարևոր տեղեկություններ</translation>
 <translation id="2197398642355049178">Ձեր թեմաները</translation>
 <translation id="2202627062836089804">ձեր քարտի հետևի կողմում</translation>
 <translation id="2204482073374652408">Թարմացումն ավարտվեց</translation>
@@ -826,6 +828,7 @@
 <translation id="2501270939904835585">Պիտակներ (ատլաս)</translation>
 <translation id="2501278716633472235">Վերադառնալ</translation>
 <translation id="250346157641628208">Թուղթ (թանաքաշիթային տպիչների)</translation>
+<translation id="2505063700931618106">Քարտի տվյալները պահվեցին</translation>
 <translation id="2505268675989099013">Պաշտպանել հաշիվը</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (գործում են պայմաններ)</translation>
 <translation id="2512101340618156538">Արգելված է (կանխադրված)</translation>
@@ -855,6 +858,7 @@
 <translation id="254524874071906077">Դարձնել Chrome-ը կանխադրված դիտարկիչ</translation>
 <translation id="2545721997179863249">Ընտրվել է բոլոր տվյալների լրացման տարբերակը</translation>
 <translation id="2546283357679194313">Cookie ֆայլեր և կայքի տվյալներ</translation>
+<translation id="2546678870939430879">Վերարկել արդյունքը</translation>
 <translation id="254947805923345898">Կանոնում նշված արժեքն անվավեր է։</translation>
 <translation id="2549836668759467704">Շինարարական խորհրդատվություն և կապալառուի ծառայություններ</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" />-ը սխալ պատասխան է ուղարկել:</translation>
@@ -1041,6 +1045,7 @@
 <translation id="2954624054936281172">Վճարման պահված եղանակների աղյուսակ</translation>
 <translation id="295526156371527179">Զգուշացում. այս կանոնը չի միավորվել որպես բառարան, ինչպես նշված է կանոնում, քանի որ այն բառարան չէ:</translation>
 <translation id="2955913368246107853">Փակել որոնման գոտին</translation>
+<translation id="2958345633099973853">Հետարկել արդյունքը</translation>
 <translation id="2958544468932521864">Կրիկետ</translation>
 <translation id="2959274854674276289">Բուսակերական խոհանոց</translation>
 <translation id="2961809451460302960">Կյանքի ապահովագրություն</translation>
@@ -1171,6 +1176,7 @@
 <translation id="3209034400446768650">Այս էջը կարող է գումար գանձել ձեզնից</translation>
 <translation id="3212581601480735796">Ձեր գործողությունները <ph name="HOSTNAME" /> կայքում հետագծվում են</translation>
 <translation id="3215092763954878852">Չհաջողվեց օգտագործել WebAuthn-ը</translation>
+<translation id="3215311088819828484">Արդյունքը թարմացվել է</translation>
 <translation id="3216313131063488104">Բլյուզ</translation>
 <translation id="3218181027817787318">Հարաբերական</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Պահանջվում է թարմացում հենց հիմա}=2{Պահանջվում է թարմացում մինչև վաղը}one{Պահանջվում է թարմացում # օրվա ընթացքում}other{Պահանջվում է թարմացում # օրվա ընթացքում}}</translation>
@@ -1252,6 +1258,7 @@
 <translation id="3359387651158939842">Ավտոմատ լրացրեք քարտի տվյալները հետագա գնումների ժամանակ, երբ պահեք այն՝ Google Pay-ով օգտագործելու համար</translation>
 <translation id="3359565626472459400">Ամուսնություն</translation>
 <translation id="3360103848165129075">Վճարման մշակման թերթ</translation>
+<translation id="3360306038446926262">Պատուհաններ</translation>
 <translation id="3362968246557010467">Այս կանոնն ավտոմատ պատճենվել է <ph name="OLD_POLICY" /> կանոնից, որն արդեն հնացել է։ Վերջինիս փոխարեն օգտագործեք այս կանոնը։</translation>
 <translation id="3364869320075768271"><ph name="URL" /> կայքն ուզում է օգտագործել վիրտուալ իրականության ձեր սարքերն ու տվյալները</translation>
 <translation id="3366477098757335611">Դիտել քարտերը</translation>
@@ -1434,6 +1441,7 @@
 <translation id="3664782872746246217">Հիմնաբառեր՝</translation>
 <translation id="3665100783276035932">Կայքերի մեծ մասը պետք է պատշաճ կերպով աշխատի</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Իմանալ ավելին<ph name="LINK_END1" /></translation>
+<translation id="3670229581627177274">Միացնել Bluetooth-ը</translation>
 <translation id="3671117652518853176">Երբ անջատված է, անվտանգության նկատառումներով ձեզնից երբեմն կարող է պահանջվել, որ հաստատեք</translation>
 <translation id="3671540257457995106">Թույլատրե՞լ չափի փոփոխումը</translation>
 <translation id="3672568546897166916">Սխալ <ph name="ERROR_PATH" />. <ph name="ERROR_MESSAGE" /></translation>
@@ -2507,6 +2515,7 @@
 <translation id="5717509257172454543">Չմշկասահք</translation>
 <translation id="5720705177508910913">ընթացիկ օգտատիրոջը</translation>
 <translation id="5720895412771013401">Համակարգիչներ</translation>
+<translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ու ևս 1 կայք}one{{website_1}, {website_2} ու ևս {more_count} կայք}other{{website_1}, {website_2} ու ևս {more_count} կայք}}</translation>
 <translation id="572328651809341494">Վերջերս բացված ներդիրներ</translation>
 <translation id="5723873695528696965">Կառավարել և վերածրագրավորել ձեր MIDI սարքերը</translation>
 <translation id="5725297205162868298">Դյուրանցումը չի կարող սկսվել @ նիշով՝ «<ph name="SHORTCUT_NAME" />»</translation>
@@ -2529,6 +2538,7 @@
 <translation id="5772086939108830423">Օգտագործել մուտքի բանալի մեկ այլ սարքում</translation>
 <translation id="5776313857861697733">Առաջնահերթություն</translation>
 <translation id="5776574724412881956">Քարտի տվյալները չե՞ն լրացվել։ Սեղմեք վիրտուալ քարտի մանրամասների վրա՝ սեղմատախտակին պատճենելու համար։ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="577804500166306874">Արդյունքների բեռնում</translation>
 <translation id="5781136890105823427">Փորձարկումը միացված է</translation>
 <translation id="578305955206182703">Սաթ</translation>
 <translation id="5783700460098783980">Ուղեբեռ և ճամփորդական պարագաներ</translation>
@@ -3273,6 +3283,7 @@
 <translation id="7192537357091279678">Համակարգչային սկավառակներ և կրիչներ</translation>
 <translation id="7193661028827781021">Տեղեկատվական նյութեր</translation>
 <translation id="719464814642662924">Visa</translation>
+<translation id="7195432682252510959">Կոդն օգտագործեք վճարման ժամանակ։ Գործում է մինչև <ph name="DATE" />։</translation>
 <translation id="7195852673246414183">Այս կարգավորումը միացնելուց հետո վերադարձեք ընթացիկ ներդիր, որպեսզի սկսեք գրել</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Նոր ինկոգնիտո ներդիր բացելու համար սեղմեք Tab, ապա՝ Enter։</translation>
@@ -3699,6 +3710,7 @@
 <translation id="7967636097426665267">Կապի միջոցներ</translation>
 <translation id="79682505114836835">«<ph name="VALUE" />» արժեքը անվավեր HEX գույն է։</translation>
 <translation id="7968982339740310781">Դիտել մանրամասները</translation>
+<translation id="7971972534124227314">Սարքի անվտանգության նկատառումներից ելնելով՝ օպերացիոն համակարգը, դիտարկիչի մասին տեղեկություններն ու տեղադրված ծրագիրը տեսանելի կլինեն</translation>
 <translation id="7976214039405368314">Չափազանց շատ հարցումներ</translation>
 <translation id="7977538094055660992">Արտածման սարք</translation>
 <translation id="7979595116210197019">Սննդի ծառայություն</translation>

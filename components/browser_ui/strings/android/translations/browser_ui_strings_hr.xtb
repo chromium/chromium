@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Natrag</translation>
 <translation id="3859306556332390985">Traži unaprijed</translation>
 <translation id="3895926599014793903">Prisilno omogućavanje zumiranja</translation>
+<translation id="3905475044299942653">Zaustavljanje mnogo obavijesti</translation>
 <translation id="3908288065506437185">Blokiraj kolačiće treće strane u anonimnom načinu</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Neke značajke možda neće funkcionirati. Povezane web-lokacije i dalje mogu upotrebljavati kolačiće trećih strana.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Time se brišu kolačići i ostali podaci web-lokacije <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Kolačići trećih strana blokirani su u anonimnom načinu</translation>
 <translation id="5740126560802162366">Web-lokacije mogu spremati podatke na vaš uređaj</translation>
+<translation id="5749085587985334212">Sakrij sigurnosnu provjeru</translation>
 <translation id="5771720122942595109">Blokirano je dopuštenje <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Dopuštenja</translation>
 <translation id="5844448279347999754">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje da vide tekst i slike spremljene u vaš međuspremnik. Kad je ta postavka isključena, web-lokacije ne mogu vidjeti tekst ili slike spremljene u međuspremnik.</translation>

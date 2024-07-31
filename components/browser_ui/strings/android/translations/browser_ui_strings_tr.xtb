@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Geri</translation>
 <translation id="3859306556332390985">İleriye doğru git</translation>
 <translation id="3895926599014793903">Yakınlaştırmayı etkinleştirmeye zorla</translation>
+<translation id="3905475044299942653">Çok fazla bildirim gelmesini engelleyin</translation>
 <translation id="3908288065506437185">Gizli modda üçüncü taraf çerezlerini engelle</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Bazı özellikler çalışmayabilir. İlgili siteler, üçüncü taraf çerezlerini kullanmaya devam edebilir.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Bu işlem, <ph name="WEBSITE" /> için çerezleri ve diğer site verilerini siler</translation>
 <translation id="5723967018671998714">Gizli modda üçüncü taraf çerezleri engelleniyor</translation>
 <translation id="5740126560802162366">Siteler, cihazınıza veri kaydedebilir</translation>
+<translation id="5749085587985334212">Güvenlik Kontrolü'nü gizle</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> engellendi</translation>
 <translation id="5804241973901381774">İzinler</translation>
 <translation id="5844448279347999754">Bu düğme açıkken siteler panonuza kaydedilen metin ve resimleri görmek isteyebilir. Düğme kapalıyken siteler panonuza kaydedilen metin veya resimleri göremez.</translation>

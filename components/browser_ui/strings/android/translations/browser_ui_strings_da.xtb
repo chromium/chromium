@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="3859306556332390985">Spol fremad</translation>
 <translation id="3895926599014793903">Tving aktivering af zoom</translation>
+<translation id="3905475044299942653">Sæt en stopper for mange notifikationer</translation>
 <translation id="3908288065506437185">Bloker tredjepartscookies i inkognitotilstand</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Nogle funktioner virker muligvis ikke. Relaterede websites kan stadig bruge tredjepartscookies.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Denne handling sletter cookies og andre websitedata for <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Tredjepartscookies er blokeret i inkognitotilstand</translation>
 <translation id="5740126560802162366">Websites kan gemme data på din enhed</translation>
+<translation id="5749085587985334212">Skjul Sikkerhedstjek</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blev blokeret</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5844448279347999754">Når dette er slået til, kan websites anmode om tilladelse at se tekst og billeder, der er gemt i din udklipsholder. Når dette er slået fra, kan websites ikke se tekst eller billeder, der er gemt i din udklipsholder.</translation>

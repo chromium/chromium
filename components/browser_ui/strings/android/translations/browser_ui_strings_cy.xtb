@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Nôl</translation>
 <translation id="3859306556332390985">Chwilio ymlaen</translation>
 <translation id="3895926599014793903">Gorfodi galluogi chwyddo</translation>
+<translation id="3905475044299942653">Atal llawer o hysbysiadau</translation>
 <translation id="3908288065506437185">Rhwystro cwcis trydydd parti yn y modd Anhysbys</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Mae'n bosib na fydd rhai nodweddion yn gweithio. Gall gwefannau cysylltiedig barhau i ddefnyddio cwcis trydydd parti.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Mae hyn yn dileu cwcis a data gwefan eraill ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Mae cwcis trydydd parti wedi'u rhwystro yn y Modd Anhysbys</translation>
 <translation id="5740126560802162366">Gall gwefannau gadw data ar eich dyfais</translation>
+<translation id="5749085587985334212">Cuddio Gwiriad Diogelwch</translation>
 <translation id="5771720122942595109">Rhwystrwyd <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Caniatadau</translation>
 <translation id="5844448279347999754">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am weld testun a lluniau sydd wedi'u cadw ar eich clipfwrdd. Pan fydd wedi'i ddiffodd, ni all gwefannau weld testun a lluniau sydd wedi'u cadw ar eich clipfwrdd.</translation>

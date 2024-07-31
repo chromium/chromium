@@ -113,6 +113,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1346748346194534595">W prawo</translation>
 <translation id="1350494136075914725">Trwa · Przełącz na kartę</translation>
 <translation id="1351937230027495976">Zwiń menu</translation>
+<translation id="1352537790882153971">Możesz monitorować dźwięk z mikrofonu na słuchawkach przewodowych. Aby zatrzymać, zamknij panel.</translation>
 <translation id="1360220746312242196">Podczas wyszukiwania na stronie przejdź do poprzedniego elementu pasującego do zapytania</translation>
 <translation id="1360788414852622716">Wyłączam profil. Może to potrwać kilka minut.</translation>
 <translation id="1364382257761975320">Aby odblokować Chromebooka, użyj odcisku palca</translation>
@@ -199,6 +200,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1677507110654891115">Funkcja <ph name="FEATURE_NAME" /> nie ma połączenia.</translation>
 <translation id="1677582821739292812">Ktoś patrzy na Twój ekran</translation>
 <translation id="1679841710523778799">Zwiększ jasność</translation>
+<translation id="1680659827022803830">Ustawienia rozmów wideo</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Minutnik <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adres IPv6: <ph name="ADDRESS" /></translation>
@@ -246,6 +248,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1862077610023398675">Ukryj elementy sterujące</translation>
 <translation id="1862380676329487333">Zaktualizuj i wyloguj się</translation>
 <translation id="1864454756846565995">Urządzenie USB-C (tylny port)</translation>
+<translation id="1867566089293859645">Zmiany zostaną wprowadzone przy następnym logowaniu. Możesz zmienić to ustawienie w dowolnym momencie, klikając Ustawienia &gt; Ustawienia systemowe &gt; Uruchamianie.</translation>
 <translation id="1869497990620230175">Szybkie pliki</translation>
 <translation id="1871023081802165724">Odtwórz multimedia</translation>
 <translation id="1871915835366697861">Funkcja niedostępna w przypadku tej gry</translation>
@@ -633,6 +636,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3387527074123400161">System operacyjny Chromium</translation>
 <translation id="3389599499324569679">Czy włączyć dyktowanie?</translation>
 <translation id="3394432020929931914">, widok rozwinięty</translation>
+<translation id="3401474642070997151">Aby dostosować sugestie, kliknij prawym przyciskiem lub naciśnij i przytrzymaj sugestię</translation>
 <translation id="3405101454990027959">Włącz dostęp do mikrofonu</translation>
 <translation id="3409584356742878290">Wyświetl lub ukryj inspektora Narzędzi dla programistów</translation>
 <translation id="3410336247007142655">Pokaż ustawienia ciemnego motywu</translation>
@@ -800,11 +804,13 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3953130726459169782">Brak ukończonych projektów.</translation>
 <translation id="3958714870339660776">Cały dzień</translation>
 <translation id="3962859241508114581">Poprzedni utwór</translation>
+<translation id="3963124517343721543">Z łatwością kontynuuj od tego samego miejsca, otwierając ostatnie okna i karty. Zobaczysz też spersonalizowane sugestie dotyczące kolejnych czynności.</translation>
 <translation id="3969043077941541451">Wyłączone</translation>
 <translation id="3970324493235864154">Wyświetlaj powiadomienia z telefonu</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
 <translation id="397726367135689299">Ładowanie baterii może przebiegać nieprawidłowo.</translation>
 <translation id="3977512764614765090">Naładowanie baterii: <ph name="PERCENTAGE" />%. Trwa ładowanie.</translation>
+<translation id="397808938113646171">Czas minął. Brawo!</translation>
 <translation id="3982013579989864579">Przełączyć wyjście audio?</translation>
 <translation id="3984536049089846927">Następna strona</translation>
 <translation id="3986082989454912832">Odpowiedz</translation>
@@ -829,6 +835,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="404437169852192935">Zakończono aktualizacje</translation>
 <translation id="4049230407053723315">Szybkie ustawienia</translation>
 <translation id="4057003836560082631">Karta <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
+<translation id="4059696795118403455">Aby zobaczyć spersonalizowane sugestie dotyczące kolejnych czynności, naciśnij klawisz Przegląd</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Wyłączono (1 aplikacja)}few{Wyłączono (# aplikacje)}many{Wyłączono (# aplikacji)}other{Wyłączono (# aplikacji)}}</translation>
 <translation id="4066027111132117168">Włączone. Pozostały czas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="4069532248403319695">Otwórz stronę Pobrane</translation>
@@ -967,6 +974,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4544483149666270818">Wybierz okno, które chcesz nagrać</translation>
 <translation id="4545950850562423083">Zapisz bieżącą stronę jako zakładkę</translation>
 <translation id="4548482551627849548">Przenieś aktywne okno na biurko po lewej</translation>
+<translation id="4552748006424994716">Aby uniknąć echa, możesz słuchać dźwięku z mikrofonu tylko przez słuchawki przewodowe.</translation>
 <translation id="4560576029703263363">Włączono</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ukryj hasło</translation>
@@ -1036,6 +1044,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4778095205580009397">Asystent Google jest niedostępny w sesji demonstracyjnej.</translation>
 <translation id="4789348252524569426">Nie udało się zainstalować plików z mową. Urządzenie wymaga aktualizacji. Uruchom je ponownie i spróbuj jeszcze raz.</translation>
 <translation id="478959186716341421">Przesyłanie</translation>
+<translation id="4798403412327076414">Poprzednio otwarte okna i aplikacje zostaną przywrócone przy następnym logowaniu</translation>
 <translation id="4798622944000246716">Twoja sieć komórkowa nie obsługuje hotspota</translation>
 <translation id="4798888871844665150">Element został już skopiowany do schowka. Aby go wyświetlić, naciśnij <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="479989351350248267">search</translation>
@@ -1456,6 +1465,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6185696379715117369">Strona do góry</translation>
 <translation id="619335566042889110">Naładuj do pełna teraz</translation>
 <translation id="6193431488227440296">Deweloperska</translation>
+<translation id="6196214354688969799">Obraz studyjny</translation>
 <translation id="6199775032047436064">Załaduj bieżącą stronę ponownie</translation>
 <translation id="6200515304866777730">Nieobsługiwana przez aplikację</translation>
 <translation id="6210042900243040400">Połącz urządzenie <ph name="NAME" /> wcześniej zapisane na koncie <ph name="EMAIL" /></translation>
@@ -2063,6 +2073,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8443879455002739353">„Kopiuj”</translation>
 <translation id="8444246603146515890">Aktywowano biurko <ph name="DESK_TITILE" /></translation>
 <translation id="8446884382197647889">Więcej informacji</translation>
+<translation id="8452090802952003258">Słuchaj dźwięku z mikrofonu</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Zamknij funkcję Przeczytaj na głos</translation>
 <translation id="8468806060683421065">termin: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2121,6 +2132,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8683506306463609433">Śledzenie wydajności jest aktywne</translation>
 <translation id="8703634754197148428">Rozpocznij nagrywanie. Po rozpoczęciu nagrywania możesz za pomocą Alt + Shift + L przejść na półkę, na której znajdziesz przycisk zatrzymujący nagrywanie.</translation>
 <translation id="8704155109538237473">Zaznacz okno z obrazem w obrazie</translation>
+<translation id="8708657523363087260">Przełącz samosłyszalność</translation>
 <translation id="870917907284186124">Włącz/wyłącz dyktowanie (pisanie głosowe)</translation>
 <translation id="8711169534266271368">Opcje panelu gier</translation>
 <translation id="8712637175834984815">OK</translation>
@@ -2152,6 +2164,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">„Pomoc”</translation>
+<translation id="8813531681893371930">Podłącz słuchawki przewodowe</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8815390544836110344">Naciśnij skrót do zrzutu ekranu, Ctrl + Shift + klawisz trybu przeglądu</translation>
 <translation id="881757059229893486">Ustawienia metod wprowadzania</translation>

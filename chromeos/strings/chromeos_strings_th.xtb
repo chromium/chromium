@@ -178,6 +178,7 @@
 <translation id="1827738518074806965">แกลเลอรีศิลปะ</translation>
 <translation id="1836553715834333258">สีของระบบ</translation>
 <translation id="183675228220305365">สมจริง</translation>
+<translation id="1837537071599385610">คำแนะนำในการเขียนพรอมต์</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
 <translation id="1840474674287087346">สีของเดสก์ท็อป</translation>
 <translation id="184095011128924488">สร้างสรรค์</translation>
@@ -192,6 +193,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">ผีเสื้อ</translation>
 <translation id="188114911237521550">ปิดโหมดมืด</translation>
+<translation id="1884794756658039602">ดูข้อมูลเพิ่มเติมเกี่ยวกับป้ายกำกับผู้พูด</translation>
 <translation id="1885577615937958993">กรอสื่อไปข้างหน้า</translation>
 <translation id="1887850431809612466">การแก้ไขฮาร์ดแวร์</translation>
 <translation id="189221451253258459">เขียวนีออน</translation>
@@ -238,6 +240,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ภาพ</translation>
+<translation id="2156072344042480449">พรอมต์ 2 รายการล่าสุด คุณใช้พรอมต์เหล่านี้ได้ขณะที่อยู่ในหน้านี้เท่านั้น</translation>
 <translation id="2157660087437850958">เครื่องมือเลือกอีโมจิ</translation>
 <translation id="2157959690810728433">อยู่ในคิว</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ลองอีกครั้ง</translation>
@@ -318,6 +321,8 @@
 <translation id="2538719227433767804">และอีก <ph name="NUM_HIDDEN_OPTIONS" /> รายการ</translation>
 <translation id="2561093647892030937">เลมอน</translation>
 <translation id="2570743873672969996">กำลังทำการทดสอบ <ph name="TEST_NAME" />...</translation>
+<translation id="2575552334616524665">คุณเปิดการดำเนินการนี้ได้ในการตั้งค่าหรือเมนู <ph name="THREE_DOTS_MENU_ICON" /></translation>
+<translation id="2576253868710695442">การดำเนินการนี้จะใช้พื้นที่เก็บข้อมูลสูงสุด 2 GB</translation>
 <translation id="2584547424703650812">แสงเงา</translation>
 <translation id="2584559707064218956">ไปที่การตั้งค่าเพื่อตั้งค่า</translation>
 <translation id="2586146417912237930">น้ำเงินและน้ำเงินอมม่วง</translation>
@@ -334,6 +339,7 @@
 <translation id="2645380101799517405">ตัวควบคุม</translation>
 <translation id="2652403576514495859">เปิดใช้หรือเปิด/ปิดการพิมพ์ตามคำบอก</translation>
 <translation id="2653659639078652383">ส่ง</translation>
+<translation id="2653807227758181366">อธิบายวอลเปเปอร์ที่ต้องการสร้าง หรือใช้ตัวอย่างพรอมต์</translation>
 <translation id="2654647726140493436">อย่าปิด <ph name="DEVICE_TYPE" /> หรือถอดสายไฟของ <ph name="DEVICE_TYPE" /> ขณะที่กำลังอัปเดต</translation>
 <translation id="2656001153562991489">เฉพาะสำหรับ Chromebook Plus</translation>
 <translation id="2665671725390405060">ฟังการออกเสียง</translation>
@@ -378,6 +384,7 @@
 <translation id="3017079585324758401">พื้นหลัง</translation>
 <translation id="3027578600144895987">ปิดกล้อง</translation>
 <translation id="3031560714565892478">อุปกรณ์เป็นกล้องวิดีโอ</translation>
+<translation id="3042927241478734594">ออกจากการบันทึกใช่ไหม</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ปลายทาง</translation>
 <translation id="3060579846059757016">โครงร่าง</translation>
@@ -410,6 +417,9 @@
 <translation id="3199982728237701504">ตัวป้อนเอกสาร (สองด้าน)</translation>
 <translation id="3201315366910775591">ผู้อื่นจะอัปเดตอัลบั้มที่แชร์ได้</translation>
 <translation id="3211671540163313381">D-pad การแมปคีย์</translation>
+<translation id="3224812403568276799">เมื่อคุณอนุญาต โปรแกรมอัดเสียงจะใช้การวิเคราะห์เสียงขั้นสูงเพื่อตรวจหาเสียงที่แตกต่างกันและติดป้ายกำกับทั่วไปให้แต่ละเสียง เช่น ผู้พูด 1 และผู้พูด 2 โดยอัตโนมัติ
+
+คุณปิดการดำเนินการนี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="3226405216343213872">กำลังค้นหาเครื่องสแกน</translation>
 <translation id="3226657629376379887">เมนูการทำงานสำหรับเลย์เอาต์</translation>
 <translation id="3227186760713762082">นำค่า <ph name="CATEGORY_TEXT" /> มาหารด้วย <ph name="CONVERSION_RATE" /></translation>
@@ -473,6 +483,7 @@
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
 <translation id="357889014807611375">Wi-Fi ที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="3583278742022654445">ความแรงสัญญาณไม่ดี ลองขยับไปใกล้ๆ แหล่งสัญญาณ Wi-Fi มากขึ้น</translation>
+<translation id="3588034708467091142">ตรวจสอบว่าคุณได้เชื่อมต่ออินเทอร์เน็ตแล้ว และลองอีกครั้ง</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> คือชื่อที่เรียกง่ายของ <ph name="APN_NAME" /></translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
 <translation id="3600339377155080675">มิเรอร์หน้าจอ</translation>
@@ -553,6 +564,7 @@
 <translation id="404928562651467259">คำเตือน</translation>
 <translation id="4050208988451295487">ตัวเลือกบางส่วนมีดังนี้</translation>
 <translation id="4054683689023980771">กำลังดาวน์โหลดรูปภาพ</translation>
+<translation id="4059839844193047929">การออกจากหน้านี้จะเป็นการยุติการบันทึกในปัจจุบัน</translation>
 <translation id="4063039537646912479">ฟ้าอ่อน</translation>
 <translation id="4070799384363688067">อะนิเมะ</translation>
 <translation id="4086271957099059213">สร้างตัวควบคุมอื่น</translation>
@@ -606,6 +618,7 @@
 <translation id="4310735698903592804">วอลเปเปอร์ล่าสุดที่ทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="4320904097188876154">ชมพูนีออน</translation>
 <translation id="4333390807948134856">กดปุ่ม <ph name="KEY_NAME" /> อยู่</translation>
+<translation id="4334293042716981313">คุณยัง<ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />เขียนพรอมต์ของคุณเอง<ph name="END_LINK_FREEFORM_SUBPAGE" />ได้ด้วย</translation>
 <translation id="4354430579665871434">แป้น</translation>
 <translation id="4361257691546579041">APN เป็นแบบ Default</translation>
 <translation id="437294888293595148">รีเซ็ตทางลัดทั้งหมด</translation>
@@ -626,6 +639,7 @@
 <translation id="4429881212383817840">ตั๋ว Kerberos กำลังจะหมดอายุ</translation>
 <translation id="4431821876790500265">ดูรายงาน</translation>
 <translation id="4443192710976771874">แดง</translation>
+<translation id="4447592701292766824">สร้างสรุปสำหรับเนื้อหานี้ไม่ได้</translation>
 <translation id="4448096106102522892">เกาะ</translation>
 <translation id="445059817448385655">รหัสผ่านเดิม</translation>
 <translation id="4453205916657964690">ซับเน็ตมาสก์</translation>
@@ -652,9 +666,11 @@
 <translation id="456077979087158257">ทิวทัศน์เมือง</translation>
 <translation id="4561801978359312462">ปลดล็อกซิมแล้ว</translation>
 <translation id="4562494484721939086">ไม่มีบริการ</translation>
+<translation id="4570558255126759859">ดาวน์โหลดโมเดล Gemini เพื่อสรุปไฟล์บันทึกเสียงไหม</translation>
 <translation id="4573777384450697571">ไม่สําเร็จ - ใบรับรองหมดอายุ</translation>
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>
 <translation id="4593212453765072419">จำเป็นต้องมีการตรวจสอบสิทธิ์พร็อกซี</translation>
+<translation id="4594021849294327751">สร้างข้อความถอดเสียง</translation>
 <translation id="4609350030397390689">ลดความสว่างของแป้นพิมพ์</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> จาก <ph name="TOTAL_PAGE_NUMBER" /> หน้า กด Enter เพื่อยกเลิกงานพิมพ์</translation>
 <translation id="463791356324567266">กำลังยกเลิกการสแกน...</translation>
@@ -727,6 +743,7 @@
 <translation id="4981003703840817201">น้ำเงินและชมพู</translation>
 <translation id="498186245079027698">ตรวจสอบเครื่องสแกนแล้วลองอีกครั้ง ตรวจดูว่ามีพื้นที่ว่างในเครื่องเพียงพอสำหรับบันทึกไฟล์ที่สแกน</translation>
 <translation id="4982627662315910959">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยใช้ Shift และแป้นกดร่วมอีก 1 รายการ (Ctrl, Alt หรือ<ph name="META_KEY" />)</translation>
+<translation id="4983216687482551672">เสียงจาก Chromebook</translation>
 <translation id="4985509611418653372">เรียกใช้</translation>
 <translation id="4987769320337599931">ไฟร์วอลล์</translation>
 <translation id="4988526792673242964">หน้า</translation>
@@ -768,6 +785,7 @@
 <translation id="5220549459260334974">ดาวน์โหลดแล้ว <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="522307662484862935">อย่าใส่อีเมล</translation>
+<translation id="5223226274641517059">ข้อความถอดเสียงแบบสดจะแสดงขึ้นขณะที่คุณบันทึก คุณปิดการดำเนินการนี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="5226879510707344687">ส่งออกข้อความถอดเสียง</translation>
 <translation id="5227902338748591677">กำหนดเวลาธีมมืด</translation>
 <translation id="5229344016299762883">ออกจากหน้าจอแบบเต็ม</translation>
@@ -791,6 +809,7 @@
 <translation id="5315873049536339193">ข้อมูลประจำตัว</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5318334351163689047">ขอ TCP ไม่สำเร็จ</translation>
+<translation id="53196409393069519">เปิดการถอดเสียงเป็นคำไหม</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">เลือกรหัสผ่านใหม่เลย</translation>
 <translation id="5333530671332546086">สถานะพอร์ทัลที่ไม่รู้จัก</translation>
@@ -849,6 +868,7 @@
 <translation id="5680504961595602662"><ph name="SURREAL_LANDSCAPE" /> ที่มี <ph name="SURREAL_SUBJECT" /> เหนือจริง</translation>
 <translation id="5685478548317291523">เชอร์รี่</translation>
 <translation id="5691511426247308406">ครอบครัว</translation>
+<translation id="5692395212036914927">การสร้างชื่อและสรุปการบันทึก</translation>
 <translation id="5695599963893094957">ลองกดแป้นใดก็ได้บนแป้นพิมพ์ โดยกดได้ถึง 4 แป้นพร้อมกัน</translation>
 <translation id="5701381305118179107">กึ่งกลาง</translation>
 <translation id="5703716265115423771">ลดระดับเสียง</translation>
@@ -891,6 +911,7 @@
 <translation id="5928411637936685857">ปุ่มลบสำหรับ <ph name="ACCELERATOR_INFO" /></translation>
 <translation id="5930669310554144537">ห้วงแห่งความฝัน</translation>
 <translation id="5931523347251946569">ไม่พบไฟล์</translation>
+<translation id="5938286923316838007">สร้างชื่อการบันทึกสำหรับเนื้อหานี้ไม่ได้</translation>
 <translation id="5939518447894949180">รีเซ็ต</translation>
 <translation id="594552776027197022">สร้างคู่คีย์แบบสุ่ม</translation>
 <translation id="5946538341867151940">คุณยังไม่ได้เชื่อมต่อ หากผู้ให้บริการเครือข่ายมือถือของคุณแนะนำ APN ที่กําหนดเอง ให้ป้อนข้อมูล APN ดังกล่าวโดยเลือก "+ APN ใหม่"</translation>
@@ -929,6 +950,7 @@
 <translation id="6113701710518389813">ลูกศรขึ้น</translation>
 <translation id="6116005346231504406">สร้างตัวควบคุมแรก</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> และอีก <ph name="NUMBER" /> อัลบั้ม</translation>
+<translation id="6120815036186828722">กำลังฟังเสียงพูด…</translation>
 <translation id="6122191549521593678">ออนไลน์</translation>
 <translation id="6122277663991249694">บริการวิธีการป้อนข้อมูลของ Chrome OS</translation>
 <translation id="6127426868813166163">ขาว</translation>
@@ -973,9 +995,11 @@
 <translation id="6327262166342360252">วอลเปเปอร์นี้สร้างด้วย AI โดยใช้ข้อความ "<ph name="PROMPT" />"</translation>
 <translation id="6331191339300272798">ธีมมืดอัตโนมัติ</translation>
 <translation id="6340526405444716530">การปรับเปลี่ยนในแบบของคุณ</translation>
+<translation id="6348252528297699679">คุณปิดตำแหน่งได้ในการตั้งค่า &gt; ความเป็นส่วนตัวและความปลอดภัย &gt; การควบคุมความเป็นส่วนตัว &gt; การเข้าถึงตำแหน่ง <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ชื่อผู้ใช้และรหัสผ่าน</translation>
 <translation id="6352210854422428614">ดาวเคราะห์ดวงอื่น</translation>
 <translation id="6359706544163531585">ปิดใช้ธีมสว่าง</translation>
+<translation id="6359919876285606596">การดำเนินการนี้มีผลถาวรและเลิกทำไม่ได้</translation>
 <translation id="636850387210749493">การลงทะเบียนองค์กร</translation>
 <translation id="6373461326814131011">หนองน้ำ</translation>
 <translation id="6379086450106841622">หน้าจอสัมผัส</translation>
@@ -1084,6 +1108,7 @@
 <translation id="6910312834584889076">ฝาเครื่องสแกนเปิดอยู่ ปิดฝาแล้วลองอีกครั้ง</translation>
 <translation id="6911383237894364323">เชื่อมต่อเซิร์ฟเวอร์สื่อไม่ได้</translation>
 <translation id="6930597342185648547">เกี่ยวกับพื้นหลัง</translation>
+<translation id="6939667434404433010">ค้นหาชื่อการบันทึก</translation>
 <translation id="6939766318048400022">ร้านกาแฟ</translation>
 <translation id="6943893908656559156">ข้อมูลประจำตัวระยะไกล (ไม่บังคับ)</translation>
 <translation id="6953137545147683679">ทอง</translation>
@@ -1156,6 +1181,7 @@
 <translation id="7212547870105584639">จัดการการตั้งค่า APN ของเครือข่าย APN จะเริ่มการเชื่อมต่อระหว่างเครือข่ายมือถือกับอินเทอร์เน็ต <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">การอัปเดตเฟิร์มแวร์สำหรับอุปกรณ์ภายนอก</translation>
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
+<translation id="7223952304612664117">การตั้งค่านี้จะช่วยให้บริการของระบบใช้ความแม่นยำของตำแหน่งเพื่อระบุตำแหน่งของคุณได้ ความแม่นยำของตำแหน่งจะใช้ข้อมูลเกี่ยวกับสัญญาณไร้สายและเซ็นเซอร์เพื่อประมาณตำแหน่งของอุปกรณ์</translation>
 <translation id="7233782086689993269">คืนค่าแป้นพิมพ์ลัดแล้ว</translation>
 <translation id="725133483556299729">เลือกอีเมล</translation>
 <translation id="7255187042098209569">ชมพูและม่วง</translation>
@@ -1189,6 +1215,8 @@
 <translation id="7359657277149375382">ประเภทไฟล์</translation>
 <translation id="73631062356239394">แชร์ข้อมูลการวินิจฉัย</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378170410161264436">โปรแกรมอัดเสียงสามารถสร้างการถอดเสียงเป็นคำสำหรับการบันทึกที่มีเสียงพูดได้
+ดาวน์โหลดโมเดลการถอดเสียงเป็นคำ (สูงสุด 100 MB) เพื่อรับการถอดเสียงเป็นคำเหล่านี้</translation>
 <translation id="7384004438856720753">พระราชวัง</translation>
 <translation id="7388959671917308825">ทัชแพดในตัว</translation>
 <translation id="7397270852490618635">ปิดธีมสว่าง</translation>
@@ -1204,6 +1232,7 @@
 <translation id="7487067081878637334">เทคโนโลยี</translation>
 <translation id="7490813197707563893">ที่อยู่ MAC</translation>
 <translation id="7497215489070763236">ใบรับรอง CA ของเซิร์ฟเวอร์</translation>
+<translation id="7500205272584643581">อนุญาตให้โปรแกรมอัดเสียงตรวจหาและติดป้ายกำกับผู้พูดไหม</translation>
 <translation id="7501957181231305652">หรือ</translation>
 <translation id="7502658306369382406">ที่อยู่ IPv6</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_TYPE" />สี<ph name="FLOWER_COLOR" />สดใส</translation>
@@ -1226,6 +1255,7 @@
 <translation id="7613724632293948900">เปลี่ยนตำแหน่งด้วยเมาส์หรือแป้นลูกศร</translation>
 <translation id="7618774594543487847">ปานกลาง</translation>
 <translation id="7620771111601174153">ดูข้อมูลเพิ่มเติมในศูนย์ช่วยเหลือ</translation>
+<translation id="7625095758347640998">วอลเปเปอร์ AI</translation>
 <translation id="763165478673169849">เวลารีเซ็ตล่าสุด</translation>
 <translation id="7633068090678117093">ภาพพื้นหลัง</translation>
 <translation id="763873111564339966">คราม</translation>
@@ -1391,6 +1421,7 @@
 <translation id="8498220429738806196">ตัวนับการรับส่งข้อมูล</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="8503836310948963452">อีกเพียงไม่กี่นาทีเท่านั้น...</translation>
+<translation id="8505011850330200833">โมเดล Gemini ต้องใช้พื้นที่เก็บข้อมูล 2 GB ในการประมวลผลข้อความถอดเสียงและสร้างข้อมูลสรุป</translation>
 <translation id="8508640263392900755">รายละเอียด APN</translation>
 <translation id="8522687886059337719">ตอนนี้คุณเข้าถึง<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />วอลเปเปอร์<ph name="END_LINK_WALLPAPER_SUBPAGE" />และ<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ภาพพักหน้าจอ<ph name="END_LINK_SCREENSAVER_SUBPAGE" />ใหม่ได้แล้ว</translation>
 <translation id="8528615187455571738">Crosvm</translation>
@@ -1418,6 +1449,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ใช้แป้นลูกศรซ้ายหรือขวาเพื่อจัดการฟีเจอร์นี้</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
 <translation id="871560550817059752">ไม่สำเร็จ - หมึกหมด</translation>
+<translation id="8721554916373590179">ตัวอย่างพรอมต์</translation>
 <translation id="8723108084122415655">เครือข่ายที่ไม่ใช่ค่าเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8726019395068607495">หยุดพิมพ์ - ฝาเครื่องเปิดอยู่</translation>
@@ -1427,6 +1459,7 @@
 <translation id="8749478549112817787">พื้นหลังกล้อง</translation>
 <translation id="8755946156089753497">หอคอย</translation>
 <translation id="8756235582947991808">วิธีสร้างด้วย AI และสิ่งที่ควรคำนึงถึง</translation>
+<translation id="8760616037557661287">พรอมต์ก่อนหน้า</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">อัลบั้มใน Google Photos</translation>
 <translation id="8775713578693478175">APN ของโมเด็ม</translation>
@@ -1491,6 +1524,7 @@
 <translation id="902638246363752736">การตั้งค่าแป้นพิมพ์</translation>
 <translation id="9028832514430399253">เปิดตัวสลับเพื่อเลือกตัวเลือกของโปรแกรมรักษาหน้าจอ</translation>
 <translation id="9030883440316693822">ลบไฟล์บันทึกใช่ไหม</translation>
+<translation id="9036971622563146214">ผลลัพธ์</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9045842401566197375">หนังสือ</translation>
 <translation id="9049868303458988905">เปิดใช้ปุ่ม "บันทึก APN" แล้ว</translation>

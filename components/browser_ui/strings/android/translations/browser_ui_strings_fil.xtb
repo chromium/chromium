@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3859306556332390985">Maghanap nang pasulong</translation>
 <translation id="3895926599014793903">Puwersahang i-enable ang zoom</translation>
+<translation id="3905475044299942653">Ihinto ang napakaraming notification</translation>
 <translation id="3908288065506437185">I-block ang mga third-party na cookie sa Incognito mode</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Posibleng hindi gumana ang ilang feature. Puwede pa ring gumamit ng third-party na cookie ang mga nauugnay na site.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Dine-delete nito ang cookies at iba pang data ng site para sa <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Bina-block ang third-party na cookies sa Incognito mode</translation>
 <translation id="5740126560802162366">Makakapag-save ang mga site ng data sa iyong device</translation>
+<translation id="5749085587985334212">I-hide ang Pag-check sa Kaligtasan</translation>
 <translation id="5771720122942595109">Naka-block ang <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5844448279347999754">Kapag naka-on, puwedeng hilingin ng mga site na makita ang text at mga larawang naka-save sa iyong clipboard. Kapag naka-off, hindi makikita ng mga site ang text o mga larawang naka-save sa iyong clipboard.</translation>

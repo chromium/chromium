@@ -113,6 +113,7 @@
 <translation id="1346748346194534595">右</translation>
 <translation id="1350494136075914725">進行中 · タブに切り替え</translation>
 <translation id="1351937230027495976">メニューを折りたたむ</translation>
+<translation id="1352537790882153971">有線ヘッドフォンからマイクの音をモニタリングできます。パネルを閉じるとモニタリングが停止します。</translation>
 <translation id="1360220746312242196">ページ検索時に前の一致箇所に移動する</translation>
 <translation id="1360788414852622716">プロファイルを無効にしています。この処理には数分かかることがあります。</translation>
 <translation id="1364382257761975320">Chromebook のロックを解除するには、指紋認証を使用します</translation>
@@ -199,6 +200,7 @@
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> は接続されていません。</translation>
 <translation id="1677582821739292812">他の人があなたの画面を見ています</translation>
 <translation id="1679841710523778799">明るさを上げる</translation>
+<translation id="1680659827022803830">ビデオ通話コントロール</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> タイマー · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 アドレス: <ph name="ADDRESS" /></translation>
@@ -246,6 +248,7 @@
 <translation id="1862077610023398675">コントロールを非表示</translation>
 <translation id="1862380676329487333">更新してログアウト</translation>
 <translation id="1864454756846565995">USB-C デバイス（背面のポート）</translation>
+<translation id="1867566089293859645">変更は次回のログイン時に適用されます。[設定] &gt; [システム環境設定] &gt; [起動] でいつでも設定を変更できます。</translation>
 <translation id="1869497990620230175">クイック ファイル</translation>
 <translation id="1871023081802165724">メディアを再生する</translation>
 <translation id="1871915835366697861">このゲームでは利用できません</translation>
@@ -633,6 +636,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">音声入力をオンにしますか？</translation>
 <translation id="3394432020929931914">、開かれています</translation>
+<translation id="3401474642070997151">候補をカスタマイズするには、いずれかの候補を右クリックするか長押しします</translation>
 <translation id="3405101454990027959">マイクへのアクセスをオンにする</translation>
 <translation id="3409584356742878290">デベロッパー ツール インスペクタの表示と非表示を切り替える</translation>
 <translation id="3410336247007142655">ダークモードの設定を表示</translation>
@@ -800,11 +804,13 @@
 <translation id="3953130726459169782">完了した課題はまだありません。</translation>
 <translation id="3958714870339660776">終日</translation>
 <translation id="3962859241508114581">前の曲</translation>
+<translation id="3963124517343721543">以前のウィンドウやタブが開かれ、中断したところから簡単に再開できます。また、次のアクティビティに関するパーソナライズされた候補も表示されます。</translation>
 <translation id="3969043077941541451">オフ</translation>
 <translation id="3970324493235864154">スマートフォンの通知を表示する</translation>
 <translation id="397105322502079400">計算しています...</translation>
 <translation id="397726367135689299">バッテリーの充電が不安定になっている可能性があります</translation>
 <translation id="3977512764614765090">電池残量は <ph name="PERCENTAGE" />% です（現在充電中）。</translation>
+<translation id="397808938113646171">時間です。正解です。</translation>
 <translation id="3982013579989864579">オーディオ出力を切り替えますか？</translation>
 <translation id="3984536049089846927">次のページ</translation>
 <translation id="3986082989454912832">応答</translation>
@@ -829,6 +835,7 @@
 <translation id="404437169852192935">更新は終了しました</translation>
 <translation id="4049230407053723315">クイック設定</translation>
 <translation id="4057003836560082631">ブラウザタブ <ph name="INDEX" />/<ph name="TOTAL_COUNT" />。<ph name="SITE_TITLE" />（<ph name="SITE_URL" />）</translation>
+<translation id="4059696795118403455">次のアクティビティに関するパーソナライズされた候補を表示するには、全ウィンドウ表示キーを押します</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{1 アプリでオフ}other{# アプリでオフ}}</translation>
 <translation id="4066027111132117168">オン（<ph name="REMAINING_TIME" />）</translation>
 <translation id="4069532248403319695">[ダウンロード] ページを開く</translation>
@@ -967,6 +974,7 @@
 <translation id="4544483149666270818">録画するウィンドウを選択してください</translation>
 <translation id="4545950850562423083">現在のページをブックマークとして保存する</translation>
 <translation id="4548482551627849548">アクティブなウィンドウを左側のデスクに移動する</translation>
+<translation id="4552748006424994716">エコーを防ぐため、マイクの音を有線ヘッドフォンでのみ聞くようにできます。</translation>
 <translation id="4560576029703263363">オン</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
@@ -1036,6 +1044,7 @@
 <translation id="4778095205580009397">Google アシスタントは、デモセッションではご利用いただけません。</translation>
 <translation id="4789348252524569426">音声ファイルをインストールできません。デバイスを更新する必要があります。デバイスを再起動してもう一度お試しください。</translation>
 <translation id="478959186716341421">キャスト中</translation>
+<translation id="4798403412327076414">次回ログインしたときに、以前開いていたウィンドウとアプリが表示されます</translation>
 <translation id="4798622944000246716">ご利用のモバイル ネットワークはアクセス ポイントに対応していません</translation>
 <translation id="4798888871844665150">すでにクリップボードにあるアイテムをコピーしました。確認するには、<ph name="SHORTCUT_KEY_NAME" />+V キーを使用します。</translation>
 <translation id="479989351350248267">検索</translation>
@@ -1456,6 +1465,7 @@
 <translation id="6185696379715117369">ページ内を上に移動</translation>
 <translation id="619335566042889110">今すぐ完全に充電</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6196214354688969799">スタジオビデオ</translation>
 <translation id="6199775032047436064">現在のページを再読み込みする</translation>
 <translation id="6200515304866777730">アプリが対応していません</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> に保存済みの <ph name="NAME" /> に接続します</translation>
@@ -2065,6 +2075,7 @@
 <translation id="8443879455002739353">「コピー」</translation>
 <translation id="8444246603146515890">デスク <ph name="DESK_TITILE" /> が有効になりました</translation>
 <translation id="8446884382197647889">詳細</translation>
+<translation id="8452090802952003258">マイクの音を聞く</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" />+V</translation>
 <translation id="8462305545768648477">「選択して読み上げ」を閉じる</translation>
 <translation id="8468806060683421065">期限 <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2123,6 +2134,7 @@
 <translation id="8683506306463609433">パフォーマンス追跡機能が有効</translation>
 <translation id="8703634754197148428">録画を開始します。録画を開始した後、シェルフにある [録画を停止] ボタンに移動するには、Alt+Shift+L キーを使用してください</translation>
 <translation id="8704155109538237473">ピクチャー イン ピクチャー ウィンドウにフォーカスする</translation>
+<translation id="8708657523363087260">サイドトーンを切り替える</translation>
 <translation id="870917907284186124">音声入力をオンまたはオフにします</translation>
 <translation id="8711169534266271368">ゲーム ダッシュボードのオプション</translation>
 <translation id="8712637175834984815">理解した</translation>
@@ -2153,6 +2165,7 @@
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">フォルダ <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"ヘルプ"</translation>
+<translation id="8813531681893371930">有線ヘッドフォンを接続</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8815390544836110344">スクリーンショット ショートカット（Ctrl+Shift+概要モード キー）を押します</translation>
 <translation id="881757059229893486">入力方法の設定</translation>

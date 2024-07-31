@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Vissza</translation>
 <translation id="3859306556332390985">Ugrás előre</translation>
 <translation id="3895926599014793903">A nagyítás mindig engedélyezett</translation>
+<translation id="3905475044299942653">Sok értesítés leállítása</translation>
 <translation id="3908288065506437185">Harmadik felektől származó cookie-k letiltása inkognitó módban</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Lehetséges, hogy néhány funkció nem működik. A kapcsolódó webhelyek továbbra is használhatnak harmadik féltől származó cookie-kt.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Ezzel törli a(z) <ph name="WEBSITE" /> webhelyhez tartozó cookie-kat és egyéb webhelyadatokat</translation>
 <translation id="5723967018671998714">A harmadik felektől származó cookie-k le vannak tiltva Inkognitó módban</translation>
 <translation id="5740126560802162366">Webhelyek menthetnek adatokat az eszközére</translation>
+<translation id="5749085587985334212">Biztonsági ellenőrzés elrejtése</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> letiltva</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5844448279347999754">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a vágólapon szereplő szövegek és képek megtekintésére. Ha ki van kapcsolva, a webhelyek nem láthatják a vágólapra mentett szövegeket és képeket.</translation>

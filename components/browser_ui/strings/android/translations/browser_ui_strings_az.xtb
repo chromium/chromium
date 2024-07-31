@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Geri</translation>
 <translation id="3859306556332390985">İrəli axtarın</translation>
 <translation id="3895926599014793903">Zoom'a icazə verməyə məcbur edin</translation>
+<translation id="3905475044299942653">Çoxlu bildirişləri dayandırın</translation>
 <translation id="3908288065506437185">Anonim rejimdə üçüncü tərəf kukilərini bloklayın</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Bəzi funksiyalar işləməyə bilər. Əlaqədar saytlar hələ də üçüncü tərəf kukilərindən istifadə edə bilər.</translation>
@@ -243,7 +244,7 @@
 <translation id="5091663350197390230">Aktiv ediləndə saytlar JavaScript istifadə edə bilər. Deaktiv ediləndə saytlar JavaScript istifadə edə bilməz.</translation>
 <translation id="5099358668261120049">Əsas ekranda <ph name="ORIGIN" /> və ya onun tətbiqi tərəfindən saxlanan data və kukilər silinəcək.</translation>
 <translation id="5100237604440890931">Yığcamlaşdırıldı - genişləndirmək üçün klikləyin.</translation>
-<translation id="5123685120097942451">Aanonim tab</translation>
+<translation id="5123685120097942451">Anonim tab</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Açıq tablarda qiymət düşməsi}other{Açıq tablarda qiymət düşməsi}}</translation>
 <translation id="5186036860380548585">Seçim ekranın yuxarısına yaxın yerdə əlçatandır</translation>
 <translation id="5197729504361054390">Seçdiyiniz kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ilə paylaşılacaq.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Bu, <ph name="WEBSITE" /> üçün kukiləri və digər sayt datasını silir</translation>
 <translation id="5723967018671998714">Üçüncü tərəf kukiləri Anonim rejimdə bloklanır</translation>
 <translation id="5740126560802162366">Saytlar cihazınızda data saxlaya bilər</translation>
+<translation id="5749085587985334212">Təhlükəsizlik yoxlanışını gizlədin</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloklanıb</translation>
 <translation id="5804241973901381774">İcazələr</translation>
 <translation id="5844448279347999754">Aktiv ediləndə saytlar mübadilə buferində saxlanmış mətn və şəkilləri görmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar mübadilə buferində saxlanmış mətn və şəkilləri görə bilməz.</translation>

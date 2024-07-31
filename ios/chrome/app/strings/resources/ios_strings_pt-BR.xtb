@@ -6,6 +6,7 @@
 <translation id="1016495303386450659">Item atualizado</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Salvar senha na conta}one{Salvar senha na conta}other{Salvar senhas na conta}}</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
+<translation id="1030376737535466765">Abra o Gerenciador de senhas</translation>
 <translation id="1035980983510608210">Ao fechar todas as guias, as fixadas também vão ser fechadas.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
@@ -92,6 +93,7 @@
 <translation id="1455492980583160269">Envie uma mensagem</translation>
 <translation id="1469381646033328562">Sua conta é gerenciada pelo seu familiar responsável.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="1484758781961275277">Aproveite no iPad o melhor do navegador para computador que você já conhece.</translation>
 <translation id="1491277525950327607">Toque duas vezes para alternar a configuração</translation>
 <translation id="1492417797159476138">Você já salvou este nome de usuário para este site</translation>
 <translation id="1497590942294823549">Menu → Gerenciador de senhas</translation>
@@ -116,7 +118,7 @@
 <translation id="1582732959743469162">Isso interromperá todo o progresso do download atual.</translation>
 <translation id="158591023028013564">{count,plural, =1{Página adicionada à Lista de leitura}one{{count} página adicionada à Lista de leitura}other{{count} páginas adicionadas à Lista de leitura}}</translation>
 <translation id="1594034544529347967">Início</translation>
-<translation id="160275202205869636">Quando ativado, use e salve dados na sua Conta do Google. Quando essa opção está desativada, os dados são salvos apenas neste dispositivo.</translation>
+<translation id="1603718000246404895">{COUNT,plural, =1{1 endereço}one{# endereço}other{# endereços}}</translation>
 <translation id="1605405588277479165">Desativado (não recomendado)</translation>
 <translation id="1605658421715042784">Copiar imagem</translation>
 <translation id="1608337082864370066">Pesquisar imagem copiada</translation>
@@ -186,6 +188,7 @@
 <translation id="1956138802718275401">Acessar as senhas na tela inicial</translation>
 <translation id="1959441496380398824">Toque em uma data e a mantenha pressionada.</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> compartilhou uma senha para <ph name="WEBSITE" /> com você.</translation>
+<translation id="1966313166384086081">dados do site</translation>
 <translation id="1967461193809857427">{count,plural, =1{Continuar usando a guia que você deixou no Android?}one{Continuar usando a guia que você deixou no Android?}other{Continuar usando as guias que você deixou no Android?}}</translation>
 <translation id="1972325230031091483">Como o conteúdo é carregado proativamente com base na página da Web atual, você navega com mais rapidez</translation>
 <translation id="1973912524893600642">Manter dados</translation>
@@ -228,6 +231,7 @@
 <translation id="2178545675770638239">Selecionar senha</translation>
 <translation id="2188919919468240749">Excluir grupo de guias?</translation>
 <translation id="2195124168004379331">Parece que está tudo certo com seu navegador</translation>
+<translation id="2199562093267256223">Essa ação vai excluir o grupo de todos os dispositivos conectados à conta <ph name="USER_EMAIL" />.</translation>
 <translation id="2218443599109088993">Diminuir zoom</translation>
 <translation id="2220529011494928058">Informar um problema</translation>
 <translation id="2230173723195178503">Página da Web carregada</translation>
@@ -294,6 +298,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2500374554657206846">Opções para salvar senha</translation>
 <translation id="2511117522375201202">Você tem <ph name="NUMBER_OF_PASSWORDS" /> senhas comprometidas que podem colocar sua segurança em risco.</translation>
 <translation id="2513103768503127042">Seus grupos de guias vão aparecer aqui</translation>
+<translation id="251837347827266434">Sua conta será desconectada, as guias serão fechadas e os dados de navegação serão excluídos</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Você pode usar as senhas salvas em qualquer dispositivo. Elas são armazenadas no Gerenciador de senhas do Google da conta <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Ocultar a "Confirmação de segurança"</translation>
@@ -307,6 +312,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2584132361465095047">Adicionar conta…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Nenhuma senha comprometida}=1{{count} senha comprometida}one{{count} senha comprometida}other{{count} senhas comprometidas}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{As guias abertas que não forem usadas por um dia ou mais serão movidas para as guias inativas. Assim, você pode se concentrar nas que mais usa. É possível mudar isso a qualquer momento nas configurações.}one{As guias abertas que não forem usadas por {COUNT} dia ou mais serão movidas para as guias inativas. Assim, você pode se concentrar nas que mais usa. É possível mudar isso a qualquer momento nas configurações.}other{As guias abertas que não forem usadas por {COUNT} dias ou mais serão movidas para as guias inativas. Assim, você pode se concentrar nas que mais usa. É possível mudar isso a qualquer momento nas configurações.}}</translation>
+<translation id="2597486707832946298">Aproveite no iPhone o melhor do navegador para computador que você já conhece.</translation>
 <translation id="260378315836159338">Na parte de cima da tela, toque em +.</translation>
 <translation id="2604176749896001318">Atualizar seu navegador</translation>
 <translation id="2609008503159898744">Fechar todas as guias?</translation>
@@ -361,6 +367,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2800683595868705743">Sair do seletor guias</translation>
 <translation id="2815198996063984598">2. Toque em "App do navegador padrão"</translation>
 <translation id="2818821771744632548">Sua conta <ph name="USER_NAME" /> foi desconectada como parte da redefinição do iPhone. Para fazer login novamente, toque em "Continuar" abaixo.</translation>
+<translation id="2819667972867209401">Quando essa opção está ativada, os dados são salvos na sua Conta do Google. Quando desativada, os dados são salvos apenas neste dispositivo e são excluídos quando você sai da conta.</translation>
 <translation id="2830972654601096923">Gerenciar endereços…</translation>
 <translation id="2834399722155632105">3. Toque em "Opções de senha"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -369,6 +376,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2848086008667475748">Definir como padrão nas Configurações…</translation>
 <translation id="2858204748079866344">Para proteger sua privacidade, o Chrome não preencherá sua senha automaticamente neste campo.</translation>
 <translation id="285960592395650245">Tentar fazer o download novamente</translation>
+<translation id="286382692684806520">{COUNT,plural, =1{1 site (mais nos dispositivos sincronizados)}one{# site (mais nos dispositivos sincronizados)}other{# sites (mais nos dispositivos sincronizados)}}</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871695793448672541">Senha oculta</translation>
 <translation id="2876369937070532032">Quando há risco de segurança, envia para o Google os URLs de algumas páginas que você visita</translation>
@@ -416,7 +424,9 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3090455602619185166">Fazer login com uma conta gerenciada</translation>
 <translation id="309710370695886264">Você tem uma senha reutilizada. Corrija o problema agora para se proteger.</translation>
+<translation id="3102139268911534961">Aproveite no iPhone o melhor do navegador para diispositivos móveis que você já conhece.</translation>
 <translation id="3112556859945124369">Marcar...</translation>
+<translation id="3119874402040566234">Sua conta será desconectada e os dados de navegação serão excluídos</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Veja o que pode ser sincronizado<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Histórico e mais</translation>
 <translation id="3131206671572504478">Bloquear tudo</translation>
@@ -438,6 +448,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3190736958609431397">Não acompanhar</translation>
 <translation id="3208260410153224535">Sua organização desativou o processo de login. Novos favoritos, senhas e outros itens serão salvos apenas neste dispositivo.</translation>
 <translation id="3214379938835224220">A conta foi desconectada como parte da redefinição do iPad. Toque em "Continuar" abaixo para fazer login.</translation>
+<translation id="3224075676564434205">As guias continuarão abertas neste dispositivo, mas o grupo será excluído de todos os dispositivos conectados à conta <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">Para exportar senhas, defina uma no dispositivo primeiro.</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3235063766008841141">Utilizada em um fraudulento e encontrada em uma violação de dados</translation>
@@ -533,6 +544,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="371230970611282515">Prevê e avisa sobre eventos perigosos antes que eles aconteçam.</translation>
 <translation id="371398631992790800">Ocultar Favoritos</translation>
 <translation id="37207012422556617">Pesquisas em alta</translation>
+<translation id="372115889256123713">arquivos em cache</translation>
 <translation id="3725081662140949903">Mude sua senha no app <ph name="APP" /> para impedir que ela seja usada por outras pessoas</translation>
 <translation id="372676576864368480">Preencher automaticamente o número do cartão que termina em <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Criação: <ph name="DATE" /></translation>
@@ -554,6 +566,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3818045793209708987">Você parou de rastrear este pacote</translation>
 <translation id="3818293389945649617">Localizar próximo</translation>
 <translation id="3819183753496523827">Você está off-line. Verifique sua conexão de Internet e tente novamente.</translation>
+<translation id="3828924571679282172">{COUNT,plural, =1{1 forma de pagamento}one{# forma de pagamento}other{# formas de pagamento}}</translation>
 <translation id="3832419617903252251">Senha salva apenas neste dispositivo</translation>
 <translation id="3835964409414434850">Ir para a próxima guia</translation>
 <translation id="383781833195845844">Continuar com esta guia</translation>
@@ -600,6 +613,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4068959193278821990">Ativar a proteção reforçada…</translation>
 <translation id="4088879333319441249">Desfazer grupo de guias?</translation>
 <translation id="4092655288299341041">Mostrar "Ajuda"</translation>
+<translation id="4094361089640885693">Acompanhe os preços com facilidade e receba informações sobre eles.</translation>
 <translation id="4105841739161771091">{count,plural, =1{Excluir endereço}one{Excluir endereço}other{Excluir endereços}}</translation>
 <translation id="4108998448622696017">Detecta e avisa você sobre eventos perigosos quando eles acontecerem.</translation>
 <translation id="411254640334432676">Falha no download.</translation>
@@ -621,6 +635,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="418156467088430727">Ver versão off-line em uma nova guia</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} item foi salvo apenas neste dispositivo. Para usá-lo em outros dispositivos, salve na sua Conta do Google, {email}.}one{{count} item foi salvo apenas neste dispositivo. Para usá-lo em outros dispositivos, salve na sua Conta do Google, {email}.}other{{count} itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}}</translation>
+<translation id="421070604241073551">Quando essa opção está ativada, os dados são salvos na sua Conta do Google. Quando desativada, os dados são salvos apenas neste dispositivo.</translation>
 <translation id="4216918546378735658">Cancelar</translation>
 <translation id="422474357428465195">Você tem vários problemas de senha que podem colocar sua segurança em risco.</translation>
 <translation id="4232900911558558076">Explorar o novo menu</translation>
@@ -630,6 +645,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="424315890655130736">Informar senha longa</translation>
 <translation id="4249955472157341256">Ordenar por mais recentes</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} guia}=1{Abrir {count} guia}one{Abrir {count} guia}other{Abrir {count} guias}}</translation>
+<translation id="4251531167342733205">Aproveite ao máximo o navegador que você adora.</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4263576668337963058">Mostrar ações de página disponíveis</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Você dispensou {COUNT} aviso}one{Você dispensou {COUNT} aviso}other{Você dispensou {COUNT} avisos}}</translation>
@@ -661,6 +677,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4375040482473363939">Pesquisa por QR code</translation>
 <translation id="4378154925671717803">Telefone</translation>
 <translation id="4389019817280890563">Toque para mudar o idioma.</translation>
+<translation id="4402672425188312225">{COUNT,plural, =1{1 guia}one{# guia}other{# guias}}</translation>
 <translation id="4405320213589929829">Use endereços em páginas da Web para conferir informações locais e rotas.</translation>
 <translation id="4420409367264901497">Editar favorito</translation>
 <translation id="4431224949908513835">Selecione uma forma de pagamento para preencher.</translation>
@@ -726,7 +743,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="470337593714520080">{count,plural, =1{Salvar 1 favorito na sua Conta do Google}one{Salvar {count} favorito na sua Conta do Google}other{Salvar {count} favoritos na sua Conta do Google}}</translation>
 <translation id="470966556546083668">Não ative a sincronização</translation>
 <translation id="4711809265250406889">Quando ativado</translation>
-<translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} e mais 1}one{{website_1}, {website_2} e mais {more_count}}other{{website_1}, {website_2} e mais {more_count}}}</translation>
 <translation id="4737560986434232178">Pesquisar guias recentes</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4744428388659507035">Para acessar seus favoritos em todos os dispositivos, ative a opção "Favoritos" nas configurações.</translation>
@@ -840,6 +856,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5235389474593199952">Ocultar histórico</translation>
 <translation id="5238301240406177137">Salvar na conta</translation>
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> agora pode usar seu nome de usuário e sua senha ao fazer login em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> com o Gerenciador de senhas do Google.</translation>
+<translation id="5238642303473095117">Excluir dados</translation>
 <translation id="5245322853195994030">Cancelar sincronização</translation>
 <translation id="5248640482715684545">O site está tentando abrir outro aplicativo.</translation>
 <translation id="5256661381001734217">O site está tentando abrir um aplicativo.  Com essa ação, você sai da navegação anônima.</translation>
@@ -869,6 +886,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5416022985862681400">Últimos sete dias</translation>
 <translation id="5416455648658732408">Mover para grupo de guias</translation>
 <translation id="5423269318075950257">Monitorar preço</translation>
+<translation id="5431252637281434233">Sua conta será desconectada</translation>
 <translation id="543338862236136125">Editar senha</translation>
 <translation id="5433691172869980887">Nome de usuário copiado</translation>
 <translation id="5439618055789623719">Conta conectada: <ph name="USER_EMAIL" /></translation>
@@ -1126,6 +1144,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6583087784430677195">Para desativar, abra <ph name="BEGIN_LINK" />Ajustes<ph name="END_LINK" /> e acesse "Preenchimento Automático de Senhas".</translation>
 <translation id="6585618849026997638">Você pode adicionar uma página importante aos favoritos para acessá-la com facilidade</translation>
 <translation id="6596481460663245319">Pesquisar imagem com o Google</translation>
+<translation id="6598432073497341323">{COUNT,plural, =1{1 senha}one{# senha}other{# senhas}}</translation>
 <translation id="6598875554591387303">Ordenar por editor</translation>
 <translation id="6601302169302852717">Imagem salva no Google Fotos de <ph name="USER_EMAIL" /></translation>
 <translation id="6603393121510733479">Sua organização desativou a navegação privada.
@@ -1205,6 +1224,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6944369514868857500">Escolher outra conta</translation>
 <translation id="6944935964236827145">Ocultar "Traduzir"</translation>
 <translation id="6945221475159498467">Selecionar</translation>
+<translation id="6952332546582084833">O navegador que você adora agora no iOS</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Pastas</translation>
 <translation id="69739764870135975">Se o Google também for seu mecanismo de pesquisa padrão, você vai receber sugestões melhores e relevantes para o contexto</translation>
@@ -1227,6 +1247,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7055240621761583113">Preencher a senha automaticamente</translation>
 <translation id="7063811929043357292">Sua conta é gerenciada pelo seu familiar responsável.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="7067610207756299941">Para proteger a segurança da sua organização, os dados não salvos serão excluídos deste dispositivo. Isso pode incluir senhas, histórico e muito mais.</translation>
 <translation id="7069695992271320873">Remover deste dispositivo</translation>
 <translation id="7080806333218412752">Envia URLs para a verificação pelo recurso Navegação segura. Também envia uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças. Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google.</translation>
 <translation id="7082853213442715471">Quando ativado, bloqueia algumas tecnologias da Web, o que pode causar lentidão no carregamento de sites ou impedir o funcionamento normal.</translation>
@@ -1244,6 +1265,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7173114856073700355">Configurações</translation>
 <translation id="7186568385131859684">Controle como o histórico de navegação é usado com seus outros dados nos Serviços do Google</translation>
 <translation id="7187190640134722091">Criar grupo</translation>
+<translation id="718807879214459529">Aproveite no iPad o melhor do navegador para dispositivos móveis que você já conhece.</translation>
 <translation id="7189598951263744875">Compartilhar...</translation>
 <translation id="719133302483559673">Gerencie seus interesses e suas preferências.</translation>
 <translation id="7192050974311852563">Iniciar registro</translation>
@@ -1255,6 +1277,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7223102419539744003">Fechar guia</translation>
 <translation id="722454870747268814">Nova guia anônima</translation>
 <translation id="7233006041370588369">Selecione uma senha para preencher.</translation>
+<translation id="7248046129087111453">O <ph name="BEGIN_LINK" />histórico de pesquisa<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> podem ser salvos na sua Conta do Google.</translation>
 <translation id="7265758999917665941">Nunca para este site</translation>
 <translation id="7272437679830969316">Não é possível confirmar sua identidade. Senha não copiada.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Novo pacote rastreado}one{Novo pacote rastreado}other{Novos pacotes rastreados}}</translation>
@@ -1272,6 +1295,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7380220816562673297">Por enquanto, só é possível compartilhar senhas com membros da família. <ph name="BEGIN_LINK" />Crie um grupo familiar<ph name="END_LINK" /> com até seis membros e aproveite ao máximo seus produtos e assinaturas do Google.</translation>
 <translation id="739101637685146669">Qual URL você quer adicionar aos favoritos?</translation>
 <translation id="7396331865858820922">A senha não foi compartilhada</translation>
+<translation id="7397805793441258955">{COUNT,plural, =1{1 site}one{# site}other{# sites}}</translation>
 <translation id="7398893703713203428">Criar link</translation>
 <translation id="7399802613464275309">Confirmação de segurança</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1317,6 +1341,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7564917801238348224">SALVAR…</translation>
 <translation id="7582857256643797524">Configuração ativada no dispositivo</translation>
 <translation id="7583004045319035904">Use o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear suas guias anônimas.</translation>
+<translation id="7592413841889764532">Aproveite o melhor do navegador que você adora</translation>
 <translation id="7598439272585186139">Aumente a segurança</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="7603308509262646847">Preencher automaticamente o titular do cartão <ph name="NAME" /></translation>
@@ -1372,6 +1397,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7839985698273989086">Página offline</translation>
 <translation id="7839994177130598711">Os membros da sua família agora podem usar seu nome de usuário e sua senha ao fazer login em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> com o Gerenciador de senhas do Google.</translation>
 <translation id="7840771868269352570">Os itens selec. serão removidos.</translation>
+<translation id="7844570984931473556">O navegador que você adora agora no iPadOS</translation>
 <translation id="7845466610722898">Mostrar "Lista de leitura"</translation>
 <translation id="784551991304901159">Para acessar o conteúdo, selecione "Ativar" no menu</translation>
 <translation id="7853202427316060426">Atividade</translation>
@@ -1443,6 +1469,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="81313319706244542">2. Toque em "Senhas"</translation>
 <translation id="8132598642024322408">De <ph name="PREVIOUS_PRICE" /> por <ph name="PRICE" />.</translation>
 <translation id="813370552429173916">Use uma senha exclusiva para cada site ou app. Se alguém descobrir uma senha que foi reutilizada, ela poderá ser usada para acessar outras contas. Clique para abrir o site e mudar as senhas agora mesmo.</translation>
+<translation id="8135643032449715400">{COUNT,plural, =1{1 outro}one{# outro}other{# outros}}</translation>
 <translation id="814463369662540460">Monitorar preço</translation>
 <translation id="8156478151976189188">O Password Sync não está funcionando</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> contas</translation>
@@ -1636,6 +1663,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9057972802061533987">Não foi possível seguir. Algo deu errado.</translation>
 <translation id="9061495354530850708">Na sua Conta do Google</translation>
 <translation id="9065203028668620118">Editar</translation>
+<translation id="9070824521421603770">Sua conta será desconectada e as guias serão fechadas</translation>
 <translation id="9079935439869366234">Marcar todas as entradas como não lidas</translation>
 <translation id="9081058212938299310">Atualizar senha para <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar vários dispositivos, ative a sincronização.</translation>

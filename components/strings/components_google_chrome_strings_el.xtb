@@ -3,6 +3,8 @@
 <translationbundle lang="el">
 <translation id="1016765312371154165">Η λειτουργία του Chrome δεν τερματίστηκε σωστά.</translation>
 <translation id="130631256467250065">Οι αλλαγές σας θα εφαρμοστούν την επόμενη φορά που θα επανεκκινήσετε τη συσκευή σας.</translation>
+<translation id="1516530951338665275">Το Google Chrome χρειάζεται πρόσβαση στο Bluetooth για να συνεχιστεί 
+ η σύζευξη. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1635457557763038537">Οι αλλαγές που πραγματοποιήσατε θα ισχύσουν την επόμενη φορά που θα εκκινήσετε το Chrome.</translation>
 <translation id="2399868464369312507">Το Google Chrome προσπαθεί να επεξεργαστεί τους τρόπους πληρωμής.</translation>
 <translation id="2447485272386224171">Το Chrome δημιουργήθηκε με τη βοήθεια του έργου ανοικτού κώδικα <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> και άλλου <ph name="BEGIN_LINK_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_OSS" />.</translation>

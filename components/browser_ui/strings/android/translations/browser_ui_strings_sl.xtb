@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="3859306556332390985">Išči naprej</translation>
 <translation id="3895926599014793903">Vsili povečavo</translation>
+<translation id="3905475044299942653">Ustavitev veliko obvestil</translation>
 <translation id="3908288065506437185">Blokiranje piškotkov tretjih oseb v anonimnem načinu.</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" />, <ph name="SEPARATOR1" />, <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Nekatere funkcije morda ne bodo delovale. Povezana spletna mesta lahko še vedno uporabljajo piškotke tretjih oseb.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">S tem izbrišete piškotke in druge podatke spletnega mesta za <ph name="WEBSITE" />.</translation>
 <translation id="5723967018671998714">Piškotki drugih spletnih mest so blokirani v anonimnem načinu</translation>
 <translation id="5740126560802162366">Spletna mesta lahko shranjujejo podatke v napravi.</translation>
+<translation id="5749085587985334212">Skrij varnostno preverjanje</translation>
 <translation id="5771720122942595109">Blokirano: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
 <translation id="5844448279347999754">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo ogled besedila in slik, shranjenih v odložišču. Če je ta možnost izklopljena, si spletna mesta ne smejo ogledati besedila ali slik, shranjenih v odložišču.</translation>

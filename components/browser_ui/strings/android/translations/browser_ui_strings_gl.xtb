@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3859306556332390985">Buscar cara adiante</translation>
 <translation id="3895926599014793903">Forzar a activación do zoom</translation>
+<translation id="3905475044299942653">Deter o exceso de notificacións</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceiros no modo de incógnito</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">É posible que algunhas funcións non estean operativas. Os sitios relacionados poden seguir usando cookies de terceiros.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Esta acción eliminará as cookies e outros datos dos sitios de <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">As cookies de terceiros bloquéanse no modo de incógnito</translation>
 <translation id="5740126560802162366">Os sitios poden gardar datos no teu dispositivo</translation>
+<translation id="5749085587985334212">Ocultar Comprobación de seguranza</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> (bloqueado)</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5844448279347999754">Cando esta opción está activada, os sitios non poden pedirche permiso para acceder ao texto e ás imaxes do portapapeis. Cando esta opción está desactivada, os sitios non poden acceder ao texto nin ás imaxes do portapapeis.</translation>

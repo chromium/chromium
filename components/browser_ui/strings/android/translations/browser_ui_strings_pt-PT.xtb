@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3859306556332390985">Procurar para a frente</translation>
 <translation id="3895926599014793903">Forçar ativação do zoom</translation>
+<translation id="3905475044299942653">Pare notificações excessivas</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceiros no Modo de navegação anónima</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Algumas funcionalidades podem não funcionar. Os sites relacionados ainda podem usar cookies de terceiros.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Esta ação elimina os cookies e outros dados de sites de <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Os cookies de terceiros estão bloqueados no Modo de navegação anónima</translation>
 <translation id="5740126560802162366">Os sites podem guardar dados no seu dispositivo</translation>
+<translation id="5749085587985334212">Ocultar verificação de segurança</translation>
 <translation id="5771720122942595109">Bloqueio de <ph name="PERMISSION_1" />.</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5844448279347999754">Quando esta opção está ativada, os sites podem pedir para ver o texto e as imagens guardados na área de transferência. Quando esta opção está desativada, os sites não podem ver o texto nem as imagens guardados na área de transferência.</translation>

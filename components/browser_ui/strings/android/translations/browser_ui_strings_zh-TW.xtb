@@ -172,6 +172,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">快轉到特定的播放時間點</translation>
 <translation id="3895926599014793903">強制啟用縮放功能</translation>
+<translation id="3905475044299942653">停止大量通知</translation>
 <translation id="3908288065506437185">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">某些功能可能無法運作，相關網站仍可使用第三方 Cookie。</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">如果這麼做，系統將刪除 <ph name="WEBSITE" /> 的 Cookie 及其他網站資料</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5740126560802162366">網站可將資料儲存到裝置</translation>
+<translation id="5749085587985334212">隱藏「安全檢查」</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5844448279347999754">如果啟用，網站就可以要求查看已儲存到剪貼簿的文字和圖片。如果停用，網站將無法查看已儲存到剪貼簿的文字或圖片。</translation>

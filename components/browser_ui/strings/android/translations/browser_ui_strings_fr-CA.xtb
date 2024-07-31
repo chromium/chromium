@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Retour</translation>
 <translation id="3859306556332390985">Rechercher vers l'avant</translation>
 <translation id="3895926599014793903">Forcer l'activation du zoom</translation>
+<translation id="3905475044299942653">Bloquer beaucoup de notifications</translation>
 <translation id="3908288065506437185">Bloquer les témoins tiers en mode de navigation privée</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Certaines fonctionnalités pourraient ne pas fonctionner. Les sites associés peuvent toujours utiliser des témoins tiers.</translation>
@@ -284,6 +285,7 @@
 <translation id="5706552988683188916">Cette opération supprime les témoins et les autres données relatives aux sites pour <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Les témoins tiers sont bloqués en mode de navigation privée</translation>
 <translation id="5740126560802162366">Les sites peuvent enregistrer des données sur votre appareil</translation>
+<translation id="5749085587985334212">Masquer la Vérification de sécurité</translation>
 <translation id="5771720122942595109">Autorisation <ph name="PERMISSION_1" /> bloquée</translation>
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5844448279347999754">Lorsque cette option est activée, les sites peuvent demander à voir le texte et les images enregistrées dans votre presse-papiers. Lorsqu'elle est désactivée, les sites ne peuvent pas voir le texte ni les images enregistrées dans votre presse-papiers.</translation>

@@ -457,6 +457,11 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
       Beachte, dass es sich hierbei um eine vorübergehende Richtlinie handelt, die dafür sorgt, dass alte Tastenkürzel weiterhin von verwalteten Nutzern verwendet werden können. Diese Richtlinie wird verworfen, sobald benutzerdefinierte Tastenkürzel verfügbar sind.</translation>
 <translation id="1361661842732478894">„Home“-Schaltfläche in der Symbolleiste anzeigen</translation>
 <translation id="1363275621236827384">Abfragen an Quirks-Server für Hardwareprofile aktivieren</translation>
+<translation id="1363839375295535439">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die LPAC-Sandbox für Druckdienste aktiviert, sofern dies von der Systemkonfiguration unterstützt wird.
+
+Ist die Richtlinie deaktiviert, hat dies negative Auswirkungen auf die Sicherheit von <ph name="PRODUCT_NAME" />, da die zum Drucken verwendeten Dienste möglicherweise in einer weniger sicheren Sandbox-Konfiguration ausgeführt werden.
+
+Die Richtlinie sollte nur deaktiviert werden, wenn Kompatibilitätsprobleme mit Drittanbieter-Software auftreten, die verhindern, dass Druckdienste in der LPAC-Sandbox ordnungsgemäß funktionieren.</translation>
 <translation id="1369698103169067223">Glanceables sind für Nutzer nicht aktiviert.</translation>
 <translation id="1371626834351873151">Die Verringerung des User-Agents ist für alle Ursprünge aktiviert.</translation>
 <translation id="1371851989348083665">Verwendung von <ph name="ASSISTANT_PRODUCT_NAME" /> im Web zulassen</translation>
@@ -856,6 +861,20 @@ Für Ursprünge, die nicht durch eine Richtlinie oder Nutzereinstellungen angege
       Wird diese Richtlinie nicht festgelegt, wird die Standardgröße verwendet und der Nutzer kann diese mit dem Parameter "--media-cache-size" ändern.</translation>
 <translation id="1648816843164517573">Liste der Namen, die vom HSTS-Richtliniencheck ausgenommen sind</translation>
 <translation id="1651197070942919276">Ausführung von virtuellen Maschinen auf dem Gerät nicht zulassen</translation>
+<translation id="1651216316133158002">Mit dieser Richtlinie können Administratoren Apps festlegen, die als Standard-Handler für die einzelnen Dateiendungen unter <ph name="PRODUCT_OS_NAME" /> dienen und von Nutzern nicht geändert werden können.
+
+Für alle Dateiendungen, die in der Richtlinie nicht angegeben sind, können Nutzer hinsichtlich des üblichen Workflows eigene Standardeinstellungen festlegen.
+
+Chrome-Apps werden mit ihrer ID angegeben, z. B. „<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />“,
+Web-Apps mit ihrer URL aus <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, z. B. „<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />“,
+Android-Apps mit ihrem Paketnamen, z. B. „<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />“,
+System-Web-Apps mit ihrem Snake-Case-Namen, z. B. „<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />“,
+und virtuelle Aufgaben mit ihrem vorgesehenen Namen mit vorangestelltem „<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX" />“, z. B. „<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE" />“.
+Isolierte Web-Apps werden mit ihrer Web-Paket-ID angegeben, z. B. „<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ISOLATED_WEB_APP_EXAMPLE" />“.
+
+Beachte, dass Apps im Manifest für angegebene Dateiendungen als Datei-Handler deklariert werden MÜSSEN, damit dieses Richtlinienelement wirksam wird (die Richtlinie erweitert also KEINE vorhandenen App-Funktionen).
+
+Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> gemäß der internen Logik Standard-Handler selbst festlegen.</translation>
 <translation id="1651810147727432656">Berechtigung für die Fensterverwaltung auf diesen Websites blockieren</translation>
 <translation id="1654087023995670109">Gastmodus im Browser erzwingen</translation>
 <translation id="1655229863189977773">Cache-Größe für Datenträger in Byte festlegen</translation>
@@ -1428,6 +1447,7 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
 <translation id="2082205219176343977">Konfiguriere die für das Gerät erforderliche Mindestversion von Chrome.</translation>
 <translation id="20838788335877967">Erfassen personenbezogener Daten deaktivieren</translation>
 <translation id="208566302163036794">Deaktivierte Funktionen sperren</translation>
+<translation id="2086040449830622332">LPAC-Sandbox für Druckdienste aktivieren</translation>
 <translation id="208623333578980446">Bildschirm-Wakelocks für die Energieverwaltung zulassen</translation>
 <translation id="2089541797660774692">Cloud-Berichterstellung über verwaltete Browser aktivieren</translation>
 <translation id="2090712407517297305">Die in Gruppen eingeteilte Chrome-Verlaufsseite ist unter chrome://history/grouped sichtbar.</translation>
@@ -1759,6 +1779,12 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="2290270645214705008">Wenn diese Richtlinie deaktiviert ist, kann der Host für den Remote-Zugriff keine eingehenden Verbindungen annehmen.  Diese Richtlinien wirkt sich nicht auf die Remote-Unterstützung aus.
 
           Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder nicht konfiguriert wird.</translation>
+<translation id="2292482441027364457">Wenn diese Richtlinie konfiguriert ist, werden die App-IDs festgelegt, die unter <ph name="PRODUCT_OS_NAME" /> als angepinnte Apps in der Launcher-Leiste angezeigt werden. Sie können nicht von Nutzern geändert werden.
+
+Chrome-Apps werden mit ihrer ID angegeben, z. B. „pjkljhegncpnkpknbcohdijeoejaedia“, Android-Apps mit ihrem Paketnamen, z. B. „com.google.android.gm“, Web-Apps mit ihrer URL aus <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, z. B. „https://google.com/maps“, und System-Web-Apps mit ihrem Snake-Case-Namen, z. B. „<ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />“.
+Isolierte Web-Apps werden mit ihrer Web-Paket-ID angegeben, z. B. „<ph name="PINNED_LAUNCHER_APPS_POLICY_ISOLATED_WEB_APP_EXAMPLE" />“.
+
+Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinnten Apps ändern.</translation>
 <translation id="229322770310505679">Gruppen aus Einzelrichtlinien aktivieren</translation>
 <translation id="22941467117331786">Wenn die Richtlinie auf "True" gesetzt ist, wird während aktiver Sitzungen in der Taskleiste eine große rote Schaltfläche zum Abmelden angezeigt, solange das Display nicht gesperrt ist.
 
@@ -2370,6 +2396,11 @@ Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="BLOCK_POPUPS_POLI
 <translation id="2801378553855965587">Dadurch wird die <ph name="GOOGLE_CALENDAR_NAME" />-Integration deaktiviert.</translation>
 <translation id="2805707493867224476">Anzeige von Pop-ups für alle Websites zulassen</translation>
 <translation id="2806804577787377637">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen „<ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />“.</translation>
+<translation id="2815701930753942156">Durch diese Richtlinie wird eine Liste von wöchentlichen Intervallen festgelegt, in denen das <ph name="PRODUCT_OS_NAME" />‑Gerät nicht verwendet werden kann. Alle laufenden Sitzungen werden geschlossen und die Anmeldung wird vorübergehend blockiert.
+
+Intervalle, die sich überschneiden, werden nicht unterstützt.
+
+<ph name="PRODUCT_OS_NAME" />‑Geräte verwenden für diese Intervalle die Systemzeitzone.</translation>
 <translation id="2816964824289752181"><ph name="DESK_API_NAME" /> für <ph name="PRODUCT_OS_NAME" />-Steuerung über Drittanbieter aktivieren</translation>
 <translation id="2818074121667686266">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird beim Zugriff für Audioaufnahmen beim Nutzer nachgefragt. Ausgenommen sind URLs in der Liste "AudioCaptureAllowedUrls".
 
@@ -3001,6 +3032,7 @@ Ist diese Richtlinie deaktiviert, werden heruntergeladene Dateien nicht von Safe
 Diese Einschränkungen gelten für Downloads, die durch Websiteinhalte ausgelöst werden, sowie für die Menüoption „Link herunterladen“. Diese Einschränkungen gelten aber weder für das Herunterladen und Speichern der gerade angezeigten Seite noch für das Speichern als PDF-Datei in den Druckoptionen.
 
 Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
+<translation id="3296560797994110772">Verknüpfungen mit der Suchtaste werden zuerst an die App gesendet, bevor sie vom Betriebssystem verarbeitet werden.</translation>
 <translation id="3300441638895109781">Authentifizierungsvorgang unter ChromeOS automatisch aktualisieren</translation>
 <translation id="3300784749135986828">Aktiviere oder deaktiviere die Funktion <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Erweiterung „Insights“ aktivieren</translation>
@@ -3486,6 +3518,7 @@ Verbindungen, die diese Prüfung nicht bestehen, schlagen mit dem Fehler ERR_SSL
       * Mit <ph name="PRINTERS_ALLOW_ALL" /> (Wert 2) werden alle Drucker angezeigt
 
       Wenn die Richtlinie nicht konfiguriert ist, wird <ph name="PRINTERS_ALLOW_ALL" /> verwendet.</translation>
+<translation id="3686607051786495544">LPAC-Sandbox für Druckdienste deaktivieren</translation>
 <translation id="3695204334462456702">Zeroconf-basierte (mDNS + DNS-SD) Protokollziele (veraltet)</translation>
 <translation id="3695706037816556327">Aktion bei der Entfernung von Sicherheitstoken (z. B. Smartcard) für <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3696134803170884851">Ladetöne deaktivieren</translation>
@@ -3797,6 +3830,7 @@ Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter http
 <translation id="3962445567482559878">EDU-Modus für das Einrichten von Assistant verwenden</translation>
 <translation id="396261881101930204">Medien-Empfehlungen für Nutzer verbergen</translation>
 <translation id="3964298692570794635">Unsichere Inhalte auf diesen Websites zulassen</translation>
+<translation id="3965027062205390679">Anzeigen des Einführungsbildschirms für Gemini bei der Anmeldung aktivieren</translation>
 <translation id="3965339130942650562">Zeitlimit bis zur Abmeldung eines inaktiven Nutzers</translation>
 <translation id="396536755218079668">Betreute Nutzer</translation>
 <translation id="3968218878014278212">Aktivieren von „Eche“ zulassen.</translation>
@@ -4256,6 +4290,13 @@ Wenn die Richtlinie nicht konfiguriert ist, wird die Richtlinie <ph name="ASK_GE
 <translation id="4313767483634435271">Eingetragene Dock-MAC-Adresse des Geräts</translation>
 <translation id="4314538398999793073">CNAME-Suche bei der Kerberos-Authentifizierung deaktivieren</translation>
 <translation id="4320592646346933548">WLAN</translation>
+<translation id="43213511254881626">Mit dieser Richtlinie wird festgelegt, ob der integrierte Passwortmanager nicht entschlüsselbare Passwörter aus seiner Datenbank löschen kann. Dies ist erforderlich, um die volle Funktionalität des integrierten Passwortmanagers wiederherzustellen. Es kann jedoch dadurch zu einem dauerhaften Datenverlust kommen. Nicht entschlüsselbare Passwörter können dann nicht automatisch entschlüsselt werden. Wenn sie überhaupt entschlüsselt werden können, sind dafür in der Regel komplexe Nutzeraktionen erforderlich.
+
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, gehen nicht entschlüsselbare Passwörter, die Nutzer im integrierten Passwortmanager gespeichert haben, verloren. Passwörter, die sich noch verwenden lassen, bleiben unverändert.
+
+Ist die Richtlinie deaktiviert, bleiben die Daten des Passwortmanagers für Nutzer erhalten, die Passwortmanager-Funktionalität ist jedoch fehlerhaft.
+
+Ist die Richtlinie konfiguriert, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern.</translation>
 <translation id="4322842393287974810">Der automatisch ohne Verzögerung gestarteten Kiosk-App die Steuerung der <ph name="PRODUCT_OS_NAME" />-Version gestatten</translation>
 <translation id="4323412353642577604">Remote-Attestierung zum Schutz von Inhalten aktivieren</translation>
 <translation id="4325690621216251241">Schaltfläche "Abmelden" zur Taskleiste hinzufügen</translation>
@@ -4825,6 +4866,13 @@ Diese Richtlinie unterstützt keine regulären Ausdrücke. Subdomains bestimmter
 Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
+<translation id="4777573685807338095">Mit dieser Richtlinie wird festgelegt, ob dem Nutzer bei der ersten Anmeldung der Einführungsbildschirm für Gemini angezeigt wird.
+
+      Wenn die Richtlinie deaktiviert ist, wird der Einführungsbildschirm für Gemini nicht angezeigt.
+
+      Wenn sie aktiviert ist, wird der Einführungsbildschirm für Gemini angezeigt.
+
+      Ist die Richtlinie nicht konfiguriert, wird der Einführungsbildschirm für Gemini bei von Unternehmen verwalteten Nutzern übersprungen und nicht verwalteten Nutzern angezeigt.</translation>
 <translation id="4783415902268741066">Zulassen, dass die neuesten Ergebnisse der Standardsuchmaschine in der Seitenleiste eines Browsers angezeigt werden</translation>
 <translation id="4786784434769279324">Aktionen, die ausgeführt werden sollen, wenn der Computer inaktiv ist</translation>
 <translation id="4787763197941188108">Überschreibt die standardmäßige Druckseitengröße.
@@ -4950,6 +4998,17 @@ Wenn du die Richtlinie auf „2“ setzt, sorgt der Arbeitsspeicher-Sparmodus f�
 Wenn die Richtlinie nicht konfiguriert ist, kann der Endnutzer diese Einstellung unter chrome://settings/performance verwalten.</translation>
 <translation id="489803897780524242">Parameter zur Steuerung der Suchbegriffersetzung für den Standardsuchanbieter</translation>
 <translation id="4899708173828500852">Safe Browsing aktivieren</translation>
+<translation id="490231389914389892">Mit dieser Richtlinie wird das Verhalten von Tastenkombinationen bei <ph name="PRODUCT_OS_NAME" /> gesteuert.
+
+Wenn diese Richtlinie nicht konfiguriert oder auf „<ph name="NORMAL_SYSTEM_PRIORITY" />“ gesetzt ist, werden alle <ph name="PRODUCT_OS_NAME" />-Tastenkombinationen auf Systemebene immer wie erwartet aktiviert.
+
+Wenn diese Richtlinie auf „<ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />“ gesetzt ist, wird durch eine vordefinierte Liste von Tastenkombinationen mit der Launcher-Taste nie eine Tastenkombination aktiviert.
+
+Wenn diese Richtlinie auf „<ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />“ gesetzt ist, wird durch eine vordefinierte Liste von Tastenkombinationen mit der Launcher-Taste nie eine Tastenkombination aktiviert, während eine App im Vollbildmodus ist.
+
+Wenn diese Richtlinie auf „<ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTCUTS" />“ gesetzt ist, werden Tastenkombinationen mit der Suchtaste an Apps gesendet und nicht vom Betriebssystem verarbeitet.
+
+Wenn diese Richtlinie auf „<ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTCUTS_FULLSCREEN_ONLY" />“ gesetzt ist, werden Tastenkombinationen mit der Suchtaste an Apps gesendet und nicht vom Betriebssystem verarbeitet, sofern die App, auf der der Fokus liegt, im Vollbildmodus ist.</translation>
 <translation id="4906194810004762807">Aktualisierungsrate für Geräterichtlinien</translation>
 <translation id="49093841899738146">Wenn diese Richtlinie aktiviert ist, darf <ph name="PRODUCT_NAME" /> WebRTC-Ereignisprotokolle aus Google-Diensten wie Hangouts Meet speichern und die Protokolle bei Google hochladen. Diese Protokolle enthalten Diagnoseinformationen, die für die Fehlerbehebung bei Audioanrufen oder Videokonferenzen in <ph name="PRODUCT_NAME" /> hilfreich sein können. Dazu zählen die Sende- und Empfangszeit sowie die Größe von RTP-Paketen, Feedback zur Auslastung des Netzwerks und Metadaten zur Länge und Qualität von Audio- und Videoframes. Audio- oder Videoinhalte von Anrufen bzw. Konferenzen gehören nicht dazu. Damit Fehler leichter behoben werden können, verknüpft Google diese Protokolle anhand einer Sitzungs-ID unter Umständen mit anderen Protokollen, die vom Google-Dienst selbst erfasst wurden.
 
@@ -5115,6 +5174,7 @@ Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAM
 <translation id="504116558738617678">Warnungen bei wenig Speicherplatz nur anzeigen, wenn das Gerät nicht verwaltet wird oder es nur einen Nutzer gibt</translation>
 <translation id="5041315457555330432"><ph name="PRODUCT_NAME" /> nur erlauben, Verbindungen zu Geräten unter privaten IP-Adressen herzustellen, es sei denn, die Funktion „CastAllowAllIPs“ ist aktiviert.</translation>
 <translation id="504689994545234073">Lokales Speichern von Nutzerdateien aktivieren</translation>
+<translation id="5048890362473520096">LPAC-Sandbox für Druckdienste aktivieren</translation>
 <translation id="5055474681190962362">Tag im Monat (1–31), an dem der Neustart ausgeführt werden soll, angegeben in der lokalen Zeit des Geräts. Diese Richtlinie wird nur verwendet, wenn „frequency“ auf „MONTHLY“ gesetzt ist. Falls der Wert höher ist als die maximale Anzahl von Tagen in einem bestimmten Monat, wird der jeweils letzte Tag des Monats gewählt.</translation>
 <translation id="5056708224511062314">Lupe deaktiviert</translation>
 <translation id="5058573563327660283">Strategie auswählen, die bei der automatischen Bereinigung zur Freigabe von Festplattenspeicher verwendet wird (eingestellt)</translation>
@@ -5533,6 +5593,11 @@ Verwaltete Konten können keiner Familiengruppe beitreten oder eine erstellen un
       Wenn das Attribut <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> in einer <ph name="GET_DISPLAY_MEDIA_SET_NAME" />-Anfrage definiert ist, werden alle Bildschirmoberflächen automatisch aufgenommen, ohne dass eine explizite Genehmigung durch den Nutzer erforderlich ist.
       Ist die Richtlinie nicht konfiguriert, steht <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> keinen Web-Apps zur Verfügung.
 Zur Verbesserung des Datenschutzes kann diese Richtlinie ab <ph name="PRODUCT_NAME" />-Version 116 nicht mehr dynamisch aktualisiert werden. Der Nutzer kann sich somit darauf verlassen, dass nach der Anmeldung keine Seiten den Bildschirm erfassen können, denen das nicht schon zu Beginn der Sitzung erlaubt war.</translation>
+<translation id="5351946114524094311">Wenn du diese Richtlinie konfigurierst, werden alle angegebenen Datentypen von der Synchronisierung ausgeschlossen. Dies gilt sowohl für die <ph name="CHROME_SYNC_NAME" /> als auch für die Synchronisierung von Roaming-Profilen. Dadurch lässt sich die Größe von Roaming-Profilen reduzieren und du kannst einschränken, welche Arten von Daten auf die <ph name="CHROME_SYNC_NAME" />-Server hochgeladen werden.
+
+      Aktuell werden folgende Datentypen unterstützt: „apps“, „autofill“, „bookmarks“, „extensions“, „preferences“, „passwords“, „payments“, „productComparison“, „readingList“, „savedTabGroups“, „tabs“, „themes“, „typedUrls“, „wifiConfigurations“. Bei diesen Namen muss die Groß- und Kleinschreibung beachtet werden.
+
+      Hinweis: Die dynamische Richtlinienaktualisierung wird nur in <ph name="PRODUCT_NAME" />-Version 123 oder höher unterstützt. Wenn du „autofill“ deaktivierst, wird auch „payments“ deaktiviert. „typedUrls“ bezieht sich auf den gesamten Browserverlauf.</translation>
 <translation id="5361167871898066799">Autokorrektur bei Nutzung der physischen Tastatur steuern</translation>
 <translation id="5361708558735884308">Mit dieser Richtlinie kann auf die aufgeführten URLs zugegriffen werden (als Ausnahmen von „<ph name="URL_BLOCKLIST_POLICY_NAME" />“). Informationen zum Format der Einträge in der Liste findest du in der Beschreibung der Richtlinie. Beispielsweise werden alle Anfragen blockiert, wenn du „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ auf * setzt. Du kannst diese Richtlinie verwenden, um den Zugriff auf eine eingeschränkte Liste mit URLs zu erlauben. Mit ihr lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte Schemas, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist. Die Richtlinie „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ hat Vorrang vor „<ph name="URL_BLOCKLIST_POLICY_NAME" />“. Diese Richtlinie ist auf 1.000 Einträge beschränkt.
 
@@ -5975,6 +6040,7 @@ Die Richtlinie wirkt sich sowohl auf die Authentifizierung bei der Anmeldung als
 <translation id="5676740747107495269">Optionen für Bedienungshilfen im Taskleistenmenü auf dem Anmeldebildschirm anzeigen</translation>
 <translation id="5679540979548648200">Nutzer des Geräts daran hindern, ADB-Sideloading zu verwenden, und ein Powerwash für das Gerät erzwingen, wenn Sideloading zuvor aktiviert war</translation>
 <translation id="5681258683432554972">Standardeinstellung für Pop-ups</translation>
+<translation id="5683494457096171405">Tastenkombinationen mit der Suchtaste werden nur dann zuerst an die App gesendet, bevor sie vom Betriebssystem verarbeitet werden, wenn die App, auf der der Fokus liegt, im Vollbildmodus ist.</translation>
 <translation id="5684501593989438324">Google Assistant-Hotword aktivieren</translation>
 <translation id="5688951037082618146">Unternehmenskennzeichen auf allen Geräten anzeigen</translation>
 <translation id="5689430183304951538">Standardmäßige Druckseitengröße</translation>
@@ -6931,6 +6997,7 @@ Weitere Informationen zur Datenverarbeitung bei Funktionen basierend auf generat
       Wenn diese Richtlinie nicht konfiguriert ist, wird der Standardwert für Unternehmensnutzer deaktiviert. Für nicht verwaltete Konten wird er aktiviert.</translation>
 <translation id="6401669939808766804">Nutzer abmelden</translation>
 <translation id="640244877779556713">Emoji-Vorschläge aktivieren</translation>
+<translation id="6402928885627067154">Wöchentliche Intervalle festlegen, in denen ChromeOS‑Geräte nicht verwendet werden können</translation>
 <translation id="6403114173011456561">Steuert die Touch-Bildschirmtastatur und ist eine Ergänzung zur Richtlinie <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Wenn die Bedienungshilfe „Bildschirmtastatur“ aktiviert ist, hat diese Richtlinie keine Auswirkungen.
@@ -6947,6 +7014,7 @@ Weitere Informationen zur Datenverarbeitung bei Funktionen basierend auf generat
 <translation id="640827304541402854">Firewallausnahme über Host für Remote-Zugriff deaktivieren</translation>
 <translation id="6410847321564585975">Zulassungsliste für Berichte zu Websiteaktivitäten</translation>
 <translation id="6412352702230183710">Native Nachrichtenhosts nur auf Systemebene zulassen</translation>
+<translation id="6412793408912788345">Einführungsbildschirm für Gemini bei der Anmeldung anzeigen</translation>
 <translation id="6416506846917150119">Wortvorschläge bei Nutzung der physischen Tastatur beim Tippen deaktivieren</translation>
 <translation id="6416916931494972926">Berichte mit Telemetriedaten von Kiosk Vision aktivieren.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -8226,6 +8294,7 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
 <translation id="7317472245305274219">Festlegen, ob Passkeys standardmäßig im iCloud-Schlüsselbund erstellt werden sollen.</translation>
+<translation id="7318503436349210241">Aktiviert: CSS‑Zoom entspricht der Standardspezifikation.</translation>
 <translation id="7322825363493984512">Passwort zur Authentifizierung der Systemdienste für den Remote-Web-Proxy.</translation>
 <translation id="7323773727263636287">Dadurch wird die Bedienungshilfe „Farbkorrektur“ aktiviert.
 
@@ -10107,6 +10176,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
       Wenn diese Richtlinie deaktiviert ist, ist Remote-Debugging für Nutzer nicht zulässig.</translation>
 <translation id="8870995142109792885">Plug-in-Suchfunktion aktivieren</translation>
 <translation id="8871974300055371298">Inhaltseinstellungen</translation>
+<translation id="8872029059067980702">Einführungsbildschirm für Gemini bei der Anmeldung nicht anzeigen</translation>
 <translation id="8872402969096027761">Hiermit wird die Bedienungshilfe "Automatisch klicken" auf dem Anmeldebildschirm aktiviert.
 
           Mit dieser Funktion wird automatisch geklickt, wenn der Mauscursor stehen bleibt. So muss der Nutzer die Maus oder die Tasten des Touchpads nicht mehr manuell betätigen.

@@ -458,6 +458,11 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
       Bunun, yönetilen kullanıcıların kullanımdan kaldırılmış eski kısayolları kullanmaya devam edebilmelerini sağlamaya yönelik geçici bir politika olduğunu unutmayın. Bu politika, özelleştirilmiş klavye kısayolları kullanıma sunulduktan sonra kullanımdan kaldırılacaktır.</translation>
 <translation id="1361661842732478894">Araç çubuğunda home düğmesini göster</translation>
 <translation id="1363275621236827384">Quirks Server'dan donanım profillerini sorgulamayı etkinleştir</translation>
+<translation id="1363839375295535439">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa sistem yapılandırması desteklediğinde yazdırma hizmetleri için LPAC korumalı alanı etkinleştirilir.
+
+Yazdırma için kullanılan hizmetler daha zayıf bir korumalı alan yapılandırmasında çalışabileceğinden politikanın Devre Dışı değerine ayarlanması, <ph name="PRODUCT_NAME" /> ürününün güvenliğini olumsuz yönde etkiler.
+
+Politika yalnızca yazdırma hizmetlerinin LPAC korumalı alanında düzgün çalışmasını engelleyen üçüncü taraf yazılımı ile uyumluluk sorunları varsa devre dışı bırakılmalıdır.</translation>
 <translation id="1369698103169067223">Glanceables, kullanıcılar için etkinleştirilmez.</translation>
 <translation id="1371626834351873151">Kullanıcı aracısı kısaltma özelliği tüm kaynaklar için etkinleştirilecek.</translation>
 <translation id="1371851989348083665">Web'de <ph name="ASSISTANT_PRODUCT_NAME" /> kullanımına izin ver</translation>
@@ -868,6 +873,20 @@ Politika veya kullanıcı ayarları tarafından belirtilmeyen kaynakların bu AP
       Politika ayarlanmadan bırakılırsa varsayılan önbellek boyutu kullanılır ve kullanıcılar --media-cache-size flag'ini belirterek bunu değiştirebilir.</translation>
 <translation id="1648816843164517573">HSTS politika kontrolünü atlayacak olan isimlerin listesi</translation>
 <translation id="1651197070942919276">Cihazın, sanal makineleri çalıştırmasına izin verme</translation>
+<translation id="1651216316133158002">Bu politika ile yöneticiler, <ph name="PRODUCT_OS_NAME" /> ürününde kullanıcıların değiştiremeyeceği ilgili dosya uzantıları için varsayılan işleyici görevi gören uygulamaları belirtebilir.
+
+Kullanıcılar, politikada belirtilmeyen tüm dosya uzantıları için normal iş akışına göre kendi varsayılanlarını ayarlayabilir.
+
+Chrome uygulamalarını kimliklerine göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />),
+web uygulamalarını <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> politikasında kullanılan URL'lere göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />), Android uygulamalarını
+paket adlarına göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />), sistem web uygulamalarını
+snake case adlarına göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />), sanal görevleri de başına <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX" />
+eklenmiş tanımlanan adına göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE" />) belirtin.
+Yalıtılmış web uygulamalarını, web paketi kimliklerine göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ISOLATED_WEB_APP_EXAMPLE" />) belirtin.
+
+İlgili politika öğesinin etkili olması için (politika, mevcut uygulama özelliklerini ARTIRMAZ) uygulamaların, manifest dosyalarında belirtilen dosya uzantılarının dosya işleyicisi olarak beyan edilmeleri GEREKİR.
+
+Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" />, dahili mantık doğrultusunda varsayılan işleyiciler seçebilir.</translation>
 <translation id="1651810147727432656">Bu sitelerde pencere yönetimi iznini engelle</translation>
 <translation id="1654087023995670109">Tarayıcı misafir modunu zorunlu tut</translation>
 <translation id="1655229863189977773">Disk önbelleği boyutunu bayt olarak ayarla</translation>
@@ -1454,6 +1473,7 @@ Genellikle bu politika kimlik avına karşı bir savunma olarak Devre Dışıdı
 <translation id="2082205219176343977">Cihaz için izin verilen minimum Chrome sürümünü yapılandır.</translation>
 <translation id="20838788335877967">Kullanıcı tanımlama bilgilerinin raporlanmasını devre dışı bırak</translation>
 <translation id="208566302163036794">Devre dışı bırakılan özellikleri engelle</translation>
+<translation id="2086040449830622332">LPAC korumalı alanı ile yazdırmayı etkinleştir</translation>
 <translation id="208623333578980446">Güç yönetimi için ekran uyanık kalma kilitlerine izin ver</translation>
 <translation id="2089541797660774692">Yönetilen tarayıcı bulut raporlamasını etkinleştir</translation>
 <translation id="2090712407517297305">Gruplar halinde düzenlenmiş Chrome geçmişi sayfası chrome://history/grouped adresinde görülebilir.</translation>
@@ -1785,6 +1805,15 @@ Kullanıcının daha önce oluşturduğu bir kısayolla çakışma olması durum
 <translation id="2290270645214705008">Bu politika Devre Dışı değerine ayarlanırsa uzaktan erişim ana makine hizmeti başlatılamaz veya gelen bağlantıları kabul etmek üzere yapılandırılamaz.  Bu politika, uzaktan destek senaryolarını etkilemez.
 
           Etkin değerine ayarlanır, boş bırakılır veya ayarlanmazsa bu politikanın hiçbir etkisi olmaz.</translation>
+<translation id="2292482441027364457">Politikanın ayarlanması, <ph name="PRODUCT_OS_NAME" /> ürününün başlatıcı çubuğunda sabitlenmiş uygulamalar olarak gösterdiği uygulama tanımlayıcılarını sabitler ve kullanıcılar bunları değiştiremez.
+
+Chrome uygulamalarını kimliklerine göre (ör. pjkljhegncpnkpknbcohdijeoejaedia),
+Android uygulamalarını paket adlarına göre (ör. com.google.android.gm),
+web uygulamalarını <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> politikasında kullanılan URL'lere göre (ör. https://google.com/maps),
+sistem web uygulamalarını ise snake case adlarına göre (ör. <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />) belirtin.
+Yalıtılmış web uygulamalarını, web paketi kimliklerine göre (ör. <ph name="PINNED_LAUNCHER_APPS_POLICY_ISOLATED_WEB_APP_EXAMPLE" />) belirtin.
+
+Ayarlanmadan bırakılması, kullanıcıların başlatıcıdaki sabitlenmiş uygulamalar listesini değiştirmesine izin verir.</translation>
 <translation id="229322770310505679">Politika atom grupları kavramını etkinleştirir</translation>
 <translation id="22941467117331786">Politikayı True (Doğru) değerine ayarlamak, ekran kilitli değilken etkin oturumlar sırasında sistem tepsisinde büyük, kırmızı bir oturum kapatma düğmesi görüntüler.
 
@@ -2414,6 +2443,11 @@ Politikayı ayarlamadan bırakırsanız <ph name="BLOCK_POPUPS_POLICY_NAME" /> p
 <translation id="2801378553855965587"><ph name="GOOGLE_CALENDAR_NAME" /> entegrasyonunu devre dışı bırak</translation>
 <translation id="2805707493867224476">Tüm sitelerin pop-up göstermesine izin ver</translation>
 <translation id="2806804577787377637">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" /> politikasını kullanın.</translation>
+<translation id="2815701930753942156">Bu politika, <ph name="PRODUCT_OS_NAME" /> cihazın kullanılamayacağı haftalık aralıkların listesini belirtir. Devam eden tüm oturumlar kapatılır ve giriş yapılması engellenir.
+
+Çakışan aralıklar desteklenmez.
+
+<ph name="PRODUCT_OS_NAME" /> cihazlar, bu aralıkları uygulamak için sistem saat dilimini kullanır.</translation>
 <translation id="2816964824289752181">Üçüncü taraf <ph name="PRODUCT_OS_NAME" /> kontrolü için <ph name="DESK_API_NAME" /> öğesini etkinleştir</translation>
 <translation id="2818074121667686266">Politika, Etkin değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcılardan ses yakalama için erişim izni istenir (AudioCaptureAllowedUrls listesinde ayarlanan URL'ler hariç).
 
@@ -3051,6 +3085,7 @@ Politika, Devre dışı değerine ayarlanırsa, indirilen dosyalar güvenilir bi
 Bu kısıtlamalar hem web sayfası içeriğinden hem de Bağlantıyı indir menü seçeneğinden tetiklenen indirmeler için geçerlidir. Bu kısıtlamalar, görüntülenmekte olan sayfanın kaydedilmesi veya indirilmesinde ya da yazdırma seçeneklerinden PDF olarak kaydedilmesinde geçerli değildir.
 
 <ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
+<translation id="3296560797994110772">Arama tuşu içeren kısayollar, işletim sistemi tarafından kullanılmadan önce uygulamaya gönderilir.</translation>
 <translation id="3300441638895109781">ChromeOS'te kimlik doğrulama akışını otomatik olarak yeniden yükle</translation>
 <translation id="3300784749135986828"><ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> özelliğini etkinleştir veya devre dışı bırak.</translation>
 <translation id="3301698868852716692">Analizler uzantısını etkinleştir</translation>
@@ -3555,6 +3590,7 @@ HTTPS'ye yönelik RSA sertifikalarına her ikisini de eklemelidir.</translation>
       * <ph name="PRINTERS_ALLOW_ALL" /> (2 değeri) ayarlanırsa tüm yazıcılar görüntülenir.
 
       Politika ayarlanmadan bırakılırsa <ph name="PRINTERS_ALLOW_ALL" /> uygulanır.</translation>
+<translation id="3686607051786495544">Yazdırma hizmetleri için LPAC korumalı alanını devre dışı bırak</translation>
 <translation id="3695204334462456702">Zeroconf tabanlı (mDNS + DNS-SD) protokol hedefleri (kullanımdan kaldırıldı)</translation>
 <translation id="3695706037816556327"><ph name="PRODUCT_OS_NAME" /> için güvenlik jetonunun (ör. akıllı kart) çıkarılmasıyla ilgili işlem.</translation>
 <translation id="3696134803170884851">Şarj seslerini devre dışı bırak</translation>
@@ -3874,6 +3910,7 @@ Not: İşlem çözüm politikaları hakkında daha fazla bilgi edinin (https://c
 <translation id="3962445567482559878">Asistan ilk katılım deneyiminin EDU modunu kullanma</translation>
 <translation id="396261881101930204">Kullanıcının medya önerilerini görmesini engelle</translation>
 <translation id="3964298692570794635">Bu sitelerde güvenli olmayan içeriğe izin ver</translation>
+<translation id="3965027062205390679">Oturum açma akışı sırasında Gemini giriş ekranının gösterilmesini etkinleştir</translation>
 <translation id="3965339130942650562">Boştaki kullanıcının çıkış yapması için geçecek zaman aşımı süresi</translation>
 <translation id="396536755218079668">Denetlenen kullanıcılar</translation>
 <translation id="3968218878014278212">Eche uygulamasının etkinleştirilmesine izin ver.</translation>
@@ -4354,6 +4391,13 @@ Politikayı ayarlamadan bırakırsanız <ph name="ASK_GEOLOCATION_POLICY_NAME" /
 <translation id="4313767483634435271">Cihazın atanmış yuva MAC adresi</translation>
 <translation id="4314538398999793073">Kerberos kimlik doğrulaması sırasında CNAME aramasını devre dışı bırak</translation>
 <translation id="4320592646346933548">Kablosuz</translation>
+<translation id="43213511254881626">Bu politika yerleşik şifre yöneticisinin, şifresi çözülemeyen şifreleri veritabanından silip silemeyeceğini kontrol eder. Bu, yerleşik şifre yöneticisinin tam işlevini geri yüklemek için gereklidir ancak kalıcı veri kaybına neden olabilir. Şifresi çözülemeyen şifre değerleri kendiliğinden şifresi çözülebilir hale gelmez ve düzeltilmeleri mümkünse genellikle karmaşık kullanıcı işlemleri yapılması gerekir.
+
+Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar, yerleşik şifre yöneticisine kaydedilmiş şifresi çözülemeyen şifreleri kaybederler. Hâlâ çalışır durumda olan şifrelerde değişiklik yapılmaz.
+
+Politika, Devre Dışı değerine ayarlanırsa kullanıcıların şifre yöneticisi verileri değişmez ancak şifre yöneticisi işlevleri bozulur.
+
+Politika ayarlanırsa kullanıcılar bunu <ph name="PRODUCT_NAME" /> ürününde değiştiremezler.</translation>
 <translation id="4322842393287974810">Sıfır gecikmeyle otomatik başlatılan kiosk uygulamasının <ph name="PRODUCT_OS_NAME" /> sürümünü kontrol etmesine izin ver</translation>
 <translation id="4323412353642577604">İçerik koruması için uzaktan onayı etkinleştir</translation>
 <translation id="4325690621216251241">Sistem tepsisine çıkış düğmesi ekle</translation>
@@ -4930,6 +4974,13 @@ Bu politika normal ifadeleri desteklemez ancak belirli bir alanın alt alan adla
 <ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
 
 <ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
+<translation id="4777573685807338095">Bu politika, ilk oturum açma akışı sırasında Gemini giriş ekranının kullanıcıya gösterilip gösterilmeyeceğini kontrol eder.
+
+      Politika, Devre Dışı dışı değerine ayarlanırsa Gemini giriş ekranı gösterilmez.
+
+      Politika, Etkin değerine ayarlanırsa Gemini giriş ekranı gösterilir.
+
+      Politika ayarlanmadan bırakılırsa Gemini giriş ekranı, kuruluş tarafından yönetilen kullanıcılar için atlanır, yönetilmeyen kullanıcılar için gösterilir.</translation>
 <translation id="4783415902268741066">En son varsayılan arama motoru sonuç sayfasının, tarayıcı yan panelinde gösterilmesine izin ver</translation>
 <translation id="4786784434769279324">Bilgisayar boşta kaldığında gerçekleştirilecek işlemler</translation>
 <translation id="4787763197941188108">Varsayılan yazdırma sayfa boyutunu geçersiz kılar.
@@ -5057,6 +5108,17 @@ Politikayı 2 - Bellek Tasarrufu değerine ayarlamak maksimum bellek tasarrufu s
 Bu politika ayarlanmazsa son kullanıcı bu ayarı chrome://settings/performance bölümünden kontrol edebilir.</translation>
 <translation id="489803897780524242">Varsayılan arama sağlayıcısı için arama terimi yerleştirmeyi kontrol eden parametre</translation>
 <translation id="4899708173828500852">Güvenli Taramayı etkinleştir</translation>
+<translation id="490231389914389892">Bu politika, <ph name="PRODUCT_OS_NAME" /> üzerindeki kısayol davranışını kontrol eder.
+
+Bu politika ayarlanmadan bırakılır veya <ph name="NORMAL_SYSTEM_PRIORITY" /> değerine ayarlanırsa tüm <ph name="PRODUCT_OS_NAME" /> sistem kısayolları her zaman beklendiği gibi etkinleştirilir.
+
+Bu politika <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" /> değerine ayarlanırsa önceden belirlenmiş bir listedeki Başlatıcı tuşu kısayolları hiçbir zaman kısayolları etkinleştirmez.
+
+Bu politika <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" /> değerine ayarlanırsa önceden belirlenmiş bir listedeki Başlatıcı tuşu kısayolları, uygulamalar tam ekran modundayken hiçbir zaman kısayolları etkinleştirmez.
+
+Bu politika <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTCUTS" /> değerine ayarlanırsa arama tuşu içeren kısayollar uygulamalara gönderilir ve işletim sistemi tarafından kullanılmaz.
+
+Bu politika <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTCUTS_FULLSCREEN_ONLY" /> değerine ayarlanırsa arama tuşu içeren kısayollar yalnızca odaklanılan uygulama tam ekran modundayken uygulamalara gönderilir ve işletim sistemi tarafından kullanılmaz.</translation>
 <translation id="4906194810004762807">Aygıt Politikası için yenileme hızı</translation>
 <translation id="49093841899738146">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" /> ürünü, Hangouts Meet gibi Google hizmetlerinden WebRTC olay günlüklerini toplayıp bu günlükleri Google'a yükleyebilir. Bu günlükler, <ph name="PRODUCT_NAME" /> ürünündeki sesli veya görüntülü toplantılarla ilgili sorunlarda hata ayıklamada kullanılacak teşhis bilgileri içerir. Bunlar, RTP paketlerinin saati ve boyutu, ağdaki tıkanmayla ilgili geri bildirim, ses ve video karelerinin zamanı ve kalitesiyle ilgili meta veriler gibi bilgilerdir. Bu günlükler toplantıya ait ses veya video içeriği barındırmaz. Hata ayıklamayı kolaylaştırmak için Google bu günlükleri bir oturum kimliği aracılığıyla Google hizmetinin kendisi tarafından toplanan diğer günlüklerle ilişkilendirebilir.
 
@@ -5223,6 +5285,7 @@ Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD
 <translation id="504116558738617678">Düşük disk alanı uyarılarını, yalnızca cihaz yönetilmiyorsa veya yalnızca 1 kullanıcı varsa göster</translation>
 <translation id="5041315457555330432">CastAllowAllIPs özelliği etkinleştirilmediği sürece <ph name="PRODUCT_NAME" /> ürününün yalnızca özel IP adreslerindeki cihazlara bağlanmasına izin ver.</translation>
 <translation id="504689994545234073">Kullanıcı dosyalarının yerel olarak depolanmasını etkinleştir</translation>
+<translation id="5048890362473520096">Yazdırma hizmetleri için LPAC korumalı alanını etkinleştir</translation>
 <translation id="5055474681190962362">Cihazın ayın hangi gününde [1-31] yeniden başlatılması gerektiği (cihazın yerel saat dilimine göre). Yalnızca "sıklık", "AYLIK" olarak ayarlandığında kullanılır. Bu sayı, belirli bir aydaki maksimum gün sayısından fazlaysa ayın son günü seçilir.</translation>
 <translation id="5056708224511062314">Ekran büyüteci devre dışı</translation>
 <translation id="5058573563327660283">Otomatik temizlik sırasında disk alanı boşaltmak için kullanılan stratejiyi seç (kullanımdan kaldırıldı)</translation>
@@ -5649,6 +5712,11 @@ Yönetilen hesaplar, aile gruplarına katılamadığı veya aile grubu oluştura
       <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> özelliği, <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> isteği içinde tanımlanırsa tüm ekran yüzeyleri, kullanıcının açık izni gerekmeden otomatik olarak yakalanır.
       Politika ayarlanmazsa <ph name="AUTO_SELECT_ALL_SCREENS_NAME" />, hiçbir web uygulaması tarafından kullanılamaz.
 Bu politika, gizliliği iyileştirmek için <ph name="PRODUCT_NAME" /> 116 sürümünden itibaren dinamik yenilemeyi desteklemeyecektir. Dolayısıyla kullanıcılar, oturum başlangıcında izin verilmediyse giriş yaptıktan sonra başka hiçbir sayfanın, ekran görüntüsü almayacağından emin olabilir.</translation>
+<translation id="5351946114524094311">Bu politika ayarlanırsa belirtilen tüm veri türleri hem <ph name="CHROME_SYNC_NAME" /> senkronizasyonunun hem de dolaşım profili senkronizasyonunun dışında tutulur. Bu, dolaşım profilinin boyutunu küçültmeye veya <ph name="CHROME_SYNC_NAME" /> sunucularına yüklenen veri türlerini sınırlandırmaya yarayabilir.
+
+      Şu anda bu politika kapsamında bulunan veri türleri şunlardır: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "productComparison", "readingList", "savedTabGroups", "tabs", "themes", "typedUrls", "wifiConfigurations". Bu adlar büyük/küçük harfe duyarlıdır.
+
+      Notlar: Dinamik politika yenileme yalnızca <ph name="PRODUCT_NAME" /> 123 sürümünde ve sonraki sürümlerde desteklenir. "autofill" veri türü devre dışı bırakıldığında "payments" türü de devre dışı bırakılır. "typedUrls", tüm tarama geçmişini ifade eder.</translation>
 <translation id="5361167871898066799">Fiziksel klavyede otomatik düzeltme özelliğini kontrol et</translation>
 <translation id="5361708558735884308">Politikanın ayarlanması <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına istisna olarak, listelenen URL'lere erişim sağlar. Bu listedeki girişlerin biçimi için söz konusu politikanın açıklamasına bakın. Örneğin, <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasını * olarak ayarlamak tüm istekleri engeller. Bu durumda bu politikayı sınırlı bir URL listesine erişim izni vermek için kullanabilirsiniz. Bu ayarı, (https://support.google.com/chrome/a?p=url_blocklist_filter_format) adresinde belirtilen biçimi kullanarak belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları veya belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini, en spesifik filtre belirler. <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikası, <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına göre daha önceliklidir. Bu politika 1.000 giriş ile sınırlıdır.
 
@@ -6096,6 +6164,7 @@ Bu politika hem giriş hem de kilit ekranı kimlik doğrulama akışlarını etk
 <translation id="5676740747107495269">Erişilebilirlik seçeneklerini giriş ekranında sistem tepsisi menüsünde gösterme</translation>
 <translation id="5679540979548648200">Bu cihaz kullanıcılarının ADB başka cihazdan yükleme işlevini kullanmalarını engelleyin ve başka cihazdan yükleme daha önce etkinleştirildiyse cihazda Powerwash işlemi uygulayın</translation>
 <translation id="5681258683432554972">Varsayılan pop-up'lar ayarı</translation>
+<translation id="5683494457096171405">Arama tuşu içeren kısayollar yalnızca odaklanılan uygulama tam ekran modundayken işletim sistemi tarafından kullanılmadan önce uygulamaya gönderilir.</translation>
 <translation id="5684501593989438324">Google Asistan özel kelimesini etkinleştir</translation>
 <translation id="5688951037082618146">Kurumsal rozetleri tüm cihazlarda göster</translation>
 <translation id="5689430183304951538">Varsayılan yazdırma sayfası boyutu</translation>
@@ -7075,6 +7144,7 @@ Politika ayarlanmadan bırakılırsa varsayılan davranış, normal tüketici ku
       hesapların varsayılan değeri etkin olur.</translation>
 <translation id="6401669939808766804">Kullanıcının oturumunu kapat</translation>
 <translation id="640244877779556713">Emoji Önerilerini Etkinleştir</translation>
+<translation id="6402928885627067154">ChromeOS cihazların kullanılamayacağı haftalık aralıkları belirt</translation>
 <translation id="6403114173011456561"><ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikasının ek politikası işlevi görerek dokunmatik sanal klavyeyi kontrol eder.
 
       Erişilebilirlik sanal klavyesi etkinleştirilirse bu politika geçerliliğini yitirir.
@@ -7091,6 +7161,7 @@ Politika ayarlanmadan bırakılırsa varsayılan davranış, normal tüketici ku
 <translation id="640827304541402854">Uzaktan erişim ana makinesinden güvenlik duvarı geçişini devre dışı bırak</translation>
 <translation id="6410847321564585975">Web sitesi etkinlik raporlaması izin verilenler listesi</translation>
 <translation id="6412352702230183710">Yalnızca sistem düzeyinde yerel mesajlaşma ana makinelerine izin ver</translation>
+<translation id="6412793408912788345">Oturum açma sırasında Gemini giriş ekranını göster</translation>
 <translation id="6416506846917150119">Kullanıcılar yazarken fiziksel klavyede tahmine dayalı yazma özelliğini devre dışı bırak</translation>
 <translation id="6416916931494972926">Kiosk Vision'ın telemetri raporlamasını etkinleştir.</translation>
 <translation id="6417265370957905582">Google Asistan</translation>
@@ -8401,6 +8472,7 @@ Bu politika <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION
 
 <ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="7317472245305274219">Geçiş anahtarı oluşturma işleminin varsayılan olarak iCloud Anahtar Zinciri'nde yapılıp yapılmayacağını kontrol et.</translation>
+<translation id="7318503436349210241">Etkin: CSS yakınlaştırma, standart spesifikasyona uyar.</translation>
 <translation id="7322825363493984512">Uzak web proxy'sinde sistem hizmetlerinin kimliğini doğrulamak için kullanılan şifre.</translation>
 <translation id="7323773727263636287">Renk düzeltme erişilebilirlik özelliğini etkinleştirin.
 
@@ -10328,6 +10400,7 @@ Bu politikayı ayarlarsanız kullanıcılar <ph name="PRODUCT_NAME" /> ürünün
       Bu politika Devre dışı değerine ayarlanırsa kullanıcılar, uzaktan hata ayıklama kullanamazlar.</translation>
 <translation id="8870995142109792885">Eklenti bulucuyu etkinleştir</translation>
 <translation id="8871974300055371298">İçerik ayarları</translation>
+<translation id="8872029059067980702">Oturum açma sırasında Gemini giriş ekranını gösterme</translation>
 <translation id="8872402969096027761">Giriş ekranında otomatik tıklama erişilebilirlik özelliğini etkinleştirir.
 
           Bu özellik, kullanıcının fareyle tıklamasına veya dokunmatik alan düğmelerine basmasına gerek olmadan fare imleci durduğunda otomatik olarak tıklamasına olanak tanır.
