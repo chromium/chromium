@@ -227,6 +227,12 @@ template("in_process_proto_fuzzer") {
         seed_corpus = seed_corpus_path
         seed_corpus_deps = [ ":${protoc_convert_target_name}" ]
       }
+
+      forward_variables_from(invoker,
+                             [
+                               "libfuzzer_options",
+                               "centipede_options",
+                             ])
     }
   } else {
     # noop if the fuzzer harness always provides its own main

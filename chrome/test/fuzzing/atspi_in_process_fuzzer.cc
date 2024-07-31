@@ -223,7 +223,11 @@ int AtspiInProcessFuzzer::Fuzz(
       }
     }
   }
+  if (fuzz_case.action_size() == 0) {
+    return -1;  // avoid wasting time even on GetRootNode, below
+  }
 
+  ScopedAtspiAccessible root_node = GetRootNode();
   for (const test::fuzzing::atspi_fuzzing::Action& action :
        fuzz_case.action()) {
     // We make no attempt to reset the UI of the browser to any 'starting
@@ -245,7 +249,7 @@ int AtspiInProcessFuzzer::Fuzz(
     // along those lines if this fuzzer finds lots of bugs.
     // Enumerate available controls after each action we take - obviously,
     // clicking on one button may make more buttons available
-    ScopedAtspiAccessible current_control = GetRootNode();
+    ScopedAtspiAccessible current_control = root_node;
     // Drill immediately down to the first level which has a choice of controls.
     // The topmost layers each have one child and are the outermost
     // application, which remains the same. (Worse, the outermost control
