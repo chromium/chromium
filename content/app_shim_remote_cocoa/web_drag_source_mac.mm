@@ -237,7 +237,7 @@
   // File instantiation promise.
   if ([type isEqualToString:base::apple::CFToNSPtrCast(
                                 kPasteboardTypeFilePromiseContent)]) {
-    return _fileType;
+    return _fileType.identifier;
   }
   if ([type isEqualToString:base::apple::CFToNSPtrCast(
                                 kPasteboardTypeFileURLPromise)]) {
