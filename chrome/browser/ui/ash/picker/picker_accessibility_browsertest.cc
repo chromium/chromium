@@ -9,6 +9,7 @@
 #include "ash/picker/views/picker_emoji_bar_view.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
+#include "ash/picker/views/picker_feature_tour.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_list_item_view.h"
@@ -25,8 +26,11 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/test_widget_builder.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/browsertest_util.h"
@@ -660,6 +664,24 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   });
   sm_.ExpectSpeechPattern("No results found.");
   sm_.ExpectSpeechPattern("Status");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       ShowingFeatureTourAnnouncesContents) {
+  ash::PickerFeatureTour feature_tour;
+
+  sm_.Call([this, &feature_tour]() {
+    feature_tour.MaybeShowForFirstUse(browser()->profile()->GetPrefs(),
+                                      base::DoNothing());
+  });
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  sm_.ExpectSpeechPattern("*insert content*");
+#endif
+  sm_.ExpectSpeechPattern("Dialog");
+  sm_.ExpectSpeechPattern("Get started");
+  sm_.ExpectSpeechPattern("Button");
   sm_.Replay();
 }
 
