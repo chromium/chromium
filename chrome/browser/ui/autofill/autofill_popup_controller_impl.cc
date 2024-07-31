@@ -376,9 +376,7 @@ void AutofillPopupControllerImpl::ViewDestroyed() {
 }
 
 void AutofillPopupControllerImpl::OnSuggestionsChanged() {
-  if (view_) {
-    view_->OnSuggestionsChanged();
-  }
+  OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false);
 }
 
 void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
@@ -452,6 +450,13 @@ const std::vector<Suggestion>& AutofillPopupControllerImpl::GetSuggestions()
   return filter_ ? filtered_suggestions_ : non_filtered_suggestions_;
 }
 
+void AutofillPopupControllerImpl::OnSuggestionsChanged(
+    bool prefer_prev_arrow_side) {
+  if (view_) {
+    view_->OnSuggestionsChanged(prefer_prev_arrow_side);
+  }
+}
+
 void AutofillPopupControllerImpl::UpdateFilteredSuggestions(
     bool notify_suggestions_changed) {
   if (filter_) {
@@ -464,7 +469,7 @@ void AutofillPopupControllerImpl::UpdateFilteredSuggestions(
     suggestion_filter_matches_.clear();
   }
   if (notify_suggestions_changed) {
-    OnSuggestionsChanged();
+    OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true);
   }
 }
 

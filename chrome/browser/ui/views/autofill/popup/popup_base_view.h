@@ -96,7 +96,9 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // places an arrow on the popup border to point towards `element_bounds`
   // within `max_bounds_for_popup`. The `preferred_popup_sides` are tried
   // one-by-one until a side with enough space is found.
-  gfx::Rect GetOptionalPositionAndPlaceArrowOnPopup(
+  // TODO(crbug.com/324242001): Rename to
+  // GetOptimalPositionAndPlaceArrowOnPopup().
+  virtual gfx::Rect GetOptionalPositionAndPlaceArrowOnPopup(
       const gfx::Rect& element_bounds,
       const gfx::Rect& max_bounds_for_popup,
       const gfx::Size& preferred_size,
