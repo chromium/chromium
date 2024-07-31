@@ -228,10 +228,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedBeforeCommit) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_FALSE(has_topics_header);
+  EXPECT_EQ(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
                                              /*body=*/{}, std::nullopt);
@@ -272,11 +270,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterCommit) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_TRUE(has_topics_header);
-  EXPECT_EQ(topics_header_value, kExpectedHeaderForOrigin1);
+  EXPECT_THAT(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+              testing::Optional(std::string(kExpectedHeaderForOrigin1)));
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
@@ -332,10 +327,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterDocumentDestroyed) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_FALSE(has_topics_header);
+  EXPECT_EQ(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
                                              /*body=*/{}, std::nullopt);
@@ -385,11 +378,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestFromSubframe) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_TRUE(has_topics_header);
-  EXPECT_EQ(topics_header_value, kExpectedHeaderForOrigin1);
+  EXPECT_THAT(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+              testing::Optional(std::string(kExpectedHeaderForOrigin1)));
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
@@ -429,11 +419,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, HasFalseValueObserveResponseHeader) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_TRUE(has_topics_header);
-  EXPECT_EQ(topics_header_value, kExpectedHeaderForOrigin1);
+  EXPECT_THAT(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+              testing::Optional(std::string(kExpectedHeaderForOrigin1)));
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
@@ -473,11 +460,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, EmptyTopics) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_TRUE(has_topics_header);
-  EXPECT_EQ(topics_header_value, kExpectedHeaderForEmptyTopics);
+  EXPECT_THAT(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+              testing::Optional(std::string(kExpectedHeaderForEmptyTopics)));
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
@@ -531,10 +515,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToFromFencedFrame) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_FALSE(has_topics_header);
+  EXPECT_EQ(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
                                              /*body=*/{}, std::nullopt);
@@ -580,10 +562,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToInactiveFrame) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_FALSE(has_topics_header);
+  EXPECT_EQ(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
                                              /*body=*/{}, std::nullopt);
@@ -623,10 +603,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, OpaqueRequestURL) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_FALSE(has_topics_header);
+  EXPECT_EQ(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
                                              /*body=*/{}, std::nullopt);
@@ -667,10 +645,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToPermissionsPolicy) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_FALSE(has_topics_header);
+  EXPECT_EQ(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
                                              /*body=*/{}, std::nullopt);
@@ -714,11 +690,8 @@ TEST_F(BrowsingTopicsURLLoaderTest,
 
   // When the request is ineligible for topics due to user settings, an empty
   // list of topics will be sent in the header.
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_TRUE(has_topics_header);
-  EXPECT_EQ(topics_header_value, kExpectedHeaderForEmptyTopics);
+  EXPECT_THAT(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+              testing::Optional(std::string(kExpectedHeaderForEmptyTopics)));
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
@@ -763,11 +736,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, RedirectTopicsUpdated) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_TRUE(has_topics_header);
-  EXPECT_EQ(topics_header_value, kExpectedHeaderForOrigin1);
+  EXPECT_THAT(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+              testing::Optional(std::string(kExpectedHeaderForOrigin1)));
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
@@ -799,12 +769,9 @@ TEST_F(BrowsingTopicsURLLoaderTest, RedirectTopicsUpdated) {
   EXPECT_EQ(follow_redirect_params[0].removed_headers[0],
             "Sec-Browsing-Topics");
 
-  std::string redirect_topics_header_value;
-  bool redirect_has_topics_header =
-      follow_redirect_params[0].modified_headers.GetHeader(
-          "Sec-Browsing-Topics", &redirect_topics_header_value);
-  EXPECT_TRUE(redirect_has_topics_header);
-  EXPECT_EQ(redirect_topics_header_value, kExpectedHeaderForOrigin2);
+  EXPECT_THAT(follow_redirect_params[0].modified_headers.GetHeader(
+                  "Sec-Browsing-Topics"),
+              testing::Optional(std::string(kExpectedHeaderForOrigin2)));
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 3u);
 
@@ -847,11 +814,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, RedirectNotEligibleForTopics) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  std::string topics_header_value;
-  bool has_topics_header = pending_request->request.headers.GetHeader(
-      "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_TRUE(has_topics_header);
-  EXPECT_EQ(topics_header_value, kExpectedHeaderForOrigin1);
+  EXPECT_THAT(pending_request->request.headers.GetHeader("Sec-Browsing-Topics"),
+              testing::Optional(std::string(kExpectedHeaderForOrigin1)));
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
@@ -883,11 +847,9 @@ TEST_F(BrowsingTopicsURLLoaderTest, RedirectNotEligibleForTopics) {
   EXPECT_EQ(follow_redirect_params[0].removed_headers[0],
             "Sec-Browsing-Topics");
 
-  std::string redirect_topics_header_value;
-  bool redirect_has_topics_header =
-      follow_redirect_params[0].modified_headers.GetHeader(
-          "Sec-Browsing-Topics", &redirect_topics_header_value);
-  EXPECT_FALSE(redirect_has_topics_header);
+  EXPECT_EQ(follow_redirect_params[0].modified_headers.GetHeader(
+                "Sec-Browsing-Topics"),
+            std::nullopt);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
                                              /*body=*/{}, std::nullopt);
@@ -925,15 +887,11 @@ TEST_F(BrowsingTopicsURLLoaderTest, TwoRequests) {
   network::TestURLLoaderFactory::PendingRequest* pending_request1 =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  {
-    std::string topics_header_value;
-    bool has_topics_header = pending_request1->request.headers.GetHeader(
-        "Sec-Browsing-Topics", &topics_header_value);
-    EXPECT_TRUE(has_topics_header);
-    EXPECT_EQ(topics_header_value, kExpectedHeaderForOrigin1);
+  EXPECT_THAT(
+      pending_request1->request.headers.GetHeader("Sec-Browsing-Topics"),
+      testing::Optional(std::string(kExpectedHeaderForOrigin1)));
 
-    EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
-  }
+  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
   pending_request1->client->OnReceiveResponse(CreateResponseHead(true),
                                               /*body=*/{}, std::nullopt);
@@ -957,16 +915,11 @@ TEST_F(BrowsingTopicsURLLoaderTest, TwoRequests) {
 
   EXPECT_TRUE(remote_url_loader_factory.is_connected());
 
-  {
-    std::string topics_header_value;
-    bool has_topics_header = pending_request2->request.headers.GetHeader(
-        "Sec-Browsing-Topics", &topics_header_value);
+  // Topics not eligible due to permissions policy.
+  EXPECT_EQ(pending_request2->request.headers.GetHeader("Sec-Browsing-Topics"),
+            std::nullopt);
 
-    // Topics not eligible due to permissions policy.
-    EXPECT_FALSE(has_topics_header);
-
-    EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
-  }
+  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
 
   pending_request2->client->OnReceiveResponse(CreateResponseHead(true),
                                               /*body=*/{}, std::nullopt);
@@ -1012,15 +965,11 @@ TEST_F(BrowsingTopicsURLLoaderTest, TwoFactories) {
   network::TestURLLoaderFactory::PendingRequest* pending_request1 =
       &proxied_url_loader_factory1.pending_requests()->back();
 
-  {
-    std::string topics_header_value;
-    bool has_topics_header = pending_request1->request.headers.GetHeader(
-        "Sec-Browsing-Topics", &topics_header_value);
-    EXPECT_TRUE(has_topics_header);
-    EXPECT_EQ(topics_header_value, kExpectedHeaderForOrigin1);
+  EXPECT_THAT(
+      pending_request1->request.headers.GetHeader("Sec-Browsing-Topics"),
+      testing::Optional(std::string(kExpectedHeaderForOrigin1)));
 
-    EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
-  }
+  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
   remote_url_loader_factory2->CreateLoaderAndStart(
       remote_loader2.BindNewPipeAndPassReceiver(),
@@ -1034,16 +983,11 @@ TEST_F(BrowsingTopicsURLLoaderTest, TwoFactories) {
   network::TestURLLoaderFactory::PendingRequest* pending_request2 =
       &proxied_url_loader_factory2.pending_requests()->back();
 
-  {
-    std::string topics_header_value;
-    bool has_topics_header = pending_request2->request.headers.GetHeader(
-        "Sec-Browsing-Topics", &topics_header_value);
+  // Topics not eligible due to permissions policy.
+  EXPECT_EQ(pending_request2->request.headers.GetHeader("Sec-Browsing-Topics"),
+            std::nullopt);
 
-    // Topics not eligible due to permissions policy.
-    EXPECT_FALSE(has_topics_header);
-
-    EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
-  }
+  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 

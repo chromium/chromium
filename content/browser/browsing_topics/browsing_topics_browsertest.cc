@@ -110,12 +110,8 @@ class BrowsingTopicsBrowserTest : public ContentBrowserTest {
               last_request_is_topics_request_ =
                   params->url_request.browsing_topics;
 
-              last_topics_header_.reset();
-              std::string topics_header;
-              if (params->url_request.headers.GetHeader("Sec-Browsing-Topics",
-                                                        &topics_header)) {
-                last_topics_header_ = topics_header;
-              }
+              last_topics_header_ =
+                  params->url_request.headers.GetHeader("Sec-Browsing-Topics");
 
               return false;
             }));
