@@ -26,6 +26,7 @@ namespace viz {
 // The type of content that has a fixed or specified frame interval.
 enum class ContentFrameIntervalType {
   kVideo,
+  kAnimatingImage,  // Gifs.
 };
 
 struct VIZ_COMMON_EXPORT ContentFrameIntervalInfo {
@@ -38,7 +39,7 @@ struct VIZ_COMMON_EXPORT ContentFrameIntervalInfo {
   // Number of _additional_ content this entry refers to. Eg if there are 2
   // videos with the same content frame interval, then they can share the same
   // entry and `duplicate_count` should be set to 1.
-  uint8_t duplicate_count = 0u;
+  uint32_t duplicate_count = 0u;
 };
 
 struct VIZ_COMMON_EXPORT FrameIntervalInputs {

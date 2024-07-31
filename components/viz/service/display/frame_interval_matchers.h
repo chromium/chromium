@@ -25,6 +25,7 @@ enum class FrameIntervalMatcherType {
   kInputBoost,
   kOnlyVideo,
   kVideoConference,
+  kOnlyAnimatingImage,
 };
 
 // Works with `FrameIntervalDecider` to compute the ideal frame interval.
@@ -129,6 +130,7 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
 DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(InputBoostMatcher);
 DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(OnlyVideoMatcher);
 DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(VideoConferenceMatcher);
+DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(OnlyAnimatingImageMatcher);
 
 #undef DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER
 

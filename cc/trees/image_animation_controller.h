@@ -5,6 +5,8 @@
 #ifndef CC_TREES_IMAGE_ANIMATION_CONTROLLER_H_
 #define CC_TREES_IMAGE_ANIMATION_CONTROLLER_H_
 
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -137,6 +139,14 @@ class CC_EXPORT ImageAnimationController {
     scheduler_.set_now_callback_for_testing(cb);
   }
 
+  // If all animating images have the same frame duration, then returns the
+  // frame duration and number of images.
+  struct ConsistentFrameDuration {
+    base::TimeDelta frame_duration;
+    uint32_t num_images;
+  };
+  std::optional<ConsistentFrameDuration> GetConsistentContentFrameDuration();
+
  private:
   class AnimationState {
    public:
@@ -155,6 +165,8 @@ class CC_EXPORT ImageAnimationController {
                       bool use_resume_behavior);
     void UpdateMetadata(const DiscardableImageMap::AnimatedImageMetadata& data);
     void PushPendingToActive();
+    // If all frames have same frame duration, return that duration.
+    std::optional<base::TimeDelta> GetConsistentContentFrameDuration();
 
     void AddDriver(AnimationDriver* driver);
     void RemoveDriver(AnimationDriver* driver);
@@ -212,6 +224,7 @@ class CC_EXPORT ImageAnimationController {
     bool needs_invalidation() const {
       return current_state_.pending_index != active_index_;
     }
+    void ComputeConsistentContentFrameDuration();
 
     PaintImage::Id paint_image_id_ = PaintImage::kInvalidId;
 
@@ -233,6 +246,11 @@ class CC_EXPORT ImageAnimationController {
     // The index being used on the active tree, if a recording with this image
     // is still present.
     size_t active_index_ = PaintImage::kDefaultFrameIndex;
+
+    // Cache result for `GetConsistentContentFrameDuration`.
+    base::TimeDelta cached_consistent_frame_duration_;
+    bool cached_has_consistent_frame_duration_ = false;
+    bool cached_consistent_frame_duration_valid_ = false;
 
     // Set if there is at least one driver interested in animating this image,
     // cached from the last update.

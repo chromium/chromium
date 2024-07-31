@@ -16,6 +16,8 @@ EnumTraits<viz::mojom::ContentFrameIntervalType,
   switch (type) {
     case viz::ContentFrameIntervalType::kVideo:
       return viz::mojom::ContentFrameIntervalType::kVideo;
+    case viz::ContentFrameIntervalType::kAnimatingImage:
+      return viz::mojom::ContentFrameIntervalType::kAnimatingImage;
   }
   NOTREACHED_NORETURN();
 }
@@ -27,6 +29,9 @@ bool EnumTraits<viz::mojom::ContentFrameIntervalType,
   switch (input) {
     case viz::mojom::ContentFrameIntervalType::kVideo:
       *out = viz::ContentFrameIntervalType::kVideo;
+      return true;
+    case viz::mojom::ContentFrameIntervalType::kAnimatingImage:
+      *out = viz::ContentFrameIntervalType::kAnimatingImage;
       return true;
   }
   return false;

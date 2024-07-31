@@ -123,6 +123,8 @@ std::string FrameIntervalMatcher::MatcherTypeToString(
       return "OnlyVideo";
     case FrameIntervalMatcherType::kVideoConference:
       return "VideoConference";
+    case FrameIntervalMatcherType::kOnlyAnimatingImage:
+      return "kOnlyAnimatingImage";
   }
 }
 
@@ -229,6 +231,14 @@ std::optional<FrameIntervalMatcher::Result> VideoConferenceMatcher::Match(
     }
   }
   return closest_supported_interval;
+}
+
+DefineSimpleMatcherConstructorDestructor(OnlyAnimatingImageMatcher,
+                                         kOnlyAnimatingImage);
+std::optional<FrameIntervalMatcher::Result> OnlyAnimatingImageMatcher::Match(
+    const Inputs& matcher_inputs) {
+  return MatchContentIntervalType(matcher_inputs,
+                                  ContentFrameIntervalType::kAnimatingImage);
 }
 
 }  // namespace viz

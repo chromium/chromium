@@ -342,6 +342,7 @@ void Display::UpdateFrameIntervalDeciderSettings() {
   matchers.push_back(std::make_unique<VideoConferenceMatcher>());
 #if BUILDFLAG(IS_ANDROID)
   matchers.push_back(std::make_unique<OnlyVideoMatcher>());
+  matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

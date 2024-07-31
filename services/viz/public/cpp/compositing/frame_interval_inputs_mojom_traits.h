@@ -34,7 +34,7 @@ struct StructTraits<viz::mojom::ContentFrameIntervalInfoDataView,
     return info.frame_interval;
   }
 
-  static uint8_t duplicate_count(const viz::ContentFrameIntervalInfo& info) {
+  static uint32_t duplicate_count(const viz::ContentFrameIntervalInfo& info) {
     return info.duplicate_count;
   }
 

@@ -2839,6 +2839,16 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   metadata.frame_interval_inputs.has_input =
       frame_rate_estimator_.input_priority_mode();
 
+  std::optional<ImageAnimationController::ConsistentFrameDuration>
+      animating_image_duration =
+          image_animation_controller_.GetConsistentContentFrameDuration();
+  if (animating_image_duration) {
+    metadata.frame_interval_inputs.content_interval_info.push_back(
+        {viz::ContentFrameIntervalType::kAnimatingImage,
+         animating_image_duration->frame_duration,
+         animating_image_duration->num_images - 1u});
+  }
+
   base::TimeDelta preferred_frame_interval;
   static const bool feature_allowed =
       base::FeatureList::IsEnabled(features::kReducedFrameRateEstimation);

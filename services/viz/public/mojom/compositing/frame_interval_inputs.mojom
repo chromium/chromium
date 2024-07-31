@@ -12,12 +12,13 @@ import "mojo/public/mojom/base/time.mojom";
 
 enum ContentFrameIntervalType {
   kVideo,
+  kAnimatingImage,
 };
 
 struct ContentFrameIntervalInfo {
   ContentFrameIntervalType type;
   mojo_base.mojom.TimeDelta frame_interval;
-  uint8 duplicate_count = 0;
+  uint32 duplicate_count = 0;
 };
 
 struct FrameIntervalInputs {
