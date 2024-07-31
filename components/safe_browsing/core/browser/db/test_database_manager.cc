@@ -53,12 +53,6 @@ bool TestSafeBrowsingDatabaseManager::CheckExtensionIDs(
   return true;
 }
 
-bool TestSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
-                                                       Client* client) {
-  NOTIMPLEMENTED();
-  return true;
-}
-
 std::optional<
     SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
 TestSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(

@@ -259,12 +259,6 @@ bool RemoteSafeBrowsingDatabaseManager::CheckExtensionIDs(
   return true;
 }
 
-bool RemoteSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
-                                                         Client* client) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
-}
-
 std::optional<
     SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
 RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(

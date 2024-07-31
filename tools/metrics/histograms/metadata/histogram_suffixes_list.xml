@@ -3777,7 +3777,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="CertCsdDownloadAllowlist" label=""/>
   <suffix name="CertCsdDownloadWhitelist" label=""/>
   <suffix name="ChromeExtMalware" label=""/>
-  <suffix name="ChromeUrlClientIncident" label=""/>
   <suffix name="IpMalware" label=""/>
   <suffix name="UrlBilling" label=""/>
   <suffix name="UrlCsdAllowlist" label=""/>

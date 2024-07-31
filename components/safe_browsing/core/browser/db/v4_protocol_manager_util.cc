@@ -143,10 +143,6 @@ ListIdentifier GetChromeUrlApiId() {
   return ListIdentifier(GetCurrentPlatformType(), URL, API_ABUSE);
 }
 
-ListIdentifier GetChromeUrlClientIncidentId() {
-  return ListIdentifier(CHROME_PLATFORM, URL, CLIENT_INCIDENT);
-}
-
 ListIdentifier GetUrlBillingId() {
   return ListIdentifier(GetCurrentPlatformType(), URL, BILLING);
 }

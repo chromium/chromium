@@ -81,7 +81,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // compiles, but this difference should be eliminated.
   bool CheckExtensionIDs(const std::set<FullHashStr>& extension_ids,
                          Client* client) override;
-  bool CheckResourceUrl(const GURL& url, Client* client) override;
   std::optional<HighConfidenceAllowlistCheckLoggingDetails>
   CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
@@ -133,10 +132,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     // This represents the case when we're trying to determine if any of the
     // URLs in a vector of URLs is unsafe for downloading binaries.
     CHECK_DOWNLOAD_URLS,
-
-    // This represents the case when we're trying to determine if a URL is an
-    // unsafe resource.
-    CHECK_RESOURCE_URL,
 
     // This represents the case when we're trying to determine if a Chrome
     // extension is a unsafe.
@@ -220,10 +215,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     // for that URL.
     ThreatMetadata url_metadata;
 
-    // The full hash that matched for a blocklisted resource URL. Used only for
-    // |CheckResourceUrl| case.
-    FullHashStr matching_full_hash;
-
     // Specifies whether the PendingCheck is in the V4LocalDatabaseManager's
     // |pending_checks_| set. This property is for sanity-checking that when the
     // check is destructed, it should never still be in |pending_checks_|, since
@@ -278,17 +269,15 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
       base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback);
 
   // Goes over the |full_hash_infos| and stores the most severe SBThreatType in
-  // |most_severe_threat_type|, the corresponding metadata in |metadata|, and
-  // the matching full hash in |matching_full_hash|. Also, updates in
-  // |full_hash_threat_types|, the threat type for each full hash in
-  // |full_hashes|.
+  // |most_severe_threat_type|, and the corresponding metadata in |metadata|.
+  // Also, updates in |full_hash_threat_types|, the threat type for each full
+  // hash in |full_hashes|.
   void GetSeverestThreatTypeAndMetadata(
       const std::vector<FullHashInfo>& full_hash_infos,
       const std::vector<FullHashStr>& full_hashes,
       std::vector<SBThreatType>* full_hash_threat_types,
       SBThreatType* most_severe_threat_type,
-      ThreatMetadata* metadata,
-      FullHashStr* matching_full_hash);
+      ThreatMetadata* metadata);
 
   // Returns the SBThreatType for a given ListIdentifier.
   SBThreatType GetSBThreatTypeForList(const ListIdentifier& list_id);

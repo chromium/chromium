@@ -85,11 +85,6 @@ class SafeBrowsingDatabaseManager
     virtual void OnCheckExtensionsResult(const std::set<std::string>& threats) {
     }
 
-    // Called when the result of checking the resource blocklist is known.
-    virtual void OnCheckResourceUrlResult(const GURL& url,
-                                          SBThreatType threat_type,
-                                          const std::string& threat_hash) {}
-
     // Called when the result of checking a allowlist is known.
     // Currently only used for CSD allowlist.
     virtual void OnCheckAllowlistUrlResult(bool did_match_allowlist) {}
@@ -173,13 +168,6 @@ class SafeBrowsingDatabaseManager
   // the result will be passed to |client|.
   virtual bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                                  Client* client) = 0;
-
-  // Check if |url| is in the resources blocklist. Returns true if not, false
-  // if further checks need to be made in which case the result will be passed
-  // to callback in |client|.
-  // TODO(crbug.com/40862355): This method is not used. Deprecate it and the
-  // underlying store.
-  virtual bool CheckResourceUrl(const GURL& url, Client* client) = 0;
 
   // Checks if the given url belongs to a list the subresource cares about. If
   // the url doesn't belong to any such list and the check can happen

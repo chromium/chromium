@@ -100,11 +100,6 @@ void FakeSafeBrowsingDatabaseManager::OnCheckUrlForSubresourceFilterComplete(
   checks_.erase(client);
 }
 
-bool FakeSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
-                                                       Client* client) {
-  return true;
-}
-
 void FakeSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   size_t erased = checks_.erase(client);
   CHECK_EQ(erased, 1u);

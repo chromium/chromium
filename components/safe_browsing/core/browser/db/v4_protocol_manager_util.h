@@ -138,7 +138,7 @@ enum class SBThreatType {
 
   // Url leads to a blocklisted resource script. Note that no warnings should be
   // shown on this threat type, but an incident report might be sent.
-  SB_THREAT_TYPE_BLOCKLISTED_RESOURCE = 9,
+  // DEPRECATED: SB_THREAT_TYPE_BLOCKLISTED_RESOURCE = 9,
 
   // Url abuses a permission API.
   SB_THREAT_TYPE_API_ABUSE = 10,
@@ -247,7 +247,6 @@ std::ostream& operator<<(std::ostream& os, const ListIdentifier& id);
 PlatformType GetCurrentPlatformType();
 ListIdentifier GetChromeExtMalwareId();
 ListIdentifier GetChromeUrlApiId();
-ListIdentifier GetChromeUrlClientIncidentId();
 ListIdentifier GetUrlBillingId();
 ListIdentifier GetUrlCsdDownloadAllowlistId();
 ListIdentifier GetUrlCsdAllowlistId();
