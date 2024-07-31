@@ -22,11 +22,6 @@ export const FaceGazeActions: MacroName[] = [
   MacroName.MOUSE_LONG_CLICK_LEFT,
   MacroName.RESET_CURSOR,
   MacroName.TOGGLE_DICTATION,
-  MacroName.KEY_PRESS_SPACE,
-  MacroName.KEY_PRESS_DOWN,
-  MacroName.KEY_PRESS_LEFT,
-  MacroName.KEY_PRESS_RIGHT,
-  MacroName.KEY_PRESS_UP,
   MacroName.KEY_PRESS_TOGGLE_OVERVIEW,
   MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE,
   MacroName.TOGGLE_VIRTUAL_KEYBOARD,
@@ -127,16 +122,6 @@ export class FaceGazeUtils {
         return 'Reset cursor to center';
       case MacroName.TOGGLE_DICTATION:
         return 'Start or stop dictation';
-      case MacroName.KEY_PRESS_SPACE:
-        return 'Press space key';
-      case MacroName.KEY_PRESS_DOWN:
-        return 'Press down key';
-      case MacroName.KEY_PRESS_LEFT:
-        return 'Press left key';
-      case MacroName.KEY_PRESS_RIGHT:
-        return 'Press right key';
-      case MacroName.KEY_PRESS_UP:
-        return 'Press up key';
       case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
         return 'Open overview of windows';
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:

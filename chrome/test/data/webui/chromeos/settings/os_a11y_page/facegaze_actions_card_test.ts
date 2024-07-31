@@ -4,18 +4,39 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {FaceGazeActionsCardElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {AddDialogPage, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActionsCardElement, FaceGazeAddActionDialogElement, FaceGazeCommandPair} from 'chrome://os-settings/lazy_load.js';
+import {CrButtonElement, CrIconButtonElement, CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../utils.js';
 
 suite('<facegaze-actions-card>', () => {
+  function getDialog(): FaceGazeAddActionDialogElement {
+    const dialog =
+        faceGazeActionsCard.shadowRoot!
+            .querySelector<FaceGazeAddActionDialogElement>('#actionsAddDialog');
+    assertTrue(!!dialog);
+    return dialog;
+  }
+
+  function getAddButton(): CrButtonElement {
+    return getButton('#addActionButton');
+  }
+
+  function getButton(id: string): CrButtonElement {
+    const button =
+        faceGazeActionsCard.shadowRoot!.querySelector<CrButtonElement>(id);
+    assertTrue(!!button);
+    assertTrue(isVisible(button));
+    return button;
+  }
+
   let faceGazeActionsCard: FaceGazeActionsCardElement;
   let prefElement: SettingsPrefsElement;
 
@@ -32,6 +53,23 @@ suite('<facegaze-actions-card>', () => {
     }
 
     return false;
+  }
+
+  async function fireCommandPairAddedEvent(
+      macro: MacroName, gesture: FacialGesture|null) {
+    getAddButton().click();
+    await flushTasks();
+
+    const dialog = getDialog();
+
+    const commandPair = new FaceGazeCommandPair(macro, gesture);
+    const event = new CustomEvent(FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, {
+      bubbles: true,
+      composed: true,
+      detail: commandPair,
+    });
+
+    dialog.dispatchEvent(event);
   }
 
   async function initPage() {
@@ -82,7 +120,7 @@ suite('<facegaze-actions-card>', () => {
     const expectedMacro: MacroName = MacroName.MOUSE_CLICK_LEFT;
     const expectedGesture: FacialGesture = FacialGesture.EYES_BLINK;
     assertFalse(isCommandPairSetInPrefs(expectedMacro, expectedGesture));
-    faceGazeActionsCard.addCommandPairForTest(expectedMacro, expectedGesture);
+    await fireCommandPairAddedEvent(expectedMacro, expectedGesture);
     assertTrue(isCommandPairSetInPrefs(expectedMacro, expectedGesture));
   });
 
@@ -91,10 +129,61 @@ suite('<facegaze-actions-card>', () => {
 
     const expectedMacro: MacroName = MacroName.MOUSE_CLICK_LEFT;
     const expectedGesture: FacialGesture = FacialGesture.EYES_BLINK;
-    faceGazeActionsCard.addCommandPairForTest(expectedMacro, expectedGesture);
+    await fireCommandPairAddedEvent(expectedMacro, expectedGesture);
     assertTrue(isCommandPairSetInPrefs(expectedMacro, expectedGesture));
-    faceGazeActionsCard.removeCommandPairForTest(
-        expectedMacro, expectedGesture);
+    flush();
+
+    const removeButton =
+        faceGazeActionsCard.shadowRoot!.querySelector<CrIconButtonElement>(
+            '.icon-clear');
+    assertTrue(!!removeButton);
+    removeButton.click();
+    await flushTasks();
+
     assertFalse(isCommandPairSetInPrefs(expectedMacro, expectedGesture));
+  });
+
+  test('actions add button opens dialog on action page', async () => {
+    await initPage();
+
+    getAddButton().click();
+    await flushTasks();
+
+    const dialog = getDialog();
+    assertEquals(AddDialogPage.SELECT_ACTION, dialog.getCurrentPageForTest());
+    assertNull(dialog.actionToAssignGesture);
+  });
+
+  test(
+      'actions assign gesture button opens dialog on gesture page',
+      async () => {
+        await initPage();
+
+        await fireCommandPairAddedEvent(MacroName.MOUSE_CLICK_LEFT, null);
+        flush();
+
+        const chip = faceGazeActionsCard.shadowRoot!.querySelector('cros-chip');
+        assertTrue(!!chip);
+        chip.click();
+        await flushTasks();
+
+        const dialog = getDialog();
+        assertEquals(AddDialogPage.SELECT_GESTURE, dialog.initialPage);
+        assertTrue(!!dialog.actionToAssignGesture);
+      });
+
+  test('actions dialog left click gestures is updated', async () => {
+    await initPage();
+
+    await fireCommandPairAddedEvent(
+        MacroName.MOUSE_CLICK_LEFT, FacialGesture.EYES_BLINK);
+    flush();
+
+    getAddButton().click();
+    await flushTasks();
+
+    const dialog = getDialog();
+    assertEquals(AddDialogPage.SELECT_ACTION, dialog.initialPage);
+    assertEquals(1, dialog.leftClickGestures.length);
   });
 });

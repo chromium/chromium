@@ -4,13 +4,13 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {FaceGazeAddActionDialogElement} from 'chrome://os-settings/lazy_load.js';
+import {AddDialogPage, FaceGazeAddActionDialogElement} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, CrSettingsPrefs, CrSliderElement, IronListElement, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../utils.js';
@@ -28,6 +28,11 @@ suite('<facegaze-actions-add-dialog>', () => {
         document.createElement('facegaze-actions-add-dialog');
     faceGazeAddActionDialog.prefs = prefElement.prefs;
     document.body.appendChild(faceGazeAddActionDialog);
+
+    // Assume default open to SELECT_ACTION page.
+    assertEquals(
+        AddDialogPage.SELECT_ACTION,
+        faceGazeAddActionDialog.getCurrentPageForTest());
     flush();
   }
 
@@ -367,4 +372,14 @@ suite('<facegaze-actions-add-dialog>', () => {
 
         assertTrue(isThresholdValueSetInPref(55));
       });
+
+  test('action page switches pages when initialPage value is set', async () => {
+    await initPage();
+
+    faceGazeAddActionDialog.actionToAssignGesture = MacroName.MOUSE_CLICK_LEFT;
+    faceGazeAddActionDialog.initialPage = AddDialogPage.SELECT_GESTURE;
+    flush();
+
+    assertGesturesListNoSelection();
+  });
 });

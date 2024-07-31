@@ -107,7 +107,7 @@
               tabindex$="[[tabIndex]]">
             <paper-ripple></paper-ripple>
             <div class="flex padded" aria-hidden="true">
-                [[getActionDisplayText_(item)]]
+              [[getActionDisplayText_(item)]]
             </div>
             <iron-icon icon="settings:check-circle" hidden="[[!selected]]">
             </iron-icon>
@@ -117,12 +117,12 @@
     </div>
     <div slot="button-container">
       <cr-button class="cancel-button" on-click="onCancelButtonClick_">
-      $i18n{cancel}
+        $i18n{cancel}
       </cr-button>
       <cr-button id="faceGazeAddActionNextButton"
           class="next-button" on-click="onActionNextButtonClick_"
           disabled="[[disableActionNextButton_]]">
-      $i18n{next}
+        $i18n{next}
       </cr-button>
     </div>
   </template>
@@ -131,7 +131,7 @@
     <div slot="title">[[localizedSelectGestureTitle_]]</div>
     <div id="dialogBody" slot="body" scrollable>
         <div slot="subtitle" class="padded">
-            $i18n{faceGazeActionsDialogSelectGestureSubtitle}
+          $i18n{faceGazeActionsDialogSelectGestureSubtitle}
         </div>
         <iron-list id="faceGazeAvailableGesturesList"
             scroll-target="[[$$('[slot=body]')]]"
@@ -143,7 +143,7 @@
                 tabindex$="[[tabIndex]]">
               <paper-ripple></paper-ripple>
               <div class="flex padded" aria-hidden="true">
-                  [[getGestureDisplayText_(item)]]
+                [[getGestureDisplayText_(item)]]
               </div>
               <iron-icon icon="settings:check-circle" hidden="[[!selected]]">
               </iron-icon>
@@ -153,19 +153,22 @@
     </div>
     <div slot="button-container" class="justify-space-between">
       <div id="leftBtnGroup">
-        <cr-button id="faceGazeGesturePreviousButton"
-            class="button" on-click="onGesturePreviousButtonClick_">
+        <template is="dom-if" if="[[displayGesturePreviousButton_]]" restamp>
+          <cr-button
+              id="faceGazeGesturePreviousButton"
+              class="button" on-click="onGesturePreviousButtonClick_">
             $i18n{faceGazePrevious}
-        </cr-button>
+          </cr-button>
+        </template>
       </div>
       <div id="rightBtnGroup">
         <cr-button class="cancel-button" on-click="onCancelButtonClick_">
-            $i18n{cancel}
+          $i18n{cancel}
         </cr-button>
         <cr-button id="faceGazeGestureNextButton"
             class="next-button" on-click="onGestureNextButtonClick_"
             disabled="[[disableGestureNextButton_]]">
-            $i18n{next}
+          $i18n{next}
         </cr-button>
       </div>
     </div>
@@ -176,7 +179,7 @@
     <div slot="title">[[localizedGestureThresholdTitle_]]</div>
     <div slot="body">
         <div slot="subtitle">
-            $i18n{faceGazeActionsDialogGestureThresholdSubtitle}
+          $i18n{faceGazeActionsDialogGestureThresholdSubtitle}
         </div>
         <div id="sliderContainer">
           <cr-icon-button
@@ -202,24 +205,24 @@
         <!-- TODO(b:341770753): Reflect count of gesture detection in this string. -->
         <!-- TODO(b:341770655): Localize this string. -->
         <div class="start settings-box-text">
-            [[getGestureDisplayText_(selectedGesture_)]] detected (0)
+          [[getGestureDisplayText_(selectedGesture_)]] detected (0)
         </div>
     </div>
     <div slot="button-container" class="justify-space-between">
       <div id="leftBtnGroup">
         <cr-button id="faceGazeThresholdPreviousButton"
             class="button" on-click="onGestureThresholdPreviousButtonClick_">
-            $i18n{faceGazePrevious}
+          $i18n{faceGazePrevious}
         </cr-button>
       </div>
       <div id="rightBtnGroup">
         <cr-button class="cancel-button" on-click="onCancelButtonClick_">
-            $i18n{cancel}
+          $i18n{cancel}
         </cr-button>
         <cr-button id="faceGazeActionDialogSaveButton"
             class="next-button"
             on-click="onSaveButtonClick_">
-            $i18n{save}
+          $i18n{save}
         </cr-button>
       </div>
     </div>
