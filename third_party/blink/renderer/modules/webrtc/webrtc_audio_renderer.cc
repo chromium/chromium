@@ -590,6 +590,9 @@ int WebRtcAudioRenderer::Render(base::TimeDelta delay,
                                 base::TimeTicks delay_timestamp,
                                 const media::AudioGlitchInfo& glitch_info,
                                 media::AudioBus* audio_bus) {
+  TRACE_EVENT("audio", "WebRtcAudioRenderer::Render", "playout_delay (ms)",
+              delay.InMillisecondsF(), "delay_timestamp (ms)",
+              (delay_timestamp - base::TimeTicks()).InMillisecondsF());
   DCHECK(sink_->CurrentThreadIsRenderingThread());
   DCHECK_LE(sink_params_.channels(), 8);
   base::AutoLock auto_lock(lock_);
@@ -635,6 +638,8 @@ void WebRtcAudioRenderer::OnRenderErrorCrossThread() {
 // Called by AudioPullFifo when more data is necessary.
 void WebRtcAudioRenderer::SourceCallback(int fifo_frame_delay,
                                          media::AudioBus* audio_bus) {
+  TRACE_EVENT("audio", "WebRtcAudioRenderer::SourceCallback", "delay (frames)",
+              fifo_frame_delay);
   DCHECK(sink_->CurrentThreadIsRenderingThread());
   base::TimeTicks start_time = base::TimeTicks::Now();
   DVLOG(2) << "WRAR::SourceCallback(" << fifo_frame_delay << ", "

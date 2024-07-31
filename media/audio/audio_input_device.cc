@@ -499,7 +499,7 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   TRACE_EVENT_END2(
       "audio", "AudioInputDevice::AudioThreadCallback::Process",
       "capture_time (ms)", (capture_time - base::TimeTicks()).InMillisecondsF(),
-      "now_time (ms)", (now_time - base::TimeTicks()).InMillisecondsF());
+      "capture_delay (ms)", (now_time - capture_time).InMillisecondsF());
 }
 
 void AudioInputDevice::AudioThreadCallback::OnSocketError() {

@@ -128,6 +128,8 @@ int AudioConverter::GetMaxInputFramesRequested(int output_frames_requested) {
 void AudioConverter::ConvertWithInfo(uint32_t initial_frames_delayed,
                                      const AudioGlitchInfo& glitch_info,
                                      AudioBus* dest) {
+  TRACE_EVENT("audio", "AudioConverter::Convert", "sample rate ratio",
+              io_sample_rate_ratio_, "delay (frames)", initial_frames_delayed);
   initial_frames_delayed_ = initial_frames_delayed;
   glitch_info_accumulator_.Add(glitch_info);
 
@@ -168,14 +170,12 @@ void AudioConverter::ConvertWithInfo(uint32_t initial_frames_delayed,
 }
 
 void AudioConverter::Convert(AudioBus* dest) {
-  TRACE_EVENT1("audio", "AudioConverter::Convert", "sample rate ratio",
-               io_sample_rate_ratio_);
   ConvertWithInfo(0, {}, dest);
 }
 
 void AudioConverter::SourceCallback(int fifo_frame_delay, AudioBus* dest) {
-  TRACE_EVENT1("audio", "AudioConverter::SourceCallback", "fifo frame delay",
-               fifo_frame_delay);
+  TRACE_EVENT("audio", "AudioConverter::SourceCallback", "delay (frames)",
+              fifo_frame_delay);
   const bool needs_downmix = channel_mixer_ && downmix_early_;
 
   if (!mixer_input_audio_bus_ ||
@@ -259,7 +259,7 @@ void AudioConverter::SourceCallback(int fifo_frame_delay, AudioBus* dest) {
 }
 
 void AudioConverter::ProvideInput(int resampler_frame_delay, AudioBus* dest) {
-  TRACE_EVENT1("audio", "AudioConverter::ProvideInput", "resampler frame delay",
+  TRACE_EVENT1("audio", "AudioConverter::ProvideInput", "delay (frames)",
                resampler_frame_delay);
   resampler_frames_delayed_ = resampler_frame_delay;
   if (audio_fifo_)

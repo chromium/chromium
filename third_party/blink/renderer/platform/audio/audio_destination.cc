@@ -104,8 +104,12 @@ int AudioDestination::Render(base::TimeDelta delay,
                              media::AudioBus* dest) {
   const uint32_t number_of_frames = dest->frames();
 
-  TRACE_EVENT_BEGIN1("webaudio", "AudioDestination::Render",
-                     "callback_buffer_size", number_of_frames);
+  TRACE_EVENT("webaudio", "AudioDestination::Render", "frames",
+              number_of_frames, "playout_delay (ms)", delay.InMillisecondsF(),
+              "delay_timestamp (ms)",
+              (delay_timestamp - base::TimeTicks()).InMillisecondsF());
+  glitch_info.MaybeAddTraceEvent();
+
   CHECK_EQ(static_cast<size_t>(dest->channels()), number_of_output_channels_);
   CHECK_EQ(number_of_frames, callback_buffer_size_);
 
@@ -129,9 +133,6 @@ int AudioDestination::Render(base::TimeDelta delay,
         "webaudio",
         "AudioDestination::Render - FIFO not ready or the size is too small",
         TRACE_EVENT_SCOPE_THREAD, "fifo length", fifo_ ? fifo_->length() : 0);
-    TRACE_EVENT_END2("webaudio", "AudioDestination::Render", "timestamp (s)",
-                     (delay_timestamp - base::TimeTicks()).InSecondsF(),
-                     "delay (s)", delay.InSecondsF());
     return 0;
   }
 
@@ -192,12 +193,14 @@ int AudioDestination::Render(base::TimeDelta delay,
 
       media::AudioGlitchInfo combined_glitch_info = glitch_info;
       if (result.frames_provided < number_of_frames) {
-        combined_glitch_info += media::AudioGlitchInfo{
+        media::AudioGlitchInfo underrun{
             // FIFO contains audio at the output device sample rate.
             .duration = audio_utilities::FramesToTime(
                 number_of_frames - result.frames_provided,
                 web_audio_device_->SampleRate()),
             .count = 1};
+        underrun.MaybeAddTraceEvent();
+        combined_glitch_info += underrun;
       }
 
       PostCrossThreadTask(
@@ -214,10 +217,6 @@ int AudioDestination::Render(base::TimeDelta delay,
                     glitch_info);
     }
   }
-
-  TRACE_EVENT_END2("webaudio", "AudioDestination::Render", "timestamp (s)",
-                   (delay_timestamp - base::TimeTicks()).InSecondsF(),
-                   "delay (s)", delay.InSecondsF());
 
   return number_of_frames;
 }
@@ -495,11 +494,14 @@ void AudioDestination::RequestRender(
     base::TimeDelta delay,
     base::TimeTicks delay_timestamp,
     const media::AudioGlitchInfo& glitch_info) {
-  TRACE_EVENT2("webaudio", "AudioDestination::RequestRender",
-               "frames_to_render", frames_to_render, "timestamp (s)",
-               delay_timestamp);
 
   base::AutoTryLock locker(device_state_lock_);
+
+  TRACE_EVENT("webaudio", "AudioDestination::RequestRender", "frames_to_render",
+              frames_to_render, "delay_timestamp (ms)",
+              (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
+              "playout_delay (ms)", delay.InMillisecondsF(), "delay (frames)",
+              fifo_->GetFramesAvailable());
 
   // The state might be changing by ::Stop() call. If the state is locked, do
   // not touch the below.
@@ -572,9 +574,12 @@ void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
                                              AudioBus* dest) {
   // Resampler delay is audio frames at the context sample rate, before
   // resampling.
-  PullFromCallback(dest, delay_to_report_ +
-                             audio_utilities::FramesToTime(
-                                 resampler_frame_delay, context_sample_rate_));
+  TRACE_EVENT("webaudio", "AudioDestination::ProvideResamplerInput",
+              "delay (frames)", resampler_frame_delay);
+  auto adjusted_delay =
+      delay_to_report_ + audio_utilities::FramesToTime(resampler_frame_delay,
+                                                       context_sample_rate_);
+  PullFromCallback(dest, adjusted_delay);
 }
 
 void AudioDestination::SendLogMessage(const String& message) const {

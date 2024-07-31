@@ -22,6 +22,9 @@ struct MEDIA_EXPORT AudioGlitchInfo {
   // Stringifies the info for human-readable logging.
   std::string ToString() const;
 
+  // Logs an "audio" category trace event in case glitch count is positive.
+  void MaybeAddTraceEvent() const;
+
   AudioGlitchInfo& operator+=(const AudioGlitchInfo& other);
 
   class MEDIA_EXPORT Accumulator;

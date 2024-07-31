@@ -119,9 +119,11 @@ class MediaStreamAudioDeliverer {
   void OnData(const media::AudioBus& audio_bus,
               base::TimeTicks reference_time,
               const media::AudioGlitchInfo& glitch_info) {
-    TRACE_EVENT1("audio", "MediaStreamAudioDeliverer::OnData",
-                 "reference time (ms)",
-                 (reference_time - base::TimeTicks()).InMillisecondsF());
+    TRACE_EVENT("audio", "MediaStreamAudioDeliverer::OnData",
+                "reference_time (ms)",
+                (reference_time - base::TimeTicks()).InMillisecondsF(),
+                "layover_delay (ms)",
+                (base::TimeTicks::Now() - reference_time).InMillisecondsF());
     base::AutoLock auto_lock(consumers_lock_);
 
     // Call OnSetFormat() for all pending consumers and move them to the

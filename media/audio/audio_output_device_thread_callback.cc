@@ -64,14 +64,16 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
   buffer->params.glitch_duration_us = {};
   buffer->params.glitch_count = 0;
 
-  TRACE_EVENT_BEGIN2("audio", "AudioOutputDevice::FireRenderCallback",
-                     "callback_num", callback_num_, "glitches",
-                     glitch_info.count);
-
   base::TimeDelta delay = base::Microseconds(buffer->params.delay_us);
 
   base::TimeTicks delay_timestamp =
       base::TimeTicks() + base::Microseconds(buffer->params.delay_timestamp_us);
+
+  TRACE_EVENT("audio", "AudioOutputDevice::FireRenderCallback", "callback_num",
+              callback_num_, "delay_timestamp (ms)",
+              (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
+              "playout_delay (ms)", delay.InMillisecondsF());
+  glitch_info.MaybeAddTraceEvent();
 
   DVLOG(4) << __func__ << " delay:" << delay << " delay_timestamp:" << delay;
 
@@ -100,10 +102,6 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
     buffer->params.bitstream_frames = output_bus_->GetBitstreamFrames();
   }
 
-  TRACE_EVENT_END2("audio", "AudioOutputDevice::FireRenderCallback",
-                   "timestamp (ms)",
-                   (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
-                   "delay (ms)", delay.InMillisecondsF());
 }
 
 void AudioOutputDeviceThreadCallback::OnSocketError() {
