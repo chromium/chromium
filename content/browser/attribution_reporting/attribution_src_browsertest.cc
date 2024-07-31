@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
              JsReplace("createAttributionEligibleImgSrc($1);", register_url)));
 
   register_response->WaitForRequest();
-  ExpectValidAttributionReportingEligibleHeaderForImg(
+  ExpectEmptyAttributionReportingEligibleHeader(
       register_response->http_request()->headers.at(
           "Attribution-Reporting-Eligible"));
   ExpectValidAttributionReportingSupportHeader(

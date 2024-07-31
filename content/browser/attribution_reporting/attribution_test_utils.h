@@ -613,6 +613,7 @@ void ExpectValidAttributionReportingEligibleHeaderForImg(
     const std::string& header);
 void ExpectValidAttributionReportingEligibleHeaderForNavigation(
     const std::string& header);
+void ExpectEmptyAttributionReportingEligibleHeader(const std::string& header);
 
 void ExpectValidAttributionReportingSupportHeader(const std::string& header,
                                                   bool web_expected,

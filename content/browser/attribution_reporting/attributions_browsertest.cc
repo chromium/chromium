@@ -1044,7 +1044,7 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
   EXPECT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
 
   register_response->WaitForRequest();
-  ExpectValidAttributionReportingEligibleHeaderForNavigation(
+  ExpectEmptyAttributionReportingEligibleHeader(
       register_response->http_request()->headers.at(
           "Attribution-Reporting-Eligible"));
   ExpectValidAttributionReportingSupportHeader(

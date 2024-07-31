@@ -7719,7 +7719,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
 
   response.WaitForRequest();
   EXPECT_EQ(response.http_request()->content, event_data);
-  ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+  ExpectEmptyAttributionReportingEligibleHeader(
       response.http_request()->headers.at("Attribution-Reporting-Eligible"));
   ExpectValidAttributionReportingSupportHeader(
       response.http_request()->headers.at("Attribution-Reporting-Support"),

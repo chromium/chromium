@@ -986,6 +986,13 @@ void ExpectValidAttributionReportingEligibleHeaderForNavigation(
       /*prohibited_keys=*/{"event-source", "trigger"});
 }
 
+void ExpectEmptyAttributionReportingEligibleHeader(const std::string& header) {
+  CheckAttributionReportingHeader(
+      header,
+      /*required_keys=*/{},
+      /*prohibited_keys=*/{"navigation-source", "event-source", "trigger"});
+}
+
 void ExpectValidAttributionReportingSupportHeader(const std::string& header,
                                                   bool web_expected,
                                                   bool os_expected) {
