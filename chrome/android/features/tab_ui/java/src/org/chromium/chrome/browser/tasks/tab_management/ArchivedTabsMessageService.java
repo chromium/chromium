@@ -155,6 +155,10 @@ public class ArchivedTabsMessageService extends MessageService
         if (mTabArchiveSettings != null) {
             mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
         }
+
+        if (mArchivedTabsDialogCoordinator != null) {
+            mArchivedTabsDialogCoordinator.destroy();
+        }
     }
 
     // CustomMessageCardViewProvider implementation.

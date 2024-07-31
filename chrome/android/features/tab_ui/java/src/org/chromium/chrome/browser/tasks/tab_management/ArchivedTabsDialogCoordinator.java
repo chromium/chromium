@@ -275,6 +275,14 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mActionConfirmationDialog = new ActionConfirmationDialog(mContext, mModalDialogManager);
     }
 
+    /** Hides the dialog. */
+    public void destroy() {
+        if (mTabListEditorCoordinator != null
+                && mTabListEditorCoordinator.getController().isVisible()) {
+            hide();
+        }
+    }
+
     /**
      * Shows the dialog.
      *

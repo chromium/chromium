@@ -190,5 +190,6 @@ public class ArchivedTabsMessageServiceUnitTest {
     public void testDestroy() {
         mArchivedTabsMessageService.destroy();
         verify(mTabArchiveSettings).removeObserver(mTabArchiveSettingsObserver.getValue());
+        verify(mArchivedTabsDialogCoordinator).destroy();
     }
 }

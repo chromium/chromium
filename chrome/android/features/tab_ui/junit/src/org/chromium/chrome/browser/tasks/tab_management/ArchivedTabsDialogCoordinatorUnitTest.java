@@ -132,7 +132,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         doReturn(mTabListEditorController).when(mTabListEditorCoordinator).getController();
         doAnswer(
                         invocationOnMock -> {
-                            mCoordinator.hideInternal();
+                            mCoordinator.getTabListEditorLifecycleObserver().willHide();
+                            mCoordinator.getTabListEditorLifecycleObserver().didHide();
                             return null;
                         })
                 .when(mTabListEditorController)
@@ -187,6 +188,16 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         verify(mRootView).removeView(any());
 
         mCoordinator.getTabListEditorLifecycleObserver().didHide();
+        verify(mTabListEditorController).setLifecycleObserver(null);
+        verify(mBackPressManager).removeHandler(any());
+    }
+
+    @Test
+    public void testDestroyHidesDialog() {
+        doReturn(true).when(mTabListEditorController).isVisible();
+        mCoordinator.show(mOnTabSelectingListener);
+        mCoordinator.destroy();
+        verify(mRootView).removeView(any());
         verify(mTabListEditorController).setLifecycleObserver(null);
         verify(mBackPressManager).removeHandler(any());
     }
