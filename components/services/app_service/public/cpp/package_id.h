@@ -34,6 +34,7 @@ namespace apps {
 // kGeForceNow | "gfn"       | GeForce Game ID       | "gfn:123456"
 // kSystem     | "system"    | policy ID             | "system:file_manager"
 // kWeb        | "web"       | processed manifest ID | "web:https://app.com/id"
+// kWebsite    | "website"   | start URL             | "website:https://app.co/"
 class COMPONENT_EXPORT(APP_TYPES) PackageId {
  public:
   // Creates a Package ID from PackageType and opaque package identifier.

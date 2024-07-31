@@ -184,6 +184,7 @@ void AppInstallServiceAsh::InstallApp(
       std::move(result_callback).Run(AppInstallResult::kUnknown);
       return;
     }
+    case PackageType::kWebsite:
     case PackageType::kChromeApp:
     case PackageType::kSystem:
     case PackageType::kUnknown:
