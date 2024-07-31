@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
@@ -129,6 +130,9 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // Initialize an ExtensionService according to the given |params|.
   virtual void InitializeExtensionService(ExtensionServiceInitParams params);
+
+  // Whether MV2 extensions should be allowed. Defaults to true.
+  virtual bool ShouldAllowMV2Extensions();
 
   // Initialize an empty ExtensionService using a production, on-disk pref file.
   // See documentation for |prefs_content|.
@@ -261,6 +265,9 @@ class ExtensionServiceTestBase : public testing::Test {
   // An override that ignores CRX3 publisher signatures.
   SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
+
+  // An override that allows MV2 extensions to be loaded.
+  std::optional<ScopedTestMV2Enabler> mv2_enabler_;
 };
 
 }  // namespace extensions

@@ -425,6 +425,10 @@ bool ExtensionBrowserTest::ShouldEnableInstallVerification() {
   return false;
 }
 
+bool ExtensionBrowserTest::ShouldAllowMV2Extensions() {
+  return true;
+}
+
 base::FilePath ExtensionBrowserTest::GetTestResourcesParentDir() {
   // Don't use |test_data_dir_| here (even though it points to
   // chrome/test/data/extensions by default) because subclasses have the ability
@@ -466,6 +470,10 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   if (!ShouldEnableInstallVerification()) {
     ignore_install_verification_ =
         std::make_unique<ScopedInstallVerifierBypassForTest>();
+  }
+
+  if (ShouldAllowMV2Extensions()) {
+    mv2_enabler_.emplace();
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -185,6 +185,10 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
         testing::UnitTest::GetInstance()->current_test_info()->name()));
   }
 
+  // Since this is testing the MV2 deprecation experiments, we don't want to
+  // bypass their disabling for testing.
+  bool ShouldAllowMV2Extensions() override { return false; }
+
   // Sets the current level of the MV2 admin policy.
   void SetMV2PolicyLevel(MV2PolicyLevel policy_level) {
     std::optional<internal::GlobalSettings::ManifestV2Setting> pref_value;

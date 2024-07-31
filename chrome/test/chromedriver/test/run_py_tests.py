@@ -6123,9 +6123,15 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
 
   def testCanInspectBackgroundPage(self):
     crx = os.path.join(_TEST_DATA_DIR, 'ext_bg_page.crx')
+    # This test exercises inspection of an extension background page, which
+    # is only valid for manifest V2 extensions. Explicitly disable the
+    # experiment that disallows MV2 extensions.
+    # This test can be removed entirely when support for MV2 extensions is
+    # removed.
     driver = self.CreateDriver(
         chrome_extensions=[self._PackExtension(crx)],
-        experimental_options={'windowTypes': ['background_page']})
+        experimental_options={'windowTypes': ['background_page']},
+        chrome_switches=['disable-features=ExtensionManifestV2Disabled'])
     handles = driver.GetWindowHandles()
     for handle in handles:
       driver.SwitchToWindow(handle)

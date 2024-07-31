@@ -40,6 +40,8 @@ class ManifestV3BrowserTest : public ExtensionBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  bool ShouldAllowMV2Extensions() override { return false; }
+
  private:
   ScopedCurrentChannel channel_override_{version_info::Channel::UNKNOWN};
 };

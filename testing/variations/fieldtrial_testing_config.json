@@ -9196,6 +9196,25 @@
             ]
         }
     ],
+    "ExtensionManifestV2Deprecation": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_DisableMV2Extensions",
+                    "enable_features": [
+                        "ExtensionManifestV2Disabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExtensionPageHats": [
         {
             "platforms": [
