@@ -7,12 +7,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "url/gurl.h"
 
-@interface ManualFillCredential () {
-  // iVar to backup URL.
-  GURL _URL;
-}
-@end
-
 @implementation ManualFillCredential
 
 - (instancetype)initWithUsername:(NSString*)username
@@ -20,13 +14,10 @@
                         siteName:(NSString*)siteName
                             host:(NSString*)host
                              URL:(const GURL&)URL {
-  self = [super init];
+  self = [super initWithSiteName:siteName host:host URL:URL];
   if (self) {
-    _host = [host copy];
-    _siteName = [siteName copy];
     _username = [username copy];
     _password = [password copy];
-    _URL = URL;
   }
   return self;
 }
@@ -71,10 +62,6 @@
           @"<%@ (%p): username: %@, siteName: %@, host: %@, URL: %@>",
           NSStringFromClass([self class]), self, self.username, self.siteName,
           self.host, base::SysUTF8ToNSString(self.URL.spec())];
-}
-
-- (const GURL&)URL {
-  return _URL;
 }
 
 @end

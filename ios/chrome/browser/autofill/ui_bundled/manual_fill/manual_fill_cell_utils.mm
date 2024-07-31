@@ -612,3 +612,40 @@ UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
 
   return layout_guide;
 }
+
+NSMutableAttributedString* CreateSiteNameLabelAttributedText(
+    ManualFillSiteInfo* siteInfo) {
+  NSString* siteName = siteInfo.siteName ? siteInfo.siteName : @"";
+  NSString* host;
+  NSMutableAttributedString* attributedString;
+
+  BOOL shouldShowHost = siteInfo.host && siteInfo.host.length &&
+                        ![siteInfo.host isEqualToString:siteInfo.siteName];
+  if (shouldShowHost) {
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
+      host = siteInfo.host;
+    }
+
+    // If the Keyboard Accessory Upgrade feature is disabled, `host` will be
+    // `nil` here, and so it won't be added to `attributedString` right away.
+    attributedString = CreateHeaderAttributedString(siteName, host);
+
+    if (!IsKeyboardAccessoryUpgradeEnabled()) {
+      host = [NSString stringWithFormat:@" –– %@", siteInfo.host];
+      NSDictionary* attributes = @{
+        NSForegroundColorAttributeName :
+            [UIColor colorNamed:kTextSecondaryColor],
+        NSFontAttributeName :
+            [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+      };
+      NSAttributedString* hostAttributedString =
+          [[NSAttributedString alloc] initWithString:host
+                                          attributes:attributes];
+      [attributedString appendAttributedString:hostAttributedString];
+    }
+  } else {
+    attributedString = CreateHeaderAttributedString(siteName, nil);
+  }
+
+  return attributedString;
+}

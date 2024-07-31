@@ -9,6 +9,8 @@
 
 #import <vector>
 
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_site_info.h"
+
 // Margins of the cell content.
 extern const CGFloat kCellMargin;
 
@@ -199,5 +201,10 @@ UIButton* CreateAutofillFormButton();
 // header into account.
 UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
                                            BOOL cell_has_header);
+
+// Creates the attributed string containing the site name and potentially a host
+// subtitle for the site name label.
+NSMutableAttributedString* CreateSiteNameLabelAttributedText(
+    ManualFillSiteInfo* siteInfo);
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_CELL_UTILS_H_
