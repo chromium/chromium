@@ -335,10 +335,6 @@ gfx::Size SearchResultListView::CalculatePreferredSize(
   return results_container_->GetPreferredSize(available_size);
 }
 
-int SearchResultListView::GetHeightForWidth(int w) const {
-  return results_container_->GetHeightForWidth(w);
-}
-
 void SearchResultListView::SearchResultActivated(SearchResultView* view,
                                                  int event_flags,
                                                  bool by_button_press) {
