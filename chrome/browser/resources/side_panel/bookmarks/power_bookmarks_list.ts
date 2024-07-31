@@ -360,9 +360,8 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   onBookmarkChanged(id: string, changedInfo: chrome.bookmarks.ChangeInfo) {
     const bookmark = this.bookmarksService_.findBookmarkWithId(id)!;
-    if (this.hasSomeActiveFilter_ &&
-        (this.bookmarkShouldShow_(bookmark) ||
-         this.bookmarkIsShowing_(bookmark))) {
+    if (this.bookmarkShouldShow_(bookmark) ||
+        this.bookmarkIsShowing_(bookmark)) {
       this.updateDisplayLists_();
     }
     Object.keys(changedInfo).forEach(key => {
@@ -560,7 +559,8 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private bookmarkIsShowing_(bookmark: chrome.bookmarks.BookmarkTreeNode):
       boolean {
-    return this.displayLists_.some(list => list.includes(bookmark));
+    return this.displayLists_.some(
+        list => list.some(item => item.id === bookmark.id));
   }
 
   private removeNodeFromDisplayLists_(nodeId: string) {
