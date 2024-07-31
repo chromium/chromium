@@ -2052,7 +2052,8 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
 }
 
 const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
-    const AggregatedRenderPass* pass) {
+    const AggregatedRenderPass* pass,
+    const RenderPassRequirements& requirements) {
   // If render pass bypassing is disabled for testing
   if (settings_->disable_render_pass_bypassing)
     return nullptr;
@@ -2066,6 +2067,19 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   // If it there are supposed to be mipmaps, the renderpass must exist
   if (pass->generate_mipmap)
     return nullptr;
+
+    // Force passes whose backings can be directly scanned out from being a
+    // bypass quad. This logic should mirror
+    // |GetRenderPassBackingForDirectScanout|.
+#if BUILDFLAG(IS_WIN)
+  if (requirements.is_scanout) {
+    return nullptr;
+  }
+#else
+  // This platform doesn't support direct scanout, so we don't expect any
+  // scanout render pass backings.
+  CHECK(!requirements.is_scanout);
+#endif
 
   const DrawQuad* quad = *pass->quad_list.BackToFrontBegin();
   // For simplicity in debug border and picture quad draw implementations, don't
@@ -3898,7 +3912,9 @@ SkiaRenderer::GetRenderPassBackingForDirectScanout(
     }
   }
 #else
-  // Non-Win backends need BufferQueue support on render pass backings.
+  // Non-Win backends need BufferQueue support on render pass backings. Any new
+  // implementation should also modify |CanPassBeDrawnDirectly| to avoid the
+  // bypass quad case for direct scanout backings.
 #endif
 
   return std::nullopt;
