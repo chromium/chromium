@@ -1179,6 +1179,16 @@
     <ph name="EXPIRATION_DATE">%1$s<ex>12/24</ex></ph> | <ph name="SECURITY_CODE">%2$s<ex>123</ex></ph>
   </message>
 
+  <!-- IBAN snackbar confirmation -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a server IBAN is saved.">
+      IBAN saved to your Google Account
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_BUTTON_TEXT" desc="Text shown on the ok button of the confirmation prompt after an IBAN is saved.">
+      Got it
+    </message>
+  </if>
+
   <!-- Card upload and virtual card enrollment confirmation related strings-->
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_TITLE_TEXT" desc="Title text for confirmation shown after save card is successfully uploaded and saved to the server.">
     Card saved

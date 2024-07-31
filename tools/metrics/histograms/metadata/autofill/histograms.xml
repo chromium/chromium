@@ -266,6 +266,9 @@ chromium-metrics-reviews@google.com.
       summary="Snackbar shown after opting into mandatory reauth."/>
   <variant name="SaveCardSuccess"
       summary="Snackbar shown after card has been successfully saved."/>
+  <variant name="SaveServerIbanSuccess"
+      summary="Snackbar shown after a server IBAN has been successfully
+               saved."/>
   <variant name="VirtualCard"
       summary="Snackbar shown after virtual card is autofilled."/>
   <variant name="VirtualCardEnrollSuccess"

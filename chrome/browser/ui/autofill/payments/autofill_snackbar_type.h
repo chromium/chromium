@@ -23,6 +23,9 @@ enum class AutofillSnackbarType {
 
   // Used when a virtual card has been successfully enrolled.
   kVirtualCardEnrollSuccess = 4,
+
+  // Used when an IBAN has been successfully saved to the server.
+  kSaveServerIbanSuccess = 5,
 };
 
 }  // namespace autofill
