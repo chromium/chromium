@@ -288,7 +288,7 @@ CSSValue* ConsumeLinear(CSSParserTokenStream& stream,
     for (wtf_size_t i = 1; i < points.size(); ++i) {
       if (std::isnan(points[i].input)) {
         if (i > upper_index) {
-          const auto* it = std::find_if(
+          const auto it = std::find_if(
               std::next(points.begin(), i + 1), points.end(),
               [](const auto& point) { return !std::isnan(point.input); });
           upper_index = static_cast<wtf_size_t>(it - points.begin());

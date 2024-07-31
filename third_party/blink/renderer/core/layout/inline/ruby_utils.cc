@@ -1155,7 +1155,7 @@ void RubyBlockPositionCalculator::HandleRubyLine(
 RubyBlockPositionCalculator::RubyLine&
 RubyBlockPositionCalculator::EnsureRubyLine(const RubyLevel& level) {
   // We do linear search because ruby_lines_ typically has only two items.
-  auto* it =
+  auto it =
       base::ranges::find_if(ruby_lines_, [&](const Member<RubyLine>& line) {
         return base::ranges::equal(line->Level(), level);
       });

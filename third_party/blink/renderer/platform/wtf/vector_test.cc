@@ -138,18 +138,18 @@ TEST(VectorTest, Erase) {
   EXPECT_EQ(4, int_vector[4]);
   EXPECT_EQ(5, int_vector[5]);
 
-  auto* first = int_vector.erase(int_vector.begin());
+  auto first = int_vector.erase(int_vector.begin());
   EXPECT_EQ(5u, int_vector.size());
   EXPECT_EQ(1, *first);
   EXPECT_EQ(int_vector.begin(), first);
 
-  auto* last = std::lower_bound(int_vector.begin(), int_vector.end(), 5);
-  auto* end = int_vector.erase(last);
+  auto last = std::lower_bound(int_vector.begin(), int_vector.end(), 5);
+  auto end = int_vector.erase(last);
   EXPECT_EQ(4u, int_vector.size());
   EXPECT_EQ(int_vector.end(), end);
 
-  auto* item2 = std::lower_bound(int_vector.begin(), int_vector.end(), 2);
-  auto* item4 = int_vector.erase(item2, item2 + 2);
+  auto item2 = std::lower_bound(int_vector.begin(), int_vector.end(), 2);
+  auto item4 = int_vector.erase(item2, item2 + 2);
   EXPECT_EQ(2u, int_vector.size());
   EXPECT_EQ(4, *item4);
 
@@ -238,9 +238,9 @@ TEST(VectorTest, OwnPtr) {
   wtf_size_t index = 0;
   for (OwnPtrVector::iterator iter = vector.begin(); iter != vector.end();
        ++iter) {
-    std::unique_ptr<DestructCounter>* ref_counter = iter;
-    EXPECT_EQ(index, static_cast<wtf_size_t>(ref_counter->get()->Get()));
-    EXPECT_EQ(index, static_cast<wtf_size_t>((*ref_counter)->Get()));
+    std::unique_ptr<DestructCounter>& ref_counter = *iter;
+    EXPECT_EQ(index, static_cast<wtf_size_t>(ref_counter.get()->Get()));
+    EXPECT_EQ(index, static_cast<wtf_size_t>(ref_counter->Get()));
     index++;
   }
   EXPECT_EQ(0, destruct_number);

@@ -78,7 +78,7 @@ struct ExpectedRange {
 void CheckBlobBuffer(const ShapeResultBloberizer::BlobBuffer& blob_buffer,
                      const std::vector<ExpectedBlob>& expected_blobs) {
   EXPECT_EQ(blob_buffer.size(), expected_blobs.size());
-  const ShapeResultBloberizer::BlobInfo* blob_info_iter = blob_buffer.begin();
+  auto blob_info_iter = blob_buffer.begin();
   auto&& expected_blob_iter = expected_blobs.begin();
   for (; blob_info_iter != blob_buffer.end() &&
          expected_blob_iter != expected_blobs.end();

@@ -255,7 +255,7 @@ Vector<std::unique_ptr<IDBKey>> IDBKey::ToMultiEntryArray(
       [](const std::unique_ptr<IDBKey>& a, const std::unique_ptr<IDBKey>& b) {
         return (a)->IsLessThan(b.get());
       });
-  std::unique_ptr<IDBKey>* end = std::unique(result.begin(), result.end());
+  auto end = std::unique(result.begin(), result.end());
   DCHECK_LE(static_cast<wtf_size_t>(end - result.begin()), result.size());
   result.resize(static_cast<wtf_size_t>(end - result.begin()));
 

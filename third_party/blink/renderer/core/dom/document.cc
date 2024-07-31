@@ -3271,7 +3271,7 @@ void Document::AXContextModeChanged() {
 }
 
 void Document::RemoveAXContext(AXContext* context) {
-  auto** iter = base::ranges::find(ax_contexts_, context);
+  auto iter = base::ranges::find(ax_contexts_, context);
   if (iter != ax_contexts_.end())
     ax_contexts_.erase(iter);
   if (ax_contexts_.size() == 0) {

@@ -127,7 +127,7 @@ ActiveSheetsChange CompareActiveStyleSheets(
 
   std::sort(merged_sorted.begin(), merged_sorted.end());
 
-  auto* merged_iterator = merged_sorted.begin();
+  auto merged_iterator = merged_sorted.begin();
   while (merged_iterator != merged_sorted.end()) {
     const auto& sheet1 = *merged_iterator++;
     if (merged_iterator == merged_sorted.end() ||

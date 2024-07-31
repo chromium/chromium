@@ -258,7 +258,7 @@ TEST_F(OriginTrialContextTest, ValidatorGetsCorrectSecurityInfoThirdParty) {
   EXPECT_TRUE(validation_params[0].origin.is_secure);
 
   EXPECT_EQ(2ul, validation_params[0].third_party_origin_info.size());
-  TrialTokenValidator::OriginInfo* unrelated_info = base::ranges::find_if(
+  auto unrelated_info = base::ranges::find_if(
       validation_params[0].third_party_origin_info,
       [](const TrialTokenValidator::OriginInfo& item) {
         return item.origin.IsSameOriginWith(GURL(kUnrelatedSecureOrigin));
@@ -266,7 +266,7 @@ TEST_F(OriginTrialContextTest, ValidatorGetsCorrectSecurityInfoThirdParty) {
   ASSERT_NE(validation_params[0].third_party_origin_info.end(), unrelated_info);
   EXPECT_TRUE(unrelated_info->is_secure);
 
-  TrialTokenValidator::OriginInfo* insecure_origin_info =
+  auto insecure_origin_info =
       base::ranges::find_if(validation_params[0].third_party_origin_info,
                             [](const TrialTokenValidator::OriginInfo& item) {
                               return item.origin.IsSameOriginWith(

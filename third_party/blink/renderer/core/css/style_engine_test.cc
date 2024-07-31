@@ -7314,7 +7314,7 @@ TEST_F(StyleEngineTest, EnsureDraggableRegionTriggersRelayout) {
   Element* drag_element = document->getElementById(AtomicString("drag-region"));
 
   auto regions = document->DraggableRegions();
-  auto* it =
+  auto it =
       std::find_if(regions.begin(), regions.end(),
                    [](blink::DraggableRegionValue s) { return s.draggable; });
   EXPECT_EQ(it, regions.end()) << "There should be no drag regions";

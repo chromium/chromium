@@ -54,7 +54,7 @@ class SVGPathByteStreamSource {
     ByteType<DataType> data;
     size_t type_size = sizeof(ByteType<DataType>);
     DCHECK_LE(stream_current_ + type_size, stream_end_);
-    memcpy(data.bytes, stream_current_, type_size);
+    memcpy(data.bytes, &*stream_current_, type_size);
     stream_current_ += type_size;
     return data.value;
   }

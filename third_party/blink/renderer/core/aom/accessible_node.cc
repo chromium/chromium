@@ -1067,7 +1067,7 @@ void AccessibleNode::removeChild(AccessibleNode* old_child,
         "Node to remove is not a child of this node.");
     return;
   }
-  auto* ix =
+  auto ix =
       base::ranges::find(children_, old_child, &Member<AccessibleNode>::Get);
   if (ix == children_.end()) {
     exception_state.ThrowDOMException(

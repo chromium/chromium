@@ -168,7 +168,7 @@ void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
       suspended_tracks_.EraseAt(it);
   }
 
-  for (auto* it = pending_tracks_.begin(); it != pending_tracks_.end(); ++it) {
+  for (auto it = pending_tracks_.begin(); it != pending_tracks_.end(); ++it) {
     if (it->track == video_track) {
       pending_tracks_.erase(it);
       break;

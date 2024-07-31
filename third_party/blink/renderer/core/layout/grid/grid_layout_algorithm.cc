@@ -2806,7 +2806,7 @@ void GridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   std::sort(reordered_grid_items.begin(), reordered_grid_items.end(),
             CompareGridItemsForIntrinsicTrackResolution);
 
-  auto** current_group_begin = reordered_grid_items.begin();
+  auto current_group_begin = reordered_grid_items.begin();
 
   // First, process the items that don't span a flexible track.
   while (current_group_begin != reordered_grid_items.end() &&
@@ -2815,7 +2815,7 @@ void GridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
     wtf_size_t current_group_span_size =
         (*current_group_begin)->SpanSize(track_direction);
 
-    auto** current_group_end = current_group_begin;
+    auto current_group_end = current_group_begin;
     do {
       DCHECK(!(*current_group_end)->IsSpanningFlexibleTrack(track_direction));
       ++current_group_end;
@@ -2856,8 +2856,9 @@ void GridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   //   sizing function...
 #if DCHECK_IS_ON()
   // Every grid item of the remaining group should span a flexible track.
-  for (auto** it = current_group_begin; it != reordered_grid_items.end(); ++it)
+  for (auto it = current_group_begin; it != reordered_grid_items.end(); ++it) {
     DCHECK((*it)->IsSpanningFlexibleTrack(track_direction));
+  }
 #endif
 
   // Now, process items spanning flexible tracks (if any).
@@ -3043,11 +3044,11 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
     std::sort(flexible_sets.begin(), flexible_sets.end(),
               CompareSetsByBaseSizeFlexFactorRatio);
 
-    auto** current_set = flexible_sets.begin();
+    auto current_set = flexible_sets.begin();
     while (leftover_space > 0 && current_set != flexible_sets.end()) {
       flex_factor_sum = base::ClampMax(flex_factor_sum, 1);
 
-      auto** next_set = current_set;
+      auto next_set = current_set;
       while (next_set != flexible_sets.end() &&
              (*next_set)->FlexFactor() * leftover_space.RawValue() <
                  (*next_set)->BaseSize().RawValue() * flex_factor_sum) {
@@ -3064,7 +3065,7 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
       // Otherwise, treat all those sets that does not receive a share of free
       // space of at least their base size as inflexible, effectively excluding
       // them from the leftover space and flex factor sum computation.
-      for (auto** it = current_set; it != next_set; ++it) {
+      for (auto it = current_set; it != next_set; ++it) {
         flex_factor_sum -= (*it)->FlexFactor();
         leftover_space -= (*it)->BaseSize();
       }
@@ -3819,7 +3820,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     has_subsequent_children = false;
 
     auto child_break_token_it = child_break_tokens.begin();
-    auto* placement_data_it = grid_items_placement_data->begin();
+    auto placement_data_it = grid_items_placement_data->begin();
 
     const auto layout_subtree =
         cached_layout_subtree ? *cached_layout_subtree
@@ -4094,7 +4095,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     *intrinsic_block_size += row_offset_delta;
     AdjustItemOffsets(breakpoint_row_set_index, row_offset_delta);
 
-    auto* it = row_offset_adjustments->begin() + breakpoint_row_set_index;
+    auto it = row_offset_adjustments->begin() + breakpoint_row_set_index;
     while (it != row_offset_adjustments->end())
       *(it++) += row_offset_delta;
 

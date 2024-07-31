@@ -383,10 +383,10 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
     cc::SharedBitmapIdRegistrar* bitmap_registrar) {
   // When searching for a hit in SharedBitmap, we don't consider the bitmap
   // format (RGBA 8888 vs F16) since the allocated bitmap is always RGBA_8888.
-  auto* it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
-                            [this](const RegisteredBitmap& registered) {
-                              return registered.bitmap->size() != size_;
-                            });
+  auto it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
+                           [this](const RegisteredBitmap& registered) {
+                             return registered.bitmap->size() != size_;
+                           });
   recycled_bitmaps_.Shrink(
       static_cast<wtf_size_t>(it - recycled_bitmaps_.begin()));
 

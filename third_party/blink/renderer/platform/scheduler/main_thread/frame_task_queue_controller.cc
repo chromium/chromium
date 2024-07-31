@@ -128,7 +128,7 @@ void FrameTaskQueueController::RemoveTaskQueueAndVoter(
   task_queue_enabled_voters_.erase(queue);
 
   bool found_task_queue = false;
-  for (auto* it = all_task_queues_and_voters_.begin();
+  for (auto it = all_task_queues_and_voters_.begin();
        it != all_task_queues_and_voters_.end(); ++it) {
     if (it->first == queue) {
       found_task_queue = true;

@@ -260,7 +260,7 @@ ImageLayerBridge::RegisteredBitmap ImageLayerBridge::CreateOrRecycleBitmap(
     const gfx::Size& size,
     viz::SharedImageFormat format,
     cc::SharedBitmapIdRegistrar* bitmap_registrar) {
-  auto* it = std::remove_if(
+  auto it = std::remove_if(
       recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
       [&size, &format](const RegisteredBitmap& registered) {
         unsigned src_bytes_per_pixel =

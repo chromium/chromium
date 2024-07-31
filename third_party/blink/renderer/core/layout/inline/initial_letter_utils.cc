@@ -250,7 +250,7 @@ const ExclusionArea* PostPlaceInitialLetterBox(
     LogicalLineItems* line_box,
     const BfcOffset& line_origin,
     LineInfo* line_info) {
-  LogicalLineItem* const initial_letter_line_item = std::find_if(
+  auto initial_letter_line_item = std::find_if(
       line_box->begin(), line_box->end(),
       [](const auto& line_item) { return line_item.IsInitialLetterBox(); });
 

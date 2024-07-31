@@ -813,7 +813,7 @@ void BackgroundClip::ApplyValue(StyleResolverState& state,
   const auto* value_list = DynamicTo<CSSValueList>(value);
   if (value_list && !value.IsImageSetValue()) {
     // Walk each value and put it into a layer, creating new layers as needed.
-    const auto* curr_val = value_list->begin();
+    auto curr_val = value_list->begin();
     while (curr_child || curr_val != value_list->end()) {
       if (!curr_child) {
         curr_child = prev_child->EnsureNext();

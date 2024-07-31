@@ -698,8 +698,8 @@ void EditContext::AttachElement(HTMLElement* element_to_attach) {
 }
 
 void EditContext::DetachElement(HTMLElement* element_to_detach) {
-  auto* it = base::ranges::find(attached_elements_, element_to_detach,
-                                &Member<HTMLElement>::Get);
+  auto it = base::ranges::find(attached_elements_, element_to_detach,
+                               &Member<HTMLElement>::Get);
 
   if (it != attached_elements_.end())
     attached_elements_.erase(it);

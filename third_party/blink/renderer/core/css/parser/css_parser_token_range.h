@@ -31,7 +31,7 @@ class CORE_EXPORT CSSParserTokenRange {
  public:
   template <wtf_size_t InlineBuffer>
   CSSParserTokenRange(const Vector<CSSParserToken, InlineBuffer>& vector)
-      : first_(vector.begin()), last_(vector.end()) {}
+      : first_(vector.data()), last_(vector.data() + vector.size()) {}
   explicit CSSParserTokenRange(base::span<CSSParserToken> tokens)
       : first_(tokens.data()), last_(tokens.data() + tokens.size()) {}
 
@@ -103,7 +103,7 @@ class CSSParserTokenOffsets {
   CSSParserTokenOffsets(const Vector<CSSParserToken, InlineBuffer>& vector,
                         Vector<wtf_size_t, 32> offsets,
                         StringView string)
-      : first_(vector.begin()), offsets_(std::move(offsets)), string_(string) {
+      : first_(vector.data()), offsets_(std::move(offsets)), string_(string) {
     DCHECK_EQ(vector.size() + 1, offsets_.size());
   }
   CSSParserTokenOffsets(base::span<const CSSParserToken> tokens,

@@ -1276,7 +1276,7 @@ class DeviceContainer {
 
     // For each processing based container, apply the constraints and only fail
     // if all of them failed.
-    for (auto* it = processing_based_containers_.begin();
+    for (auto it = processing_based_containers_.begin();
          it != processing_based_containers_.end();) {
       DCHECK(!it->IsEmpty());
       failed_constraint_name = it->ApplyConstraintSet(constraint_set);
@@ -1482,7 +1482,7 @@ class CandidatesContainer {
 
   const char* ApplyConstraintSet(const ConstraintSet& constraint_set) {
     const char* latest_failed_constraint_name = nullptr;
-    for (auto* it = devices_.begin(); it != devices_.end();) {
+    for (auto it = devices_.begin(); it != devices_.end();) {
       DCHECK(!it->IsEmpty());
       auto* failed_constraint_name = it->ApplyConstraintSet(constraint_set);
       if (failed_constraint_name) {

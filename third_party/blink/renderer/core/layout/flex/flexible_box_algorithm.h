@@ -205,10 +205,10 @@ class FlexItemVectorView {
     return vector_->at(start_ + i);
   }
 
-  FlexItem* begin() { return vector_->begin() + start_; }
-  const FlexItem* begin() const { return vector_->begin() + start_; }
-  FlexItem* end() { return vector_->begin() + end_; }
-  const FlexItem* end() const { return vector_->begin() + end_; }
+  FlexItem* begin() { return vector_->data() + start_; }
+  const FlexItem* begin() const { return vector_->data() + start_; }
+  FlexItem* end() { return vector_->data() + end_; }
+  const FlexItem* end() const { return vector_->data() + end_; }
 
  private:
   FlexItemVector* vector_;

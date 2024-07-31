@@ -62,7 +62,7 @@ bool operator==(const HeapVector<OffsetMappingUnit>& units1,
                 const HeapVector<OffsetMappingUnit>& units2) {
   if (units1.size() != units2.size())
     return false;
-  auto* it2 = units2.begin();
+  auto it2 = units2.begin();
   for (const auto& unit1 : units1) {
     if (unit1 != *it2)
       return false;

@@ -1084,12 +1084,12 @@ LineRelativeRect HighlightPainter::LocalRectInWritingModeSpace(
     return LineRelativeLocalRect(fragment_item_, text, from, to);
   }
 
-  const HighlightEdgeInfo* from_info =
+  auto from_info =
       std::lower_bound(edges_info_.begin(), edges_info_.end(), from,
                        [](const HighlightEdgeInfo& info, unsigned offset) {
                          return info.offset < offset;
                        });
-  const HighlightEdgeInfo* to_info =
+  auto to_info =
       std::lower_bound(from_info, edges_info_.end(), to,
                        [](const HighlightEdgeInfo& info, unsigned offset) {
                          return info.offset < offset;

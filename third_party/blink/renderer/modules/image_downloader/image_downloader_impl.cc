@@ -111,9 +111,8 @@ void FilterAndResizeImagesForMaximalSize(
   uint32_t min_image_size = std::numeric_limits<uint32_t>::max();
   // Filter the images by |max_image_size|, and also identify the smallest image
   // in case all the images are bigger than |max_image_size|.
-  for (auto* it = unfiltered.begin(); it != unfiltered.end(); ++it) {
-    const SkBitmap& image = *it;
-    uint32_t current_size = std::max(it->width(), it->height());
+  for (const SkBitmap& image : unfiltered) {
+    uint32_t current_size = std::max(image.width(), image.height());
     if (current_size < min_image_size) {
       min_image = &image;
       min_image_size = current_size;
@@ -295,7 +294,7 @@ void ImageDownloaderImpl::DidFetchImage(
 
   // Remove the image fetcher from our pending list. We're in the callback from
   // MultiResolutionImageResourceFetcher, best to delay deletion.
-  for (auto* it = image_fetchers_.begin(); it != image_fetchers_.end(); ++it) {
+  for (auto it = image_fetchers_.begin(); it != image_fetchers_.end(); ++it) {
     MultiResolutionImageResourceFetcher* image_fetcher = it->get();
     DCHECK(image_fetcher);
     if (image_fetcher == fetcher) {

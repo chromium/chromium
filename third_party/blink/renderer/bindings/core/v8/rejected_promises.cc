@@ -208,7 +208,7 @@ void RejectedPromises::RejectedWithNoHandler(
 void RejectedPromises::HandlerAdded(v8::PromiseRejectMessage data) {
   // First look it up in the pending messages and fast return, it'll be covered
   // by processQueue().
-  for (auto* it = queue_.begin(); it != queue_.end(); ++it) {
+  for (auto it = queue_.begin(); it != queue_.end(); ++it) {
     if (!(*it)->IsCollected() && (*it)->HasPromise(data.GetPromise())) {
       queue_.erase(it);
       return;
@@ -264,7 +264,7 @@ void RejectedPromises::ProcessQueue() {
 
 void RejectedPromises::ProcessQueueNow(MessageQueue queue) {
   // Remove collected handlers.
-  auto* new_end = std::remove_if(
+  auto new_end = std::remove_if(
       reported_as_errors_.begin(), reported_as_errors_.end(),
       [](const auto& message) { return message->IsCollected(); });
   reported_as_errors_.Shrink(

@@ -1440,7 +1440,7 @@ HashMap<String, Vector<String>> ManifestParser::ParseFileHandlerAccept(
     int extension_overflow =
         total_file_handler_extension_count_ - kExtensionLimit;
     if (extension_overflow > 0) {
-      auto* erase_iter = extensions.end() - extension_overflow;
+      auto erase_iter = extensions.end() - extension_overflow;
       AddErrorInfo(
           "property 'accept': too many total file extensions, ignoring "
           "extensions starting from \"" +

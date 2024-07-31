@@ -190,9 +190,13 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
 
     Iterator begin() const {
       // The AdjustedIndex call ensures that we skip leading invisible rules.
-      return Iterator(rules_.begin() + AdjustedIndex(0), rules_.end());
+      return Iterator(rules_.data() + AdjustedIndex(0),
+                      rules_.data() + rules_.size());
     }
-    Iterator end() const { return Iterator(rules_.end(), rules_.end()); }
+    Iterator end() const {
+      const Member<StyleRuleBase>* end = rules_.data() + rules_.size();
+      return Iterator(end, end);
+    }
 
     const Member<StyleRuleBase>& operator[](wtf_size_t i) const {
       return rules_.at(AdjustedIndex(i));

@@ -550,7 +550,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
   switch (starting_guess) {
     case kMinGuess: {
       // All columns are their min inline-size.
-      LayoutUnit* computed_size = computed_sizes.begin();
+      LayoutUnit* computed_size = computed_sizes.data();
       for (const TableTypes::Column* column = start_column;
            column != end_column; ++column, ++computed_size) {
         if (column->is_mergeable) {
@@ -567,7 +567,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       LayoutUnit distributable_inline_size =
           target_inline_size - guess_sizes[kMinGuess];
       LayoutUnit remaining_deficit = distributable_inline_size;
-      LayoutUnit* computed_size = computed_sizes.begin();
+      LayoutUnit* computed_size = computed_sizes.data();
       LayoutUnit* last_computed_size = nullptr;
       for (const TableTypes::Column* column = start_column;
            column != end_column; ++column, ++computed_size) {
@@ -607,7 +607,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
           target_inline_size - guess_sizes[kPercentageGuess];
       LayoutUnit remaining_deficit = distributable_inline_size;
       LayoutUnit* last_computed_size = nullptr;
-      LayoutUnit* computed_size = computed_sizes.begin();
+      LayoutUnit* computed_size = computed_sizes.data();
       for (const TableTypes::Column* column = start_column;
            column != end_column; ++column, ++computed_size) {
         if (column->is_mergeable) {
@@ -653,7 +653,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       LayoutUnit remaining_deficit =
           is_exact_match ? LayoutUnit() : distributable_inline_size;
       LayoutUnit* last_computed_size = nullptr;
-      LayoutUnit* computed_size = computed_sizes.begin();
+      LayoutUnit* computed_size = computed_sizes.data();
       for (const TableTypes::Column* column = start_column;
            column != end_column; ++column, ++computed_size) {
         if (column->is_mergeable) {
@@ -722,7 +722,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
         // Grow fixed columns if available.
         LayoutUnit remaining_deficit = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
-        LayoutUnit* computed_size = computed_sizes.begin();
+        LayoutUnit* computed_size = computed_sizes.data();
         for (const TableTypes::Column* column = start_column;
              column != end_column; ++column, ++computed_size) {
           if (column->is_mergeable) {
@@ -756,7 +756,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
         // proportional to column percent.
         LayoutUnit remaining_deficit = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
-        LayoutUnit* computed_size = computed_sizes.begin();
+        LayoutUnit* computed_size = computed_sizes.data();
         for (const TableTypes::Column* column = start_column;
              column != end_column; ++column, ++computed_size) {
           if (column->is_mergeable || !column->percent) {
@@ -846,8 +846,8 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
         scale_available = false;
       }
     }
-    LayoutUnit* column_size = column_sizes.begin();
-    for (const TableTypes::Column* column = column_constraints.data.begin();
+    LayoutUnit* column_size = column_sizes.data();
+    for (auto column = column_constraints.data.begin();
          column != column_constraints.data.end(); ++column, ++column_size) {
       if (!TreatAsFixed(*column)) {
         continue;
@@ -885,8 +885,8 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
         scale_available = false;
       }
     }
-    LayoutUnit* column_size = column_sizes.begin();
-    for (const TableTypes::Column* column = column_constraints.data.begin();
+    LayoutUnit* column_size = column_sizes.data();
+    for (auto column = column_constraints.data.begin();
          column != column_constraints.data.end(); ++column, ++column_size) {
       if (!column->percent) {
         continue;
@@ -906,12 +906,12 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
   // Distribute to auto, and zero inline size columns.
   LayoutUnit distributing_inline_size =
       target_inline_size - assigned_inline_size;
-  LayoutUnit* column_size = column_sizes.begin();
+  LayoutUnit* column_size = column_sizes.data();
 
   bool distribute_zero_inline_size =
       zero_inline_size_constrained_colums_count == all_columns_count;
 
-  for (const TableTypes::Column* column = column_constraints.data.begin();
+  for (auto column = column_constraints.data.begin();
        column != column_constraints.data.end(); ++column, ++column_size) {
     if (column->percent || TreatAsFixed(*column)) {
       continue;
@@ -1129,7 +1129,7 @@ void DistributeColspanCellToColumnsAuto(
   Vector<LayoutUnit> computed_sizes =
       DistributeInlineSizeToComputedInlineSizeAuto(
           colspan_cell_min_inline_size, start_column, end_column, true);
-  LayoutUnit* computed_size = computed_sizes.begin();
+  LayoutUnit* computed_size = computed_sizes.data();
   for (TableTypes::Column* column = start_column; column != end_column;
        ++column, ++computed_size) {
     column->min_inline_size =
@@ -1139,7 +1139,7 @@ void DistributeColspanCellToColumnsAuto(
       colspan_cell_max_inline_size, start_column,
       end_column, /* treat_target_size_as_constrained */
       colspan_cell.cell_inline_constraint.is_constrained);
-  computed_size = computed_sizes.begin();
+  computed_size = computed_sizes.data();
   for (TableTypes::Column* column = start_column; column != end_column;
        ++column, ++computed_size) {
     column->max_inline_size =

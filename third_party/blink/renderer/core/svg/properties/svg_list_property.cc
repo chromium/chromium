@@ -79,8 +79,8 @@ String SVGListPropertyBase::ValueAsString() const {
 
   StringBuilder builder;
 
-  auto* it = values_.begin();
-  auto* it_end = values_.end();
+  auto it = values_.begin();
+  auto it_end = values_.end();
   while (it != it_end) {
     builder.Append((*it)->ValueAsString());
     ++it;

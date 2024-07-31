@@ -58,7 +58,7 @@ void SMILAnimationSandwich::Add(SVGAnimationElement* animation) {
 }
 
 void SMILAnimationSandwich::Remove(SVGAnimationElement* animation) {
-  auto* position = base::ranges::find(sandwich_, animation);
+  auto position = base::ranges::find(sandwich_, animation);
   CHECK(sandwich_.end() != position, base::NotFatalUntil::M130);
   sandwich_.erase(position);
   // Clear the animated value when there are active animation elements but the
@@ -102,7 +102,7 @@ bool SMILAnimationSandwich::ApplyAnimationValues() {
   // Only calculate the relevant animations. If we actually set the
   // animation value, we don't need to calculate what is beneath it
   // in the sandwich.
-  auto* sandwich_start = active_.end();
+  auto sandwich_start = active_.end();
   while (sandwich_start != active_.begin()) {
     --sandwich_start;
     if ((*sandwich_start)->OverwritesUnderlyingAnimationValue())
@@ -118,7 +118,7 @@ bool SMILAnimationSandwich::ApplyAnimationValues() {
   // contributes to a particular element/attribute pair.
   SMILAnimationValue animation_value = animation->CreateAnimationValue();
 
-  for (auto* sandwich_it = sandwich_start; sandwich_it != active_.end();
+  for (auto sandwich_it = sandwich_start; sandwich_it != active_.end();
        sandwich_it++) {
     (*sandwich_it)->ApplyAnimation(animation_value);
   }

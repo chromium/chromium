@@ -459,9 +459,9 @@ base::TimeTicks InteractiveDetector::FindInteractiveCandidate(
     base::TimeTicks lower_bound,
     base::TimeTicks current_time) {
   // Network iterator.
-  auto* it_net = network_quiet_windows_.begin();
+  auto it_net = network_quiet_windows_.begin();
   // Long tasks iterator.
-  auto* it_lt = long_tasks_.begin();
+  auto it_lt = long_tasks_.begin();
 
   base::TimeTicks main_quiet_start = page_event_times_.nav_start;
 

@@ -199,10 +199,10 @@ PerformanceEntryVector MergePerformanceEntryVectors(
   merged_entries.reserve(first_entry_vector.size() +
                          second_entry_vector.size());
 
-  auto* first_it = first_entry_vector.begin();
-  auto* first_end = first_entry_vector.end();
-  auto* second_it = second_entry_vector.begin();
-  auto* second_end = second_entry_vector.end();
+  auto first_it = first_entry_vector.begin();
+  auto first_end = first_entry_vector.end();
+  auto second_it = second_entry_vector.begin();
+  auto second_end = second_entry_vector.end();
 
   // Advance the second iterator past any entries with disallowed names.
   while (second_it != second_end && !CheckName(*second_it, maybe_name)) {

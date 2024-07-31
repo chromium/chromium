@@ -209,8 +209,8 @@ PresentationAvailabilityState::GetScreenAvailability(
 PresentationAvailabilityState::AvailabilityListener*
 PresentationAvailabilityState::GetAvailabilityListener(
     const Vector<KURL>& urls) {
-  auto* listener_it = base::ranges::find(availability_listeners_, urls,
-                                         &AvailabilityListener::urls);
+  auto listener_it = base::ranges::find(availability_listeners_, urls,
+                                        &AvailabilityListener::urls);
   return listener_it == availability_listeners_.end() ? nullptr : *listener_it;
 }
 
@@ -230,8 +230,8 @@ void PresentationAvailabilityState::TryRemoveAvailabilityListener(
 
 PresentationAvailabilityState::ListeningStatus*
 PresentationAvailabilityState::GetListeningStatus(const KURL& url) const {
-  auto* status_it = base::ranges::find(availability_listening_status_, url,
-                                       &ListeningStatus::url);
+  auto status_it = base::ranges::find(availability_listening_status_, url,
+                                      &ListeningStatus::url);
   return status_it == availability_listening_status_.end() ? nullptr
                                                            : status_it->get();
 }

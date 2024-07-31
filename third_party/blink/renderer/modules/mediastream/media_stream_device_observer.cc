@@ -103,7 +103,7 @@ void MediaStreamDeviceObserver::OnDeviceStopped(
   }
 
   Vector<Stream>& streams = it->value;
-  auto* stream_it = streams.begin();
+  auto stream_it = streams.begin();
   while (stream_it != it->value.end()) {
     Stream& stream = *stream_it;
     if (stream.audio_devices.empty() && stream.video_devices.empty()) {
@@ -332,7 +332,7 @@ void MediaStreamDeviceObserver::RemoveStreamDevice(
   bool device_found = false;
   Vector<String> streams_to_remove;
   for (auto& entry : label_stream_map_) {
-    for (auto* stream_it = entry.value.begin();
+    for (auto stream_it = entry.value.begin();
          stream_it != entry.value.end();) {
       Stream& stream = *stream_it;
       MediaStreamDevices& audio_devices = stream.audio_devices;

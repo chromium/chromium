@@ -58,7 +58,7 @@ class SpacingApplier {
                   const ComputedStyle& style) {
     DCHECK(current_item->TextShapeResult());
     const float spacing = TextAutoSpace::GetSpacingWidth(&style.GetFont());
-    const wtf_size_t* offset = offsets.begin();
+    auto offset = offsets.begin();
     if (!offsets.empty() && *offset == current_item->StartOffset()) {
       DCHECK(last_item_);
       // If the previous item's direction is from the left to the right, it is
@@ -161,7 +161,7 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
 
   Vector<wtf_size_t, 16> offsets;
   CHECK(!ranges_.empty());
-  const RunSegmenter::RunSegmenterRange* range = ranges_.begin();
+  auto range = ranges_.begin();
   std::optional<CharType> last_type = kOther;
 
   // The initial value does not matter, as the value is used for determine

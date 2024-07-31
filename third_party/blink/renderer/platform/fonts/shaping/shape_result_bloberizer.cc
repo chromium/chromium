@@ -136,13 +136,11 @@ void ShapeResultBloberizer::CommitText() {
 
   DVLOG(4) << "  CommitText appended UTF-8: \""
            << std::string(&pending_utf8_[pending_utf8_original_size],
-                          pending_utf8_.end())
+                          pending_utf8_.data() + pending_utf8_.size())
            << "\"";
   DVLOG(4) << "  CommitText UTF-8 indexes: "
-           << base::make_span(
-                  &pending_utf8_character_indexes_
-                      [pending_utf8_character_indexes_original_size],
-                  pending_utf8_character_indexes_.end());
+           << base::span(pending_utf8_character_indexes_)
+                  .subspan(pending_utf8_character_indexes_original_size);
 }
 
 void ShapeResultBloberizer::CommitPendingRun() {

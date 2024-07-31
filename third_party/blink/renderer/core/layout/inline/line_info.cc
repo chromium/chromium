@@ -588,7 +588,7 @@ void LineInfo::RemoveParallelFlowBreakToken(unsigned item_index) {
                           return a->StartItemIndex() < b->StartItemIndex();
                         }));
 #endif  //  EXPENSIVE_DCHECKS_ARE_ON()
-  for (auto* iter = parallel_flow_break_tokens_.begin();
+  for (auto iter = parallel_flow_break_tokens_.begin();
        iter != parallel_flow_break_tokens_.end(); ++iter) {
     const InlineBreakToken* break_token = *iter;
     DCHECK(break_token->IsInParallelBlockFlow());

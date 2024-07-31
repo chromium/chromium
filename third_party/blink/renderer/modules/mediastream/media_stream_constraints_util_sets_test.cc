@@ -68,8 +68,7 @@ bool AreCounterclockwise(const Vector<Point>& vertices) {
   // Compute orientation using the determinant of each diagonal in the
   // polygon, using the first vertex as reference.
   Point prev_diagonal = vertices[1] - vertices[0];
-  for (auto* vertex = vertices.begin() + 2; vertex != vertices.end();
-       ++vertex) {
+  for (auto vertex = vertices.begin() + 2; vertex != vertices.end(); ++vertex) {
     Point current_diagonal = *vertex - vertices[0];
     // The determinant of the two diagonals returns the signed area of the
     // parallelogram they generate. The area is positive if the diagonals are in

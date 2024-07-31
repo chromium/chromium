@@ -42,7 +42,7 @@ class Seeker {
 
  private:
   const HeapVector<RuleSet::Interval<T>>& intervals_;
-  const RuleSet::Interval<T>* iter_;
+  HeapVector<RuleSet::Interval<T>>::const_iterator iter_;
 #if DCHECK_IS_ON()
   unsigned last_rule_position_ = 0;
 #endif

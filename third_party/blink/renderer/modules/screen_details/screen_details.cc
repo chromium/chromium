@@ -35,8 +35,8 @@ ScreenDetailed* ScreenDetails::currentScreen() const {
   if (screens_.empty())
     return nullptr;
 
-  auto* it = base::ranges::find(screens_, current_display_id_,
-                                &ScreenDetailed::DisplayId);
+  auto it = base::ranges::find(screens_, current_display_id_,
+                               &ScreenDetailed::DisplayId);
   CHECK(it != screens_.end(), base::NotFatalUntil::M130);
   return it->Get();
 }

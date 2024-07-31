@@ -483,15 +483,15 @@ const FindBuffer::BufferNodeMapping* FindBuffer::MappingForIndex(
     unsigned index) const {
   // Get the first entry that starts at a position higher than offset, and
   // move back one entry.
-  auto* it = std::upper_bound(
+  auto it = std::upper_bound(
       buffer_node_mappings_.begin(), buffer_node_mappings_.end(), index,
       [](const unsigned offset, const BufferNodeMapping& entry) {
         return offset < entry.offset_in_buffer;
       });
   if (it == buffer_node_mappings_.begin())
     return nullptr;
-  auto* entry = std::prev(it);
-  return entry;
+  auto entry = std::prev(it);
+  return &*entry;
 }
 
 PositionInFlatTree FindBuffer::PositionAtStartOfCharacterAtIndex(

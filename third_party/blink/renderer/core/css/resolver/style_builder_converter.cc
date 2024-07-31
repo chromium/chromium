@@ -1401,7 +1401,7 @@ GridPosition StyleBuilderConverter::ConvertGridPosition(
   int grid_line_number = 1;
   AtomicString grid_line_name;
 
-  auto* it = values.begin();
+  auto it = values.begin();
   const CSSValue* current_value = it->Get();
   auto* current_identifier_value = DynamicTo<CSSIdentifierValue>(current_value);
   if (current_identifier_value &&
@@ -1553,7 +1553,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
   };
 
   const auto& values = To<CSSValueList>(value);
-  auto* curr_value = values.begin();
+  auto curr_value = values.begin();
   bool is_subgrid = false;
 
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(curr_value->Get());

@@ -606,7 +606,7 @@ protocol::Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
     Maybe<bool> runImmediately,
     String* identifier) {
   Vector<WTF::String> keys = scripts_to_evaluate_on_load_.Keys();
-  auto* result = std::max_element(
+  auto result = std::max_element(
       keys.begin(), keys.end(), [](const WTF::String& a, const WTF::String& b) {
         return Decimal::FromString(a) < Decimal::FromString(b);
       });

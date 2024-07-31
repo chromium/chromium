@@ -93,7 +93,7 @@ const LayoutQuote* StyleContainmentScope::FindQuotePrecedingElement(
                element, *quote->GetOwningPseudo()) < 0;
   };
   // Find the first quote for which comp will return true.
-  auto* it = std::upper_bound(quotes_.begin(), quotes_.end(), element, comp);
+  auto it = std::upper_bound(quotes_.begin(), quotes_.end(), element, comp);
   // And get the previous quote as it will be the one we are searching for.
   return it == quotes_.begin() ? nullptr : *std::prev(it);
 }
