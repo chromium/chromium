@@ -674,6 +674,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                std::string());
   registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
                                 0);
+
+  // Preferences related to the Docking Promo feature (used only if
+  // `kIOSDockingPromoForEligibleUsersOnly` is enabled).
+  registry->RegisterBooleanPref(prefs::kIosDockingPromoEligibilityMet, false);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {

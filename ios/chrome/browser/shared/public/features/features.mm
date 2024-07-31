@@ -107,6 +107,10 @@ BASE_FEATURE(kIOSDockingPromo,
              "IOSDockingPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSDockingPromoForEligibleUsersOnly,
+             "IOSDockingPromoForEligibleUsersOnly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSDockingPromoFixedTriggerLogicKillswitch,
              "IOSDockingPromoFixedTriggerLogicKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -491,6 +495,10 @@ const char kBackgroundRefreshMaxAgeInSeconds[] =
 
 bool IsDockingPromoEnabled() {
   return base::FeatureList::IsEnabled(kIOSDockingPromo);
+}
+
+bool IsDockingPromoForEligibleUsersOnlyEnabled() {
+  return base::FeatureList::IsEnabled(kIOSDockingPromoForEligibleUsersOnly);
 }
 
 DockingPromoDisplayTriggerArm DockingPromoExperimentTypeEnabled() {

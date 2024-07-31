@@ -244,6 +244,12 @@ inline constexpr char kIosDiscoverFeedLastRefreshTime[] =
 inline constexpr char kIosDiscoverFeedLastUnseenRefreshTime[] =
     "ios.discover_feed.last_unseen_refresh_time";
 
+// Boolean to represent if the user has ever met the criteria to be shown the
+// Docking Promo. Once true, remains true permanently. Used only when
+// `kIOSDockingPromoForEligibleUsersOnly` is enabled.
+inline constexpr char kIosDockingPromoEligibilityMet[] =
+    "ios.docking_promo.eligibility_met";
+
 // A list of the latest fetched Most Visited Sites.
 inline constexpr char kIosLatestMostVisitedSites[] = "ios.most_visited_sites";
 

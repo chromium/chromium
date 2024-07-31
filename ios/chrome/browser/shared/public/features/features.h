@@ -120,6 +120,13 @@ extern const char kIOSDockingPromoOldUserInactiveThreshold[];
 // Feature flag to enable the Docking Promo.
 BASE_DECLARE_FEATURE(kIOSDockingPromo);
 
+// Feature flag to enable the Docking Promo feature exclusively for users who
+// first meet the promo's eligibility criteria.
+//
+// NOTE: This feature flag exists to improve metrics logging to better
+// understand the feature's impact on user engagement and conversion rates.
+BASE_DECLARE_FEATURE(kIOSDockingPromoForEligibleUsersOnly);
+
 // Killswitch to enable the fixed Docking Promo trigger logic.
 BASE_DECLARE_FEATURE(kIOSDockingPromoFixedTriggerLogicKillswitch);
 
@@ -134,8 +141,12 @@ enum class DockingPromoDisplayTriggerArm {
   kDuringFRE = 2,
 };
 
-// Helper function to check if kIOSDockingPromo is enabled.
+// Helper function to check if `kIOSDockingPromo` is enabled.
 bool IsDockingPromoEnabled();
+
+// Helper function to check if `kIOSDockingPromoForEligibleUsersOnly` is
+// enabled.
+bool IsDockingPromoForEligibleUsersOnlyEnabled();
 
 // Returns the experiment type for the Docking Promo feature.
 DockingPromoDisplayTriggerArm DockingPromoExperimentTypeEnabled();
