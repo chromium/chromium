@@ -467,7 +467,7 @@ public class EdgeToEdgeInstrumentationTest {
                 mActivity.getWindow().getNavigationBarColor());
 
         TabUiTestHelper.leaveTabSwitcher(mActivity);
-        assertNotEquals(
+        assertEquals(
                 "Should return toEdge upon leaving the Tab Switcher.",
                 Color.TRANSPARENT,
                 mActivity.getWindow().getNavigationBarColor());

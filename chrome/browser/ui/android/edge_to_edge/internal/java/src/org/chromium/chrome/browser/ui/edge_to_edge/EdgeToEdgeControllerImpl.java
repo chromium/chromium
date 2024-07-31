@@ -21,6 +21,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -38,7 +39,9 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @RequiresApi(VERSION_CODES.R)
 public class EdgeToEdgeControllerImpl
-        implements EdgeToEdgeController, BrowserControlsStateProvider.Observer {
+        implements EdgeToEdgeController,
+                BrowserControlsStateProvider.Observer,
+                LayoutStateProvider.LayoutStateObserver {
     private static final String TAG = "E2E_ControllerImpl";
 
     /** The outermost view in our view hierarchy that is identified with a resource ID. */
@@ -135,6 +138,7 @@ public class EdgeToEdgeControllerImpl
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
         mLayoutManager = layoutManager;
+        mLayoutManager.addObserver(this);
 
         mWindowInsetsConsumer = this::handleWindowInsets;
         mInsetObserver.addInsetsConsumer(mWindowInsetsConsumer);
@@ -230,6 +234,13 @@ public class EdgeToEdgeControllerImpl
         // changing view visibility.
         mBottomControlsHeight = bottomControlsHeight;
         updateBrowserControlsVisibility(bottomControlsHeight > 0);
+    }
+
+    // LayoutStateProvider.LayoutStateObserver
+
+    @Override
+    public void onStartedShowing(int layoutType) {
+        drawToEdge(mIsPageOptedIntoEdgeToEdge, false);
     }
 
     private void updateBrowserControlsVisibility(boolean visible) {
@@ -404,6 +415,9 @@ public class EdgeToEdgeControllerImpl
         }
         if (mBrowserControlsStateProvider != null) {
             mBrowserControlsStateProvider.removeObserver(this);
+        }
+        if (mLayoutManager != null) {
+            mLayoutManager.removeObserver(this);
         }
     }
 
