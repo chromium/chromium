@@ -3108,6 +3108,27 @@
             ]
         }
     ],
+    "BatterySaverModeAlignWakeUps": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BatterySaverModeAlignWakeUps",
+                        "LowerHighResolutionTimerThreshold",
+                        "TimerSlackMac"
+                    ]
+                }
+            ]
+        }
+    ],
     "BatterySaverModeRenderTuning": [
         {
             "platforms": [
@@ -13239,28 +13260,6 @@
             ]
         }
     ],
-    "LowerHighResolutionTimerThreshold": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LowerHighResolutionTimerThreshold"
-                    ]
-                }
-            ]
-        }
-    ],
     "MacAllowBackgroundingRenderProcesses": [
         {
             "platforms": [
@@ -22711,22 +22710,6 @@
                     },
                     "enable_features": [
                         "TimedHTMLParserBudget"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TimerSlackMac": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AlignWakeUps",
-                        "TimerSlackMac"
                     ]
                 }
             ]
