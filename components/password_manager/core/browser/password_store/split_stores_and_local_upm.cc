@@ -20,6 +20,14 @@ using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 
 namespace password_manager {
 
+namespace {
+
+// Do not expose these constants! Use GetLocalUpmMinGmsVersion() instead.
+const int kLocalUpmMinGmsVersionForNonAuto = 240212000;
+const int kLocalUpmMinGmsVersionForAuto = 241512000;
+
+}  // namespace
+
 bool UsesSplitStoresAndUPMForLocal(const PrefService* pref_service) {
   switch (
       static_cast<UseUpmLocalAndSeparateStoresState>(pref_service->GetInteger(
@@ -47,24 +55,19 @@ bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
   }
 
   // GMSCore version is pre-UPM, update is required.
-  if (gms_version < password_manager::features::kAccountUpmMinGmsVersion) {
+  if (gms_version < kAccountUpmMinGmsVersion) {
     return true;
   }
 
   // GMSCore version is post-UPM with local passwords, no update required.
-  bool is_automotive = base::android::BuildInfo::GetInstance()->is_automotive();
-  if (is_automotive &&
-      gms_version >= base::GetFieldTrialParamByFeatureAsInt(
+  const char* feature_param =
+      base::android::BuildInfo::GetInstance()->is_automotive()
+          ? password_manager::features::kLocalUpmMinGmsVersionParamForAuto
+          : password_manager::features::kLocalUpmMinGmsVersionParam;
+  if (gms_version >= base::GetFieldTrialParamByFeatureAsInt(
                          kUnifiedPasswordManagerSyncOnlyInGMSCore,
-                         features::kLocalUpmMinGmsVersionParamForAuto,
-                         features::kDefaultLocalUpmMinGmsVersionForAuto)) {
-    return false;
-  }
-  if (!is_automotive &&
-      gms_version >= base::GetFieldTrialParamByFeatureAsInt(
-                         kUnifiedPasswordManagerSyncOnlyInGMSCore,
-                         features::kLocalUpmMinGmsVersionParam,
-                         features::kDefaultLocalUpmMinGmsVersion)) {
+                         feature_param,
+                         password_manager::GetLocalUpmMinGmsVersion())) {
     return false;
   }
 
@@ -95,6 +98,12 @@ bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
   bool is_user_unenrolled = pref_service->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
   return is_user_unenrolled || is_initial_migration_missing;
+}
+
+int GetLocalUpmMinGmsVersion() {
+  return base::android::BuildInfo::GetInstance()->is_automotive()
+             ? kLocalUpmMinGmsVersionForAuto
+             : kLocalUpmMinGmsVersionForNonAuto;
 }
 
 }  // namespace password_manager

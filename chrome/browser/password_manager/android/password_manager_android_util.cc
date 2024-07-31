@@ -113,25 +113,17 @@ ActivationError CheckMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
   // client-side changes being needed, once a min version is established.
   // As soon as the min GMS version for auto can be changed client-side,
   // consider using it as a sentinel value here instead.
-  if (gms_version < password_manager::features::kDefaultLocalUpmMinGmsVersion) {
+  if (gms_version < password_manager::GetLocalUpmMinGmsVersion()) {
     return ActivationError::kOutdatedGmsCore;
   }
 
-  if (base::android::BuildInfo::GetInstance()->is_automotive() &&
-      gms_version <
-          base::GetFieldTrialParamByFeatureAsInt(
-              feature,
-              password_manager::features::kLocalUpmMinGmsVersionParamForAuto,
-              password_manager::features::
-                  kDefaultLocalUpmMinGmsVersionForAuto)) {
-    return ActivationError::kOutdatedGmsCore;
-  }
-
-  if (!base::android::BuildInfo::GetInstance()->is_automotive() &&
-      gms_version <
-          base::GetFieldTrialParamByFeatureAsInt(
-              feature, password_manager::features::kLocalUpmMinGmsVersionParam,
-              password_manager::features::kDefaultLocalUpmMinGmsVersion)) {
+  const char* feature_param =
+      base::android::BuildInfo::GetInstance()->is_automotive()
+          ? password_manager::features::kLocalUpmMinGmsVersionParamForAuto
+          : password_manager::features::kLocalUpmMinGmsVersionParam;
+  if (gms_version < base::GetFieldTrialParamByFeatureAsInt(
+                        feature, feature_param,
+                        password_manager::GetLocalUpmMinGmsVersion())) {
     return ActivationError::kOutdatedGmsCore;
   }
 
@@ -490,7 +482,7 @@ bool AreMinUpmRequirementsMet() {
   }
 
   // If the GMSCore version is pre-UPM an update is required.
-  return gms_version >= password_manager::features::kAccountUpmMinGmsVersion;
+  return gms_version >= password_manager::kAccountUpmMinGmsVersion;
 }
 
 bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
@@ -547,20 +539,13 @@ PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
   }
 
   // GMSCore version is pre-UPM, update is required.
-  if (gms_version < password_manager::features::kAccountUpmMinGmsVersion) {
+  if (gms_version < password_manager::kAccountUpmMinGmsVersion) {
     return PasswordAccessLossWarningType::kNoUpm;
   }
 
   // GMSCore version supports the account passwords, but doesn't support local
   // passwords. Update is still required.
-  bool is_automotive = base::android::BuildInfo::GetInstance()->is_automotive();
-  if (is_automotive &&
-      gms_version <
-          password_manager::features::kDefaultLocalUpmMinGmsVersionForAuto) {
-    return PasswordAccessLossWarningType::kOnlyAccountUpm;
-  }
-  if (!is_automotive &&
-      gms_version < password_manager::features::kDefaultLocalUpmMinGmsVersion) {
+  if (gms_version < password_manager::GetLocalUpmMinGmsVersion()) {
     return PasswordAccessLossWarningType::kOnlyAccountUpm;
   }
 
