@@ -19485,6 +19485,22 @@
             ]
         }
     ],
+    "RoundedWindows": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "RoundedWindowsEnabled",
+                    "enable_features": [
+                        "ArcRoundedWindowCompat",
+                        "RoundedWindows"
+                    ]
+                }
+            ]
+        }
+    ],
     "RubyLineBreakable": [
         {
             "platforms": [
