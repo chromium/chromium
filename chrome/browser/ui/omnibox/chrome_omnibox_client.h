@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
 #include "chrome/common/search/instant_types.h"
 #include "components/omnibox/browser/favicon_cache.h"
@@ -18,7 +19,6 @@
 #include "components/omnibox/browser/omnibox_client.h"
 
 class Browser;
-class ChromeAutocompleteSchemeClassifier;
 class GURL;
 class LocationBar;
 class Profile;
@@ -137,7 +137,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
   const raw_ptr<LocationBar> location_bar_;
   const raw_ptr<Browser, DanglingUntriaged> browser_;
   const raw_ptr<Profile> profile_;
-  std::unique_ptr<ChromeAutocompleteSchemeClassifier> scheme_classifier_;
+  ChromeAutocompleteSchemeClassifier scheme_classifier_;
   std::vector<BitmapFetcherService::RequestId> request_ids_;
   FaviconCache favicon_cache_;
 
