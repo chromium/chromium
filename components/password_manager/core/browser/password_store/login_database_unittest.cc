@@ -2791,6 +2791,85 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutofillableLogins) {
   }
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
+// Regression test for b/354847250.
+// Checks that if kSkipUndecryptablePasswords is enabled, getting login succeeds
+// even if there are undecryptable passwords present.
+TEST_P(LoginDatabaseGetUndecryptableLoginsTest,
+       GettingLoginForFormIfUndecryptablePasswordsArePresent) {
+  base::HistogramTester histogram_tester;
+  std::vector<PasswordForm> result;
+  auto form1 =
+      AddDummyLogin("user1", GURL("http://www.google.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  auto form2 =
+      AddDummyLogin("user2", GURL("http://www.google.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/false);
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init(nullptr));
+  PasswordForm form = GenerateExamplePasswordForm();
+
+  // Set the user data directory switch, it will prevent passwords from being
+  // deleted.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      password_manager::kUserDataDir);
+
+  if (!base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
+    EXPECT_FALSE(db.GetLogins(PasswordFormDigest(form),
+                              /*should_PSL_matching_apply=*/false, &result));
+
+    histogram_tester.ExpectTotalCount(
+        "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+    return;
+  }
+
+  EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
+                           /*should_PSL_matching_apply=*/false, &result));
+  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+}
+
+// Regression test for b/354847250.
+// Checks that if kSkipUndecryptablePasswords is enabled, getting all logins
+// succeeds even if there are undecryptable passwords present.
+TEST_P(LoginDatabaseGetUndecryptableLoginsTest,
+       GettingAllLoginsIfUndecryptablePasswordsArePresent) {
+  base::HistogramTester histogram_tester;
+  std::vector<PasswordForm> result;
+
+  auto form1 =
+      AddDummyLogin("foo1", GURL("https://foo1.com/"),
+                    /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  auto form2 =
+      AddDummyLogin("foo2", GURL("https://foo2.com/"),
+                    /*should_be_corrupted=*/true, /*blocklisted=*/false);
+
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init(nullptr));
+
+  // Set the user data directory switch, it will prevent passwords from being
+  // deleted.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      password_manager::kUserDataDir);
+
+  if (!base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
+    EXPECT_FALSE(db.GetAutofillableLogins(&result));
+
+    histogram_tester.ExpectTotalCount(
+        "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+    return;
+  }
+
+  EXPECT_TRUE(db.GetAutofillableLogins(&result));
+  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+}
+#endif
+
 INSTANTIATE_TEST_SUITE_P(All,
                          LoginDatabaseGetUndecryptableLoginsTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
