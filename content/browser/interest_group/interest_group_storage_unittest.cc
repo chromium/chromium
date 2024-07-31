@@ -143,6 +143,8 @@ class InterestGroupStorageTest : public testing::Test {
             .SetAllSellersCapabilities(
                 {SellerCapabilities::kInterestGroupCounts,
                  SellerCapabilities::kLatencyStats})
+            .SetExecutionMode(
+                blink::InterestGroup::ExecutionMode::kFrozenContext)
             .SetBiddingUrl(GURL("https://full.example.com/bid"))
             .SetBiddingWasmHelperUrl(GURL("https://full.example.com/bid_wasm"))
             .SetUpdateUrl(GURL("https://full.example.com/update"))
@@ -192,6 +194,8 @@ class InterestGroupStorageTest : public testing::Test {
             .SetAuctionServerRequestFlags(
                 {blink::AuctionServerRequestFlagsEnum::kOmitAds,
                  blink::AuctionServerRequestFlagsEnum::kIncludeFullAds})
+            // Note that `additional_bid_key` can only be set for negative
+            // interest groups, so cannot be set here.
             .SetAggregationCoordinatorOrigin(
                 url::Origin::Create(GURL("https://coordinator.test/")))
             .Build();
