@@ -2467,8 +2467,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   SetStatusVector(AutofillStatus::kIsFocusable, field.IsFocusable());
   SetStatusVector(AutofillStatus::kUserTypedIntoField,
                   OptionalBooleanToBool(user_typed_into_field));
-  SetStatusVector(AutofillStatus::kWasFocused,
-                  OptionalBooleanToBool(OptionalBoolean(field.was_focused())));
+  SetStatusVector(AutofillStatus::kWasFocused, field.was_focused());
   SetStatusVector(AutofillStatus::kWasFocusedByTapOrClick,
                   OptionalBooleanToBool(was_focused_by_tap_or_click));
   SetStatusVector(AutofillStatus::kIsInSubFrame,
