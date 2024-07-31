@@ -353,26 +353,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.DeleteRetentionTime.Audio" units="hours"
-    expires_after="2020-01-30">
-  <owner>qinmin@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    How long users keep downloaded audio files on disk. Recorded when the
-    downloaded file is deleted.
-  </summary>
-</histogram>
-
-<histogram name="Download.DeleteRetentionTime.Video" units="hours"
-    expires_after="2020-01-30">
-  <owner>qinmin@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    How long users keep downloaded video files on disk. Recorded when the
-    downloaded file is deleted.
-  </summary>
-</histogram>
-
 <histogram name="Download.DOMEvent" enum="DownloadDOMEvent"
     expires_after="2025-01-05">
   <owner>dtrainor@chromium.org</owner>
