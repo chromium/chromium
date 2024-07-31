@@ -451,6 +451,8 @@ export class DragDropReorderTileListDelegate {
   // Prepare 'this.draggingTile_' member variable as the dragging tile.
   // It will used throughout each drag event cycle and reset in the
   // `resetDraggingTile_()` method which restore the tile to it's initial state.
+  // Notifies the tile that the drag event started to allow for UI
+  // modifications.
   private markDraggingTile_(element: HTMLElement) {
     this.draggingTile_ = element;
     this.draggingTile_.classList.add(DRAGGING_TAG);
@@ -462,6 +464,8 @@ export class DragDropReorderTileListDelegate {
     // element would be considered invisible and would not react to drag events
     // anymore. A value of '0.001' is enough to simulate the 'invisible' effect.
     this.draggingTile_.style.opacity = '0.001';
+
+    this.draggingTile_.dispatchEvent(new Event('drag-tile-start'));
   }
 
   // Restores `this.draggingTile_` to it's initial state.

@@ -9,6 +9,7 @@ import './profile_card_menu.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -27,6 +28,7 @@ export interface ProfileCardElement {
     gaiaNameTooltip: CrTooltipElement,
     nameInput: CrInputElement,
     tooltip: CrTooltipElement,
+    profileCardButton: CrButtonElement,
   };
 }
 
@@ -61,6 +63,8 @@ export class ProfileCardElement extends ProfileCardElementBase {
     super.connectedCallback();
     this.addNameInputTooltipListeners_();
     this.addGaiaNameTooltipListeners_();
+
+    this.addEventListener('drag-tile-start', this.disableActiveRipple_);
   }
 
   private addNameInputTooltipListeners_() {
@@ -155,6 +159,21 @@ export class ProfileCardElement extends ProfileCardElementBase {
   protected onProfileNameInputBlur_() {
     if (this.$.nameInput.invalid) {
       this.$.nameInput.value = this.profileState.localProfileName;
+    }
+  }
+
+  /**
+   * Disables the ripple effect if any. This is needed when the tile is being
+   * dragged in order not to break the visual effect of the dragging tile and
+   * mouse positioning relative to the card.
+   */
+  private disableActiveRipple_(): void {
+    if (this.$.profileCardButton.hasRipple()) {
+      const buttonRipple = this.$.profileCardButton.getRipple();
+      // This sequence is equivalent to calling `buttonRipple.clear()` but also
+      // avoids the animation effect which is needed in this case.
+      buttonRipple.showAndHoldDown();
+      buttonRipple.holdDown = false;
     }
   }
 }
