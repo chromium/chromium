@@ -354,9 +354,12 @@ void PickerController::ToggleWidget(
       focused_client != nullptr && focused_client->GetTextInputType() !=
                                        ui::TextInputType::TEXT_INPUT_TYPE_NONE;
   if (PrefService* prefs = client_->GetPrefs();
-      prefs && feature_tour_.MaybeShowForFirstUse(
-                   prefs, base::BindRepeating(
-                              &PickerController::OnFeatureTourCompleted,
+      prefs &&
+      feature_tour_.MaybeShowForFirstUse(
+          prefs,
+          base::BindRepeating(&PickerController::OnFeatureTourLearnMore,
+                              weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&PickerController::OnFeatureTourCompleted,
                               weak_ptr_factory_.GetWeakPtr(), has_focus))) {
     return;
   }
@@ -684,6 +687,10 @@ void PickerController::CloseCapsLockStateView() {
     caps_lock_state_view_->Close();
     OnViewIsDeleting(caps_lock_state_view_);
   }
+}
+
+void PickerController::OnFeatureTourLearnMore() {
+  OpenLink(GURL("about:blank"));
 }
 
 void PickerController::OnFeatureTourCompleted(

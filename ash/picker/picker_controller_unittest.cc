@@ -314,6 +314,26 @@ TEST_F(PickerControllerTest,
   views::test::WidgetVisibleWaiter(controller.widget_for_testing()).Wait();
 }
 
+TEST_F(PickerControllerTest, ToggleWidgetOpensUrlAfterLearnMore) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  RegisterUserProfilePrefs(client.registry(), /*country=*/"",
+                           /*for_test=*/true);
+  controller.ToggleWidget();
+  auto& feature_tour = controller.feature_tour_for_testing();
+  views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
+
+  EXPECT_CALL(mock_new_window_delegate(), OpenUrl(GURL("about:blank"), _, _))
+      .Times(1);
+
+  const views::Button* button = feature_tour.learn_more_button_for_testing();
+  ASSERT_NE(button, nullptr);
+  LeftClickOn(button);
+  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+
+  EXPECT_FALSE(controller.widget_for_testing());
+}
+
 TEST_F(PickerControllerTest,
        ToggleWidgetShowsWidgetForDogfoodWhenClientAllowed) {
   base::test::ScopedFeatureList features(ash::features::kPickerDogfood);

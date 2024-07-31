@@ -34,14 +34,17 @@ class ASH_EXPORT PickerFeatureTour {
   static void DisableFeatureTourForTesting();
 
   // Shows the feature tour dialog if the tour has not been shown before.
-  // `completion_callback` is called when the user has completed the feature
-  // tour.
-  // Returns whether the feature tour dialog was shown or not.
+  // `learn_more_callback` is called when the user has asked for more
+  // information. `completion_callback` is called when the user has completed
+  // the feature tour. Returns whether the feature tour dialog was shown or not.
   bool MaybeShowForFirstUse(PrefService* prefs,
+                            base::RepeatingClosure learn_more_callback,
                             base::RepeatingClosure completion_callback);
 
   views::Widget* widget_for_testing();
 
+  // Returns the button to learn more.
+  const views::Button* learn_more_button_for_testing() const;
   // Returns the button to complete the tour.
   const views::Button* complete_button_for_testing() const;
 

@@ -35,8 +35,8 @@ class PickerFeatureTourTest : public AshTestBase {
 TEST_F(PickerFeatureTourTest, ShowShowsDialogForFirstTime) {
   PickerFeatureTour feature_tour;
 
-  EXPECT_TRUE(
-      feature_tour.MaybeShowForFirstUse(pref_service(), base::DoNothing()));
+  EXPECT_TRUE(feature_tour.MaybeShowForFirstUse(
+      pref_service(), base::DoNothing(), base::DoNothing()));
   views::Widget* widget = feature_tour.widget_for_testing();
   EXPECT_NE(widget, nullptr);
   views::test::WidgetVisibleWaiter(widget).Wait();
@@ -46,7 +46,7 @@ TEST_F(PickerFeatureTourTest,
        ClickingCompleteButtonClosesWidgetAndTriggersCallback) {
   PickerFeatureTour feature_tour;
   base::test::TestFuture<void> completed_future;
-  feature_tour.MaybeShowForFirstUse(pref_service(),
+  feature_tour.MaybeShowForFirstUse(pref_service(), base::DoNothing(),
                                     completed_future.GetRepeatingCallback());
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
 
@@ -59,10 +59,28 @@ TEST_F(PickerFeatureTourTest,
   EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
 }
 
+TEST_F(PickerFeatureTourTest,
+       ClickingLearnMoreButtonClosesWidgetAndTriggersCallback) {
+  PickerFeatureTour feature_tour;
+  base::test::TestFuture<void> learn_more_future;
+  feature_tour.MaybeShowForFirstUse(pref_service(),
+                                    learn_more_future.GetRepeatingCallback(),
+                                    base::DoNothing());
+  views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
+
+  const views::Button* button = feature_tour.learn_more_button_for_testing();
+  ASSERT_NE(button, nullptr);
+  LeftClickOn(button);
+
+  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+  EXPECT_TRUE(learn_more_future.Wait());
+  EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
+}
+
 TEST_F(PickerFeatureTourTest, PressingEnterClosesWidgetAndTriggersCallback) {
   PickerFeatureTour feature_tour;
   base::test::TestFuture<void> completed_future;
-  feature_tour.MaybeShowForFirstUse(pref_service(),
+  feature_tour.MaybeShowForFirstUse(pref_service(), base::DoNothing(),
                                     completed_future.GetRepeatingCallback());
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
 
@@ -75,11 +93,12 @@ TEST_F(PickerFeatureTourTest, PressingEnterClosesWidgetAndTriggersCallback) {
 
 TEST_F(PickerFeatureTourTest, ShouldNotShowDialogSecondTime) {
   PickerFeatureTour feature_tour;
-  feature_tour.MaybeShowForFirstUse(pref_service(), base::DoNothing());
+  feature_tour.MaybeShowForFirstUse(pref_service(), base::DoNothing(),
+                                    base::DoNothing());
   feature_tour.widget_for_testing()->CloseNow();
 
-  EXPECT_FALSE(
-      feature_tour.MaybeShowForFirstUse(pref_service(), base::DoNothing()));
+  EXPECT_FALSE(feature_tour.MaybeShowForFirstUse(
+      pref_service(), base::DoNothing(), base::DoNothing()));
   EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
 }
 

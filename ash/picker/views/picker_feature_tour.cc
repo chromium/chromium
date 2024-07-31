@@ -67,6 +67,7 @@ ui::ImageModel GetIllustration() {
 }
 
 std::unique_ptr<views::Widget> CreateWidget(
+    base::RepeatingClosure learn_more_callback,
     base::RepeatingClosure completion_callback) {
   auto feature_tour_dialog =
       views::Builder<SystemDialogDelegateView>()
@@ -74,9 +75,10 @@ std::unique_ptr<views::Widget> CreateWidget(
           .SetDescription(GetBodyText())
           .SetAcceptButtonText(l10n_util::GetStringUTF16(
               IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL))
-          .SetAcceptCallback(completion_callback)
+          .SetAcceptCallback(std::move(completion_callback))
           .SetCancelButtonText(l10n_util::GetStringUTF16(
               IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL))
+          .SetCancelCallback(std::move(learn_more_callback))
           .SetTopContentView(
               views::Builder<views::ImageView>().SetImage(GetIllustration()))
           .Build();
@@ -111,6 +113,7 @@ void PickerFeatureTour::DisableFeatureTourForTesting() {
 
 bool PickerFeatureTour::MaybeShowForFirstUse(
     PrefService* prefs,
+    base::RepeatingClosure learn_more_callback,
     base::RepeatingClosure completion_callback) {
   if (!g_feature_tour_enabled) {
     return false;
@@ -123,11 +126,24 @@ bool PickerFeatureTour::MaybeShowForFirstUse(
     return false;
   }
 
-  widget_ = CreateWidget(std::move(completion_callback));
+  widget_ = CreateWidget(std::move(learn_more_callback),
+                         std::move(completion_callback));
   widget_->Show();
 
   prefs->SetBoolean(kFeatureTourCompletedPref, true);
   return true;
+}
+
+const views::Button* PickerFeatureTour::learn_more_button_for_testing() const {
+  if (!widget_) {
+    return nullptr;
+  }
+
+  auto* feature_tour_dialog =
+      static_cast<SystemDialogDelegateView*>(widget_->GetContentsView());
+  return feature_tour_dialog != nullptr
+             ? feature_tour_dialog->GetCancelButtonForTesting()  // IN-TEST
+             : nullptr;
 }
 
 const views::Button* PickerFeatureTour::complete_button_for_testing() const {
@@ -137,7 +153,7 @@ const views::Button* PickerFeatureTour::complete_button_for_testing() const {
 
   auto* feature_tour_dialog =
       static_cast<SystemDialogDelegateView*>(widget_->GetContentsView());
-  return feature_tour_dialog
+  return feature_tour_dialog != nullptr
              ? feature_tour_dialog->GetAcceptButtonForTesting()  // IN-TEST
              : nullptr;
 }

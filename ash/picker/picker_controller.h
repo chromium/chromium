@@ -133,6 +133,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
  private:
   void ShowWidget(base::TimeTicks trigger_event_timestamp);
   void CloseWidget();
+  void OnFeatureTourLearnMore();
   void OnFeatureTourCompleted(bool had_focus_before_feature_tour);
   void ShowWidgetPostFeatureTour();
   void CloseCapsLockStateView();
