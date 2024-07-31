@@ -873,15 +873,12 @@ base::expected<OperationPtr, String> CreateGruCellOperation(
   if (options->hasRecurrentBias()) {
     recurrent_bias_operand_id = operand_to_id_map.at(options->recurrentBias());
   }
-  // gru_cell_mojo->reset_after = options->resetAfter();
-  // gru_cell_mojo->layout =
-  //     mojo::BlinkGruWeightLayoutToMojo(options->layout().AsEnum());
 
   const Vector<V8MLRecurrentNetworkActivation>& ml_activations =
       options->activations();
   CHECK_EQ(ml_activations.size(), 2u);
-  Vector<webnn::mojom::blink::RecurrentNetworkActivation> activations(
-      ml_activations.size());
+  Vector<webnn::mojom::blink::RecurrentNetworkActivation> activations;
+  activations.reserve(ml_activations.size());
   for (const auto& activation : ml_activations) {
     activations.push_back(
         mojo::BlinkRecurrentNetworkActivationToMojo(activation));
