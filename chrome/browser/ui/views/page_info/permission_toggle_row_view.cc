@@ -233,7 +233,7 @@ void PermissionToggleRowView::InitForUserSource(
                   row->permission_.type);
             },
             base::Unretained(this)),
-        vector_icons::kSubmenuArrowIcon);
+        vector_icons::kSubmenuArrowChromeRefreshIcon, icon_size);
     subpage_button->SetTooltipText(
         PageInfoUI::PermissionSubpageButtonTooltipString(permission_.type));
     views::InstallCircleHighlightPathGenerator(subpage_button.get());
