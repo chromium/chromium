@@ -28,56 +28,48 @@ BASE_FEATURE(kExpandedPrefetchRange,
 // otherwise it is treated as 0 by the Windows prefetcher and will interfere
 // with the main process launch.
 
-constexpr base::CommandLine::StringPieceType kPrefetchArgument1 =
-    L"/prefetch:1";
-constexpr base::CommandLine::StringPieceType kPrefetchArgument2 =
-    L"/prefetch:2";
-constexpr base::CommandLine::StringPieceType kPrefetchArgument3 =
-    L"/prefetch:3";
-constexpr base::CommandLine::StringPieceType kPrefetchArgument4 =
-    L"/prefetch:4";
+constexpr base::CommandLine::StringViewType kPrefetchArgument1 = L"/prefetch:1";
+constexpr base::CommandLine::StringViewType kPrefetchArgument2 = L"/prefetch:2";
+constexpr base::CommandLine::StringViewType kPrefetchArgument3 = L"/prefetch:3";
+constexpr base::CommandLine::StringViewType kPrefetchArgument4 = L"/prefetch:4";
 
 // /prefetch:5, /prefetch:6 and /prefetch:7 are reserved for content embedders
 // and are not to be used by content itself, with caveats: we violate this
 // rule with kBrowserBackground using bucket 5, while the 7th bucket is used by
 // the crashpad fallback handler.
-constexpr base::CommandLine::StringPieceType kPrefetchArgument5 =
-    L"/prefetch:5";
-// constexpr base::CommandLine::StringPieceType kPrefetchArgument6 =
+constexpr base::CommandLine::StringViewType kPrefetchArgument5 = L"/prefetch:5";
+// constexpr base::CommandLine::StringViewType kPrefetchArgument6 =
 // "/prefetch:6";
-constexpr base::CommandLine::StringPieceType kPrefetchArgument7 =
-    L"/prefetch:7";
+constexpr base::CommandLine::StringViewType kPrefetchArgument7 = L"/prefetch:7";
 
 // Catch all for Windows versions before Win 11 21H2.
-constexpr base::CommandLine::StringPieceType kPrefetchArgument8 =
-    L"/prefetch:8";
+constexpr base::CommandLine::StringViewType kPrefetchArgument8 = L"/prefetch:8";
 
 // On Windows 11 21H2 and later the prefetch range was expanded to be [1,16]
 
-constexpr base::CommandLine::StringPieceType kPrefetchArgument9 =
-    L"/prefetch:9";
-constexpr base::CommandLine::StringPieceType kPrefetchArgument10 =
+constexpr base::CommandLine::StringViewType kPrefetchArgument9 = L"/prefetch:9";
+constexpr base::CommandLine::StringViewType kPrefetchArgument10 =
     L"/prefetch:10";
-constexpr base::CommandLine::StringPieceType kPrefetchArgument11 =
+constexpr base::CommandLine::StringViewType kPrefetchArgument11 =
     L"/prefetch:11";
-constexpr base::CommandLine::StringPieceType kPrefetchArgument12 =
+constexpr base::CommandLine::StringViewType kPrefetchArgument12 =
     L"/prefetch:12";
-constexpr base::CommandLine::StringPieceType kPrefetchArgument13 =
+constexpr base::CommandLine::StringViewType kPrefetchArgument13 =
     L"/prefetch:13";
-constexpr base::CommandLine::StringPieceType kPrefetchArgument14 =
+constexpr base::CommandLine::StringViewType kPrefetchArgument14 =
     L"/prefetch:14";
-// constexpr base::CommandLine::StringPieceType kPrefetchArgument15 =
+// constexpr base::CommandLine::StringViewType kPrefetchArgument15 =
 // "/prefetch:15";
 
 // Catch all for Windows versions  Win 11 21H2 and later.
-constexpr base::CommandLine::StringPieceType kPrefetchArgument16 =
+constexpr base::CommandLine::StringViewType kPrefetchArgument16 =
     L"/prefetch:16";
 
 }  // namespace
 
 namespace app_launch_prefetch {
 
-base::CommandLine::StringPieceType GetPrefetchSwitch(SubprocessType type) {
+base::CommandLine::StringViewType GetPrefetchSwitch(SubprocessType type) {
   using enum SubprocessType;
   if (base::win::GetVersion() >= base::win::Version::WIN11 &&
       base::FeatureList::GetInstance() &&

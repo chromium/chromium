@@ -111,7 +111,7 @@ base::ScopedFD PassNetworkContextParentDirs(
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-base::CommandLine::StringPieceType UtilityToAppLaunchPrefetchArg(
+base::CommandLine::StringViewType UtilityToAppLaunchPrefetchArg(
     const std::string& utility_type) {
   // Set the default prefetch type for utility processes.
   app_launch_prefetch::SubprocessType prefetch_type =

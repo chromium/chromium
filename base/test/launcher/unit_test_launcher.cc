@@ -302,7 +302,7 @@ UNSAFE_BUFFER_USAGE void InitGoogleTestWChar(int* argc, wchar_t** argv) {
 MergeTestFilterSwitchHandler::~MergeTestFilterSwitchHandler() = default;
 void MergeTestFilterSwitchHandler::ResolveDuplicate(
     std::string_view key,
-    CommandLine::StringPieceType new_value,
+    CommandLine::StringViewType new_value,
     CommandLine::StringType& out_value) {
   if (key != switches::kTestLauncherFilterFile) {
     out_value = CommandLine::StringType(new_value);

@@ -416,7 +416,7 @@ BASE_EXPORT bool GetAppOutputWithExitCode(const CommandLine& cl,
 // A Windows-specific version of GetAppOutput that takes a command line string
 // instead of a CommandLine object. Useful for situations where you need to
 // control the command line arguments directly.
-BASE_EXPORT bool GetAppOutput(CommandLine::StringPieceType cl,
+BASE_EXPORT bool GetAppOutput(CommandLine::StringViewType cl,
                               std::string* output);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // A POSIX-specific version of GetAppOutput that takes an argv array
