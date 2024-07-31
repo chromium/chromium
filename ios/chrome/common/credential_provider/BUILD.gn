@@ -11,6 +11,8 @@ source_set("credential_provider") {
     "ASPasskeyCredentialIdentity+credential.mm",
     "ASPasswordCredentialIdentity+credential.h",
     "ASPasswordCredentialIdentity+credential.mm",
+    "archivable_credential+passkey.h",
+    "archivable_credential+passkey.mm",
     "archivable_credential.h",
     "archivable_credential.mm",
     "archivable_credential_store.h",
@@ -29,6 +31,7 @@ source_set("credential_provider") {
   deps = [
     ":ui",
     "//base",
+    "//components/sync/protocol",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
     "//ios/chrome/common/app_group",
   ]
