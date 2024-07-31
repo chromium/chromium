@@ -207,6 +207,18 @@ void DataSharingServiceAndroid::InviteMember(
                      ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
+void DataSharingServiceAndroid::AddMember(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& group_id,
+    const JavaParamRef<jstring>& access_token,
+    const JavaParamRef<jobject>& j_callback) {
+  data_sharing_service_->AddMember(
+      GroupId(ConvertJavaStringToUTF8(env, group_id)),
+      ConvertJavaStringToUTF8(env, access_token),
+      base::BindOnce(&RunPeopleGroupActionOutcomeCallback,
+                     ScopedJavaGlobalRef<jobject>(j_callback)));
+}
+
 void DataSharingServiceAndroid::RemoveMember(
     JNIEnv* env,
     const JavaParamRef<jstring>& group_id,

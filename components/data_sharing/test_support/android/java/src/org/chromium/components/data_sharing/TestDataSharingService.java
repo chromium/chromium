@@ -61,6 +61,11 @@ public class TestDataSharingService implements DataSharingService {
     }
 
     @Override
+    public void addMember(String groupId, String accessToken, Callback<Integer> callback) {
+        Callback.runNullSafe(callback, PeopleGroupActionOutcome.PERSISTENT_FAILURE);
+    }
+
+    @Override
     public void removeMember(String groupId, String memberEmail, Callback<Integer> callback) {
         Callback.runNullSafe(callback, PeopleGroupActionOutcome.PERSISTENT_FAILURE);
     }

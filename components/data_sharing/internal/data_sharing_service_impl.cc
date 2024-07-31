@@ -253,6 +253,28 @@ void DataSharingServiceImpl::InviteMember(
           weak_ptr_factory_.GetWeakPtr(), group_id, std::move(callback)));
 }
 
+void DataSharingServiceImpl::AddMember(
+    const GroupId& group_id,
+    const std::string& access_token,
+    base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
+  if (!sdk_delegate_) {
+    // Reply in a posted task to avoid reentrance on the calling side.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       PeopleGroupActionOutcome::kPersistentFailure));
+    return;
+  }
+
+  data_sharing_pb::AddMemberParams params;
+  params.set_group_id(group_id.value());
+  params.set_access_token(access_token);
+  sdk_delegate_->AddMember(
+      params,
+      base::BindOnce(&DataSharingServiceImpl::OnSimpleGroupActionCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void DataSharingServiceImpl::RemoveMember(
     const GroupId& group_id,
     const std::string& member_email,

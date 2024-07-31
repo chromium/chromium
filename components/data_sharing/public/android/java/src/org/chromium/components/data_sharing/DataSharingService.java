@@ -147,6 +147,18 @@ public interface DataSharingService {
             Callback</*PeopleGroupActionOutcome*/ Integer> callback);
 
     /**
+     * Attempt to add the primary account associated with the current profile to the group.
+     *
+     * @param groupId The group ID to add to.
+     * @param accessToken The access token from the group.
+     * @param callback The invite result as PeopleGroupActionOutcome.
+     */
+    void addMember(
+            String groupId,
+            String accessToken,
+            Callback</*PeopleGroupActionOutcome*/ Integer> callback);
+
+    /**
      * Attempts to remove a user from the group.
      *
      * @param groupId The group ID to remove from.

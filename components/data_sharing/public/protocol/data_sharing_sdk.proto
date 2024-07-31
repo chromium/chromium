@@ -31,7 +31,12 @@ message ReadGroupsResult {
 
 message AddMemberParams {
   optional string group_id = 1;
-  optional string member_gaia_id = 2;
+  oneof AddMemberOptions {
+    // To add an another member, to an owned group.
+    string member_gaia_id = 2;
+    // To add current account to an unowned group.
+    string access_token = 3;
+  }
 };
 
 message RemoveMemberParams {

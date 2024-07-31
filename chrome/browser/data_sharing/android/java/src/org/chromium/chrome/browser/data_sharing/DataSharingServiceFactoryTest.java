@@ -128,6 +128,15 @@ public class DataSharingServiceFactoryTest {
                                             PeopleGroupActionOutcome.TRANSIENT_FAILURE);
                                     callbackReceived();
                                 });
+                        dataSharingService.addMember(
+                                "bad_id",
+                                "bad_token",
+                                result -> {
+                                    Assert.assertEquals(
+                                            result.intValue(),
+                                            PeopleGroupActionOutcome.TRANSIENT_FAILURE);
+                                    callbackReceived();
+                                });
                         dataSharingService.removeMember(
                                 "bad_id",
                                 "bad_email",

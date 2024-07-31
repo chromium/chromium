@@ -130,6 +130,13 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       const std::string& invitee_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) = 0;
 
+  // Attempts to add the primary account associated with the current profile to
+  // the group.
+  virtual void AddMember(
+      const GroupId& group_id,
+      const std::string& access_token,
+      base::OnceCallback<void(PeopleGroupActionOutcome)> callback) = 0;
+
   // Attempts to remove a user from the group.
   virtual void RemoveMember(
       const GroupId& group_id,

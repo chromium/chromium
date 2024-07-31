@@ -50,6 +50,11 @@ void EmptyDataSharingService::InviteMember(
     const std::string& invitee_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 
+void EmptyDataSharingService::AddMember(
+    const GroupId& group_id,
+    const std::string& access_token,
+    base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
+
 void EmptyDataSharingService::RemoveMember(
     const GroupId& group_id,
     const std::string& member_email,

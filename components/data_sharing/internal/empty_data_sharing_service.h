@@ -44,6 +44,10 @@ class EmptyDataSharingService : public DataSharingService {
       const GroupId& group_id,
       const std::string& invitee_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
+  void AddMember(
+      const GroupId& group_id,
+      const std::string& access_token,
+      base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
   void RemoveMember(
       const GroupId& group_id,
       const std::string& member_email,

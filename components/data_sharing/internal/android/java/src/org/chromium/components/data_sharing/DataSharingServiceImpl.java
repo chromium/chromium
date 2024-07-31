@@ -74,6 +74,11 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     @Override
+    public void addMember(String groupId, String accessToken, Callback<Integer> callback) {
+        DataSharingServiceImplJni.get().addMember(mNativePtr, groupId, accessToken, callback);
+    }
+
+    @Override
     public void removeMember(String groupId, String memberEmail, Callback<Integer> callback) {
         DataSharingServiceImplJni.get().removeMember(mNativePtr, groupId, memberEmail, callback);
     }
@@ -134,6 +139,12 @@ public class DataSharingServiceImpl implements DataSharingService {
                 long nativeDataSharingServiceAndroid,
                 String groupId,
                 String inviteeEmail,
+                Callback<Integer> callback);
+
+        void addMember(
+                long nativeDataSharingServiceAndroid,
+                String groupId,
+                String accessToken,
                 Callback<Integer> callback);
 
         void removeMember(

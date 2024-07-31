@@ -47,6 +47,10 @@ class MockDataSharingService : public DataSharingService {
                void(const GroupId&,
                     const std::string&,
                     base::OnceCallback<void(PeopleGroupActionOutcome)>));
+  MOCK_METHOD3(AddMember,
+               void(const GroupId&,
+                    const std::string&,
+                    base::OnceCallback<void(PeopleGroupActionOutcome)>));
   MOCK_METHOD3(RemoveMember,
                void(const GroupId&,
                     const std::string&,
