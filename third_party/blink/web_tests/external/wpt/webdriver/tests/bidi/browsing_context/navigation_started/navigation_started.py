@@ -1,3 +1,4 @@
+import asyncio
 import pytest
 from tests.support.sync import AsyncPoll
 
@@ -461,3 +462,31 @@ async def test_navigate_history_pushstate(
     event = await wait_for_future_safe(on_entry)
 
     assert event["navigation"] == result["navigation"]
+
+
+@pytest.mark.capabilities({"unhandledPromptBehavior": {"beforeUnload": "ignore"}})
+async def test_with_beforeunload_prompt(
+    bidi_session,
+    new_tab,
+    wait_for_event,
+    wait_for_future_safe,
+    url,
+    subscribe_events,
+    setup_beforeunload_page,
+):
+    await subscribe_events(events=[NAVIGATION_STARTED_EVENT])
+    await setup_beforeunload_page(new_tab)
+    target_url = url("/webdriver/tests/support/html/default.html", domain="alt")
+
+    on_navigation_started = wait_for_event(NAVIGATION_STARTED_EVENT)
+    asyncio.ensure_future(
+        bidi_session.browsing_context.navigate(
+            context=new_tab["context"], url=target_url, wait="none"
+        )
+    )
+
+    event = await wait_for_future_safe(on_navigation_started)
+
+    assert event["context"] == new_tab["context"]
+    assert event["navigation"] is not None
+    assert event["url"] == target_url

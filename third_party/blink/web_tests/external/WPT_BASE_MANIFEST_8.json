@@ -352227,6 +352227,14 @@
       ]
      }
     },
+    "fill-stroke": {
+     "animation": {
+      "stroke-color-interpolation-expected.txt": [
+       "fbf0f159537de4c6fdb630552be6a98aba8770b9",
+       []
+      ]
+     }
+    },
     "filter-effects": {
      "DIR_METADATA": [
       "0dfef80521e06207d84f383c466f84b725226a40",
@@ -402734,7 +402742,7 @@
        []
       ],
       "property-list.js": [
-       "cc6c9eae777986101495c04807842c7ff24051ae",
+       "2e5e876204be276ea6df70e92b960d94695be84b",
        []
       ],
       "property-types.js": [
@@ -404282,6 +404290,12 @@
          []
         ]
        },
+       "navigation_failed": {
+        "__init__.py": [
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ]
+       },
        "navigation_started": {
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -404459,7 +404473,7 @@
         ]
        },
        "conftest.py": [
-        "591e3b42d6ef0f8d4bd64654f3d0d3fb13ff929b",
+        "6928334b7d989006cd97b4b2d52ef288634dbdc2",
         []
        ],
        "continue_request": {
@@ -469970,6 +469984,13 @@
        {}
       ]
      ],
+     "snap-to-visible-areas-both-pseudo.html": [
+      "6bc6d13b3bbf3f0e375df929b2185b74c2fd0136",
+      [
+       null,
+       {}
+      ]
+     ],
      "snap-to-visible-areas-both.html": [
       "cde329bcc38da15bbf225f7f6dfc0cc34103a221",
       [
@@ -485879,6 +485900,17 @@
        {}
       ]
      ]
+    },
+    "fill-stroke": {
+     "animation": {
+      "stroke-color-interpolation.html": [
+       "2f1ec8598b4160825bf4b9e10f4713daa09d7f26",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
     },
     "filter-effects": {
      "animation": {
@@ -588512,7 +588544,7 @@
          ]
         ],
         "image-decode-path-changes.html": [
-         "4b878c1bae2af4e104b6073832990ec8a84982b7",
+         "72e27af296c17e9d898ba31132d0db22c72defb8",
          [
           null,
           {
@@ -643511,6 +643543,13 @@
     ],
     "move-paragraph-cross-editing-boundary.tentative.html": [
      "f6a558d7582e73386b9e7f6b1443d31b35efb875",
+     [
+      null,
+      {}
+     ]
+    ],
+    "move-paragraphboundary-cross-editing-boundary.tentative.html": [
+     "552b8aecb66e8f2369e1b6800d0d9273f7a86788",
      [
       null,
       {}
@@ -743063,9 +743102,18 @@
          ]
         ]
        },
+       "navigation_failed": {
+        "navigation_failed.py": [
+         "fcab85fb075dc39a2b73fce0fda98aa02a2b1638",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "navigation_started": {
         "navigation_started.py": [
-         "af91f0110aa0c3af0610ed46b34bb14ec57ac926",
+         "36670b57f7ce4e254d316f6b5cc89856b7942186",
          [
           null,
           {}

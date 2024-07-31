@@ -752,6 +752,12 @@ const gCSSProperties1 = {
     types: [
     ]
   },
+  'hanging-punctuation': {
+    // https://drafts.csswg.org/css-text/#hanging-punctuation-property
+    types: [
+      { type: 'discrete', options: [ [ 'none', 'first last'] ] }
+    ]
+  },
   'hyphens': {
     // https://drafts.csswg.org/css-text-3/#propdef-hyphens
     types: [
