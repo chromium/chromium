@@ -249,7 +249,7 @@ public class CompositorViewHolder extends FrameLayout
                         @Override
                         public void setCurrentTouchEventOffsets(float top) {
                             EventForwarder forwarder = getEventForwarder();
-                            if (forwarder != null) forwarder.setCurrentTouchEventOffsets(0, top);
+                            if (forwarder != null) forwarder.setCurrentTouchOffsetY(top);
                         }
 
                         @Override
