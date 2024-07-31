@@ -2,6 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# We need a component because this gives access to a per-process
+# singleton instance of the model. Without a component, we end up an
+# instance in each component that uses the library.
+component("language_detection") {
+  sources = [
+    "language_detection_provider.cc",
+    "language_detection_provider.h",
+  ]
+  public_deps = [ ":core" ]
+  deps = [ "//base" ]
+  defines = [ "IS_LANGUAGE_DETECTION_IMPL" ]
+}
+
 static_library("core") {
   sources = [
     "embedding_lookup.cc",
@@ -33,12 +46,13 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "language_detection_model_unittest.cc",
+    "language_detection_provider_unittest.cc",
     "ngram_hash_ops_utils_unittest.cc",
     "quantization_utils_unittest.cc",
   ]
 
   deps = [
-    ":core",
+    ":language_detection",
     "//base",
     "//base/test:test_support",
     "//components/language_detection/testing",

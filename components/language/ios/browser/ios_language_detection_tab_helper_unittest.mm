@@ -13,6 +13,7 @@
 #import "base/values.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
 #include "components/language_detection/core/language_detection_model.h"
+#include "components/language_detection/core/language_detection_provider.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/translate/core/browser/translate_pref_names.h"

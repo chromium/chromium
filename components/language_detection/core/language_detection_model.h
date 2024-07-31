@@ -86,10 +86,5 @@ class LanguageDetectionModel {
   const int num_threads_ = -1;
 };
 
-// Returns the language detection model that is shared across this process.
-// TODO(https://crbug.com/354069716): The model may not have been initialized.
-// Initialization is still handled by the translate component.
-LanguageDetectionModel& GetLanguageDetectionModel();
-
 }  // namespace language_detection
 #endif  // COMPONENTS_LANGUAGE_DETECTION_CORE_LANGUAGE_DETECTION_MODEL_H_

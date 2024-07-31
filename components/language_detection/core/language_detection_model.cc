@@ -171,9 +171,4 @@ std::string LanguageDetectionModel::GetModelVersion() const {
   return kTFLiteModelVersion;
 }
 
-LanguageDetectionModel& GetLanguageDetectionModel() {
-  static base::NoDestructor<LanguageDetectionModel> instance;
-  return *instance;
-}
-
 }  // namespace language_detection

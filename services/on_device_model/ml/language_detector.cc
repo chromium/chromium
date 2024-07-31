@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/language_detection/core/language_detection_model.h"
+#include "components/language_detection/core/language_detection_provider.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 
 namespace ml {
