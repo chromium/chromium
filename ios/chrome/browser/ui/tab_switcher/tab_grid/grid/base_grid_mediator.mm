@@ -317,6 +317,10 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       tabIdentifier:webStateList->GetWebStateAt(webStateIndex)];
 }
 
+- (void)updateForTabInserted {
+  // Default implementation is a no-op.
+}
+
 - (void)addWebStateObservations {
   int firstIndex =
       IsPinnedTabsEnabled() ? self.webStateList->pinned_tabs_count() : 0;
@@ -530,6 +534,9 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress()) {
+    if (change.type() == WebStateListChange::Type::kInsert) {
+      [self updateForTabInserted];
+    }
     return;
   }
 
@@ -681,6 +688,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       break;
     }
     case WebStateListChange::Type::kInsert: {
+      [self updateForTabInserted];
       const WebStateListChangeInsert& insertChange =
           change.As<WebStateListChangeInsert>();
       if ([self isPinnedWebState:insertChange.index()]) {

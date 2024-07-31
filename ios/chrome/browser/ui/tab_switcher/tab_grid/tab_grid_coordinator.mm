@@ -944,8 +944,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
     [self.inactiveTabsCoordinator start];
 
-    baseViewController.inactiveGridHandler =
-        self.inactiveTabsCoordinator.gridCommandsHandler;
     self.regularTabsMediator.containedGridToolbarsProvider =
         self.inactiveTabsCoordinator.toolbarsConfigurationProvider;
     self.regularTabsMediator.inactiveTabsGridCommands =

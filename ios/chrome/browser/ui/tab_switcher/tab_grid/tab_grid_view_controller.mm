@@ -443,7 +443,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self recordIdlePageStatus];
 
   [self.regularGridHandler discardSavedClosedItems];
-  [self.inactiveGridHandler discardSavedClosedItems];
 
   [self.swipeToIncognitoIPH
       dismissWithReason:IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView];

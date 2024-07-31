@@ -125,7 +125,6 @@ enum class TabGridPageConfiguration {
 
 // Delegates send updates from the UI layer to the model layer.
 @property(nonatomic, weak) id<GridCommands> regularGridHandler;
-@property(nonatomic, weak) id<GridCommands> inactiveGridHandler;
 @property(nonatomic, weak) id<GridCommands> incognitoGridHandler;
 
 // Data source for acquiring data which power the PriceCardView
