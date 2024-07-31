@@ -22,6 +22,9 @@
 // subscription.
 @property(nonatomic, weak) id<PriceInsightsMutator> mutator;
 
+// PriceInsightsItem object displayed in the cell.
+@property(nonatomic, readonly) PriceInsightsItem* priceInsightsItem;
+
 // Configures the UICollectionViewCell with `PriceInsightsitem`.
 - (void)configureWithItem:(PriceInsightsItem*)item;
 

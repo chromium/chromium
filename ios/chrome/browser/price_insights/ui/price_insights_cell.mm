@@ -192,6 +192,10 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   }
 }
 
+- (PriceInsightsItem*)priceInsightsItem {
+  return self.item;
+}
+
 #pragma mark - Private
 
 // Returns whether or not price range is available.
