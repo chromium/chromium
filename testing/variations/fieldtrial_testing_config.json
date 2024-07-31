@@ -25004,15 +25004,11 @@
         {
             "platforms": [
                 "mac",
-                "windows",
-                "linux"
+                "windows"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "WebAuthenticationGpmPin": "true"
-                    },
                     "enable_features": [
                         "WebAuthenticationEnclaveAuthenticator"
                     ]

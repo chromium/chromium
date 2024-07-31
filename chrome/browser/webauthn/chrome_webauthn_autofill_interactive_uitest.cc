@@ -49,7 +49,6 @@
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/cable/v2_handshake.h"
@@ -67,12 +66,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/fake_webauthn_api.h"
-#include "device/fido/win/util.h"
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_MAC)
-#include "device/fido/mac/util.h"
-#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -152,19 +146,6 @@ syncer::DeviceInfo CreateDeviceInfo() {
       /*sharing_info=*/std::nullopt, std::move(paask_info),
       /*fcm_registration_token=*/"fcm_token", syncer::ModelTypeSet(),
       /*floating_workspace_last_signin_timestamp=*/base::Time::Now());
-}
-
-std::u16string ExpectedPasskeyLabel() {
-  return
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      // These platforms have GPM enabled by default.
-      l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER);
-#else
-      // Otherwise the label will mention the priority phone.
-      l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
-                                 kPhoneName);
-#endif
 }
 
 // Autofill integration tests. This file contains end-to-end tests for
@@ -321,19 +302,6 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     delegate_observer_ = std::make_unique<DelegateObserver>(this);
     ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(
         delegate_observer_.get());
-
-    mock_hw_provider_ =
-        std::make_unique<crypto::ScopedMockUnexportableKeyProvider>();
-
-#if BUILDFLAG(IS_MAC)
-    biometrics_override_.reset();
-    biometrics_override_ =
-        std::make_unique<device::fido::mac::ScopedBiometricsOverride>(true);
-#elif BUILDFLAG(IS_WIN)
-    biometrics_override_.reset();
-    biometrics_override_ =
-        std::make_unique<device::fido::win::ScopedBiometricsOverride>(true);
-#endif
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
@@ -494,15 +462,6 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
   std::unique_ptr<DelegateObserver> delegate_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
   logging::ScopedVmoduleSwitches scoped_vmodule_;
-  std::unique_ptr<crypto::ScopedMockUnexportableKeyProvider> mock_hw_provider_;
-
-#if BUILDFLAG(IS_WIN)
-  std::unique_ptr<device::fido::win::ScopedBiometricsOverride>
-      biometrics_override_;
-#elif BUILDFLAG(IS_MAC)
-  std::unique_ptr<device::fido::mac::ScopedBiometricsOverride>
-      biometrics_override_;
-#endif
 };
 
 // Autofill integration test using the devtools virtual environment.
@@ -623,7 +582,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, GPMPasskeys) {
   ASSERT_EQ(webauthn_entry_count, 1u);
   ASSERT_LT(suggestion_index, suggestions.size()) << "WebAuthn entry not found";
   EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
-  EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value, ExpectedPasskeyLabel());
+  EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
+            l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
+                                       kPhoneName));
   EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.
@@ -710,7 +671,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
     }
   }
   EXPECT_EQ(webauthn_entry->main_text.value, u"flandre");
-  EXPECT_EQ(webauthn_entry->labels.at(0).at(0).value, ExpectedPasskeyLabel());
+  EXPECT_EQ(webauthn_entry->labels.at(0).at(0).value,
+            l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
+                                       kPhoneName));
   EXPECT_EQ(webauthn_entry->icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.
