@@ -97,9 +97,6 @@ import java.util.Set;
 @DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountManagementFragmentTest {
-    private static final String CHILD_ACCOUNT_NAME =
-            AccountManagerTestRule.generateChildEmail("account@gmail.com");
-
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
@@ -247,15 +244,9 @@ public class AccountManagementFragmentTest {
             ReplaceProfileIsChildWithAccountCapabilitiesParams.class)
     public void testAccountManagementViewForChildAccount(
             boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) throws Exception {
-        final AccountCapabilitiesBuilder accountCapabilitiesBuilder =
-                new AccountCapabilitiesBuilder();
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         CoreAccountInfo primarySupervisedAccount =
-                signinTestRule.addAccount(
-                        CHILD_ACCOUNT_NAME,
-                        accountCapabilitiesBuilder.setIsSubjectToParentalControls(true).build());
-        signinTestRule.waitForSeeding();
-        signinTestRule.waitForSignin(primarySupervisedAccount);
+                signinTestRule.addChildTestAccountThenWaitForSignin();
 
         mSettingsActivityTestRule.startSettingsActivity();
         CriteriaHelper.pollUiThread(
@@ -263,7 +254,7 @@ public class AccountManagementFragmentTest {
                     return mSettingsActivityTestRule
                             .getFragment()
                             .getProfileDataCacheForTesting()
-                            .hasProfileDataForTesting(CHILD_ACCOUNT_NAME);
+                            .hasProfileDataForTesting(primarySupervisedAccount.getEmail());
                 });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -280,13 +271,9 @@ public class AccountManagementFragmentTest {
             ReplaceProfileIsChildWithAccountCapabilitiesParams.class)
     public void testAccountManagementViewForChildAccountWithSecondaryEduAccount(
             boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) throws Exception {
-        final AccountCapabilitiesBuilder accountCapabilitiesBuilder =
-                new AccountCapabilitiesBuilder();
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         CoreAccountInfo primarySupervisedAccount =
-                signinTestRule.addAccount(
-                        CHILD_ACCOUNT_NAME,
-                        accountCapabilitiesBuilder.setIsSubjectToParentalControls(true).build());
+                signinTestRule.addChildTestAccountThenWaitForSignin();
         signinTestRule.addAccount("account@school.com");
         signinTestRule.waitForSeeding();
         signinTestRule.waitForSignin(primarySupervisedAccount);
@@ -297,7 +284,7 @@ public class AccountManagementFragmentTest {
                     return mSettingsActivityTestRule
                             .getFragment()
                             .getProfileDataCacheForTesting()
-                            .hasProfileDataForTesting(CHILD_ACCOUNT_NAME);
+                            .hasProfileDataForTesting(primarySupervisedAccount.getEmail());
                 });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));

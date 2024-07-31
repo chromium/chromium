@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
@@ -76,9 +75,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 @DoNotBatch(reason = "A subset of tests requires adding a new account that could fail if batched.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class GoogleServicesSettingsTest {
-    private static final String CHILD_ACCOUNT_NAME =
-            AccountManagerTestRule.generateChildEmail("account@gmail.com");
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule public final JniMocker mJniMocker = new JniMocker();
@@ -124,7 +120,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     public void allowSigninOptionHiddenFromChildUser() {
-        mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
+        mSigninTestRule.addChildTestAccountThenWaitForSignin();
         final Profile profile =
                 ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
