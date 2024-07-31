@@ -64,7 +64,7 @@
 <translation id="1309341072016605398">‫<ph name="MINUTES" /> دقيقة</translation>
 <translation id="1310380015393971138">ما مِن شبكة <ph name="NETWORK_NAME" /> متوفّرة.</translation>
 <translation id="131421566576084655">تاريخ أحدث عملية إعادة ضبط للبيانات غير متوفّر.</translation>
-<translation id="1314565355471455267">‏الشبكة الظاهرية الخاصة (VPN) في Android</translation>
+<translation id="1314565355471455267">‏شبكة VPN في Android</translation>
 <translation id="131461803491198646">الشبكة الرئيسية، بلا تجوال</translation>
 <translation id="1327977588028644528">المدخل</translation>
 <translation id="1328223165223065150">لون الخلفية</translation>
@@ -1010,7 +1010,7 @@
 <translation id="6650062777702288430">مفتاح التبديل بين لوحة مفاتيح "كانا" ولوحة المفاتيح الأبجدية الرقمية</translation>
 <translation id="6657240842932274095">هل تريد السماح لخدمات النظام باستخدام موقعك الجغرافي؟</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
-<translation id="6659594942844771486">علامة تبويب</translation>
+<translation id="6659594942844771486">‏مفتاح Tab</translation>
 <translation id="66621959568103627">وردي مرجاني</translation>
 <translation id="6673898378497337661">زيادة سطوع لوحة المفاتيح</translation>
 <translation id="6692996468359469499">الحصول على معلومات ذات صلة باختيارك</translation>
