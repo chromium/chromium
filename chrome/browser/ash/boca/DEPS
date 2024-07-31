@@ -26,6 +26,8 @@ include_rules = [
   "+chrome/test/base/testing_profile.h",
   "+chrome/test/base/testing_profile_manager.h",
   "+chrome/browser/profiles/profile_keyed_service_factory.h",
-  "+chrome/browser/profiles/profile.h"
+  "+chrome/browser/profiles/profile_manager.h",
+  "+chrome/browser/profiles/profile.h",
+
 
 ]

@@ -39,4 +39,12 @@ void BocaAppClient::Observer::OnProducerCaptionConfigUpdated(
 void BocaAppClient::Observer::OnConsumerCaptionConfigUpdated(
     const boca::CaptionsConfig& config) {}
 
+void BocaAppClient::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void BocaAppClient::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 }  // namespace ash
