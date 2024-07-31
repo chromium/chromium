@@ -2735,6 +2735,10 @@
       status: "stable",
     },
     {
+      name: "MoveToParagraphStartOrEndSkipsNonEditable",
+      status: "stable",
+    },
+    {
       name: "MultiSelectDeselectWhenOnlyOption",
       status: "test",
     },
