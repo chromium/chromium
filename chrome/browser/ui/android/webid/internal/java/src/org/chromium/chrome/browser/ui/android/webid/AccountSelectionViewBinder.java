@@ -675,6 +675,7 @@ class AccountSelectionViewBinder {
                     model.get(HeaderProperties.SET_FOCUS_VIEW_CALLBACK).onResult(headerView);
                 }
                 headerSubtitleText.setText(subtitle);
+                headerSubtitleText.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
                 headerSubtitleText.setVisibility(View.GONE);
             }
