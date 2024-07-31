@@ -604,6 +604,8 @@ src/webgpu/shader/execution/expression/call/builtin/sqrt.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/step.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/step.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/storageBarrier.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/subgroupBallot.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/subgroupBroadcast.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tan.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/tan.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.cache.ts
@@ -813,6 +815,8 @@ src/webgpu/shader/validation/expression/call/builtin/sinh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/smoothstep.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sqrt.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/step.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/subgroupBallot.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/subgroupBroadcast.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/tan.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/tanh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureDimensions.spec.ts
