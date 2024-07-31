@@ -474,6 +474,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (self.topToolbar.pageControl.selectedPage != page)
     [self.topToolbar.pageControl setSelectedPage:page animated:animated];
   if (self.currentPage != page) {
+    [self.mutator pageChanged:page
+                  interaction:TabSwitcherPageChangeInteraction::kNone];
+    self.currentPage = page;
     [self scrollToPage:page animated:animated];
   }
 }
