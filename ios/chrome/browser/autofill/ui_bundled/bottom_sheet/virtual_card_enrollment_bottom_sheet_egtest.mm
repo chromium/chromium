@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/authentication_egtest_util.h"
@@ -241,6 +242,14 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
 
   // Avoid immediately failing due to missing access token.
   [AutofillAppInterface setAccessToken];
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Assert the logo has an accessibility label set.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+#endif
 
   // Push the accept button on the virtual card enrollment bottom sheet.
   [[EarlGrey selectElementWithMatcher:VirtualCardEnrollmentAcceptButton()]
