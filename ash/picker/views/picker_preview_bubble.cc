@@ -69,7 +69,7 @@ namespace ash {
 
 PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
     : BubbleDialogDelegateView(anchor_view,
-                               views::BubbleBorder::RIGHT_CENTER,
+                               views::BubbleBorder::LEFT_CENTER,
                                views::BubbleBorder::STANDARD_SHADOW,
                                /*autosize=*/true) {
   // Configuration for this view.
