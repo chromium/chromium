@@ -266,6 +266,13 @@ public class PrivacyGuideFragmentTest {
                                 ProfileManager.getLastUsedRegularProfile(), preloadPagesState));
     }
 
+    private void setAdTopicsState(boolean isAdTopicsOn) {
+        runOnUiThreadBlocking(
+                () ->
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                .setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, isAdTopicsOn));
+    }
+
     private void executeWhileCapturingIntents(Runnable func) {
         Intents.init();
         try {
@@ -480,6 +487,7 @@ public class PrivacyGuideFragmentTest {
         setPreloadStatePG3(PreloadPagesState.STANDARD_PRELOADING);
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
+        setAdTopicsState(false);
 
         launchPrivacyGuide();
         testButtonVisibility(false, false, false);
