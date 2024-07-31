@@ -7413,7 +7413,7 @@
   {
     "name": "profiles-reordering",
     "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 126
+    "expiry_milestone": 130
   },
   {
     "name": "promise-icons",
