@@ -25,15 +25,3 @@ NSString* const kPriceHistoryPrimarySubtitleIdentifier =
 NSString* const kPriceHistorySecondarySubtitleIdentifier =
     @"priceHistorySecondarySubtitleIdentifier";
 NSString* const kPriceHistoryGraphIdentifier = @"priceHistoryGraphIdentifier";
-NSString* const kPriceRangeTitleIdentifier = @"PriceRangeTitleIdentifier";
-NSString* const kPriceRangeSubtitleIdentifier = @"PriceRangeSubtitleIdentifier";
-NSString* const kPriceRangeStackViewIdentifier =
-    @"kPriceRangeStackViewIdentifier";
-NSString* const kPriceRangeSliderLowLabelIdentifier =
-    @"PriceRangeSliderLowLabelIdentifier";
-NSString* const kPriceRangeSliderLowPriceIdentifier =
-    @"PriceRangeSliderLowPriceIdentifier";
-NSString* const kPriceRangeSliderHighLabelIdentifier =
-    @"PriceRangeSliderHighLabelIdentifier";
-NSString* const kPriceRangeSliderHighPriceIdentifier =
-    @"PriceRangeSliderHighPriceIdentifier";

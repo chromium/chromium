@@ -279,17 +279,6 @@ NSDate* getNSDateFromString(std::string date) {
     return item;
   }
 
-  item.currentPrice = config->product_info->amount_micros;
-  if (config->price_insights_info->typical_low_price_micros.has_value()) {
-    item.lowPrice =
-        config->price_insights_info->typical_low_price_micros.value();
-  }
-
-  if (config->price_insights_info->typical_high_price_micros.has_value()) {
-    item.highPrice =
-        config->price_insights_info->typical_high_price_micros.value();
-  }
-
   NSMutableDictionary* priceHistory = [[NSMutableDictionary alloc] init];
   for (std::tuple<std::string, int64_t> history :
        config->price_insights_info->catalog_history_prices) {
