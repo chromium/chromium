@@ -29,46 +29,6 @@ import org.chromium.base.test.util.RawFailureHandler;
 
 /** {@link Condition}s related to Android {@link View}s. */
 public class ViewConditions {
-    /**
-     * Fulfilled when a single matching View exists and is displayed, but ignored if |gate| returns
-     * true.
-     */
-    public static class GatedDisplayedCondition extends ConditionWithResult<View> {
-
-        private final DisplayedCondition mDisplayedCondition;
-        private final Condition mGate;
-
-        public GatedDisplayedCondition(
-                Matcher<View> matcher, Condition gate, DisplayedCondition.Options options) {
-            super(/* isRunOnUiThread= */ false);
-            mDisplayedCondition = new DisplayedCondition(matcher, options);
-            mGate = gate;
-        }
-
-        @Override
-        protected ConditionStatusWithResult<View> resolveWithSuppliers() throws Exception {
-            ConditionStatus gateStatus = mGate.check();
-            String gateMessage = gateStatus.getMessageAsGate();
-            if (gateStatus.isAwaiting()) {
-                return notFulfilled(gateMessage).withoutResult();
-            }
-
-            if (!gateStatus.isFulfilled()) {
-                return fulfilled(gateMessage).withoutResult();
-            }
-
-            ConditionStatus status = mDisplayedCondition.check();
-            status.amendMessage(gateMessage);
-            return status.withResult(mDisplayedCondition.get());
-        }
-
-        @Override
-        public String buildDescription() {
-            return String.format(
-                    "%s (if %s)", mDisplayedCondition.buildDescription(), mGate.buildDescription());
-        }
-    }
-
     /** Fulfilled when a single matching View exists and is displayed. */
     public static class DisplayedCondition extends ConditionWithResult<View> {
         private final Matcher<View> mMatcher;

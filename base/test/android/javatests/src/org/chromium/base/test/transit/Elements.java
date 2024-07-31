@@ -103,7 +103,7 @@ public class Elements {
         /** Declare as an element a View that matches |viewMatcher|. */
         public ViewElementInState declareView(ViewElement viewElement) {
             assertNotBuilt();
-            ViewElementInState inState = new ViewElementInState(viewElement, /* gate= */ null);
+            ViewElementInState inState = new ViewElementInState(viewElement);
             mElementsInState.add(inState);
             return inState;
         }
