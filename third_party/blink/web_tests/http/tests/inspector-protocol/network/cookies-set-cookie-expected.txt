@@ -1,0 +1,11 @@
+Tests that cookies can be set
+Result of Network.setCookie: {
+    id : <number>
+    result : {
+        success : true
+    }
+    sessionId : <string>
+}
+Num of cookies 1
+name: foo, value: bar1, domain: 127.0.0.1, path: /, session
+
