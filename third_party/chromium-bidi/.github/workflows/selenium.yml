@@ -37,7 +37,7 @@ jobs:
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ~/.cache/chromium-bidi
-          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
+          key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}
       - name: Install pinned browser
         id: browser
         run: node tools/install-browser.mjs --github
