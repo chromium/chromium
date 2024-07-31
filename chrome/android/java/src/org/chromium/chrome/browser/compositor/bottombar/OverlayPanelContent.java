@@ -378,9 +378,7 @@ public class OverlayPanelContent {
         // Creates an initially hidden WebContents which gets shown when the panel is opened.
         mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
 
-        ContentView cv =
-                ContentView.createContentView(
-                        mActivity, /* eventOffsetHandler= */ null, mWebContents);
+        ContentView cv = ContentView.createContentView(mActivity, mWebContents);
         if (mContentViewWidth != 0 || mContentViewHeight != 0) {
             int width =
                     mContentViewWidth == 0

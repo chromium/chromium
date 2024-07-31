@@ -82,9 +82,7 @@ public class SelectPopupOtherContentViewTest {
                                     ProfileManager.getLastUsedRegularProfile(), false, false);
                     ChromeActivity activity = mActivityTestRule.getActivity();
 
-                    ContentView cv =
-                            ContentView.createContentView(
-                                    activity, /* eventOffsetHandler= */ null, webContents);
+                    ContentView cv = ContentView.createContentView(activity, webContents);
                     webContents.setDelegates(
                             "",
                             ViewAndroidDelegate.createBasicDelegate(cv),

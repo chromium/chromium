@@ -30,7 +30,6 @@ import org.mockito.Mock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.EventOffsetHandler;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
 /**
@@ -40,7 +39,6 @@ import org.chromium.ui.base.ViewAndroidDelegate;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContentViewTest {
-    @Mock private EventOffsetHandler.EventOffsetHandlerDelegate mEventOffsetHandlerDelegate;
     @Mock private WebContents mWebContents;
     @Mock private ViewAndroidDelegate mViewDelegate;
 
@@ -51,11 +49,7 @@ public class ContentViewTest {
     public void setUp() {
         openMocks(this);
         mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        mContentView =
-                new ContentView(
-                        mContext,
-                        new EventOffsetHandler(mEventOffsetHandlerDelegate),
-                        mWebContents);
+        mContentView = new ContentView(mContext, mWebContents);
     }
 
     @Test

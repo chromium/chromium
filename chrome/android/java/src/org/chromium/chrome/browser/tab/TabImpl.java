@@ -1742,9 +1742,7 @@ class TabImpl implements Tab {
             WebContents oldWebContents = mWebContents;
             mWebContents = webContents;
 
-            ContentView cv =
-                    ContentView.createContentView(
-                            mThemedApplicationContext, /* eventOffsetHandler= */ null, webContents);
+            ContentView cv = ContentView.createContentView(mThemedApplicationContext, webContents);
             cv.setContentDescription(
                     mThemedApplicationContext
                             .getResources()

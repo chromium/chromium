@@ -591,9 +591,7 @@ public class CreatorCoordinator
         // Creates an initially hidden WebContents which gets shown when the panel is opened.
         mWebContents = mCreatorWebContents.createWebContents();
 
-        mContentView =
-                ContentView.createContentView(
-                        mActivity, /* eventOffsetHandler= */ null, mWebContents);
+        mContentView = ContentView.createContentView(mActivity, mWebContents);
 
         mWebContents.setDelegates(
                 VersionInfo.getProductVersion(),
