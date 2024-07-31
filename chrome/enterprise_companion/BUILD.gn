@@ -111,6 +111,7 @@ executable("test_crashpad_embedder") {
   sources = [ "test/test_crashpad_embedder.cc" ]
   deps = [
     ":base",
+    ":client",
     "//base",
     "//chrome/updater:constants_test",
   ]
