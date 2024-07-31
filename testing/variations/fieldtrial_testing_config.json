@@ -14785,6 +14785,83 @@
             ]
         }
     ],
+    "OmniboxMlUrlPiecewiseMappedScoringAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_AdjustedBy0",
+                    "params": {
+                        "MlUrlPiecewiseMappedSearchBlending": "true",
+                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.034,595;0.043,790;0.067,795;0.076,900;0.117,930;0.147,1200;0.184,1205;0.2,1300;0.647,1350;0.668,1410;0.988,1430;1,1530",
+                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1414",
+                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "MlUrlSearchBlending_MappedSearchBlending": "false",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlPiecewiseMappedSearchBlending",
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_DemotedBy50",
+                    "params": {
+                        "MlUrlPiecewiseMappedSearchBlending": "true",
+                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.034,545;0.043,740;0.067,745;0.076,850;0.117,880;0.147,1150;0.184,1155;0.2,1250;0.647,1300;0.668,1360;0.988,1380;1,1530",
+                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1364",
+                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "MlUrlSearchBlending_MappedSearchBlending": "false",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlPiecewiseMappedSearchBlending",
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_PromotedBy100",
+                    "params": {
+                        "MlUrlPiecewiseMappedSearchBlending": "true",
+                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.034,695;0.043,890;0.067,895;0.076,1000;0.117,1030;0.147,1300;0.184,1305;0.2,1400;0.647,1450;0.668,1510;0.988,1530;1,1530",
+                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1514",
+                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "MlUrlSearchBlending_MappedSearchBlending": "false",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlPiecewiseMappedSearchBlending",
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_PromotedBy50",
+                    "params": {
+                        "MlUrlPiecewiseMappedSearchBlending": "true",
+                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.034,645;0.043,840;0.067,845;0.076,950;0.117,980;0.147,1250;0.184,1255;0.2,1350;0.647,1400;0.668,1460;0.988,1480;1,1530",
+                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1464",
+                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "MlUrlSearchBlending_MappedSearchBlending": "false",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlPiecewiseMappedSearchBlending",
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxMlUrlPiecewiseMappedScoringDesktop": [
         {
             "platforms": [
