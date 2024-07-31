@@ -311,5 +311,9 @@ specific_include_rules = {
   "chrome_tab_strip_delegate\.cc":[
     "+chrome/browser/favicon/favicon_utils.h",
     "+chrome/browser/ui/tabs/tab_renderer_data.h",
+  ],
+    "snap_group_browsertest\.cc":[
+    "+chrome/browser/ui/views/tabs/tab_strip.h",
+    "+chrome/browser/ui/views/tabs/tab_strip_observer.h",
   ]
 }

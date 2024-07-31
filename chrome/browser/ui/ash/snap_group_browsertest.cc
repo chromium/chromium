@@ -9,7 +9,6 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
-#include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
@@ -25,6 +24,7 @@
 #include "ash/wm/splitview/split_view_setup_view.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -34,7 +34,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -64,6 +68,33 @@ const GURL& GetActiveUrl(Browser* browser) {
       ->GetActiveWebContents()
       ->GetLastCommittedURL();
 }
+
+// This class observes the `TabStripModelObserver` and reacts with predetermined
+// actions to manage tab behavior. In particular, it finalizes tab detachment
+// by releasing the left mouse button when a tab strip is removed from a window.
+class TabRemoveObserver : public TabStripModelObserver {
+ public:
+  TabRemoveObserver(Browser* browser, ui::test::EventGenerator* event_generator)
+      : browser_(browser), event_generator_(event_generator) {
+    browser_->tab_strip_model()->AddObserver(this);
+  }
+  TabRemoveObserver(const TabStripObserver&) = delete;
+  TabRemoveObserver& operator=(const TabStripObserver&) = delete;
+  ~TabRemoveObserver() override {
+    browser_->tab_strip_model()->RemoveObserver(this);
+  }
+
+  // TabStripModelObserver:
+  void OnTabWillBeRemoved(content::WebContents* contents, int index) override {
+    // Tab detachment is asynchronous. Release the mouse button after the tab
+    // move is done.
+    event_generator_->ReleaseLeftButton();
+  }
+
+ private:
+  raw_ptr<Browser> browser_;
+  raw_ptr<ui::test::EventGenerator> event_generator_;
+};
 
 }  // namespace
 
@@ -160,6 +191,9 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithNewSettingsBrowserTest,
   ASSERT_TRUE(settings_browser);
   ASSERT_EQ(os_settings, GetActiveUrl(settings_browser));
 }
+
+// -----------------------------------------------------------------------------
+// FasterSplitScreenWithOldSettingsBrowserTest:
 
 class FasterSplitScreenWithOldSettingsBrowserTest
     : public FasterSplitScreenBrowserTest {
@@ -333,6 +367,74 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, RotatedSnapGroup) {
   EXPECT_EQ(top_half, w1->GetBoundsInScreen());
   ASSERT_EQ(gfx::Rect(800, 579, 900, 573), bottom_half);
   EXPECT_EQ(bottom_half, w2->GetBoundsInScreen());
+}
+
+// Verify that dragging a tab within a Snap Group window does not break the
+// group.
+IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDragging) {
+  aura::Window* window1 = browser()->window()->GetNativeWindow();
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUITabSearchURL), -1, true);
+  ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+
+  aura::Window* window2 =
+      CreateBrowser(browser()->profile())->window()->GetNativeWindow();
+
+  aura::Window* root_window = ash::Shell::GetPrimaryRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  ash::SnapTwoTestWindows(window1, window2, /*horizontal=*/true,
+                          &event_generator);
+  ASSERT_TRUE(
+      ash::SnapGroupController::Get()->AreWindowsInSnapGroup(window1, window2));
+
+  TabStrip* tap_strip =
+      BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
+  const auto start_point =
+      tap_strip->tab_at(1)->GetBoundsInScreen().CenterPoint();
+  const auto end_point =
+      tap_strip->tab_at(0)->GetBoundsInScreen().left_center();
+  event_generator.MoveMouseTo(start_point);
+  event_generator.PressLeftButton();
+  event_generator.MoveMouseTo(end_point);
+  event_generator.ReleaseLeftButton();
+
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_TRUE(
+      ash::SnapGroupController::Get()->AreWindowsInSnapGroup(window1, window2));
+}
+
+// Verify that detaching a tab from a window within a Snap Group doesn't break
+// the group.
+IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDetaching) {
+  aura::Window* window1 = browser()->window()->GetNativeWindow();
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUITabSearchURL), -1, true);
+  ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+
+  aura::Window* window2 =
+      CreateBrowser(browser()->profile())->window()->GetNativeWindow();
+
+  ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
+  ash::SnapTwoTestWindows(window1, window2, /*horizontal=*/true,
+                          &event_generator);
+  ASSERT_TRUE(
+      ash::SnapGroupController::Get()->AreWindowsInSnapGroup(window1, window2));
+
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+
+  TabStrip* tap_strip =
+      BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
+  const gfx::Point start_point =
+      tap_strip->tab_at(1)->GetBoundsInScreen().CenterPoint();
+  const gfx::Point end_point = window2->GetBoundsInScreen().CenterPoint();
+  event_generator.MoveMouseTo(start_point);
+  event_generator.PressLeftButton();
+  TabRemoveObserver observer(browser(), &event_generator);
+  event_generator.MoveMouseTo(end_point);
+
+  // Verify that detaching a tab results in a new window being created and that
+  // `window1` and `window2` still belong to the Snap Group.
+  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+  EXPECT_TRUE(
+      ash::SnapGroupController::Get()->AreWindowsInSnapGroup(window1, window2));
 }
 
 // Test that "Save Desk for Later" is not supported when both windows in a Snap
