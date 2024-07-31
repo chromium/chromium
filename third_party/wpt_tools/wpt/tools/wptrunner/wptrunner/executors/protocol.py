@@ -262,6 +262,12 @@ class StorageProtocolPart(ProtocolPart):
         :param url: A url belonging to the origin"""
         pass
 
+    @abstractmethod
+    def run_bounce_tracking_mitigations(self):
+        """Run the Bounce Tracking Mitigations deletion/enforcement algorithm
+
+        :returns: A list of sites corresponding to bounce trackers whose state was removed"""
+        pass
 
 class SelectorProtocolPart(ProtocolPart):
     """Protocol part for selecting elements on the page."""

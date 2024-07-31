@@ -1066,6 +1066,29 @@
          */
         clear_device_posture: function(context=null) {
             return window.test_driver_internal.clear_device_posture(context);
+        },
+
+        /**
+         * Runs the `bounce tracking timer algorithm
+         * <https://privacycg.github.io/nav-tracking-mitigations/#bounce-tracking-timer>`_,
+         * which removes all hosts from the stateful bounce tracking map, without
+         * regard for the bounce tracking grace period and returns a list of the
+         * deleted hosts.
+         *
+         * Matches the `Run Bounce Tracking Mitigations
+         * https://privacycg.github.io/nav-tracking-mitigations/#run-bounce-tracking-mitigations-command`_
+         * WebDriver command.
+         *
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         * @returns {Promise} Fulfilled after the bounce tracking timer
+         *                    algorithm has finished running. Returns an array
+         *                    of all hosts that were in the stateful bounce
+         *                    tracking map before deletion occurred.
+         */
+        run_bounce_tracking_mitigations: function (context = null) {
+            return window.test_driver_internal.run_bounce_tracking_mitigations(context);
         }
     };
 
@@ -1262,6 +1285,10 @@
 
         async clear_device_posture(context=null) {
             throw new Error("clear_device_posture() is not implemented by testdriver-vendor.js");
+        },
+
+        async run_bounce_tracking_mitigations(context=null) {
+            throw new Error("run_bounce_tracking_mitigations() is not implemented by testdriver-vendor.js");
         }
     };
 })();
