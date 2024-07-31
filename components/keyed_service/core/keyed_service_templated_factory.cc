@@ -225,8 +225,7 @@ void KeyedServiceTemplatedFactory<ServiceType>::ContextShutdown(void* context) {
 #endif
 
 #if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_INITIALIZATION)
-  CHECK(iterator->second.stage == MappingStage::kContextInitialized ||
-        iterator->second.stage == MappingStage::kServiceAssociated);
+  CHECK_LE(iterator->second.stage, MappingStage::kServiceAssociated);
 #else
   CHECK_LT(iterator->second.stage, MappingStage::kServiceShutdown);
 #endif
