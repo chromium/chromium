@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "headless/lib/headless_content_main_delegate.h"
 
 #include <cstdint>
@@ -125,13 +120,10 @@ void OnResourceExhausted() {
 
 void InitializeResourceBundle(const base::CommandLine& command_line) {
 #if defined(HEADLESS_USE_EMBEDDED_RESOURCES)
-  ui::ResourceBundle::InitSharedInstanceWithBuffer(
-      {kHeadlessResourcePackStrings.contents,
-       kHeadlessResourcePackStrings.length},
-      ui::kScaleFactorNone);
+  ui::ResourceBundle::InitSharedInstanceWithBuffer(kHeadlessResourcePackStrings,
+                                                   ui::kScaleFactorNone);
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromBuffer(
-      {kHeadlessResourcePackData.contents, kHeadlessResourcePackData.length},
-      ui::k100Percent);
+      kHeadlessResourcePackData, ui::k100Percent);
 #else
   base::FilePath resource_dir;
   bool result = base::PathService::Get(base::DIR_ASSETS, &resource_dir);

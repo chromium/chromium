@@ -13,11 +13,11 @@ COPYRIGHT="""// Copyright 2017 The Chromium Authors
 
 HEADER="""{copyright}
 
-#include "headless/lib/util/embedded_file.h"
+#include "base/containers/span.h"
 
 namespace {namespace} {{
 
-extern const headless::util::EmbeddedFile {variable_name};
+extern const base::span<const uint8_t> {variable_name};
 
 }}  // namespace {namespace}
 """
@@ -34,7 +34,7 @@ const uint8_t contents[] = {contents};
 
 namespace {namespace} {{
 
-const headless::util::EmbeddedFile {variable_name} = {{ {length}, contents }};
+const base::span<const uint8_t> {variable_name}(contents);
 
 }}  // namespace {namespace}
 """
@@ -57,7 +57,7 @@ def GenerateArray(filepath):
 
   contents = [ str(byte) for byte in bytearray(contents) ]
 
-  return len(contents), '{' + ','.join(contents) + '}'
+  return '{' + ','.join(contents) + '}'
 
 
 def GenerateHeader(args):
@@ -67,13 +67,12 @@ def GenerateHeader(args):
       variable_name=args.variable_name)
 
 def GenerateSource(args):
-  length, contents = GenerateArray(args.data_file)
+  contents = GenerateArray(args.data_file)
 
   return SOURCE.format(
       copyright=COPYRIGHT,
       header_file=args.header_file,
       namespace=args.namespace,
-      length=length,
       contents=contents,
       variable_name=args.variable_name)
 
