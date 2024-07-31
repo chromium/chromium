@@ -30,6 +30,7 @@ source_set("lens") {
     ":lens_internal",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/views/side_panel",
     "//components/lens:enterprise_policy",
   ]

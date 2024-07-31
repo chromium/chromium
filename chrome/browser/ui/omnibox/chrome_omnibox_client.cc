@@ -22,6 +22,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -91,7 +92,8 @@ ChromeOmniboxClient::ChromeOmniboxClient(LocationBar* location_bar,
     : location_bar_(location_bar),
       browser_(browser),
       profile_(profile),
-      scheme_classifier_(profile),
+      scheme_classifier_(
+          std::make_unique<ChromeAutocompleteSchemeClassifier>(profile)),
       favicon_cache_(FaviconServiceFactory::GetForProfile(
                          profile,
                          ServiceAccessType::EXPLICIT_ACCESS),
@@ -178,7 +180,7 @@ TemplateURLService* ChromeOmniboxClient::GetTemplateURLService() {
 
 const AutocompleteSchemeClassifier& ChromeOmniboxClient::GetSchemeClassifier()
     const {
-  return scheme_classifier_;
+  return *scheme_classifier_;
 }
 
 AutocompleteClassifier* ChromeOmniboxClient::GetAutocompleteClassifier() {
