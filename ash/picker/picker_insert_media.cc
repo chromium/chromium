@@ -73,10 +73,28 @@ bool ShouldSkipLinkClipboardInsertion(const GURL& url_of_target) {
          url_of_target.path_piece().starts_with("/presentation/");
 }
 
+// Some websites such as https://x.com use a `contenteditable` text field, but
+// `<a>` elements are stripped. Inserting
+//     <a href="https://example.com">Example</a>
+// into these text fields will result in a _plain text_ "Example", without a
+// link. As a result, we only insert link titles on a set of allowlisted
+// websites. If this returns false, we insert
+//     <a href="https://example.com">https://example.com</a>
+// instead, which, if the `<a>` element is stripped, still inserts the link
+// "https://example.com".
+//
+// TODO: b/337064111 - Determine allowlist for inserting link title.
 bool ShouldUseLinkTitle(const GURL& url_of_target) {
-  // TODO: b/337064111 - Determine allowlist for inserting link title.
-  return url_of_target.DomainIs("google.com") &&
-         !url_of_target.DomainIs("docs.google.com");
+  if (url_of_target.DomainIs("google.com")) {
+    return !url_of_target.DomainIs("docs.google.com");
+  }
+
+  if (url_of_target.DomainIs("onedrive.live.com") ||
+      url_of_target.DomainIs("sharepoint.com")) {
+    return true;
+  }
+
+  return false;
 }
 
 void InsertMediaToInputFieldNoClipboard(
