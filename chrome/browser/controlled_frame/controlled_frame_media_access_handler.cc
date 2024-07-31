@@ -102,7 +102,7 @@ bool ControlledFrameMediaAccessHandler::CheckMediaAccessPermission(
   // Note that the type check can be omitted here because WebView Permission
   // Request API does not differentiate audio and video requests, they are both
   // treated as "media".
-  if (requests_[embedder_origin].contains(requesting_origin)) {
+  if (!requests_[embedder_origin].contains(requesting_origin)) {
     return false;
   }
 
