@@ -103,8 +103,13 @@ const char kFirstContentfulPaint[] = "FirstContentfulPaint";
 const char kDOMContentLoaded[] = "DOMContentLoaded";
 const char kLoadEventStarted[] = "LoadStarted";
 const char kLargestContentfulPaint[] = "LargestContentfulPaint";
+
 const char kAFTStart[] = "AFTStart";
 const char kAFTEnd[] = "AFTEnd";
+const char kHeaderChunkStart[] = "HeaderChunkStart";
+const char kHeaderChunkEnd[] = "HeaderChunkEnd";
+const char kBodyChunkStart[] = "BodyChunkStart";
+const char kBodyChunkEnd[] = "BodyChunkEnd";
 
 const char kRendererProcessCreatedBeforeNavHistogramName[] =
     "RendererProcessCreatedBeforeNav";
@@ -189,6 +194,14 @@ std::string AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
       return internal::kAFTStart;
     case NavigationMilestone::kAFTEnd:
       return internal::kAFTEnd;
+    case NavigationMilestone::kHeaderChunkStart:
+      return internal::kHeaderChunkStart;
+    case NavigationMilestone::kHeaderChunkEnd:
+      return internal::kHeaderChunkEnd;
+    case NavigationMilestone::kBodyChunkStart:
+      return internal::kBodyChunkStart;
+    case NavigationMilestone::kBodyChunkEnd:
+      return internal::kBodyChunkEnd;
   }
 }
 

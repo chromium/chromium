@@ -74,6 +74,8 @@ chromium-metrics-reviews@google.com.
 <variants name="NavigationMilestone">
   <variant name="AFTEnd"/>
   <variant name="AFTStart"/>
+  <variant name="BodyChunkEnd" summary="BodyChunkEnd (added in M129)"/>
+  <variant name="BodyChunkStart" summary="BodyChunkStart (added inM129)"/>
   <variant name="CommitReceived"/>
   <variant name="CommitSent"/>
   <variant name="DidCommit"/>
@@ -82,6 +84,8 @@ chromium-metrics-reviews@google.com.
   <variant name="FirstRedirectedRequestStart"/>
   <variant name="FirstRedirectResponseLoaderCallback"/>
   <variant name="FirstRedirectResponseStart"/>
+  <variant name="HeaderChunkEnd" summary="HeaderChunkEnd (added in M129)"/>
+  <variant name="HeaderChunkStart" summary="HeaderChunkStart (added in M129)"/>
   <variant name="LargestContentfulPaint"/>
   <variant name="LoaderStart"/>
   <variant name="LoadEventStarted"/>

@@ -36,6 +36,10 @@ extern const char kHistogramGWSParseStart[];
 
 extern const char kGwsAFTStartMarkName[];
 extern const char kGwsAFTEndMarkName[];
+extern const char kGwsHeaderChunkStartMarkName[];
+extern const char kGwsHeaderChunkEndMarkName[];
+extern const char kGwsBodyChunkStartMarkName[];
+extern const char kGwsBodyChunkEndMarkName[];
 
 }  // namespace internal
 

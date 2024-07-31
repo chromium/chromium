@@ -56,6 +56,14 @@ const char kHistogramGWSConnectTimingFinalRequestSslDelay[] =
 
 const char kHistogramGWSAFTEnd[] = HISTOGRAM_PREFIX "PaintTiming.AFTEnd";
 const char kHistogramGWSAFTStart[] = HISTOGRAM_PREFIX "PaintTiming.AFTStart";
+const char kHistogramGWSHeaderChunkStart[] =
+    HISTOGRAM_PREFIX "PaintTiming.HeaderChunkStart";
+const char kHistogramGWSHeaderChunkEnd[] =
+    HISTOGRAM_PREFIX "PaintTiming.HeaderChunkEnd";
+const char kHistogramGWSBodyChunkStart[] =
+    HISTOGRAM_PREFIX "PaintTiming.BodyChunkStart";
+const char kHistogramGWSBodyChunkEnd[] =
+    HISTOGRAM_PREFIX "PaintTiming.BodyChunkEnd";
 const char kHistogramGWSFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToFirstContentfulPaint";
 const char kHistogramGWSLargestContentfulPaint[] =
@@ -65,6 +73,10 @@ const char kHistogramGWSParseStart[] =
 
 const char kGwsAFTStartMarkName[] = "SearchAFTStart";
 const char kGwsAFTEndMarkName[] = "trigger:SearchAFTEnd";
+const char kGwsHeaderChunkStartMarkName[] = "SearchHeadStart";
+const char kGwsHeaderChunkEndMarkName[] = "SearchHeadEnd";
+const char kGwsBodyChunkStartMarkName[] = "SearchBodyStart";
+const char kGwsBodyChunkEndMarkName[] = "SearchBodyEnd";
 
 }  // namespace internal
 
@@ -164,6 +176,18 @@ void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
       PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTStart, mark->start_time);
     } else if (mark->mark_name == internal::kGwsAFTEndMarkName) {
       PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTEnd, mark->start_time);
+    } else if (mark->mark_name == internal::kGwsHeaderChunkStartMarkName) {
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHeaderChunkStart,
+                          mark->start_time);
+    } else if (mark->mark_name == internal::kGwsHeaderChunkEndMarkName) {
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHeaderChunkEnd,
+                          mark->start_time);
+    } else if (mark->mark_name == internal::kGwsBodyChunkStartMarkName) {
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSBodyChunkStart,
+                          mark->start_time);
+    } else if (mark->mark_name == internal::kGwsBodyChunkEndMarkName) {
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSBodyChunkEnd,
+                          mark->start_time);
     }
   }
 }

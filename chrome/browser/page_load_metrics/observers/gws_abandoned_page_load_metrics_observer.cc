@@ -83,9 +83,18 @@ const base::flat_map<std::string,
 GWSAbandonedPageLoadMetricsObserver::GetCustomUserTimingMarkNames() const {
   static const base::NoDestructor<
       base::flat_map<std::string, NavigationMilestone>>
-      mark_names(
-          {{internal::kGwsAFTStartMarkName, NavigationMilestone::kAFTStart},
-           {internal::kGwsAFTEndMarkName, NavigationMilestone::kAFTEnd}});
+      mark_names({
+          {internal::kGwsAFTStartMarkName, NavigationMilestone::kAFTStart},
+          {internal::kGwsAFTEndMarkName, NavigationMilestone::kAFTEnd},
+          {internal::kGwsHeaderChunkStartMarkName,
+           NavigationMilestone::kHeaderChunkStart},
+          {internal::kGwsHeaderChunkEndMarkName,
+           NavigationMilestone::kHeaderChunkEnd},
+          {internal::kGwsBodyChunkStartMarkName,
+           NavigationMilestone::kBodyChunkStart},
+          {internal::kGwsBodyChunkEndMarkName,
+           NavigationMilestone::kBodyChunkEnd},
+      });
   return *mark_names;
 }
 

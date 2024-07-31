@@ -989,8 +989,7 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
       }
     } else {
       if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
-        if (window->GetFrame() && window->GetFrame()->IsOutermostMainFrame() &&
-            has_start_time) {
+        if (window->GetFrame() && window->GetFrame()->IsOutermostMainFrame()) {
           window->GetFrame()
               ->Loader()
               .GetDocumentLoader()

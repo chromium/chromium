@@ -214,6 +214,10 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="kLargestContentfulPaint"/>
   <int value="16" label="kAFTStart"/>
   <int value="17" label="kAFTEnd"/>
+  <int value="18" label="kHeaderChunkStart"/>
+  <int value="19" label="kHeaderChunkEnd"/>
+  <int value="20" label="kBodyChunkStart"/>
+  <int value="21" label="kBodyChunkEnd"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->

@@ -54,7 +54,11 @@ class AbandonedPageLoadMetricsObserver
     kLargestContentfulPaint = 15,
     kAFTStart = 16,
     kAFTEnd = 17,
-    kMaxValue = kAFTEnd,
+    kHeaderChunkStart = 18,
+    kHeaderChunkEnd = 19,
+    kBodyChunkStart = 20,
+    kBodyChunkEnd = 21,
+    kMaxValue = kBodyChunkEnd,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationMilestoneEnum2)
 
