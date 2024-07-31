@@ -207,6 +207,7 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
   void UpdateTitleColor();
 
   void UpdateAccessibleName();
+  void UpdateAccessibleSelection();
 
   raw_ptr<TabbedPane> tabbed_pane_;
   raw_ptr<Label> title_ = nullptr;
