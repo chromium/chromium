@@ -7515,6 +7515,28 @@
             ]
         }
     ],
+    "DesktopNtpCalendar": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "CalendarModuleEnabled",
+                    "params": {
+                        "NtpCalendarModuleMaxEventsParam": "5"
+                    },
+                    "enable_features": [
+                        "NtpCalendarModule"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpDriveCache": [
         {
             "platforms": [
