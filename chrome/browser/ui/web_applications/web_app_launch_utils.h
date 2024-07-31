@@ -130,6 +130,21 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   WithAppResources& app_resources,
                   LaunchWebAppDebugValueCallback callback);
 
+// Encapsulates web_app capturing and launching during navigation requests.
+// Returns a valid Browser and tab index if web app handling is appropriate,
+// otherwise nullopt. May create a browser, app window or tab as needed.
+//
+// A value of std::nullopt means that the web app system cannot handle the
+// navigation, and as such, would allow the "normal" workflow to identify a
+// browser to perform navigation in to proceed. See
+// `GetBrowserAndTabForDisposition()` for more information.
+//
+// TODO(crbug.com/351775835): Integrate with web_applications system to
+// determine which browser to complete navigation in based on launch handlers.
+std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
+    Profile* profile,
+    const NavigateParams& navigate_params);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_UTILS_H_
