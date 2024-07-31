@@ -20,7 +20,7 @@
 class PrefService;
 
 // ChromeBrowserStateManager implementation.
-class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
+class ChromeBrowserStateManagerImpl : public ChromeBrowserStateManager,
                                       public ChromeBrowserState::Delegate {
  public:
   // Constructs the ChromeBrowserStateManagerImpl with a pointer to the local

@@ -76,7 +76,7 @@ void TestingApplicationContext::SetLastShutdownClean(bool clean) {
 }
 
 void TestingApplicationContext::SetChromeBrowserStateManager(
-    ios::ChromeBrowserStateManager* manager) {
+    ChromeBrowserStateManager* manager) {
   DCHECK(thread_checker_.CalledOnValidThread());
   chrome_browser_state_manager_ = manager;
 }
@@ -155,7 +155,7 @@ const std::string& TestingApplicationContext::GetApplicationCountry() {
   return application_country_;
 }
 
-ios::ChromeBrowserStateManager*
+ChromeBrowserStateManager*
 TestingApplicationContext::GetChromeBrowserStateManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return chrome_browser_state_manager_;

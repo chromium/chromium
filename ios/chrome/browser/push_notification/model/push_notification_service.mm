@@ -20,7 +20,7 @@
 
 PushNotificationService::PushNotificationService()
     : client_manager_(std::make_unique<PushNotificationClientManager>()) {
-  ios::ChromeBrowserStateManager* manager =
+  ChromeBrowserStateManager* manager =
       GetApplicationContext()->GetChromeBrowserStateManager();
   context_manager_ = [[PushNotificationAccountContextManager alloc]
       initWithChromeBrowserStateManager:manager];

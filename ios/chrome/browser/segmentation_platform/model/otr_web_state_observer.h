@@ -14,10 +14,7 @@
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache_observer.h"
 
 class AllWebStateListObservationRegistrar;
-
-namespace ios {
 class ChromeBrowserStateManager;
-}
 
 namespace segmentation_platform {
 
@@ -35,7 +32,7 @@ class OTRWebStateObserver : public BrowserStateInfoCacheObserver {
   };
 
   explicit OTRWebStateObserver(
-      ios::ChromeBrowserStateManager* browser_state_manager);
+      ChromeBrowserStateManager* browser_state_manager);
   ~OTRWebStateObserver() override;
 
   OTRWebStateObserver(OTRWebStateObserver&) = delete;
@@ -74,7 +71,7 @@ class OTRWebStateObserver : public BrowserStateInfoCacheObserver {
   bool HasAnyOtrWebState() const;
 
   base::ObserverList<ObserverClient, true> observer_clients_;
-  raw_ptr<ios::ChromeBrowserStateManager> browser_state_manager_;
+  raw_ptr<ChromeBrowserStateManager> browser_state_manager_;
   base::flat_map<std::string, std::unique_ptr<BrowserStateData>, std::less<>>
       browser_state_data_;
 

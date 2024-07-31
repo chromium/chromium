@@ -316,7 +316,7 @@ const std::string& ApplicationContextImpl::GetApplicationCountry() {
   return application_country_;
 }
 
-ios::ChromeBrowserStateManager*
+ChromeBrowserStateManager*
 ApplicationContextImpl::GetChromeBrowserStateManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!chrome_browser_state_manager_) {

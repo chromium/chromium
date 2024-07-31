@@ -318,7 +318,7 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
           "EnsureBrowserStateKeyedServiceFactoriesBuilt()");
 
   // Ensure the ChromeBrowserState is loaded and initialized.
-  ios::ChromeBrowserStateManager* browser_state_manager =
+  ChromeBrowserStateManager* browser_state_manager =
       application_context_->GetChromeBrowserStateManager();
 
   // Load all BrowserStates.

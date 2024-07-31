@@ -63,7 +63,7 @@ class ApplicationContextImpl : public ApplicationContext {
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   const std::string& GetApplicationLocale() override;
   const std::string& GetApplicationCountry() override;
-  ios::ChromeBrowserStateManager* GetChromeBrowserStateManager() override;
+  ChromeBrowserStateManager* GetChromeBrowserStateManager() override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* GetMetricsService() override;
@@ -142,7 +142,7 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<gcm::GCMDriver> gcm_driver_;
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
 
-  std::unique_ptr<ios::ChromeBrowserStateManager> chrome_browser_state_manager_;
+  std::unique_ptr<ChromeBrowserStateManager> chrome_browser_state_manager_;
   std::string application_locale_;
   std::string application_country_;
 

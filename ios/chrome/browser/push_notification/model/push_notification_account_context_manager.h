@@ -9,9 +9,6 @@
 
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 
-namespace ios {
-class ChromeBrowserStateManager;
-}
 enum class PushNotificationClientId;
 
 // The purpose of this class is to manage the mapping between GaiaIDs and its
@@ -20,7 +17,7 @@ enum class PushNotificationClientId;
 
 // The designated initializer. `manager` must not be nil.
 - (instancetype)initWithChromeBrowserStateManager:
-    (ios::ChromeBrowserStateManager*)manager NS_DESIGNATED_INITIALIZER;
+    (ChromeBrowserStateManager*)manager NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

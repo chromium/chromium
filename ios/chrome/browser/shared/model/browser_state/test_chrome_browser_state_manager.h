@@ -17,7 +17,7 @@
 //
 // Register itself with the TestApplicationContext on creation. Requires
 // the ApplicationContext's local State to be created before this object.
-class TestChromeBrowserStateManager : public ios::ChromeBrowserStateManager {
+class TestChromeBrowserStateManager : public ChromeBrowserStateManager {
  public:
   TestChromeBrowserStateManager();
 

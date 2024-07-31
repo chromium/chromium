@@ -19,10 +19,6 @@ namespace gcm {
 class GCMDriver;
 }
 
-namespace ios {
-class ChromeBrowserStateManager;
-}
-
 namespace metrics {
 class MetricsService;
 }
@@ -70,6 +66,7 @@ class VariationsService;
 
 class ApplicationContext;
 class BrowserPolicyConnectorIOS;
+class ChromeBrowserStateManager;
 class IOSChromeIOThread;
 class PrefService;
 class PushNotificationService;
@@ -124,7 +121,7 @@ class ApplicationContext {
   virtual const std::string& GetApplicationCountry() = 0;
 
   // Gets the ChromeBrowserStateManager used by this application.
-  virtual ios::ChromeBrowserStateManager* GetChromeBrowserStateManager() = 0;
+  virtual ChromeBrowserStateManager* GetChromeBrowserStateManager() = 0;
 
   // Gets the manager for the various metrics-related service, constructing it
   // if necessary. May return null.

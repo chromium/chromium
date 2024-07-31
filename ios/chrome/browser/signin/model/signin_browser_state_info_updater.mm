@@ -41,7 +41,7 @@ void SigninBrowserStateInfoUpdater::Shutdown() {
 }
 
 void SigninBrowserStateInfoUpdater::UpdateBrowserStateInfo() {
-  ios::ChromeBrowserStateManager* browser_state_manager =
+  ChromeBrowserStateManager* browser_state_manager =
       GetApplicationContext()->GetChromeBrowserStateManager();
   BrowserStateInfoCache* cache =
       browser_state_manager->GetBrowserStateInfoCache();

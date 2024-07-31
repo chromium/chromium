@@ -12,7 +12,6 @@
 class BrowserStateInfoCache;
 class ChromeBrowserState;
 
-namespace ios {
 // Provides methods that allow for various ways of creating non-incognito
 // ChromeBrowserState instances. Owns all instances that it creates.
 class ChromeBrowserStateManager {
@@ -46,7 +45,5 @@ class ChromeBrowserStateManager {
  protected:
   ChromeBrowserStateManager() {}
 };
-
-}  // namespace ios
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_H_
