@@ -3,6 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
+
+#include <map>
+#include <string>
+
+#include "base/test/scoped_feature_list.h"
+#include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -265,6 +271,42 @@ TEST(LinkCapturingNavigationThrottleTest, TestInFencedFrameTree) {
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_SUBFRAME), false, true,
       true));
 }
+
+class LinkCapturingNavThrottleReimplTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool> {
+ public:
+  LinkCapturingNavThrottleReimplTest() {
+    std::map<std::string, std::string> parameters;
+    parameters["link_capturing_state"] = FlagBoolToReimpl();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDesktopPWAsLinkCapturing, parameters);
+  }
+
+  std::string FlagBoolToReimpl() {
+    if (GetParam()) {
+      return "reimpl_default_on";
+    }
+    return "reimpl_default_off";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(LinkCapturingNavThrottleReimplTest, NotCreated) {
+  EXPECT_EQ(nullptr, LinkCapturingNavigationThrottle::MaybeCreate(
+                         /*handle=*/nullptr, /*delegate=*/nullptr));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         LinkCapturingNavThrottleReimplTest,
+                         testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool> info) {
+                           if (info.param) {
+                             return "reimpl_default_on";
+                           }
+                           return "reimpl_default_off";
+                         });
 
 }  // namespace
 }  // namespace apps
