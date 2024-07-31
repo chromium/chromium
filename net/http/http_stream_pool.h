@@ -18,6 +18,7 @@
 #include "net/http/http_stream_request.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
+#include "net/socket/stream_attempt.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
@@ -132,6 +133,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   void OnSSLConfigForServersChanged(
       const base::flat_set<HostPortPair>& servers) override;
 
+  // Called when a group has completed.
+  void OnGroupComplete(Group* group);
+
   // Checks if there are any pending requests in groups and processes them. If
   // `this` reached the maximum number of streams, it will try to close idle
   // streams before processing pending requests.
@@ -141,6 +145,10 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   HttpNetworkSession* http_network_session() const {
     return http_network_session_;
+  }
+
+  const StreamAttemptParams* stream_attempt_params() const {
+    return &stream_attempt_params_;
   }
 
   size_t max_stream_sockets_per_pool() const {
@@ -175,6 +183,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   bool CloseOneIdleStreamSocket();
 
   const raw_ptr<HttpNetworkSession> http_network_session_;
+
+  StreamAttemptParams stream_attempt_params_;
 
   const bool cleanup_on_ip_address_change_;
 

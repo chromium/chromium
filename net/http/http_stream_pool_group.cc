@@ -247,6 +247,12 @@ void HttpStreamPool::Group::CancelRequests(int error) {
   }
 }
 
+void HttpStreamPool::Group::OnJobComplete() {
+  CHECK(in_flight_job_);
+  in_flight_job_.reset();
+  MaybeComplete();
+}
+
 void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
 }
@@ -284,6 +290,15 @@ void HttpStreamPool::Group::EnsureInFlightJob() {
   }
   in_flight_job_ =
       std::make_unique<Job>(this, http_network_session()->net_log());
+}
+
+void HttpStreamPool::Group::MaybeComplete() {
+  if (ActiveStreamSocketCount() > 0) {
+    return;
+  }
+
+  pool_->OnGroupComplete(this);
+  // `this` is deleted.
 }
 
 }  // namespace net

@@ -120,6 +120,7 @@ int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
 
 int TlsStreamAttempt::DoTlsAttempt(int rv) {
   CHECK_EQ(rv, OK);
+  CHECK(ssl_config_provider_);
 
   net_log().EndEvent(NetLogEventType::TLS_STREAM_ATTEMPT_WAIT_FOR_SSL_CONFIG);
 
@@ -128,6 +129,8 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
   std::unique_ptr<StreamSocket> nested_socket =
       nested_attempt_->ReleaseStreamSocket();
   SSLConfig ssl_config = ssl_config_provider_->GetSSLConfig();
+  // Clear `ssl_config_provider_` to avoid dangling pointer.
+  ssl_config_provider_ = nullptr;
 
   nested_attempt_.reset();
 

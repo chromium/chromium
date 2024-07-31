@@ -42,6 +42,8 @@ HttpStreamPool::SucceededStream::~SucceededStream() = default;
 HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
                                bool cleanup_on_ip_address_change)
     : http_network_session_(http_network_session),
+      stream_attempt_params_(
+          StreamAttemptParams::FromHttpNetworkSession(http_network_session_)),
       cleanup_on_ip_address_change_(cleanup_on_ip_address_change) {
   CHECK(http_network_session_);
   if (cleanup_on_ip_address_change) {
@@ -151,6 +153,12 @@ void HttpStreamPool::OnSSLConfigForServersChanged(
     }
   }
   ProcessPendingRequestsInGroups();
+}
+
+void HttpStreamPool::OnGroupComplete(Group* group) {
+  auto it = groups_.find(group->stream_key());
+  CHECK(it != groups_.end());
+  groups_.erase(it);
 }
 
 bool HttpStreamPool::IsPoolStalled() {

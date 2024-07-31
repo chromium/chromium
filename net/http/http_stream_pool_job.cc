@@ -110,10 +110,7 @@ struct HttpStreamPool::Job::PreconnectEntry {
 };
 
 HttpStreamPool::Job::Job(Group* group, NetLog* net_log)
-    : group_(group),
-      requests_(NUM_PRIORITIES),
-      attempt_params_(
-          StreamAttemptParams::FromHttpNetworkSession(http_network_session())) {
+    : group_(group), requests_(NUM_PRIORITIES) {
   proxy_info_.UseDirect();
   CHECK(group_);
 }
@@ -440,12 +437,12 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
     std::unique_ptr<StreamAttempt> attempt;
     if (UsingTls()) {
       attempt = std::make_unique<TlsStreamAttempt>(
-          &attempt_params_, *ip_endpoint,
+          pool()->stream_attempt_params(), *ip_endpoint,
           HostPortPair::FromSchemeHostPort(stream_key().destination()),
           /*ssl_config_provider=*/this);
     } else {
-      attempt = std::make_unique<TcpStreamAttempt>(&attempt_params_,
-                                                   *ip_endpoint, &net_log());
+      attempt = std::make_unique<TcpStreamAttempt>(
+          pool()->stream_attempt_params(), *ip_endpoint, &net_log());
     }
     net_log().AddEventReferencingSource(
         NetLogEventType::HTTP_STREAM_POOL_JOB_ATTEMPT_START,
@@ -679,6 +676,11 @@ void HttpStreamPool::Job::NotifyPreconnectsComplete(int rv) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(entry->callback), rv));
   }
+  if (preconnects_.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Job::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void HttpStreamPool::Job::ProcessPreconnectsAfterAttemptComplete(int rv) {
@@ -701,6 +703,11 @@ void HttpStreamPool::Job::ProcessPreconnectsAfterAttemptComplete(int rv) {
         std::move(preconnects_.extract(it).value());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(entry->callback), entry->result));
+  }
+  if (preconnects_.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Job::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -913,7 +920,13 @@ void HttpStreamPool::Job::OnSpdyThrottleDelayPassed() {
 }
 
 void HttpStreamPool::Job::MaybeComplete() {
-  // TODO(crbug.com/346835898): Complete `this` when there is no request.
+  if (!requests_.empty() || !notified_requests_.empty() ||
+      !preconnects_.empty() || !in_flight_attempts_.empty()) {
+    return;
+  }
+
+  group_->OnJobComplete();
+  // `this` is deleted.
 }
 
 }  // namespace net

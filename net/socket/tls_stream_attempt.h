@@ -89,7 +89,7 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   State next_state_ = State::kNone;
   const HostPortPair host_port_pair_;
-  const raw_ptr<SSLConfigProvider> ssl_config_provider_;
+  raw_ptr<SSLConfigProvider> ssl_config_provider_;
 
   std::unique_ptr<TcpStreamAttempt> nested_attempt_;
 

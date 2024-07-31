@@ -309,7 +309,6 @@ class HttpStreamPool::Job
   std::optional<SSLConfig> ssl_config_;
   std::vector<CompletionOnceCallback> ssl_config_waiting_callbacks_;
 
-  StreamAttemptParams attempt_params_;
   std::set<std::unique_ptr<InFlightAttempt>, base::UniquePtrComparator>
       in_flight_attempts_;
   // The number of in-flight attempts that are treated as slow.

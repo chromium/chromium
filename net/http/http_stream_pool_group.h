@@ -126,6 +126,9 @@ class HttpStreamPool::Group {
   // Cancels all on-going requests.
   void CancelRequests(int error);
 
+  // Called when the in-flight job has completed.
+  void OnJobComplete();
+
   void CleanupTimedoutIdleStreamSocketsForTesting();
 
   Job* GetJobForTesting() const { return in_flight_job_.get(); }
@@ -153,6 +156,8 @@ class HttpStreamPool::Group {
   void CleanupIdleStreamSockets(CleanupMode mode);
 
   void EnsureInFlightJob();
+
+  void MaybeComplete();
 
   const raw_ptr<HttpStreamPool> pool_;
   const HttpStreamKey stream_key_;
