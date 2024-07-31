@@ -120,26 +120,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT
 BASE_DECLARE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAutomaticLazyFrameLoadingToAds);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kTimeoutMillisForLazyAds;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSkipFrameCountForLazyAds;
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAutomaticLazyFrameLoadingToEmbeds);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kTimeoutMillisForLazyEmbeds;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSkipFrameCountForLazyEmbeds;
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAutomaticLazyFrameLoadingToEmbedUrls);
-enum class AutomaticLazyFrameLoadingToEmbedLoadingStrategy {
-  kAllowList,
-  kNonAds,
-};
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    AutomaticLazyFrameLoadingToEmbedLoadingStrategy>
-    kAutomaticLazyFrameLoadingToEmbedLoadingStrategyParam;
-
 // https://crbug.com/1472970
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAutoSpeculationRules);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
@@ -325,7 +305,9 @@ enum class DelayAsyncScriptTarget {
   kCrossSiteOnly,
   // Unlike other options (that are more like scheduling changes within the
   // spec),  kCrossSiteWithAllowList and kCrossSiteWithAllowListReportOnly are
-  // used only for LazyEmbeds intervention.
+  // used only for the ForceInOrder intervention.
+  // TODO(crbug.com/40231912): Remove these values when the ForceInOrder
+  // experiment is cleaned up.
   kCrossSiteWithAllowList,
   kCrossSiteWithAllowListReportOnly,
 };

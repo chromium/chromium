@@ -244,8 +244,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kScriptSchedulingType_InOrder,
           WebFeature::kScriptSchedulingType_Async,
           WebFeature::kClientHintsMetaHTTPEquivAcceptCH,
-          WebFeature::kAutomaticLazyAds,
-          WebFeature::kAutomaticLazyEmbeds,
           WebFeature::kCookieDomainNonASCII,
           WebFeature::kClientHintsMetaEquivDelegateCH,
           WebFeature::kAuthorizationCoveredByWildcard,

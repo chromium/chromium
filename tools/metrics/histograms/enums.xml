@@ -10425,8 +10425,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4283" label="OBSOLETE_kV8PendingBeacon_SendNow_Method"/>
   <int value="4284" label="TabSharingBarSwitchToCapturer"/>
   <int value="4285" label="TabSharingBarSwitchToCapturee"/>
-  <int value="4286" label="AutomaticLazyAds"/>
-  <int value="4287" label="AutomaticLazyEmbeds"/>
+  <int value="4286" label="OBSOLATE_AutomaticLazyAds"/>
+  <int value="4287" label="OBSOLATE_AutomaticLazyEmbeds"/>
   <int value="4288" label="OBSOLETE_TouchActionChangedAtPointerDown"/>
   <int value="4289" label="DeviceOrientationPermissionRequested"/>
   <int value="4290" label="DeviceOrientationUsedWithoutPermissionRequest"/>

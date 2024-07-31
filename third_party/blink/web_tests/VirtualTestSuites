@@ -1544,27 +1544,6 @@
     "expires": "Jan 14, 2025"
   },
   {
-    "prefix": "automatic-lazy-frame-loading",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "wpt_internal/lazyembed",
-      "wpt_internal/async-script-scheduling"
-    ],
-    "exclusive_tests": ["wpt_internal/lazyembed"],
-    "args": [
-      "--enable-features=AutomaticLazyFrameLoadingToEmbeds:timeout/1000,AutomaticLazyFrameLoadingToEmbedUrls:allowed_websites/http%3A%2F%2Fbad3p.test%3A3001%7C%2Fembed,AutomaticLazyFrameLoadingToAds:timeout/5000,DelayAsyncScriptExecution:delay_async_exec_target/cross_site_with_allow_list/delay_async_exec_allow_list/http%3A%2F%2Fbad3p.test",
-      "--disable-field-trial-config"
-    ],
-    "expires": "Jul 1, 2024"
-  },
-  {
-    "prefix": "automatic-lazy-frame-loading-ads",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [],
-    "args": ["--enable-features=AutomaticLazyFrameLoadingToAds:timeout/1000"],
-    "expires": "Jul 1, 2024"
-  },
-  {
     "prefix": "async-script-scheduling-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],

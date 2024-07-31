@@ -1986,8 +1986,6 @@ class CORE_EXPORT Document : public ContainerNode,
     return rendering_had_begun_for_last_style_update_;
   }
 
-  void IncrementLazyAdsFrameCount();
-  void IncrementLazyEmbedsFrameCount();
   void IncrementImmediateChildFrameCreationCount();
   int GetImmediateChildFrameCreationCount() const;
 

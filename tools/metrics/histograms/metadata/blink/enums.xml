@@ -26,19 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AutomaticLazyFrameLoadReason">
-  <int value="0" label="Not eligible"/>
-  <int value="1" label="Eligible for LazyEmbeds"/>
-  <int value="2" label="Eligible for LazyAds"/>
-  <int value="3" label="Eligible for both"/>
-</enum>
-
-<enum name="AutomaticLazyLoadFrameState">
-  <int value="0" label="Feature is not enabled"/>
-  <int value="1" label="Target frames not found"/>
-  <int value="2" label="Target frames found"/>
-</enum>
-
 <enum name="AVIFCleanApertureType">
   <int value="0" label="kInvalid"/>
   <int value="1" label="kNonzeroOrigin"/>

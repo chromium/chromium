@@ -168,12 +168,6 @@ BASE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill,
              "AutofillSendUnidentifiedKeyAfterFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Apply lazy-loading to ad frames which have embeds likely impacting Core Web
-// Vitals.
-BASE_FEATURE(kAutomaticLazyFrameLoadingToAds,
-             "AutomaticLazyFrameLoadingToAds",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // https://crbug.com/1472970
 BASE_FEATURE(kAutoSpeculationRules,
              "AutoSpeculationRules",
@@ -182,66 +176,6 @@ const base::FeatureParam<std::string> kAutoSpeculationRulesConfig{
     &kAutoSpeculationRules, "config", "{}"};
 const base::FeatureParam<bool> kAutoSpeculationRulesHoldback{
     &kAutoSpeculationRules, "holdback", false};
-
-// The timeout value that forces loading iframes that are lazy loaded by
-// LazyAds. After this timeout, the frame loading is triggered even when the
-// intersection observer does not trigger iframe loading.
-const base::FeatureParam<int> kTimeoutMillisForLazyAds(
-    &features::kAutomaticLazyFrameLoadingToAds,
-    "timeout",
-    0);
-
-// Skip applying LazyAds for the first "skip_frame_count" frames in the
-// document, and apply LazyAds the rest if they are eligible.
-const base::FeatureParam<int> kSkipFrameCountForLazyAds(
-    &features::kAutomaticLazyFrameLoadingToAds,
-    "skip_frame_count",
-    0);
-
-// Apply lazy-loading to frames which have embeds likely impacting Core Web
-// Vitals.
-BASE_FEATURE(kAutomaticLazyFrameLoadingToEmbeds,
-             "AutomaticLazyFrameLoadingToEmbeds",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The timeout value that forces loading iframes that are lazy loaded by
-// LazyEmbeds. After this timeout, the frame loading is triggered even when the
-// intersection observer does not trigger iframe loading.
-const base::FeatureParam<int> kTimeoutMillisForLazyEmbeds(
-    &features::kAutomaticLazyFrameLoadingToEmbeds,
-    "timeout",
-    0);
-
-// Skip applying LazyEmbeds for the first "skip_frame_count" frames in the
-// document, and apply LazyEmbeds the rest if they are eligible.
-const base::FeatureParam<int> kSkipFrameCountForLazyEmbeds(
-    &features::kAutomaticLazyFrameLoadingToEmbeds,
-    "skip_frame_count",
-    0);
-
-// Define the allowed websites to use LazyEmbeds. The allowed websites need to
-// be defined separately from kAutomaticLazyFrameLoadingToEmbeds because we want
-// to gather Blink.AutomaticLazyLoadFrame.LazyEmbedFrameCount UKM data even when
-// kAutomaticLazyFrameLoadingToEmbeds is disabled.
-BASE_FEATURE(kAutomaticLazyFrameLoadingToEmbedUrls,
-             "AutomaticLazyFrameLoadingToEmbedUrls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Define the strategy for LazyEmbeds to decide which frames we apply
-// lazy-loading or not. If the loading strategy is kAllowList, the detection
-// logic is based on the allowlist that kAutomaticLazyFrameLoadingToEmbedUrls
-// passes to the client. If the strategy is kNonAds, the detection logic is
-// based on the Ad Tagging in chromium.
-const base::FeatureParam<AutomaticLazyFrameLoadingToEmbedLoadingStrategy>::
-    Option kAutomaticLazyFrameLoadingToEmbedLoadingStrategies[] = {
-        {AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kAllowList,
-         "allow_list"},
-        {AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kNonAds, "non_ads"}};
-const base::FeatureParam<AutomaticLazyFrameLoadingToEmbedLoadingStrategy>
-    kAutomaticLazyFrameLoadingToEmbedLoadingStrategyParam{
-        &kAutomaticLazyFrameLoadingToEmbedUrls, "strategy",
-        AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kAllowList,
-        &kAutomaticLazyFrameLoadingToEmbedLoadingStrategies};
 
 BASE_FEATURE(kAvifGainmapHdrImages,
              "AvifGainmapHdrImages",

@@ -1201,16 +1201,6 @@ PendingScript* ScriptLoader::PrepareScript(
           static const features::DelayAsyncScriptTarget
               delay_async_script_target =
                   features::kDelayAsyncScriptTargetParam.Get();
-          // Currently LazyEmbeds(crbug.com/1247131) experiment uses
-          // DelayAsyncScript mechanism here.
-          if (delay_async_script_target ==
-                  features::DelayAsyncScriptTarget::kCrossSiteWithAllowList ||
-              delay_async_script_target ==
-                  features::DelayAsyncScriptTarget::
-                      kCrossSiteWithAllowListReportOnly) {
-            UseCounter::Count(element_document.TopDocument(),
-                              WebFeature::kAutomaticLazyEmbeds);
-          }
           if (delay_async_script_target ==
               features::DelayAsyncScriptTarget::
                   kCrossSiteWithAllowListReportOnly) {

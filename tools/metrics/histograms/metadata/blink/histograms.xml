@@ -253,33 +253,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.AutomaticLazyFrameLoad.Reason"
-    enum="AutomaticLazyFrameLoadReason" expires_after="2023-06-25">
-  <owner>sisidovski@chromium.org</owner>
-  <owner>chikamune@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Records if the frame is eligible for automatic lazy-load mechanisms. This is
-    recorded when each frame having a url in the page is created.
-  </summary>
-</histogram>
-
-<histogram name="Blink.AutomaticLazyLoadFrame"
-    enum="AutomaticLazyLoadFrameState" expires_after="2023-08-27">
-  <owner>sisidovski@google.com</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Records if the automatic lazy-load for selected performance problematic
-    iframes is applied or not. This is recorded when each frame having a url in
-    the page is created. See HTMLFrameOwnerElement::LazyLoadIfPossible() for
-    more details.
-
-    Note: There are two groups that lazy-load isn't applied. One group is simply
-    the feature itself is disabled, another groupd is that feature is enabled,
-    but there are no targeted frames on the page.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.2DLayerBridge.Compression.DecompressionTime"
     units="ms" expires_after="2025-01-05">
   <owner>lizeb@chromium.org</owner>

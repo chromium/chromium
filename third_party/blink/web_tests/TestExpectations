@@ -6760,7 +6760,6 @@ crbug.com/1501090 [ Linux ] external/wpt/preload/preload-strict-dynamic.sub.html
 
 # Gardener 2023-11-23
 crbug.com/1504651 [ Linux ] external/wpt/touch-events/single-touch.html [ Failure Pass ]
-crbug.com/1504244 [ Linux ] virtual/automatic-lazy-frame-loading-ads/http/tests/subresource_filter/frame-lazyload.html [ Failure Pass Timeout ]
 crbug.com/1495671 [ Win ] external/wpt/webmessaging/with-ports/020.html [ Failure Pass ]
 
 # Gardener 2023-11-24
@@ -6792,11 +6791,7 @@ crbug.com/1496375 [ Linux ] http/tests/loading/image-picture-download-after-shri
 crbug.com/1496375 [ Mac ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
 
 # Gardener 2023-12-21
-crbug.com/1508113 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/automatic-lazy-frame-loading.sub.html [ Failure Pass Timeout ]
 crbug.com/1470053 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-traversal.html [ Failure Pass ]
-
-# Gardener 2024-01-08
-crbug.com/1504244 [ Mac ] virtual/automatic-lazy-frame-loading-ads/http/tests/subresource_filter/frame-lazyload.html [ Failure Pass Timeout ]
 
 # Fix importer 2024-01-12
 crbug.com/626703 external/wpt/clipboard-apis/async-promise-write-blobs-read-blobs.https.html [ Failure Pass ]
