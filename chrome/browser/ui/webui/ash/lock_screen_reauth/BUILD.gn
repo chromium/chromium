@@ -29,6 +29,7 @@ static_library("lock_screen_reauth") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:primitives",
     "//chrome/browser/ash",
     "//chrome/browser/ash/login",
     "//chrome/browser/profiles:profile",

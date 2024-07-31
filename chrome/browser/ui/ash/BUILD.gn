@@ -125,6 +125,7 @@ static_library("ash") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:main_extra_parts",
+    "//chrome/browser:primitives",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash",
     "//chrome/browser/ash/accessibility",

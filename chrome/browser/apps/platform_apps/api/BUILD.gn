@@ -52,6 +52,7 @@ source_set("api") {
   deps = [
     "//build:chromeos_buildflags",
     "//chrome/app:generated_resources_grit",
+    "//chrome/browser:primitives",
 
     # TODO(crbug.com/40593486): It'd be nice to have more APIs here
     # extracted into their own BUILD files (so they are easy to audit, add, or

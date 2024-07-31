@@ -334,6 +334,7 @@ static_library("crosapi") {
     "//base",
     "//build/config/chromebox_for_meetings:buildflags",
     "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_list",

@@ -417,6 +417,7 @@ static_library("ui") {
     # New dependencies inside of //chrome/browser that generate header files
     # should be added to //chrome/browser:browser_generated_files.
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:primitives",
     "//chrome/browser/feedback",
     "//chrome/browser/headless",
     "//chrome/browser/media/webrtc",
@@ -1131,8 +1132,6 @@ static_library("ui") {
       "browser_window_state.h",
       "chrome_pages.cc",
       "chrome_pages.h",
-      "chrome_web_modal_dialog_manager_delegate.cc",
-      "chrome_web_modal_dialog_manager_delegate.h",
       "collected_cookies_infobar_delegate.cc",
       "collected_cookies_infobar_delegate.h",
       "commerce/commerce_prompt.h",

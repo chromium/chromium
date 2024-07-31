@@ -55,6 +55,7 @@ static_library("smb_client") {
     ":constants",
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser:primitives",
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client/discovery",

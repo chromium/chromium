@@ -19,6 +19,7 @@ static_library("capture_mode") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash",
     "//chrome/browser/ash/crosapi",

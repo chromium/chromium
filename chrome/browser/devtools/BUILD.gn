@@ -100,7 +100,10 @@ static_library("devtools") {
     "//build/config:precompiled_headers",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:primitives",
+  ]
 
   deps = [
     "//base",

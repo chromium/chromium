@@ -279,7 +279,6 @@ static_library("browser") {
     "client_hints/client_hints_factory.cc",
     "client_hints/client_hints_factory.h",
     "command_observer.h",
-    "command_updater.h",
     "command_updater_delegate.h",
     "command_updater_impl.cc",
     "command_updater_impl.h",
@@ -1050,7 +1049,6 @@ static_library("browser") {
     "picture_in_picture/picture_in_picture_bounds_cache.h",
     "picture_in_picture/picture_in_picture_window_manager.cc",
     "picture_in_picture/picture_in_picture_window_manager.h",
-    "platform_util.h",
     "platform_util_internal.h",
     "plugins/pdf_iframe_navigation_throttle.cc",
     "plugins/pdf_iframe_navigation_throttle.h",
@@ -8723,6 +8721,29 @@ static_library("browser_generated_files") {
 
   if (is_win || is_linux || is_android || is_chromeos) {
     public_deps += [ "//chrome/browser/privacy:traffic_annotation_proto" ]
+  }
+}
+
+# Any source files may be added to primitives. The only requirement is that
+# there are no dependencies on //chrome/browser.
+source_set("primitives") {
+  sources = [
+    "command_updater.h",
+    "platform_util.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/common:buildflags",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+  deps = []
+  if (!is_android) {
+    sources += [
+      "ui/chrome_web_modal_dialog_manager_delegate.cc",
+      "ui/chrome_web_modal_dialog_manager_delegate.h",
+    ]
+    public_deps += [ "//components/web_modal:web_modal" ]
   }
 }
 

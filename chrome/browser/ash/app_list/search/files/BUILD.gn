@@ -34,6 +34,7 @@ static_library("files") {
     "//ash/strings",
     "//base",
     "//base:i18n",
+    "//chrome/browser:primitives",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/local_image_search",
