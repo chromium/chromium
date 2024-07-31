@@ -285,16 +285,18 @@ bool TabsCloser::CanUndoCloseTabs() const {
 
 int TabsCloser::UndoCloseTabs() {
   DCHECK(CanUndoCloseTabs());
-  const int result = state_->count();
-  state_->Undo();
-  state_.reset();
+  // Invalidate `state_` before performing the "undo" operation.
+  std::unique_ptr<UndoStorage> state = std::exchange(state_, {});
+  const int result = state->count();
+  state->Undo();
   return result;
 }
 
 int TabsCloser::ConfirmDeletion() {
   DCHECK(CanUndoCloseTabs());
-  const int result = state_->count();
-  state_->Drop();
-  state_.reset();
+  // Invalidate `state_` before performing the "drop" operation.
+  std::unique_ptr<UndoStorage> state = std::exchange(state_, {});
+  const int result = state->count();
+  state->Drop();
   return result;
 }

@@ -37,6 +37,27 @@ using tab_groups::TabGroupVisualData;
 
 namespace {
 
+// Reentrancy observer to help checking the state of the tab closer during the
+// operations.
+class ReentrancyObserver : public WebStateListObserver {
+ public:
+  ReentrancyObserver(TabsCloser& tabs_closer) : tabs_closer_(&tabs_closer) {}
+
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) final {
+    can_undo_ = tabs_closer_->CanUndoCloseTabs();
+  }
+
+  bool CheckThatUndoCloseTabsWasNotPossible() {
+    return can_undo_.has_value() && !can_undo_.value();
+  }
+
+ private:
+  raw_ptr<TabsCloser> tabs_closer_;
+  std::optional<bool> can_undo_ = std::nullopt;
+};
+
 // Controls whether the WebState is inserted as pinned or regular.
 enum class InsertionPolicy {
   kPinned,
@@ -798,4 +819,25 @@ TEST_F(TabsCloserTest, GroupedTabs_ClosePolicyRegularTabs) {
   // Check that the TabRestoreService has now been informed of the
   // close operation which has been confirmed.
   EXPECT_EQ(restore_service()->entries().size(), 8u);
+}
+
+// Check that TabsCloser returns that there it is not possible to undo a close
+// operation while undo is in progress.
+TEST_F(TabsCloserTest, UndoCloseTabs_Reentrancy) {
+  WebStateList* web_state_list = browser()->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "a b | c d e", browser()->GetBrowserState()));
+
+  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kAllTabs);
+
+  EXPECT_EQ(tabs_closer.CloseTabs(), 5);
+
+  ReentrancyObserver observer(tabs_closer);
+  base::ScopedObservation<WebStateList, WebStateListObserver> scoped_observer(
+      &observer);
+  scoped_observer.Observe(web_state_list);
+
+  tabs_closer.UndoCloseTabs();
+  EXPECT_TRUE(observer.CheckThatUndoCloseTabsWasNotPossible());
 }
