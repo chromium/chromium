@@ -17,6 +17,7 @@
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_consumer.h"
@@ -214,7 +215,7 @@ NSString* CreationText(base::Time creation_date) {
     if (favicon) {
       [favicons addObject:favicon->ToUIImage()];
     } else {
-      [favicons addObject:[UIImage imageNamed:@"ic_close"]];
+      [favicons addObject:DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 16)];
     }
   }
   // TODO(crbug.com/351110394): Remove this simulated asynchronous fetch once

@@ -13,7 +13,8 @@ namespace {
 const CGFloat kCornerRadius = 13;
 const CGFloat kInnerSquircleCornerRadius = 10;
 const CGFloat kSpacing = 4;
-const CGFloat kImageSize = 26;
+const CGFloat kImageSize = 16;
+const CGFloat kImageContainerSize = 26;
 const CGFloat kFaviconCornerRadius = 4;
 const CGFloat kLabelFontSize = 11;
 
@@ -47,16 +48,20 @@ using LayoutSides::kTrailing;
     [self addSubview:_innerSquircle];
 
     _imageView1 = [self makeFaviconImageView];
-    [_innerSquircle addSubview:_imageView1];
+    UIView* imageViewContainer1 = [self wrappedImageView:_imageView1];
+    [_innerSquircle addSubview:imageViewContainer1];
 
     _imageView2 = [self makeFaviconImageView];
-    [_innerSquircle addSubview:_imageView2];
+    UIView* imageViewContainer2 = [self wrappedImageView:_imageView2];
+    [_innerSquircle addSubview:imageViewContainer2];
 
     _imageView3 = [self makeFaviconImageView];
-    [_innerSquircle addSubview:_imageView3];
+    UIView* imageViewContainer3 = [self wrappedImageView:_imageView3];
+    [_innerSquircle addSubview:imageViewContainer3];
 
     _imageView4 = [self makeFaviconImageView];
-    [_innerSquircle addSubview:_imageView4];
+    UIView* imageViewContainer4 = [self wrappedImageView:_imageView4];
+    [_innerSquircle addSubview:imageViewContainer4];
 
     _label = [[UILabel alloc] init];
     _label.textColor = [UIColor colorNamed:kTextSecondaryColor];
@@ -66,26 +71,27 @@ using LayoutSides::kTrailing;
     [_innerSquircle addSubview:_label];
 
     AddSameConstraintsWithInset(_innerSquircle, self, kSpacing);
-    AddSquareConstraints(_imageView1, kImageSize);
-    AddSquareConstraints(_imageView2, kImageSize);
-    AddSquareConstraints(_imageView3, kImageSize);
-    AddSquareConstraints(_imageView4, kImageSize);
-    AddSameConstraintsToSides(_imageView1, _innerSquircle, kTop | kLeading);
-    AddSameConstraintsToSides(_imageView2, _innerSquircle, kTop | kTrailing);
-    AddSameConstraintsToSides(_imageView3, _innerSquircle, kBottom | kLeading);
-    AddSameConstraintsToSides(_imageView4, _innerSquircle, kBottom | kTrailing);
+    AddSameConstraintsToSides(imageViewContainer1, _innerSquircle,
+                              kTop | kLeading);
+    AddSameConstraintsToSides(imageViewContainer2, _innerSquircle,
+                              kTop | kTrailing);
+    AddSameConstraintsToSides(imageViewContainer3, _innerSquircle,
+                              kBottom | kLeading);
+    AddSameConstraintsToSides(imageViewContainer4, _innerSquircle,
+                              kBottom | kTrailing);
     [NSLayoutConstraint activateConstraints:@[
-      // Add the constraints between image views.
-      [_imageView2.leadingAnchor
-          constraintEqualToAnchor:_imageView1.trailingAnchor
+      // Add the constraints between image view containers.
+      [imageViewContainer2.leadingAnchor
+          constraintEqualToAnchor:imageViewContainer1.trailingAnchor
                          constant:kSpacing],
-      [_imageView3.topAnchor constraintEqualToAnchor:_imageView1.bottomAnchor
-                                            constant:kSpacing],
-      [_imageView4.leadingAnchor
-          constraintEqualToAnchor:_imageView3.trailingAnchor
+      [imageViewContainer3.topAnchor
+          constraintEqualToAnchor:imageViewContainer1.bottomAnchor
+                         constant:kSpacing],
+      [imageViewContainer4.leadingAnchor
+          constraintEqualToAnchor:imageViewContainer3.trailingAnchor
                          constant:kSpacing],
     ]];
-    AddSameConstraints(_label, _imageView4);
+    AddSameConstraints(_label, imageViewContainer4);
   }
   return self;
 }
@@ -105,10 +111,22 @@ using LayoutSides::kTrailing;
 // Makes a new rounded rectangle image view to display as part of the 2×2 grid.
 - (UIImageView*)makeFaviconImageView {
   UIImageView* imageView = [[UIImageView alloc] init];
-  imageView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  imageView.layer.cornerRadius = kFaviconCornerRadius;
+  imageView.tintColor = UIColor.whiteColor;
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSquareConstraints(imageView, kImageSize);
   return imageView;
+}
+
+// Wraps the image view in a colored rounded rect.
+- (UIView*)wrappedImageView:(UIImageView*)imageView {
+  UIView* container = [[UIView alloc] init];
+  container.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  container.layer.cornerRadius = kFaviconCornerRadius;
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+  [container addSubview:imageView];
+  AddSquareConstraints(container, kImageContainerSize);
+  AddSameCenterConstraints(imageView, container);
+  return container;
 }
 
 // Reconfigures the 4 elements of the grid.

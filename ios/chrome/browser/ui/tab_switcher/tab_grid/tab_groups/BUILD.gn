@@ -38,6 +38,7 @@ source_set("tab_groups") {
     "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/chrome/browser/ui/tab_switcher:utils",
