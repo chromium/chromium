@@ -7,6 +7,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "base/check.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_state_view.h"
@@ -312,17 +313,53 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
 - (void)configureCell:(TabGroupsPanelCell*)cell
              withItem:(TabGroupsPanelItem*)item {
   cell.item = item;
-  TabGroupsPanelItemData* itemData =
-      [_itemDataSource dataForItem:item
-          withFaviconsFetchCompletion:^(NSArray<UIImage*>* favicons) {
-            if ([cell.item isEqual:item]) {
-              cell.faviconsGrid.favicons = favicons;
-            }
-          }];
+  TabGroupsPanelItemData* itemData = [_itemDataSource dataForItem:item];
   cell.titleLabel.text = itemData.title;
   cell.dot.backgroundColor = itemData.color;
   cell.subtitleLabel.text = itemData.creationText;
-  cell.faviconsGrid.numberOfTabs = itemData.numberOfTabs;
+  NSUInteger numberOfTabs = itemData.numberOfTabs;
+  cell.faviconsGrid.numberOfTabs = numberOfTabs;
+  UIImage* fallbackImage = DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 16);
+  if (numberOfTabs >= 1) {
+    cell.faviconsGrid.favicon1 = fallbackImage;
+    [_itemDataSource fetchFaviconForItem:item
+                                   index:0
+                              completion:^(UIImage* favicon) {
+                                if ([cell.item isEqual:item] && favicon) {
+                                  cell.faviconsGrid.favicon1 = favicon;
+                                }
+                              }];
+  }
+  if (numberOfTabs >= 2) {
+    cell.faviconsGrid.favicon2 = fallbackImage;
+    [_itemDataSource fetchFaviconForItem:item
+                                   index:1
+                              completion:^(UIImage* favicon) {
+                                if ([cell.item isEqual:item] && favicon) {
+                                  cell.faviconsGrid.favicon2 = favicon;
+                                }
+                              }];
+  }
+  if (numberOfTabs >= 3) {
+    cell.faviconsGrid.favicon3 = fallbackImage;
+    [_itemDataSource fetchFaviconForItem:item
+                                   index:2
+                              completion:^(UIImage* favicon) {
+                                if ([cell.item isEqual:item] && favicon) {
+                                  cell.faviconsGrid.favicon3 = favicon;
+                                }
+                              }];
+  }
+  if (numberOfTabs == 4) {
+    cell.faviconsGrid.favicon4 = fallbackImage;
+    [_itemDataSource fetchFaviconForItem:item
+                                   index:3
+                              completion:^(UIImage* favicon) {
+                                if ([cell.item isEqual:item] && favicon) {
+                                  cell.faviconsGrid.favicon4 = favicon;
+                                }
+                              }];
+  }
 }
 
 @end

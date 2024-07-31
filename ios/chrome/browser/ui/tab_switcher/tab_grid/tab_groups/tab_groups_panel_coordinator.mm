@@ -7,6 +7,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/prefs/pref_service.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -75,10 +76,14 @@
       tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   WebStateList* regularWebStateList = self.browser->GetWebStateList();
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
 
   _mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:tabGroupSyncService
               regularWebStateList:regularWebStateList
+                    faviconLoader:faviconLoader
                  disabledByPolicy:regularModeDisabled];
   _mediator.toolbarsMutator = _toolbarsMutator;
   _mediator.toolbarTabGridDelegate = _toolbarTabGridDelegate;
