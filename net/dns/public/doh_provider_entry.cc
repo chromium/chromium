@@ -196,7 +196,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           /*dns_over_53_server_ip_strs=*/{},
           /*dns_over_tls_hostnames=*/{}, "https://public.dns.iij.jp/dns-query",
           /*ui_name=*/"IIJ (Public DNS)",
-          /*privacy_policy=*/"https://public.dns.iij.jp/",
+          /*privacy_policy=*/"https://policy.public.dns.iij.jp/",
           /*display_globally=*/false, /*display_countries=*/{"JP"},
           LoggingLevel::kNormal),
       new DohProviderEntry(
