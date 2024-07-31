@@ -148,7 +148,13 @@ export class Oobe extends DisplayManager {
         // TODO(b/260015541): migrate logic to dedicated test api.
         chrome.send(
             'toggleFakeEnrollmentAndCompleteLogin',
-            [username, OobeTypes.LicenseType.ENTERPRISE],
+            [
+              username,
+              gaiaId,
+              password,
+              /*using_saml*/ false,
+              OobeTypes.LicenseType.ENTERPRISE,
+            ],
         );
       });
     }
