@@ -105,11 +105,7 @@ const CGFloat kHighlightBackgroundColorAlpha = 0.3;
   _titleLabel.text = nil;
   _subtitleLabel.text = nil;
   _dot.backgroundColor = nil;
-  _faviconsGrid.numberOfTabs = 0;
-  _faviconsGrid.favicon1 = nil;
-  _faviconsGrid.favicon2 = nil;
-  _faviconsGrid.favicon3 = nil;
-  _faviconsGrid.favicon4 = nil;
+  _faviconsGrid.favicons = nil;
   self.item = nil;
 }
 

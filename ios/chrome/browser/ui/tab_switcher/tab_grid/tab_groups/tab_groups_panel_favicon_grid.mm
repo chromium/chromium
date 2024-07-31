@@ -98,49 +98,12 @@ using LayoutSides::kTrailing;
 
 - (void)setNumberOfTabs:(NSUInteger)numberOfTabs {
   _numberOfTabs = numberOfTabs;
-
-  if (numberOfTabs > 4) {
-    _label.hidden = NO;
-    const NSInteger overFlowCount = numberOfTabs - 3;
-    _label.text = overFlowCount > 99
-                      ? @"99+"
-                      : [NSString stringWithFormat:@"+%@", @(overFlowCount)];
-  } else {
-    _label.hidden = YES;
-    _label.text = nil;
-  }
+  [self updateElements];
 }
 
-- (UIImage*)favicon1 {
-  return _imageView1.image;
-}
-
-- (void)setFavicon1:(UIImage*)favicon1 {
-  _imageView1.image = favicon1;
-}
-
-- (UIImage*)favicon2 {
-  return _imageView2.image;
-}
-
-- (void)setFavicon2:(UIImage*)favicon2 {
-  _imageView2.image = favicon2;
-}
-
-- (UIImage*)favicon3 {
-  return _imageView3.image;
-}
-
-- (void)setFavicon3:(UIImage*)favicon3 {
-  _imageView3.image = favicon3;
-}
-
-- (UIImage*)favicon4 {
-  return _imageView4.image;
-}
-
-- (void)setFavicon4:(UIImage*)favicon4 {
-  _imageView4.image = favicon4;
+- (void)setFavicons:(NSArray<UIImage*>*)favicons {
+  _favicons = [favicons copy];
+  [self updateElements];
 }
 
 #pragma mark Private
@@ -164,6 +127,39 @@ using LayoutSides::kTrailing;
   AddSquareConstraints(container, kImageContainerSize);
   AddSameCenterConstraints(imageView, container);
   return container;
+}
+
+// Reconfigures the 4 elements of the grid.
+- (void)updateElements {
+  // Reset subviews.
+  _imageView1.image = nil;
+  _imageView2.image = nil;
+  _imageView3.image = nil;
+  _imageView4.image = nil;
+  _label.text = nil;
+  _label.hidden = YES;
+
+  const NSUInteger numberOfTabs = self.numberOfTabs;
+  NSArray<UIImage*>* favicons = self.favicons;
+  const NSUInteger numberOfFavicons = favicons.count;
+  if (numberOfTabs > 0 && numberOfFavicons > 0) {
+    _imageView1.image = favicons[0];
+  }
+  if (numberOfTabs > 1 && numberOfFavicons > 1) {
+    _imageView2.image = favicons[1];
+  }
+  if (numberOfTabs > 2 && numberOfFavicons > 2) {
+    _imageView3.image = favicons[2];
+  }
+  if (numberOfTabs == 4 && numberOfFavicons > 3) {
+    _imageView4.image = favicons[3];
+  } else if (numberOfTabs > 4) {
+    _label.hidden = NO;
+    const NSInteger overFlowCount = numberOfTabs - 3;
+    _label.text = overFlowCount > 99
+                      ? @"99+"
+                      : [NSString stringWithFormat:@"+%@", @(overFlowCount)];
+  }
 }
 
 @end

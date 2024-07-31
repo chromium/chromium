@@ -15,9 +15,9 @@
 #import "components/saved_tab_groups/saved_tab_group.h"
 #import "components/saved_tab_groups/string_utils.h"
 #import "components/tab_groups/tab_group_color.h"
-#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_consumer.h"
@@ -27,10 +27,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
-#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-#import "ui/gfx/favicon_size.h"
 #import "ui/gfx/image/image.h"
 
 namespace {
@@ -85,8 +83,6 @@ NSString* CreationText(base::Time creation_date) {
   // The regular WebStateList, to check if there are tabs to go back to when
   // pressing the Done button.
   base::WeakPtr<WebStateList> _regularWebStateList;
-  // The object to retrieve tabs favicons.
-  raw_ptr<FaviconLoader> _faviconLoader;
   // Whether this screen is disabled by policy.
   BOOL _isDisabled;
   // Whether this screen is selected in the TabGrid.
@@ -96,7 +92,6 @@ NSString* CreationText(base::Time creation_date) {
 - (instancetype)initWithTabGroupSyncService:
                     (tab_groups::TabGroupSyncService*)tabGroupSyncService
                         regularWebStateList:(WebStateList*)regularWebStateList
-                              faviconLoader:(FaviconLoader*)faviconLoader
                            disabledByPolicy:(BOOL)disabled {
   self = [super init];
   if (self) {
@@ -108,7 +103,6 @@ NSString* CreationText(base::Time creation_date) {
             _syncServiceObserver.get());
     _scopedSyncServiceObservation->Observe(_tabGroupSyncService);
     _regularWebStateList = regularWebStateList->AsWeakPtr();
-    _faviconLoader = faviconLoader;
     _isDisabled = disabled;
   }
   return self;
@@ -190,7 +184,9 @@ NSString* CreationText(base::Time creation_date) {
 
 #pragma mark TabGroupsPanelItemDataSource
 
-- (TabGroupsPanelItemData*)dataForItem:(TabGroupsPanelItem*)item {
+- (TabGroupsPanelItemData*)dataForItem:(TabGroupsPanelItem*)item
+           withFaviconsFetchCompletion:
+               (void (^)(NSArray<UIImage*>*))completion {
   const auto group = _tabGroupSyncService->GetGroup(item.savedTabGroupID);
   if (!group) {
     return nil;
@@ -211,29 +207,33 @@ NSString* CreationText(base::Time creation_date) {
       CreationText(group->creation_time_windows_epoch_micros());
   itemData.numberOfTabs = static_cast<NSUInteger>(numberOfTabs);
 
-  return itemData;
-}
-
-- (void)fetchFaviconForItem:(TabGroupsPanelItem*)item
-                      index:(int)index
-                 completion:(void (^)(UIImage*))completion {
-  const auto group = _tabGroupSyncService->GetGroup(item.savedTabGroupID);
-  if (!group) {
-    return;
-  }
+  // Fetch the favicons.
+  NSMutableArray<UIImage*>* favicons = [[NSMutableArray alloc] init];
   const auto saved_tabs = group->saved_tabs();
-  if (static_cast<size_t>(index) >= saved_tabs.size() || index < 0) {
-    return;
+  // Query up to 4 favicons…
+  NSUInteger maxFaviconsCount = MIN(numberOfTabs, 4);
+  // … but only 3 if there is an overflow. The 4th spot is replaced with the
+  // count of remaining tabs.
+  if (maxFaviconsCount > 4) {
+    maxFaviconsCount = 3;
   }
+  for (size_t i = 0; i < saved_tabs.size() && favicons.count < maxFaviconsCount;
+       i++) {
+    // TODO(crbug.com/351110394): Fetch favicons from the URL.
+    const auto favicon = saved_tabs[i].favicon();
+    if (favicon) {
+      [favicons addObject:favicon->ToUIImage()];
+    } else {
+      [favicons addObject:DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 16)];
+    }
+  }
+  // TODO(crbug.com/351110394): Remove this simulated asynchronous fetch once
+  // actually fetching favicons asynchronously.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    completion(favicons);
+  });
 
-  const auto saved_tab = saved_tabs[index];
-  _faviconLoader->FaviconForPageUrlOrHost(
-      saved_tab.url(), gfx::kFaviconSize, ^(FaviconAttributes* attributes) {
-        // Pass only the non-default image.
-        if (!attributes.usesDefaultImage) {
-          completion(attributes.faviconImage);
-        }
-      });
+  return itemData;
 }
 
 #pragma mark TabGroupsPanelMutator

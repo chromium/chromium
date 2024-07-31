@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mutator.h"
 
-class FaviconLoader;
 @protocol GridToolbarsMutator;
 @protocol TabGridToolbarsMainTabGridDelegate;
 @protocol TabGroupsPanelConsumer;
@@ -34,7 +33,6 @@ class TabGroupSyncService;
 - (instancetype)initWithTabGroupSyncService:
                     (tab_groups::TabGroupSyncService*)tabGroupSyncService
                         regularWebStateList:(WebStateList*)regularWebStateList
-                              faviconLoader:(FaviconLoader*)faviconLoader
                            disabledByPolicy:(BOOL)disabled
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

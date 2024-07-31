@@ -27,7 +27,6 @@ source_set("tab_groups") {
     "//components/tab_groups",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/drag_and_drop/model",
-    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/saved_tab_groups/model",
@@ -56,7 +55,6 @@ source_set("tab_groups") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/favicon",
     "//ios/web/public",
   ]
 }

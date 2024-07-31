@@ -65,7 +65,6 @@ TEST_F(TabGroupsPanelMediatorTest, StartStopObserving_Released) {
   __unused TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&strict_tab_group_sync_service
               regularWebStateList:&web_state_list_
-                    faviconLoader:nullptr
                  disabledByPolicy:NO];
 
   // Expect the observation end when the mediator is released.
@@ -83,7 +82,6 @@ TEST_F(TabGroupsPanelMediatorTest, StartStopObserving_Disconnect) {
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&strict_tab_group_sync_service
               regularWebStateList:&web_state_list_
-                    faviconLoader:nullptr
                  disabledByPolicy:NO];
 
   {
@@ -98,7 +96,6 @@ TEST_F(TabGroupsPanelMediatorTest, RecordUMAWhenSelected) {
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
-                    faviconLoader:nullptr
                  disabledByPolicy:NO];
 
   EXPECT_EQ(0, user_action_tester.GetActionCount(kSelectTabGroupsUMA));
@@ -122,7 +119,6 @@ TEST_F(TabGroupsPanelMediatorTest, NotSelected_NoToolbarsDelegateOrConfig) {
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
-                    faviconLoader:nullptr
                  disabledByPolicy:NO];
   FakeTabGridToolbarsMediator* toolbars_mutator =
       [[FakeTabGridToolbarsMediator alloc] init];
@@ -140,7 +136,6 @@ TEST_F(TabGroupsPanelMediatorTest, DisabledByPolicy_DisabledToolbarsConfig) {
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
-                    faviconLoader:nullptr
                  disabledByPolicy:YES];
   FakeTabGridToolbarsMediator* toolbars_mutator =
       [[FakeTabGridToolbarsMediator alloc] init];
@@ -180,7 +175,6 @@ TEST_F(TabGroupsPanelMediatorTest,
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
-                    faviconLoader:nullptr
                  disabledByPolicy:NO];
   FakeTabGridToolbarsMediator* toolbars_mutator =
       [[FakeTabGridToolbarsMediator alloc] init];
@@ -227,7 +221,6 @@ TEST_F(TabGroupsPanelMediatorTest,
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
-                    faviconLoader:nullptr
                  disabledByPolicy:NO];
   FakeTabGridToolbarsMediator* toolbars_mutator =
       [[FakeTabGridToolbarsMediator alloc] init];
@@ -267,7 +260,6 @@ TEST_F(TabGroupsPanelMediatorTest,
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
-                    faviconLoader:nullptr
                  disabledByPolicy:NO];
   // Prepare a consumer.
   FakeTabGroupsPanelConsumer* consumer =
@@ -296,7 +288,6 @@ TEST_F(TabGroupsPanelMediatorTest,
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
-                    faviconLoader:nullptr
                  disabledByPolicy:NO];
   EXPECT_NE(observer, nullptr);
   // Prepare a consumer.
@@ -329,7 +320,6 @@ TEST_F(TabGroupsPanelMediatorTest,
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
-                    faviconLoader:nullptr
                  disabledByPolicy:NO];
   EXPECT_NE(observer, nullptr);
   // Prepare a consumer.
@@ -361,7 +351,6 @@ TEST_F(TabGroupsPanelMediatorTest,
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
-                    faviconLoader:nullptr
                  disabledByPolicy:NO];
   EXPECT_NE(observer, nullptr);
   // Set no saved tab group.
