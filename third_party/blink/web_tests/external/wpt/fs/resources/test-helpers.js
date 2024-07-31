@@ -132,6 +132,11 @@ function createFileHandles(dir, ...fileNames) {
       fileNames.map(fileName => dir.getFileHandle(fileName, {create: true})));
 }
 
+function createDirectoryHandles(dir, ...dirNames) {
+  return Promise.all(
+      dirNames.map(dirName => dir.getDirectoryHandle(dirName, {create: true})));
+}
+
 // Releases a lock created by one of the create*WithCleanup functions below.
 async function releaseLock(lockPromise) {
   const result = await lockPromise;

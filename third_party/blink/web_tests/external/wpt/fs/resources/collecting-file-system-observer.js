@@ -7,6 +7,10 @@
 // getRecords() with the records it collected.
 class CollectingFileSystemObserver {
   #observer = new FileSystemObserver(this.#collectRecordsCallback.bind(this));
+  #notificationObserver =
+      new FileSystemObserver(this.#notificationCallback.bind(this));
+
+  #callback;
 
   #records_promise_and_resolvers = Promise.withResolvers();
   #collected_records = [];
@@ -15,12 +19,14 @@ class CollectingFileSystemObserver {
   #notification_file_count = 0;
   #received_changes_since_last_notification = true;
 
-  constructor(test, root_dir) {
+  constructor(test, root_dir, callback) {
     test.add_cleanup(() => {
       this.disconnect();
+      this.#notificationObserver.disconnect();
     });
 
     this.#setupCollectNotification(root_dir);
+    this.#callback = callback ?? (() => {return {}});
   }
 
   #getCollectNotificationName() {
@@ -30,7 +36,7 @@ class CollectingFileSystemObserver {
   async #setupCollectNotification(root_dir) {
     this.#notification_dir_handle =
         await root_dir.getDirectoryHandle(getUniqueName(), {create: true});
-    await this.#observer.observe(this.#notification_dir_handle);
+    await this.#notificationObserver.observe(this.#notification_dir_handle);
     await this.#createCollectNotification();
   }
 
@@ -51,32 +57,26 @@ class CollectingFileSystemObserver {
     }
   }
 
-  #groupRecords(records) {
-    return Object.groupBy(records, record => {
-      if (record.relativePathComponents[0] ==
-          this.#getCollectNotificationName()) {
-        return 'notification';
-      } else {
-        return 'nonNotifications';
-      }
+  #notificationCallback(records) {
+    this.#finishCollectingIfReady(records);
+  }
+
+  #collectRecordsCallback(records, observer) {
+    this.#collected_records.push({
+      ...this.#callback(records, observer),
+      records,
     });
+
+    this.#received_changes_since_last_notification = true;
   }
 
-  #collectRecordsCallback(records) {
-    const {notification, nonNotifications} = this.#groupRecords(records);
-
-    if (nonNotifications) {
-      this.#collected_records.push(...nonNotifications);
-
-      this.#received_changes_since_last_notification = true;
-    }
-
-    if (notification) {
-      this.#finishCollectingIfReady(records)
-    }
+  async getRecords() {
+    return (await this.#records_promise_and_resolvers.promise)
+        .map(record => record.records)
+        .flat();
   }
 
-  getRecords() {
+  getRecordsWithCallbackInfo() {
     return this.#records_promise_and_resolvers.promise;
   }
 

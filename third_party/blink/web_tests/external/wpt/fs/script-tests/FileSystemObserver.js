@@ -268,3 +268,106 @@ directory_test(async (t, root_dir) => {
     }
   }
 }, 'Moving a file through FileSystemFileHandle.move is reported as a "disappeared" event if only source is in scope');
+
+// Wraps a `CollectingFileSystemObserver` and disconnects the observer after it's
+// received `num_of_records_to_observe`.
+class DisconnectingFileSystemObserver {
+  #collectingObserver;
+
+  #num_of_records_to_observe;
+
+  #called_disconnect = false;
+  #records_observed_count = 0;
+
+  constructor(test, root_dir, num_of_records_to_observe) {
+    this.#collectingObserver = new CollectingFileSystemObserver(
+        test, root_dir, this.#callback.bind(this));
+    this.#num_of_records_to_observe = num_of_records_to_observe;
+  }
+
+  #callback(records, observer) {
+    this.#records_observed_count += records.length;
+
+    const called_disconnect = this.#called_disconnect;
+
+    // Call `disconnect` once after we've received `num_of_records_to_observe`.
+    if (!called_disconnect &&
+        this.#records_observed_count >= this.#num_of_records_to_observe) {
+      observer.disconnect();
+      this.#called_disconnect = true;
+    }
+
+    return {called_disconnect};
+  }
+
+  getRecordsWithCallbackInfo() {
+    return this.#collectingObserver.getRecordsWithCallbackInfo();
+  }
+
+  observe(handles) {
+    return this.#collectingObserver.observe(handles);
+  }
+}
+
+
+directory_test(async (t, root_dir) => {
+  const total_files_to_create = 100;
+
+  const child_dir =
+      await root_dir.getDirectoryHandle(getUniqueName(), {create: true});
+
+  // Create a `FileSystemObserver` that will disconnect after its
+  // received half of the total files we're going to create.
+  const observer = new DisconnectingFileSystemObserver(
+      t, root_dir, total_files_to_create / 2);
+
+  // Observe the child directory and create files in it.
+  await observer.observe([child_dir]);
+  for (let i = 0; i < total_files_to_create; i++) {
+    child_dir.getFileHandle(`file${i}`, {create: true});
+  }
+
+  // Wait for `disconnect` to be called.
+  const records_with_disconnect_state =
+      await observer.getRecordsWithCallbackInfo();
+
+  // No observations should have been received after disconnected has been
+  // called.
+  assert_false(
+      records_with_disconnect_state.some(
+          ({called_disconnect}) => called_disconnect),
+      'Received records after disconnect.');
+}, 'Observations stop after disconnect()');
+
+directory_test(async (t, root_dir) => {
+  const num_of_child_dirs = 5;
+  const num_files_to_create_per_directory = 100;
+  const total_files_to_create =
+      num_files_to_create_per_directory * num_of_child_dirs;
+
+  const child_dirs = await createDirectoryHandles(
+      root_dir, getUniqueName(), getUniqueName(), getUniqueName());
+
+  // Create a `FileSystemObserver` that will disconnect after its received half
+  // of the total files we're going to create.
+  const observer = new DisconnectingFileSystemObserver(
+      t, root_dir, total_files_to_create / 2);
+
+  // Observe the child directories and create files in them.
+  await observer.observe(child_dirs);
+  for (let i = 0; i < num_files_to_create_per_directory; i++) {
+    child_dirs.forEach(
+        child_dir => child_dir.getFileHandle(`file${i}`, {create: true}));
+  }
+
+  // Wait for `disconnect` to be called.
+  const records_with_disconnect_state =
+      await observer.getRecordsWithCallbackInfo();
+
+  // No observations should have been received after disconnected has been
+  // called.
+  assert_false(
+      records_with_disconnect_state.some(
+          ({called_disconnect}) => called_disconnect),
+      'Received records after disconnect.');
+}, 'Observations stop for all observed handles after disconnect()');
