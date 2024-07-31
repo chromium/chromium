@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
-#include "chrome/browser/extensions/api/developer_private/entry_picker.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -66,8 +65,6 @@ namespace developer_private {
 struct ProfileInfo;
 
 }
-
-class EntryPickerClient;
 
 }  // namespace api
 
@@ -516,16 +513,6 @@ class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
       error_reporter_observation_{this};
 };
 
-class DeveloperPrivateChooseEntryFunction : public ExtensionFunction,
-                                            public EntryPickerClient {
- protected:
-  ~DeveloperPrivateChooseEntryFunction() override;
-  bool ShowPicker(ui::SelectFileDialog::Type picker_type,
-                  const std::u16string& select_title,
-                  const ui::SelectFileDialog::FileTypeInfo& info,
-                  int file_type_index);
-};
-
 class DeveloperPrivateLoadUnpackedFunction
     : public DeveloperPrivateAPIFunction,
       public ui::SelectFileDialog::Listener {
@@ -634,18 +621,38 @@ class DeveloperPrivateNotifyDragInstallInProgressFunction
 };
 
 class DeveloperPrivateChoosePathFunction
-    : public DeveloperPrivateChooseEntryFunction {
+    : public DeveloperPrivateAPIFunction,
+      public ui::SelectFileDialog::Listener {
  public:
   DECLARE_EXTENSION_FUNCTION("developerPrivate.choosePath",
                              DEVELOPERPRIVATE_CHOOSEPATH)
+  DeveloperPrivateChoosePathFunction();
+
+  // ui::SelectFileDialog::Listener:
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
+
+  // For testing:
+  void set_accept_dialog_for_testing(bool accept) {
+    accept_dialog_for_testing_ = accept;
+  }
+  void set_selected_file_for_testing(const ui::SelectedFileInfo& file) {
+    selected_file_for_testing_ = file;
+  }
 
  protected:
   ~DeveloperPrivateChoosePathFunction() override;
   ResponseAction Run() override;
 
-  // EntryPickerClient:
-  void FileSelected(const base::FilePath& path) override;
-  void FileSelectionCanceled() override;
+ private:
+  // The dialog with the select file picker.
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+
+  // For testing:
+  // Whether to accept or reject the select file dialog without showing it.
+  std::optional<bool> accept_dialog_for_testing_;
+  // File to load when accepting the select file dialog without showing it.
+  std::optional<ui::SelectedFileInfo> selected_file_for_testing_;
 };
 
 class DeveloperPrivatePackDirectoryFunction

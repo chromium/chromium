@@ -710,19 +710,24 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-
   base::FilePath expected_dir_path =
       data_dir().AppendASCII("simple_with_popup");
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(expected_dir_path);
+  base::FilePath expected_file_path =
+      data_dir().AppendASCII("simple_with_popup.pem");
 
   // Try selecting a directory.
-  base::Value::List choose_args;
-  choose_args.Append("FOLDER");
-  choose_args.Append("LOAD");
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateChoosePathFunction>();
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  function->set_accept_dialog_for_testing(true);
+  function->set_selected_file_for_testing(
+      ui::SelectedFileInfo(expected_dir_path));
+  base::Value::List choose_args;
+  choose_args.Append("FOLDER");
+  choose_args.Append("LOAD");
   EXPECT_TRUE(RunFunction(function, choose_args)) << function->GetError();
+
+  // Verify directory was properly chosen.
   std::string path;
   const base::Value::List* result_list = function->GetResultListForTest();
   ASSERT_TRUE(result_list);
@@ -732,15 +737,17 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   EXPECT_EQ(path, expected_dir_path.AsUTF8Unsafe());
 
   // Try selecting a pem file.
-  base::FilePath expected_file_path =
-      data_dir().AppendASCII("simple_with_popup.pem");
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(expected_file_path);
+  function = base::MakeRefCounted<api::DeveloperPrivateChoosePathFunction>();
+  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  function->set_accept_dialog_for_testing(true);
+  function->set_selected_file_for_testing(
+      ui::SelectedFileInfo(expected_file_path));
   choose_args.clear();
   choose_args.Append("FILE");
   choose_args.Append("PEM");
-  function = base::MakeRefCounted<api::DeveloperPrivateChoosePathFunction>();
-  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(RunFunction(function, choose_args)) << function->GetError();
+
+  // Verify pem file was properly chosen.
   result_list = function->GetResultListForTest();
   ASSERT_TRUE(result_list);
   ASSERT_GT(result_list->size(), 0u);
@@ -749,10 +756,12 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   EXPECT_EQ(path, expected_file_path.AsUTF8Unsafe());
 
   // Try canceling the file dialog.
-  api::EntryPicker::SkipPickerAndAlwaysCancelForTest();
   function = base::MakeRefCounted<api::DeveloperPrivateChoosePathFunction>();
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  function->set_accept_dialog_for_testing(false);
   EXPECT_FALSE(RunFunction(function, choose_args));
+
+  // Verify function returns an error.
   EXPECT_EQ(std::string("File selection was canceled."), function->GetError());
 }
 
@@ -1073,7 +1082,6 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
   TestExtensionDir dir;
   dir.WriteManifest(kGoodManifest);
   base::FilePath path = dir.UnpackedPath();
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
 
   scoped_refptr<const Extension> extension;
   {
@@ -1259,7 +1267,6 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // Cleanup.
   api::DeveloperPrivateNotifyDragInstallInProgressFunction::
       SetDropPathForTesting(nullptr);
-  api::EntryPicker::StopSkippingPickerForTest();
 }
 
 // Test developerPrivate.requestFileSource.
@@ -3154,7 +3161,6 @@ TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   base::FilePath path = data_dir().AppendASCII("simple_with_popup");
-  api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(path);
 
   if (extensions_permissions_for_supervised_users_on_desktop()) {
     EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(

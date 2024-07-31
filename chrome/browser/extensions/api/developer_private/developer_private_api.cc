@@ -30,7 +30,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/extensions/api/developer_private/entry_picker.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -1538,32 +1537,6 @@ void DeveloperPrivateNotifyDragInstallInProgressFunction::SetDropPathForTesting(
   g_drop_path_for_testing = file_path;
 }
 
-bool DeveloperPrivateChooseEntryFunction::ShowPicker(
-    ui::SelectFileDialog::Type picker_type,
-    const std::u16string& select_title,
-    const ui::SelectFileDialog::FileTypeInfo& info,
-    int file_type_index) {
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (!web_contents)
-    return false;
-
-  // The entry picker will hold a reference to this function instance,
-  // and subsequent sending of the function response) until the user has
-  // selected a file or cancelled the picker. At that point, the picker will
-  // delete itself.
-  // TODO(crbug.com/353743644): This causes a dangling pointer when file dialog
-  // is cancelled and DeveloperPrivateLoadUnpackedFunction() is destructed
-  // before EntryPicker is destructed, which still holds a pointer to this
-  // function instance.
-  new EntryPicker(
-      this, web_contents, picker_type,
-      DeveloperPrivateAPI::Get(browser_context())->last_unpacked_directory(),
-      select_title, info, file_type_index);
-  return true;
-}
-
-DeveloperPrivateChooseEntryFunction::~DeveloperPrivateChooseEntryFunction() {}
-
 void DeveloperPrivatePackDirectoryFunction::OnPackSuccess(
     const base::FilePath& crx_file,
     const base::FilePath& pem_file) {
@@ -1874,18 +1847,47 @@ DeveloperPrivateLoadDirectoryFunction::DeveloperPrivateLoadDirectoryFunction()
 DeveloperPrivateLoadDirectoryFunction::~DeveloperPrivateLoadDirectoryFunction()
     {}
 
+DeveloperPrivateChoosePathFunction::DeveloperPrivateChoosePathFunction() {}
+
+DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {
+  // There may be pending file dialogs, we need to tell them that we've gone
+  // away so they don't try and call back to us.
+  if (select_file_dialog_.get()) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
+
 ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
   std::optional<developer::ChoosePath::Params> params =
       developer::ChoosePath::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ui::SelectFileDialog::Type type = ui::SelectFileDialog::SELECT_FOLDER;
-  ui::SelectFileDialog::FileTypeInfo info;
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error(kCouldNotShowSelectFileDialogError));
+  }
+
+  // Start or cancel the file selection without showing the select file dialog
+  // for tests that require it.
+  if (accept_dialog_for_testing_.has_value()) {
+    AddRef();  // Balanced in FileSelected() / FileSelectionCanceled().
+    if (accept_dialog_for_testing_.value()) {
+      CHECK(selected_file_for_testing_.has_value());
+      FileSelected(selected_file_for_testing_.value(), /*index=*/0);
+    } else {
+      FileSelectionCanceled();
+    }
+    CHECK(did_respond());
+    return AlreadyResponded();
+  }
+
+  ui::SelectFileDialog::Type file_type = ui::SelectFileDialog::SELECT_FOLDER;
+  ui::SelectFileDialog::FileTypeInfo file_type_info;
+  std::u16string select_title;
 
   if (params->select_type == developer::SelectType::kFile) {
-    type = ui::SelectFileDialog::SELECT_OPEN_FILE;
+    file_type = ui::SelectFileDialog::SELECT_OPEN_FILE;
   }
-  std::u16string select_title;
 
   int file_type_index = 0;
   if (params->file_type == developer::FileType::kLoad) {
@@ -1893,32 +1895,35 @@ ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
   } else if (params->file_type == developer::FileType::kPem) {
     select_title = l10n_util::GetStringUTF16(
         IDS_EXTENSION_PACK_DIALOG_SELECT_KEY);
-    info.extensions.push_back(std::vector<base::FilePath::StringType>(
-        1, FILE_PATH_LITERAL("pem")));
-    info.extension_description_overrides.push_back(
+    file_type_info.extensions.emplace_back(1, FILE_PATH_LITERAL("pem"));
+    file_type_info.extension_description_overrides.push_back(
         l10n_util::GetStringUTF16(
             IDS_EXTENSION_PACK_DIALOG_KEY_FILE_TYPE_DESCRIPTION));
-    info.include_all_files = true;
+    file_type_info.include_all_files = true;
     file_type_index = 1;
   } else {
     NOTREACHED_IN_MIGRATION();
   }
 
-  if (!ShowPicker(
-           type,
-           select_title,
-           info,
-           file_type_index)) {
-    return RespondNow(Error(kCouldNotShowSelectFileDialogError));
-  }
+  const base::FilePath last_directory =
+      DeveloperPrivateAPI::Get(browser_context())->last_unpacked_directory();
+  gfx::NativeWindow owning_window =
+      platform_util::GetTopLevel(web_contents->GetNativeView());
 
-  AddRef();  // Balanced by FileSelected / FileSelectionCanceled.
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
+  select_file_dialog_->SelectFile(file_type, select_title, last_directory,
+                                  &file_type_info, file_type_index,
+                                  base::FilePath::StringType(), owning_window);
+
+  AddRef();  // Balanced in FileSelected() / FileSelectionCanceled().
   return RespondLater();
 }
 
 void DeveloperPrivateChoosePathFunction::FileSelected(
-    const base::FilePath& path) {
-  Respond(WithArguments(path.LossyDisplayName()));
+    const ui::SelectedFileInfo& file,
+    int index) {
+  Respond(WithArguments(file.path().LossyDisplayName()));
   Release();
 }
 
@@ -1928,8 +1933,6 @@ void DeveloperPrivateChoosePathFunction::FileSelectionCanceled() {
   Respond(Error(kFileSelectionCanceled));
   Release();
 }
-
-DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {}
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateIsProfileManagedFunction::Run() {
