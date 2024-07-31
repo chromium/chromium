@@ -233,7 +233,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       WebInputEvent::Type web_input_event_type,
       const WebInputEventAttribution& web_input_event_attribution);
   void DidHandleInputEventOnMainThread(const WebInputEvent& web_input_event,
-                                       WebInputEventResult result);
+                                       WebInputEventResult result,
+                                       bool frame_requested);
 
   // Use a separate task runner so that IPC tasks are not logged via the same
   // task queue that executes them. Otherwise this would result in an infinite

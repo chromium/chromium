@@ -362,6 +362,10 @@ void WidgetInputHandlerManager::SetNeedsMainFrame() {
   widget_->RequestAnimationAfterDelay(base::TimeDelta());
 }
 
+bool WidgetInputHandlerManager::RequestedMainFramePending() {
+  return widget_->LayerTreeHost()->RequestedMainFramePending();
+}
+
 void WidgetInputHandlerManager::WillShutdown() {
 #if BUILDFLAG(IS_ANDROID)
   if (synchronous_compositor_registry_)

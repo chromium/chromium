@@ -89,7 +89,8 @@ class PLATFORM_EXPORT WidgetScheduler
   // called from the main thread.
   virtual void DidHandleInputEventOnMainThread(
       const WebInputEvent& web_input_event,
-      WebInputEventResult result) = 0;
+      WebInputEventResult result,
+      bool frame_requested) = 0;
 
   // Tells the scheduler that the main thread processed a BeginMainFrame task
   // from its queue. Note that DidRunBeginMainFrame will be called

@@ -57,6 +57,9 @@ class PLATFORM_EXPORT MainThreadEventQueueClient {
 
   // Requests a BeginMainFrame callback from the compositor.
   virtual void SetNeedsMainFrame() = 0;
+
+  // Returns true if a main frame has been requested and has not yet run.
+  virtual bool RequestedMainFramePending() = 0;
 };
 
 // MainThreadEventQueue implements a queue for events that need to be

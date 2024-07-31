@@ -653,28 +653,32 @@ class MainThreadSchedulerImplTest : public testing::Test {
           InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
       scheduler_->DidHandleInputEventOnMainThread(
           FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-          WebInputEventResult::kHandledSystem);
+          WebInputEventResult::kHandledSystem,
+          /*frame_requested=*/true);
 
       scheduler_->DidHandleInputEventOnCompositorThread(
           FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
           InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
       scheduler_->DidHandleInputEventOnMainThread(
           FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-          WebInputEventResult::kHandledSystem);
+          WebInputEventResult::kHandledSystem,
+          /*frame_requested=*/true);
 
       scheduler_->DidHandleInputEventOnCompositorThread(
           FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
           InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
       scheduler_->DidHandleInputEventOnMainThread(
           FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-          WebInputEventResult::kHandledSystem);
+          WebInputEventResult::kHandledSystem,
+          /*frame_requested=*/true);
     }
     if (gesture_type != blink::WebInputEvent::Type::kUndefined) {
       scheduler_->DidHandleInputEventOnCompositorThread(
           FakeInputEvent(gesture_type),
           InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
       scheduler_->DidHandleInputEventOnMainThread(
-          FakeInputEvent(gesture_type), WebInputEventResult::kHandledSystem);
+          FakeInputEvent(gesture_type), WebInputEventResult::kHandledSystem,
+          /*frame_requested=*/true);
     }
   }
 
@@ -686,7 +690,8 @@ class MainThreadSchedulerImplTest : public testing::Test {
     test_task_runner_->AdvanceMockTickClock(begin_main_frame_duration);
     scheduler_->DidHandleInputEventOnMainThread(
         FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-        WebInputEventResult::kHandledApplication);
+        WebInputEventResult::kHandledApplication,
+        /*frame_requested=*/true);
     scheduler_->DidCommitFrameToCompositor();
   }
 
@@ -782,7 +787,8 @@ class MainThreadSchedulerImplTest : public testing::Test {
                                                  String value) {
     scheduler_->DidHandleInputEventOnMainThread(
         FakeInputEvent(WebInputEvent::Type::kMouseMove),
-        WebInputEventResult::kHandledApplication);
+        WebInputEventResult::kHandledApplication,
+        /*frame_requested=*/true);
     AppendToVectorBeginMainFrameTask(vector, value);
   }
 
@@ -790,7 +796,8 @@ class MainThreadSchedulerImplTest : public testing::Test {
                                     Vector<String>* vector,
                                     String value) {
     scheduler_->DidHandleInputEventOnMainThread(
-        FakeInputEvent(event_type), WebInputEventResult::kHandledApplication);
+        FakeInputEvent(event_type), WebInputEventResult::kHandledApplication,
+        /*frame_requested=*/true);
     AppendToVectorTestTask(vector, value);
   }
 
@@ -1254,7 +1261,8 @@ TEST_F(MainThreadSchedulerImplTest,
   EXPECT_EQ(UseCase::kMainThreadCustomInputHandling, CurrentUseCase());
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureFlingStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
 }
 
 TEST_F(MainThreadSchedulerImplTest,
@@ -1272,7 +1280,8 @@ TEST_F(MainThreadSchedulerImplTest,
   EXPECT_EQ(UseCase::kMainThreadCustomInputHandling, CurrentUseCase());
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureFlingStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
 }
 
 TEST_F(MainThreadSchedulerImplTest,
@@ -1286,7 +1295,8 @@ TEST_F(MainThreadSchedulerImplTest,
       InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledApplication);
+      WebInputEventResult::kHandledApplication,
+      /*frame_requested=*/true);
   base::RunLoop().RunUntilIdle();
   // Because the main thread is performing custom input handling, we let all
   // tasks run. However compositing tasks are still given priority.
@@ -1307,7 +1317,8 @@ TEST_F(
       InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   base::RunLoop().RunUntilIdle();
   // Because we are still waiting for the touchstart to be processed,
   // non-essential tasks like loading tasks are blocked.
@@ -1381,7 +1392,8 @@ TEST_F(MainThreadSchedulerImplTest, TestTouchstartPolicy_MainThread) {
       InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EnableIdleTasks();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("C1", "C2", "D1", "D2"));
@@ -1393,13 +1405,15 @@ TEST_F(MainThreadSchedulerImplTest, TestTouchstartPolicy_MainThread) {
       InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureFlingCancel),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   scheduler_->DidHandleInputEventOnCompositorThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureTapDown),
       InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureTapDown),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre());
 
@@ -1411,7 +1425,8 @@ TEST_F(MainThreadSchedulerImplTest, TestTouchstartPolicy_MainThread) {
       InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureScrollBegin),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(run_order, testing::ElementsAre("L1", "T1", "T2"));
@@ -1535,7 +1550,8 @@ TEST_F(MainThreadSchedulerImplTest,
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kMouseMove,
                      blink::WebInputEvent::kLeftButtonDown),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
 }
 
 TEST_F(MainThreadSchedulerImplTest,
@@ -1710,7 +1726,8 @@ TEST_F(MainThreadSchedulerImplTest,
   // Note compositor tasks are not prioritized.
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kKeyDown),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
 }
 
 TEST_F(MainThreadSchedulerImplTest,
@@ -1870,7 +1887,8 @@ TEST_F(MainThreadSchedulerImplTest, SlowMainThreadInputEvent) {
                                           2);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureFlingStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   base::RunLoop().RunUntilIdle();
 
   // Even though we exceeded the input priority escalation period, we should
@@ -1920,7 +1938,8 @@ TEST_F(MainThreadSchedulerImplTest, UpdatePolicyCountTriggeredByOneInputEvent) {
 
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EXPECT_EQ(1, scheduler_->update_policy_count_);
 
   test_task_runner_->AdvanceMockTickClock(base::Seconds(1));
@@ -1943,7 +1962,8 @@ TEST_F(MainThreadSchedulerImplTest,
 
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EXPECT_EQ(1, scheduler_->update_policy_count_);
 
   // The second call to DidHandleInputEventOnCompositorThread should not post
@@ -1957,7 +1977,8 @@ TEST_F(MainThreadSchedulerImplTest,
   // We expect DidHandleInputEvent to trigger a policy update.
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EXPECT_EQ(1, scheduler_->update_policy_count_);
 
   // The third call to DidHandleInputEventOnCompositorThread should post a
@@ -1972,7 +1993,8 @@ TEST_F(MainThreadSchedulerImplTest,
   // We expect DidHandleInputEvent to trigger a policy update.
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EXPECT_EQ(2, scheduler_->update_policy_count_);
   test_task_runner_->FastForwardBy(base::Seconds(1));
   // We finally expect a delayed policy update.
@@ -1993,7 +2015,8 @@ TEST_F(MainThreadSchedulerImplTest,
 
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EXPECT_EQ(1, scheduler_->update_policy_count_);
   test_task_runner_->FastForwardBy(base::Seconds(1));
   // We expect a delayed policy update.
@@ -2010,7 +2033,8 @@ TEST_F(MainThreadSchedulerImplTest,
 
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   EXPECT_EQ(3, scheduler_->update_policy_count_);
   test_task_runner_->FastForwardBy(base::Seconds(1));
   // We finally expect a delayed policy update.
@@ -2044,16 +2068,20 @@ TEST_F(MainThreadSchedulerImplTest, EnsureUpdatePolicyNotTriggeredTooOften) {
 
   scheduler_->DidHandleInputEventOnMainThread(
       FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kTouchMove),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kTouchEnd),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
 
   EXPECT_EQ(2, scheduler_->update_policy_count_);
 
@@ -2341,7 +2369,8 @@ TEST_F(MainThreadSchedulerImplTest, MismatchedDidHandleInputEventOnMainThread) {
   // debugging impossible.
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureFlingStart),
-      WebInputEventResult::kHandledSystem);
+      WebInputEventResult::kHandledSystem,
+      /*frame_requested=*/true);
 }
 
 TEST_F(MainThreadSchedulerImplTest, BeginMainFrameOnCriticalPath) {

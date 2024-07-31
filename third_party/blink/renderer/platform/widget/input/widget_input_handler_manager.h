@@ -106,6 +106,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
                         HandledEventCallback handled_callback) override;
   void InputEventsDispatched(bool raf_aligned) override;
   void SetNeedsMainFrame() override;
+  bool RequestedMainFramePending() override;
 
   void DidFirstVisuallyNonEmptyPaint(const base::TimeTicks& first_paint_time);
 

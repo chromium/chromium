@@ -1313,7 +1313,8 @@ void MainThreadSchedulerImpl::WillHandleInputEventOnMainThread(
 
 void MainThreadSchedulerImpl::DidHandleInputEventOnMainThread(
     const WebInputEvent& web_input_event,
-    WebInputEventResult result) {
+    WebInputEventResult result,
+    bool frame_requested) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "MainThreadSchedulerImpl::DidHandleInputEventOnMainThread");
   helper_.CheckOnValidThread();
