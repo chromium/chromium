@@ -31,7 +31,9 @@
 
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
+#include <algorithm>
 #include <optional>
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -80,6 +82,7 @@
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_entry.h"
 #include "third_party/blink/renderer/core/timing/visibility_state_entry.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -88,6 +91,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 static constexpr base::TimeDelta kLongTaskObserverThreshold =
@@ -557,11 +561,20 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
   if (event.IsKeyboardEvent()) {
     key_code = DynamicTo<KeyboardEvent>(event)->keyCode();
   }
-  // Add |entry| to the end of the queue along with the presentation promise
-  // index in order to match with corresponding presentation feedback later.
-  events_data_.push_back(EventData::Create(
-      entry, event_presentation_promise_count_, start_time, processing_start,
-      processing_end, key_code, pointer_id));
+  // Add |entry| to in the order of processing_start, along with the
+  // presentation promise index in order to match with corresponding
+  // presentation feedback later.
+  auto* event_data =
+      EventData::Create(entry, event_presentation_promise_count_, start_time,
+                        processing_start, processing_end, key_code, pointer_id);
+
+  // Insert EventData object in the ascending order of the processingStart.
+  auto reverse_iter =
+      std::find_if_not(events_data_.rbegin(), events_data_.rend(),
+                       [processing_start](auto event) {
+                         return processing_start < event->GetProcessingStart();
+                       });
+  events_data_.InsertAt(reverse_iter.base(), event_data);
   SetCurrentEventTimingEvent(nullptr);
 }
 
@@ -633,11 +646,10 @@ void WindowPerformance::ReportAllPendingEventTimingsOnPageHidden() {
       InteractiveDetector::From(*(DomWindow()->document()));
 
   // Using the processingEnd timestamp in place of visibility change timestamp.
-  while (!events_data_.empty()) {
-    ReportEvent(interactive_detector, events_data_.front(),
-                events_data_.front()->GetProcessingEnd());
-    events_data_.pop_front();
+  for (auto event : events_data_) {
+    ReportEvent(interactive_detector, event, event->GetProcessingEnd());
   }
+  events_data_.clear();
 }
 
 void WindowPerformance::ReportEventTimings() {
@@ -660,13 +672,17 @@ void WindowPerformance::ReportEventTimings() {
         pending_event_presentation_time_map_.at(presentation_index_to_report);
     pending_event_presentation_time_map_.erase(presentation_index_to_report);
 
-    while (!events_data_.empty() &&
-           events_data_.front()->GetPresentationIndex() ==
-               presentation_index_to_report) {
-      ReportEvent(interactive_detector, events_data_.front(),
-                  presentation_timestamp);
-      events_data_.pop_front();
+    auto iter = std::find_if_not(events_data_.begin(), events_data_.end(),
+                                 [presentation_index_to_report](auto event) {
+                                   return presentation_index_to_report ==
+                                          event->GetPresentationIndex();
+                                 });
+
+    for (auto it = events_data_.begin(); it != iter; it = std::next(it)) {
+      ReportEvent(interactive_detector, it->Get(), presentation_timestamp);
     }
+    // Remove reported EventData objects.
+    events_data_.erase(events_data_.begin(), iter);
   }
 }
 

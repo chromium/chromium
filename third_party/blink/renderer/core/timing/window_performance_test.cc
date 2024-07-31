@@ -160,7 +160,7 @@ class WindowPerformanceTest : public testing::Test,
         LocalDOMWindow::From(GetScriptState()));
   }
 
-  HeapDeque<Member<WindowPerformance::EventData>>*
+  HeapVector<Member<WindowPerformance::EventData>>*
   GetWindowPerformanceEventsData() {
     return &performance_->events_data_;
   }
@@ -2041,7 +2041,7 @@ TEST_P(InteractionIdTest, PointerupClick) {
 TEST_P(InteractionIdTest, JustClick) {
   // Hitting enter on a keyboard may cause just a trusted click event.
   std::vector<EventForInteraction> events = {
-      {event_type_names::kClick, std::nullopt, -1, GetTimeStamp(120),
+      {event_type_names::kClick, std::nullopt, 0, GetTimeStamp(120),
        GetTimeStamp(150)}};
   std::vector<uint32_t> ids = SimulateInteractionIds(events);
   EXPECT_GT(ids[0], 0u) << "Nonzero interaction id";

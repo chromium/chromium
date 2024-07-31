@@ -11275,6 +11275,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5042" label="EyeDropperOpen"/>
   <int value="5043" label="FlexNewColumnWrapIntrinsicSize"/>
   <int value="5044" label="V8AI_TextModelInfo_Method"/>
+  <int value="5045" label="EventTimingSimulatedClickWithNoKeyboardInteraction"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace viz {
@@ -283,7 +284,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // Store all event timing and latency related data, including
   // PerformanceEventTiming, presentation_index, keycode and pointerId.
   // We use the data to calculate events latencies.
-  HeapDeque<Member<EventData>> events_data_;
+  HeapVector<Member<EventData>> events_data_;
   Member<PerformanceEventTiming> first_pointer_down_event_timing_;
   Member<EventCounts> event_counts_;
   mutable Member<PerformanceNavigation> navigation_;
