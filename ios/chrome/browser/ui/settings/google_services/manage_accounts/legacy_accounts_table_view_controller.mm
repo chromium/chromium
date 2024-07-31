@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/legacy_accounts_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
@@ -102,7 +102,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 }  // namespace
 
-@interface AccountsTableViewController () <
+@interface LegacyAccountsTableViewController () <
     SignoutActionSheetCoordinatorDelegate> {
   raw_ptr<Browser> _browser;
   BOOL _closeSettingsOnAddAccount;
@@ -147,7 +147,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 @end
 
-@implementation AccountsTableViewController {
+@implementation LegacyAccountsTableViewController {
   // Callback to dismiss MyGoogle (Account Detail).
   DismissViewCallback _accountDetailsControllerDismissCallback;
 }
@@ -679,7 +679,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                             view:itemView
                       withSource:signin_metrics::ProfileSignout::
                                      kUserClickedSignoutSettings];
-  __weak AccountsTableViewController* weakSelf = self;
+  __weak LegacyAccountsTableViewController* weakSelf = self;
   self.signoutCoordinator.completion = ^(BOOL success) {
     [weakSelf.signoutCoordinator stop];
     weakSelf.signoutCoordinator = nil;

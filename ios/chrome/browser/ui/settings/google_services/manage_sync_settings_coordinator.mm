@@ -45,7 +45,6 @@
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/features.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_mediator.h"

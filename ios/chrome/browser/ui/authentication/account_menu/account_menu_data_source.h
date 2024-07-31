@@ -10,8 +10,8 @@
 #import <vector>
 
 @class AccountErrorUIInfo;
-@class AccountsTableViewController;
 enum class IdentityAvatarSize;
+@class LegacyAccountsTableViewController;
 @protocol SystemIdentity;
 @class TableViewIdentityItem;
 

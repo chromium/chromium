@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/legacy_accounts_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/callback_helpers.h"
@@ -46,10 +46,10 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
 
 }  // namespace
 
-class AccountsTableViewControllerTest
+class LegacyAccountsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  public:
-  AccountsTableViewControllerTest() {
+  LegacyAccountsTableViewControllerTest() {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -78,8 +78,8 @@ class AccountsTableViewControllerTest
                                           authService:authentication_service()
                                       identityManager:identity_manager()];
 
-    AccountsTableViewController* controller =
-        [[AccountsTableViewController alloc]
+    LegacyAccountsTableViewController* controller =
+        [[LegacyAccountsTableViewController alloc]
                                 initWithBrowser:browser_.get()
                       closeSettingsOnAddAccount:NO
                      applicationCommandsHandler:mock_application_handler
@@ -94,7 +94,7 @@ class AccountsTableViewControllerTest
 
   void TearDown() override {
     mediator_ = nil;
-    [base::apple::ObjCCast<AccountsTableViewController>(controller())
+    [base::apple::ObjCCast<LegacyAccountsTableViewController>(controller())
         settingsWillBeDismissed];
     LegacyChromeTableViewControllerTest::TearDown();
   }
@@ -136,7 +136,7 @@ class AccountsTableViewControllerTest
 };
 
 // Tests that a valid identity is added to the model.
-TEST_F(AccountsTableViewControllerTest, AddChromeIdentity) {
+TEST_F(LegacyAccountsTableViewControllerTest, AddChromeIdentity) {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
 
@@ -154,7 +154,7 @@ TEST_F(AccountsTableViewControllerTest, AddChromeIdentity) {
 }
 
 // Tests that an invalid identity is not added to the model.
-TEST_F(AccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
+TEST_F(LegacyAccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
   FakeSystemIdentity* fake_identity1 = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity1);
   FakeSystemIdentity* fake_identity2 = [FakeSystemIdentity fakeIdentity2];
@@ -189,7 +189,7 @@ TEST_F(AccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
 
 // Tests that no passphrase error is exposed in the account table view (since
 // it's exposed one level up).
-TEST_F(AccountsTableViewControllerTest, DontHoldPassphraseError) {
+TEST_F(LegacyAccountsTableViewControllerTest, DontHoldPassphraseError) {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
 
@@ -214,7 +214,7 @@ TEST_F(AccountsTableViewControllerTest, DontHoldPassphraseError) {
 
 // Tests that when eligible account bookmarks don't have the Account Storage
 // error when there is no error.
-TEST_F(AccountsTableViewControllerTest,
+TEST_F(LegacyAccountsTableViewControllerTest,
        DontHoldPassphraseErrorWhenEligibleNoError) {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
