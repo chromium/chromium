@@ -325,10 +325,10 @@ void LoadUserScripts(
       script_files_length += script_file->GetContent().length();
     }
     if (script->css_scripts().size() > 0) {
-      std::unique_ptr<SubstitutionMap> localization_messages(
+      std::unique_ptr<SubstitutionMap> localization_messages =
           l10n_file_util::LoadMessageBundleSubstitutionMap(
               host_info.file_path, script->host_id().id,
-              host_info.default_locale, host_info.gzip_permission));
+              host_info.default_locale, host_info.gzip_permission);
 
       for (const std::unique_ptr<UserScript::Content>& script_file :
            script->css_scripts()) {
