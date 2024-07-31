@@ -112,27 +112,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int MEDIA_LAUNCHER_ACTIVITY = 3;
     }
 
-    // These values are persisted to logs. Entries should not be renumbered and numeric values
-    // should never be reused.
-    @IntDef({
-        ShareOptionLocation.TOOLBAR,
-        ShareOptionLocation.MENU,
-        ShareOptionLocation.TOOLBAR_FULL_MENU_FALLBACK,
-        ShareOptionLocation.NO_SPACE,
-        ShareOptionLocation.SHARE_DISABLED,
-        ShareOptionLocation.NUM_ENTRIES
-    })
-    private @interface ShareOptionLocation {
-        int TOOLBAR = 0;
-        int MENU = 1;
-        int TOOLBAR_FULL_MENU_FALLBACK = 2;
-        int NO_SPACE = 3;
-        int SHARE_DISABLED = 4;
-
-        // Must be the last one.
-        int NUM_ENTRIES = 5;
-    }
-
     @IntDef({
         BackgroundInteractBehavior.DEFAULT,
         BackgroundInteractBehavior.ON,
@@ -902,22 +881,16 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 mToolbarButtons.add(
                         CustomButtonParamsImpl.createShareButton(
                                 context, getColorProvider().getToolbarColor()));
-                logShareOptionLocation(ShareOptionLocation.TOOLBAR);
             } else if (mMenuEntries.isEmpty()) {
                 mShowShareItemInMenu = true;
-                logShareOptionLocation(ShareOptionLocation.TOOLBAR_FULL_MENU_FALLBACK);
-            } else {
-                logShareOptionLocation(ShareOptionLocation.NO_SPACE);
             }
         } else if (shareState == CustomTabsIntent.SHARE_STATE_ON) {
             if (mToolbarButtons.isEmpty()) {
                 mToolbarButtons.add(
                         CustomButtonParamsImpl.createShareButton(
                                 context, getColorProvider().getToolbarColor()));
-                logShareOptionLocation(ShareOptionLocation.TOOLBAR);
             } else {
                 mShowShareItemInMenu = true;
-                logShareOptionLocation(ShareOptionLocation.MENU);
             }
         } else {
             mShowShareItemInMenu =
@@ -925,19 +898,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                             intent,
                             CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM,
                             mIsOpenedByChrome && mUiType == CustomTabsUiType.DEFAULT);
-            if (mShowShareItemInMenu) {
-                logShareOptionLocation(ShareOptionLocation.MENU);
-            } else {
-                logShareOptionLocation(ShareOptionLocation.SHARE_DISABLED);
-            }
         }
-    }
-
-    private static void logShareOptionLocation(@ShareOptionLocation int shareOptionLocation) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.ShareOptionLocation",
-                shareOptionLocation,
-                ShareOptionLocation.NUM_ENTRIES);
     }
 
     private String resolveUrlToLoad(Intent intent) {

@@ -243,19 +243,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="High-end and Pip"/>
 </enum>
 
-<enum name="ShareOptionLocation">
-  <int value="0" label="TOOLBAR"/>
-  <int value="1" label="MENU">Share option chosen to be shown in the menu.</int>
-  <int value="2" label="TOOLBAR_FULL_MENU_FALLBACK">
-    Share option shown in the menu because the toolbar is full.
-  </int>
-  <int value="3" label="NO_SPACE">
-    No share option shown despite share being enabled. This is due to the
-    existence of custom buttons and menu items, which take precedence.
-  </int>
-  <int value="4" label="SHARE_DISABLED"/>
-</enum>
-
 <enum name="TrustedWebActivityDelegatedNotificationSmallIconFallback">
   <int value="0" label="No fallback"/>
   <int value="1" label="Fallback icon mot provided"/>

@@ -694,16 +694,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.ShareOptionLocation" enum="ShareOptionLocation"
-    expires_after="2024-07-24">
-  <owner>sophey@chromium.org</owner>
-  <owner>src/components/send_tab_to_self/OWNERS</owner>
-  <summary>
-    Records the location of the share option in the Custom Tab. Recorded when
-    the share option is added while the Custom Tab is being constructed.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.Startup.TimeToFirstCommitNavigation2.{suffix}"
     units="ms" expires_after="2024-12-30">
   <owner>mthiesse@chromium.org</owner>
