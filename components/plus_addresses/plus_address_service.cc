@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
@@ -47,9 +48,11 @@ namespace plus_addresses {
 
 namespace {
 
+using autofill::FormFieldData;
 using autofill::Suggestion;
 using autofill::SuggestionType;
-using PasswordFormType = autofill::AutofillClient::PasswordFormType;
+using PasswordFormClassification =
+    autofill::AutofillClient::PasswordFormClassification;
 
 // Get the ETLD+1 of `origin`, which means any subdomain is treated
 // equivalently. See `GetDomainAndRegistry` for concrete examples.
@@ -82,16 +85,30 @@ PlusProfile::facet_t OriginToFacet(const url::Origin& origin) {
   return facet;
 }
 
-bool ShouldOfferPlusAddressCreation(PasswordFormType form_type) {
-  switch (form_type) {
-    case PasswordFormType::kNoPasswordForm:
-    case PasswordFormType::kSignupForm:
+// Returns `true` when we wish to offer plus address creation on a form with
+// password manager classification `form_classification` and a focused field
+// with id `focused_field_id`.
+// If password manager did not recognize a username field or the username field
+// is different from the focused field, this is always `true`. Otherwise,
+// whether we offer plus address creation depends on the form type.
+bool ShouldOfferPlusAddressCreation(
+    const PasswordFormClassification& form_classification,
+    autofill::FieldGlobalId focused_field_id) {
+  if ((!form_classification.username_field ||
+       *form_classification.username_field != focused_field_id) &&
+      base::FeatureList::IsEnabled(
+          features::kPlusAddressOfferCreationOnAllNonUsernameFields)) {
+    return true;
+  }
+  switch (form_classification.type) {
+    case PasswordFormClassification::Type::kNoPasswordForm:
+    case PasswordFormClassification::Type::kSignupForm:
       return true;
-    case PasswordFormType::kLoginForm:
-    case PasswordFormType::kChangePasswordForm:
-    case PasswordFormType::kResetPasswordForm:
+    case PasswordFormClassification::Type::kLoginForm:
+    case PasswordFormClassification::Type::kChangePasswordForm:
+    case PasswordFormClassification::Type::kResetPasswordForm:
       return false;
-    case PasswordFormType::kSingleUsernameForm:
+    case PasswordFormClassification::Type::kSingleUsernameForm:
       return base::FeatureList::IsEnabled(
           features::kPlusAddressOfferCreationOnSingleUsernameForms);
   }
@@ -225,8 +242,8 @@ bool PlusAddressService::IsPlusAddress(
 void PlusAddressService::GetSuggestions(
     const url::Origin& last_committed_primary_main_frame_origin,
     bool is_off_the_record,
-    PasswordFormType focused_form_type,
-    std::u16string_view focused_field_value,
+    const PasswordFormClassification& focused_form_classification,
+    const FormFieldData& focused_field,
     autofill::AutofillSuggestionTriggerSource trigger_source,
     GetSuggestionsCallback callback) {
   if (!IsEnabled() ||
@@ -238,9 +255,9 @@ void PlusAddressService::GetSuggestions(
   plus_address_match_helper_.GetAffiliatedPlusProfiles(
       OriginToFacet(last_committed_primary_main_frame_origin),
       base::BindOnce(&PlusAddressService::OnGetAffiliatedPlusProfiles,
-                     weak_factory_.GetWeakPtr(), focused_form_type,
-                     std::u16string(focused_field_value), trigger_source,
-                     is_off_the_record, std::move(callback)));
+                     weak_factory_.GetWeakPtr(), focused_form_classification,
+                     focused_field, trigger_source, is_off_the_record,
+                     std::move(callback)));
 }
 
 Suggestion PlusAddressService::GetManagePlusAddressSuggestion() const {
@@ -257,15 +274,15 @@ bool PlusAddressService::ShouldMixWithSingleFieldFormFillSuggestions() const {
 }
 
 void PlusAddressService::OnGetAffiliatedPlusProfiles(
-    PasswordFormType focused_form_type,
-    std::u16string_view focused_field_value,
+    const PasswordFormClassification& focused_form_classification,
+    const FormFieldData& focused_field,
     autofill::AutofillSuggestionTriggerSource trigger_source,
     bool is_off_the_record,
     GetSuggestionsCallback callback,
     std::vector<PlusProfile> affiliated_profiles) {
   using enum autofill::AutofillSuggestionTriggerSource;
   const std::u16string normalized_field_value =
-      autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field_value);
+      autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field.value());
 
   if (affiliated_profiles.empty()) {
     // Do not offer creation in incognito mode.
@@ -285,7 +302,8 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
     // login forms).
     if (trigger_source != kManualFallbackPlusAddresses &&
         (!normalized_field_value.empty() ||
-         !ShouldOfferPlusAddressCreation(focused_form_type))) {
+         !ShouldOfferPlusAddressCreation(focused_form_classification,
+                                         focused_field.global_id()))) {
       std::move(callback).Run({});
       return;
     }
@@ -624,7 +642,7 @@ void PlusAddressService::OnPlusAddressSuggestionShown(
     autofill::FormGlobalId form,
     autofill::FieldGlobalId field,
     SuggestionContext suggestion_context,
-    autofill::AutofillClient::PasswordFormType form_type,
+    autofill::AutofillClient::PasswordFormClassification::Type form_type,
     autofill::SuggestionType suggestion_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   submission_logger_.OnPlusAddressSuggestionShown(

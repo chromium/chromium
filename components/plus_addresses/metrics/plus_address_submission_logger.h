@@ -46,7 +46,7 @@ class PlusAddressSubmissionLogger final : autofill::AutofillManager::Observer {
       autofill::FieldGlobalId field,
       autofill::AutofillPlusAddressDelegate::SuggestionContext
           suggestion_context,
-      autofill::AutofillClient::PasswordFormType form_type,
+      autofill::AutofillClient::PasswordFormClassification::Type form_type,
       autofill::SuggestionType suggestion_type,
       size_t plus_address_count);
 

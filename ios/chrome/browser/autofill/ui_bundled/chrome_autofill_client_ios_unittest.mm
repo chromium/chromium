@@ -123,10 +123,13 @@ TEST_F(ChromeAutofillClientIOSTest, ClassifyAsPasswordForm) {
   const FormStructure& form =
       *(main_frame_manager()->form_structures().begin()->second);
   FormData form_data = form.ToFormData();
+  const auto expected = AutofillClient::PasswordFormClassification{
+      .type = AutofillClient::PasswordFormClassification::Type::kLoginForm,
+      .username_field = form_data.fields()[0].global_id()};
   EXPECT_EQ(client().ClassifyAsPasswordForm(*main_frame_manager(),
                                             form_data.global_id(),
                                             form_data.fields()[0].global_id()),
-            AutofillClient::PasswordFormType::kLoginForm);
+            expected);
 }
 
 }  // namespace autofill

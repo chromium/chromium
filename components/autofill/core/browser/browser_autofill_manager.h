@@ -522,7 +522,7 @@ class BrowserAutofillManager : public AutofillManager {
   // `OnGenerateSuggestionsCallback`.
   void OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions(
       AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-      AutofillClient::PasswordFormType password_form_type,
+      AutofillClient::PasswordFormClassification::Type password_form_type,
       const FormData& form,
       const FormFieldData& field,
       OnGenerateSuggestionsCallback callback,
@@ -550,7 +550,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   void OnGetPlusAddressSuggestions(
       AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-      AutofillClient::PasswordFormType password_form_type,
+      AutofillClient::PasswordFormClassification::Type password_form_type,
       const FormData& form,
       const FormFieldData& field,
       std::vector<Suggestion> address_suggestions,

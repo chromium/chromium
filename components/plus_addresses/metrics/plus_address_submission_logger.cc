@@ -93,7 +93,7 @@ void PlusAddressSubmissionLogger::OnPlusAddressSuggestionShown(
     FormGlobalId form,
     FieldGlobalId field,
     autofill::AutofillPlusAddressDelegate::SuggestionContext suggestion_context,
-    autofill::AutofillClient::PasswordFormType form_type,
+    autofill::AutofillClient::PasswordFormClassification::Type form_type,
     SuggestionType suggestion_type,
     size_t plus_address_count) {
   const CoreAccountInfo core_account_info =

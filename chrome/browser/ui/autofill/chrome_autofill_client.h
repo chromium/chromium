@@ -170,7 +170,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void NotifyAutofillManualFallbackUsed() override;
   void set_test_addresses(std::vector<AutofillProfile> test_addresses) override;
   base::span<const AutofillProfile> GetTestAddresses() const override;
-  PasswordFormType ClassifyAsPasswordForm(
+  PasswordFormClassification ClassifyAsPasswordForm(
       AutofillManager& manager,
       FormGlobalId form_id,
       FieldGlobalId field_id) const override;

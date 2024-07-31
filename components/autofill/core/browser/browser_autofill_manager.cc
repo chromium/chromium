@@ -1405,9 +1405,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
   // suggestions are mixed with profile suggestions if these exist.
   if (IsPlusAddressesManuallyTriggered(trigger_source) ||
       should_offer_plus_addresses_with_profiles) {
-    const AutofillClient::PasswordFormType password_form_type =
-        client().ClassifyAsPasswordForm(*this, form.global_id(),
-                                        field.global_id());
+    const AutofillClient::PasswordFormClassification
+        password_form_classification = client().ClassifyAsPasswordForm(
+            *this, form.global_id(), field.global_id());
     const AutofillPlusAddressDelegate::SuggestionContext suggestions_context =
         IsPlusAddressesManuallyTriggered(trigger_source)
             ? AutofillPlusAddressDelegate::SuggestionContext::kManualFallback
@@ -1415,12 +1415,12 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
                   kAutofillProfileOnEmailField;
     client().GetPlusAddressDelegate()->GetSuggestions(
         client().GetLastCommittedPrimaryMainFrameOrigin(),
-        client().IsOffTheRecord(), password_form_type, field.value(),
+        client().IsOffTheRecord(), password_form_classification, field,
         trigger_source,
         base::BindOnce(&BrowserAutofillManager::OnGetPlusAddressSuggestions,
                        weak_ptr_factory_.GetWeakPtr(), suggestions_context,
-                       password_form_type, form, field, std::move(suggestions),
-                       std::move(callback)));
+                       password_form_classification.type, form, field,
+                       std::move(suggestions), std::move(callback)));
 
     return;
   }
@@ -1483,9 +1483,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     return;
   }
 
-  const AutofillClient::PasswordFormType password_form_type =
-      client().ClassifyAsPasswordForm(*this, form.global_id(),
-                                      field.global_id());
+  const AutofillClient::PasswordFormClassification
+      password_form_classification = client().ClassifyAsPasswordForm(
+          *this, form.global_id(), field.global_id());
   // The barrier callback bundles requests to generate suggestions for plus
   // addresses and single field form fill suggestions.
   auto barrier_callback = base::BarrierCallback<std::vector<Suggestion>>(
@@ -1495,12 +1495,12 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
               OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions,
           weak_ptr_factory_.GetWeakPtr(),
           AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
-          password_form_type, form, field, std::move(callback)));
+          password_form_classification.type, form, field, std::move(callback)));
 
   if (should_offer_plus_addresses_with_sfff) {
     client().GetPlusAddressDelegate()->GetSuggestions(
         client().GetLastCommittedPrimaryMainFrameOrigin(),
-        client().IsOffTheRecord(), password_form_type, field.value(),
+        client().IsOffTheRecord(), password_form_classification, field,
         trigger_source, barrier_callback);
   }
 
@@ -1526,7 +1526,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
 void BrowserAutofillManager::
     OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions(
         AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-        AutofillClient::PasswordFormType password_form_type,
+        AutofillClient::PasswordFormClassification::Type password_form_type,
         const FormData& form,
         const FormFieldData& field,
         OnGenerateSuggestionsCallback callback,
@@ -1649,7 +1649,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
 
 void BrowserAutofillManager::OnGetPlusAddressSuggestions(
     AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-    AutofillClient::PasswordFormType password_form_type,
+    AutofillClient::PasswordFormClassification::Type password_form_type,
     const FormData& form,
     const FormFieldData& field,
     std::vector<Suggestion> address_suggestions,

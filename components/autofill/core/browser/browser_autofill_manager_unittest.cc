@@ -8030,7 +8030,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        CreatePlusAddressSuggestionShownWithAddressSuggestions) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
 
   // Plus address suggestions request.
   EXPECT_CALL(plus_address_delegate(), GetSuggestions)
@@ -8074,7 +8074,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        CreatePlusAddressSuggestionShown) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
   personal_data().test_address_data_manager().ClearProfiles();
 
   // Plus address suggestions request.
@@ -8114,7 +8114,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        NoPlusAddressOnlyIBANsSuggestions) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
   personal_data().test_address_data_manager().ClearProfiles();
 
   // No plus address suggestions request.
@@ -8157,7 +8157,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        NoPlusAddressOnlyPromoCodesSuggestions) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
   personal_data().test_address_data_manager().ClearProfiles();
 
   // No plus address suggestions request.
@@ -8203,7 +8203,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        CreatePlusAddressSuggestionShownWithSingleFieldFormFillSuggestions) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
   personal_data().test_address_data_manager().ClearProfiles();
 
   // Plus address suggestions request.
@@ -8253,7 +8253,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        NoStandaloneManagePlusAddressSuggestion) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
   personal_data().test_address_data_manager().ClearProfiles();
   EXPECT_CALL(plus_address_delegate(), GetSuggestions)
       .WillOnce(RunOnceCallback<5>(std::vector<Suggestion>{}));
@@ -8282,7 +8282,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 // a manual fallback for plus addresses.
 TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
-  using enum AutofillClient::PasswordFormType;
+  using enum AutofillClient::PasswordFormClassification::Type;
   EXPECT_CALL(
       plus_address_delegate(),
       GetSuggestions(

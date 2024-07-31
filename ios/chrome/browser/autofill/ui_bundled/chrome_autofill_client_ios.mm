@@ -412,13 +412,13 @@ std::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {
   return std::nullopt;
 }
 
-AutofillClient::PasswordFormType
+AutofillClient::PasswordFormClassification
 ChromeAutofillClientIOS::ClassifyAsPasswordForm(AutofillManager& manager,
                                                 FormGlobalId form_id,
                                                 FieldGlobalId field_id) const {
   FormStructure* form_structure = manager.FindCachedFormById(form_id);
   if (!form_structure) {
-    return PasswordFormType::kNoPasswordForm;
+    return {};
   }
   // There is no form flattening on iOS (yet) - we can assume that the form here
   // consists of a single renderer form.
@@ -436,8 +436,15 @@ ChromeAutofillClientIOS::ClassifyAsPasswordForm(AutofillManager& manager,
   std::unique_ptr<password_manager::PasswordForm> pw_form =
       parser.Parse(form, password_manager::FormDataParser::Mode::kFilling,
                    /*stored_usernames=*/{});
-  return pw_form ? pw_form->GetPasswordFormType()
-                 : PasswordFormType::kNoPasswordForm;
+  if (!pw_form) {
+    return {};
+  }
+  PasswordFormClassification result{.type = pw_form->GetPasswordFormType()};
+  if (!pw_form->username_element_renderer_id.is_null()) {
+    result.username_field = FieldGlobalId(
+        field_id.frame_token, pw_form->username_element_renderer_id);
+  }
+  return result;
 }
 
 AutofillSaveCardInfoBarDelegateIOS*

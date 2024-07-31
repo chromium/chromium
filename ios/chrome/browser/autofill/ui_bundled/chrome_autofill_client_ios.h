@@ -131,7 +131,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
                                 PlusAddressCallback callback) override;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
-  PasswordFormType ClassifyAsPasswordForm(
+  PasswordFormClassification ClassifyAsPasswordForm(
       AutofillManager& manager,
       FormGlobalId form_id,
       FieldGlobalId field_id) const override;

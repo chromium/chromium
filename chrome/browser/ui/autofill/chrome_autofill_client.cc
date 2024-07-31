@@ -853,15 +853,15 @@ base::span<const AutofillProfile> ChromeAutofillClient::GetTestAddresses()
   return test_addresses_;
 }
 
-AutofillClient::PasswordFormType ChromeAutofillClient::ClassifyAsPasswordForm(
-    AutofillManager& manager,
-    FormGlobalId form_id,
-    FieldGlobalId field_id) const {
+AutofillClient::PasswordFormClassification
+ChromeAutofillClient::ClassifyAsPasswordForm(AutofillManager& manager,
+                                             FormGlobalId form_id,
+                                             FieldGlobalId field_id) const {
   // Find the form with `form_id` and decompose into renderer forms.
   std::optional<RendererFormsWithServerPredictions> forms_and_predictions =
       RendererFormsWithServerPredictions::FromBrowserForm(manager, form_id);
   if (!forms_and_predictions) {
-    return PasswordFormType::kNoPasswordForm;
+    return {};
   }
 
   // Find the form to which `field_id` belongs.
@@ -875,7 +875,7 @@ AutofillClient::PasswordFormType ChromeAutofillClient::ClassifyAsPasswordForm(
                form.fields().end();
       });
   if (it == forms_and_predictions->renderer_forms.end()) {
-    return PasswordFormType::kNoPasswordForm;
+    return {};
   }
 
   password_manager::FormDataParser parser;
@@ -888,8 +888,15 @@ AutofillClient::PasswordFormType ChromeAutofillClient::ClassifyAsPasswordForm(
   std::unique_ptr<password_manager::PasswordForm> pw_form =
       parser.Parse(it->first, password_manager::FormDataParser::Mode::kFilling,
                    /*stored_usernames=*/{});
-  return pw_form ? pw_form->GetPasswordFormType()
-                 : PasswordFormType::kNoPasswordForm;
+  if (!pw_form) {
+    return {};
+  }
+  PasswordFormClassification result{.type = pw_form->GetPasswordFormType()};
+  if (!pw_form->username_element_renderer_id.is_null()) {
+    result.username_field = FieldGlobalId(
+        field_id.frame_token, pw_form->username_element_renderer_id);
+  }
+  return result;
 }
 
 }  // namespace autofill
