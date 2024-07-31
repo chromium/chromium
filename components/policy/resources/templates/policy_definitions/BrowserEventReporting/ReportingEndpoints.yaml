@@ -21,5 +21,6 @@ schema:
 future_on:
 - android
 - chrome.*
+- chrome_os
 tags: []
 type: dict

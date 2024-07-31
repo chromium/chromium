@@ -758,7 +758,6 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
   EXPECT_EQ(false, EvalJs(GetActiveWebContents(), command));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 class ReportingEndpointsPolicyTest : public policy::PolicyTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
@@ -804,4 +803,3 @@ IN_PROC_BROWSER_TEST_F(ReportingEndpointsPolicyTest,
   EXPECT_EQ(expected_enterprise_endpoints,
             network_context_params.enterprise_reporting_endpoints);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)

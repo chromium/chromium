@@ -301,7 +301,7 @@
 #include "chrome/browser/rlz/chrome_rlz_tracker_web_contents_observer.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_REPORTING)
+#if BUILDFLAG(ENABLE_REPORTING)
 #include "components/tpcd/enterprise_reporting/enterprise_reporting_tab_helper.h"
 #endif
 
@@ -402,7 +402,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
   DIPSWebContentsObserver::MaybeCreateForWebContents(web_contents);
-#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_REPORTING)
+#if BUILDFLAG(ENABLE_REPORTING)
   if (base::FeatureList::IsEnabled(
           net::features::kReportingApiEnableEnterpriseCookieIssues)) {
     tpcd::enterprise_reporting::EnterpriseReportingTabHelper::

@@ -8403,7 +8403,7 @@ static_library("browser") {
     deps += [ "//chrome/browser/chrome_for_testing" ]
   }
 
-  if (!is_chromeos && enable_reporting) {
+  if (enable_reporting) {
     deps += [ "//components/tpcd/enterprise_reporting" ]
   }
 }

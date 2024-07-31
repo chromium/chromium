@@ -6218,7 +6218,7 @@ static_library("ui") {
     ]
   }
 
-  if (!is_chromeos && enable_reporting) {
+  if (enable_reporting) {
     deps += [ "//components/tpcd/enterprise_reporting" ]
   }
 }

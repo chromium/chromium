@@ -851,7 +851,7 @@ test("components_unittests") {
     deps += [ "//components/remote_cocoa/common:unit_tests" ]
   }
 
-  if (!is_chromeos && enable_reporting) {
+  if (enable_reporting) {
     deps += [ "//components/tpcd/enterprise_reporting:unit_tests" ]
   }
 

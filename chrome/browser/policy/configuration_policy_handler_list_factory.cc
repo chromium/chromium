@@ -391,6 +391,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kQRCodeGeneratorEnabled,
     prefs::kQRCodeGeneratorEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kReportingEndpoints,
+    prefs::kReportingEndpoints,
+    base::Value::Type::DICT },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,
@@ -994,9 +997,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kMetricsReportingEnabled,
     metrics::prefs::kMetricsReportingEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kReportingEndpoints,
-    prefs::kReportingEndpoints,
-    base::Value::Type::DICT },
   { key::kVariationsRestrictParameter,
     variations::prefs::kVariationsRestrictParameter,
     base::Value::Type::STRING },
