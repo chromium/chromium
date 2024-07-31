@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 
 class DipsNavigationFlowDetectorWrapper;
+class FedCmAccountSelectionViewController;
 class LensOverlayController;
 class Profile;
 
@@ -53,6 +54,11 @@ class TabFeatures {
     return data_protection_controller_.get();
   }
 
+  FedCmAccountSelectionViewController*
+  fedcm_account_selection_view_controller() {
+    return fedcm_account_selection_view_controller_.get();
+  }
+
   permissions::PermissionIndicatorsTabData* permission_indicators_tab_data() {
     return permission_indicators_tab_data_.get();
   }
@@ -85,6 +91,9 @@ class TabFeatures {
       enterprise_data_protection::DataProtectionNavigationController>
       data_protection_controller_;
   std::unique_ptr<LensOverlayController> lens_overlay_controller_;
+  std::unique_ptr<FedCmAccountSelectionViewController>
+      fedcm_account_selection_view_controller_;
+
   std::unique_ptr<permissions::PermissionIndicatorsTabData>
       permission_indicators_tab_data_;
 

@@ -128,6 +128,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Setter method for testing only.
   void SetIsLensOverlayShowingForTesting(bool value);
 
+  base::WeakPtr<FedCmAccountSelectionView> GetWeakPtr();
+
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
 

@@ -27,11 +27,6 @@
 
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
 
-// static
-std::unique_ptr<AccountSelectionView> AccountSelectionView::Create(
-    AccountSelectionView::Delegate* delegate) {
-  return std::make_unique<FedCmAccountSelectionView>(delegate);
-}
 
 // static
 int AccountSelectionView::GetBrandIconMinimumSize(
@@ -1146,6 +1141,11 @@ void FedCmAccountSelectionView::OnLensOverlayControllerDestroyed() {
 
 void FedCmAccountSelectionView::SetIsLensOverlayShowingForTesting(bool value) {
   is_lens_overlay_showing_ = value;
+}
+
+base::WeakPtr<FedCmAccountSelectionView>
+FedCmAccountSelectionView::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void FedCmAccountSelectionView::ShowMultiAccountPicker(

@@ -23,68 +23,6 @@
 constexpr char kTopFrameEtldPlusOne[] = "top-frame-example.com";
 constexpr char kIdpEtldPlusOne[] = "idp-example.com";
 
-class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
- public:
-  IdentityDialogControllerTest()
-      : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~IdentityDialogControllerTest() override = default;
-  IdentityDialogControllerTest(IdentityDialogControllerTest&) = delete;
-  IdentityDialogControllerTest& operator=(IdentityDialogControllerTest&) =
-      delete;
-
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    SetContents(CreateTestWebContents());
-    NavigateAndCommit(GURL(permissions::MockPermissionRequest::kDefaultOrigin));
-    permissions::PermissionRequestManager::CreateForWebContents(web_contents());
-  }
-
-  void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
-
-  void WaitForBubbleToBeShown(permissions::PermissionRequestManager* manager) {
-    manager->DocumentOnLoadCompletedInPrimaryMainFrame();
-    task_environment()->RunUntilIdle();
-  }
-
-  void Accept(permissions::PermissionRequestManager* manager) {
-    manager->Accept();
-    task_environment()->RunUntilIdle();
-  }
-
-  void Deny(permissions::PermissionRequestManager* manager) {
-    manager->Deny();
-    task_environment()->RunUntilIdle();
-  }
-
-  void Dismiss(permissions::PermissionRequestManager* manager) {
-    manager->Dismiss();
-    task_environment()->RunUntilIdle();
-  }
-
-  std::vector<content::IdentityRequestAccount> CreateAccount() {
-    return {
-        {"account_id1", "", "", "", GURL(),
-         /*login_hints=*/std::vector<std::string>(),
-         /*domain_hints=*/std::vector<std::string>(),
-         /*labels=*/std::vector<std::string>(),
-         /*login_state=*/content::IdentityRequestAccount::LoginState::kSignUp,
-         /*browser_trusted_login_state=*/
-         content::IdentityRequestAccount::LoginState::kSignUp}};
-  }
-
-  content::IdentityProviderData CreateIdentityProviderData(
-      std::vector<content::IdentityRequestAccount> accounts) {
-    return {kIdpEtldPlusOne,
-            accounts,
-            content::IdentityProviderMetadata(),
-            content::ClientMetadata(GURL(), GURL(), GURL()),
-            blink::mojom::RpContext::kSignIn,
-            /*request_permission=*/true,
-            /*has_login_status_mismatch=*/false};
-  }
-};
-
 // Mock version of AccountSelectionView for injection during tests.
 class MockAccountSelectionView : public AccountSelectionView {
  public:
@@ -145,6 +83,68 @@ class MockAccountSelectionView : public AccountSelectionView {
   MOCK_METHOD(void, CloseModalDialog, (), (override));
 
   MOCK_METHOD(content::WebContents*, GetRpWebContents, (), (override));
+};
+
+class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
+ public:
+  IdentityDialogControllerTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~IdentityDialogControllerTest() override = default;
+  IdentityDialogControllerTest(IdentityDialogControllerTest&) = delete;
+  IdentityDialogControllerTest& operator=(IdentityDialogControllerTest&) =
+      delete;
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    SetContents(CreateTestWebContents());
+    NavigateAndCommit(GURL(permissions::MockPermissionRequest::kDefaultOrigin));
+    permissions::PermissionRequestManager::CreateForWebContents(web_contents());
+  }
+
+  void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
+
+  void WaitForBubbleToBeShown(permissions::PermissionRequestManager* manager) {
+    manager->DocumentOnLoadCompletedInPrimaryMainFrame();
+    task_environment()->RunUntilIdle();
+  }
+
+  void Accept(permissions::PermissionRequestManager* manager) {
+    manager->Accept();
+    task_environment()->RunUntilIdle();
+  }
+
+  void Deny(permissions::PermissionRequestManager* manager) {
+    manager->Deny();
+    task_environment()->RunUntilIdle();
+  }
+
+  void Dismiss(permissions::PermissionRequestManager* manager) {
+    manager->Dismiss();
+    task_environment()->RunUntilIdle();
+  }
+
+  std::vector<content::IdentityRequestAccount> CreateAccount() {
+    return {
+        {"account_id1", "", "", "", GURL(),
+         /*login_hints=*/std::vector<std::string>(),
+         /*domain_hints=*/std::vector<std::string>(),
+         /*labels=*/std::vector<std::string>(),
+         /*login_state=*/content::IdentityRequestAccount::LoginState::kSignUp,
+         /*browser_trusted_login_state=*/
+         content::IdentityRequestAccount::LoginState::kSignUp}};
+  }
+
+  content::IdentityProviderData CreateIdentityProviderData(
+      std::vector<content::IdentityRequestAccount> accounts) {
+    return {kIdpEtldPlusOne,
+            accounts,
+            content::IdentityProviderMetadata(),
+            content::ClientMetadata(GURL(), GURL(), GURL()),
+            blink::mojom::RpContext::kSignIn,
+            /*request_permission=*/true,
+            /*has_login_status_mismatch=*/false};
+  }
 };
 
 TEST_F(IdentityDialogControllerTest, Accept) {
