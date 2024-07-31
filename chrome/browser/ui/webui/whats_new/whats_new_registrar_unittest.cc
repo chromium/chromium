@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+using BrowserCommand = browser_command::mojom::Command;
 
 // Modules
 BASE_FEATURE(kTestModule, "TestModule", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -25,13 +26,15 @@ BASE_FEATURE(kTestEdition, "TestEdition", base::FEATURE_DISABLED_BY_DEFAULT);
 void RegisterWhatsNewModulesForTests(whats_new::WhatsNewRegistry* registry) {
   // Test Module
   registry->RegisterModule(
-      whats_new::WhatsNewModule(&kTestModule, "mickeyburks@chromium.org"));
+      whats_new::WhatsNewModule(kTestModule, "mickeyburks@chromium.org"));
+  registry->RegisterModule(whats_new::WhatsNewModule(
+      "mickeyburks@chromium.org", BrowserCommand::kNoOpCommand));
 }
 
 void RegisterWhatsNewEditionsForTests(whats_new::WhatsNewRegistry* registry) {
   // Test Edition
   registry->RegisterEdition(
-      whats_new::WhatsNewEdition(&kTestEdition, "mickeyburks@chromium.org"));
+      whats_new::WhatsNewEdition(kTestEdition, "mickeyburks@chromium.org"));
 }
 
 class MockWhatsNewStorageService : public whats_new::WhatsNewStorageService {
@@ -77,8 +80,10 @@ TEST(WhatsNewRegistrarTest, CheckModuleHistograms) {
   RegisterWhatsNewModulesForTests(&registry);
   const auto& modules = registry.modules();
   for (const auto& module : modules) {
-    if (!base::Contains(*variants, module.GetFeatureName())) {
-      missing_modules.emplace_back(module.GetFeatureName());
+    if (module.HasFeature()) {
+      if (!base::Contains(*variants, module.GetFeatureName())) {
+        missing_modules.emplace_back(module.GetFeatureName());
+      }
     }
   }
   ASSERT_TRUE(missing_modules.empty())
@@ -106,8 +111,10 @@ TEST(WhatsNewRegistrarTest, CheckModuleActions) {
   RegisterWhatsNewModulesForTests(&registry);
   const auto& modules = registry.modules();
   for (const auto& module : modules) {
-    if (!base::Contains(suffixes[0], module.GetFeatureName())) {
-      missing_modules.emplace_back(module.GetFeatureName());
+    if (module.HasFeature()) {
+      if (!base::Contains(suffixes[0], module.GetFeatureName())) {
+        missing_modules.emplace_back(module.GetFeatureName());
+      }
     }
   }
   ASSERT_TRUE(missing_modules.empty())

@@ -12,21 +12,60 @@ namespace whats_new {
 
 using BrowserCommand = browser_command::mojom::Command;
 
+// What's New modules represent sections of content on the What's New
+// page. These are meant to contain the Feature they describe, the ownership
+// of the module, and the browser command that it triggers, if any.
+//
+// To connect the rollout of your Feature to your WhatsNewModule,
+// supple a base::Feature when creating a module. This will tell the
+// embedded page when the user has enabled this Feature that the content
+// may be shown.
+//
+// Content on the What's New page that is released to 100% Stable before
+// a milestone launches does not need to register a WhatsNewModule. The
+// content will always be shown. Regardless, do remember to create metrics
+// variants for these modules using the module name you agreed upon
+// with frizzle-team@google.com. However, if this module triggers
+// a browser command, it still needs to be created and registered, just
+// without a base::Feature.
+//
+// Metrics:
+// When registering a module, make sure to add UserAction and Histogram
+// variants. Creating these are enforced by the registrar unit tests.
+//
+// * For a WhatsNewModule with a Feature, the metric name should be the
+//      same as the name of the base::Feature.
+// * For a WhatsNewModule without a Feature, the metric name should follow
+//      the same pattern, but can be any string that uniquely identifies
+//      this content.
 class WhatsNewModule {
  public:
-  WhatsNewModule(const base::Feature* feature,
+  ~WhatsNewModule() = default;
+
+  // Creates a WhatsNewModule tied to the rollout of a base::Feature.
+  //
+  // This module must include a base::Feature and an owner string, but
+  // can optionally pass a browser command.
+  WhatsNewModule(const base::Feature& feature,
                  std::string owner,
                  std::optional<BrowserCommand> browser_command = std::nullopt)
-      : feature_(feature), owner_(owner), browser_command_(browser_command) {
-    CHECK(feature);
-  }
-  WhatsNewModule(WhatsNewModule&& other) noexcept = default;
-  WhatsNewModule& operator=(WhatsNewModule&& other) noexcept = default;
-  ~WhatsNewModule() = default;
+      : feature_(&feature), owner_(owner), browser_command_(browser_command) {}
+
+  // Creates a default-enabled WhatsNewModule in order to enable
+  // a browser command on the embedded page.
+  //
+  // Default-enabled modules do not reference a base::Feature, but must
+  // include an owner string and a browser command.
+  WhatsNewModule(std::string owner,
+                 std::optional<BrowserCommand> browser_command)
+      : feature_(nullptr), owner_(owner), browser_command_(browser_command) {}
 
   std::optional<BrowserCommand> browser_command() const {
     return browser_command_;
   }
+
+  // Return true if the module has a feature, i.e. is not default-enabled.
+  bool HasFeature() const;
 
   // Return true if the feature is enabled, but not by default.
   // This indicates a feature is in the process of rolling out.
@@ -42,21 +81,41 @@ class WhatsNewModule {
   // Get the name of the feature for this module.
   const char* GetFeatureName() const;
 
-  // Returns true if the module can appear on the What's New Page.
-  bool IsAvailable() const;
-
  private:
   raw_ptr<const base::Feature> feature_ = nullptr;
   std::string owner_;
   std::optional<BrowserCommand> browser_command_;
 };
 
-class WhatsNewEdition : public WhatsNewModule {
+// What's New editions represent an entire What's New page with content
+// relevant to a single feature or set of features. Editions are always
+// tied to a base::Feature.
+//
+// As with modules, remember to add user action and histogram variants
+// with the same name as the base::Feature for your edition.
+class WhatsNewEdition {
  public:
-  WhatsNewEdition(const base::Feature* feature, std::string owner)
-      : WhatsNewModule(feature, owner, std::nullopt) {}
+  WhatsNewEdition(const base::Feature& feature, std::string owner)
+      : feature_(feature), owner_(owner) {}
+  ~WhatsNewEdition() = default;
+
+  // Return true if the feature is enabled, but not by default.
+  // This indicates a feature is in the process of rolling out.
+  bool HasActiveFeature() const;
+
+  // Return true if the feature is enabled.
+  bool IsFeatureEnabled() const;
+
+  // Get the name of the feature for this module.
+  const char* GetFeatureName() const;
+
+ private:
+  raw_ref<const base::Feature> feature_;
+  std::string owner_;
 };
 
+// Stores module and edition data used to display the What's New page,
+// customized to the feature's a user has enabled.
 class WhatsNewRegistry {
  public:
   explicit WhatsNewRegistry(

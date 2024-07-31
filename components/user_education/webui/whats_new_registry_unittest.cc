@@ -124,13 +124,15 @@ class WhatsNewRegistryTest : public testing::Test {
 
     // Modules
     whats_new_registry_->RegisterModule(
-        WhatsNewModule(&kTestModuleEnabled, "", BrowserCommand::kNoOpCommand));
+        WhatsNewModule(kTestModuleEnabled, "", BrowserCommand::kNoOpCommand));
     whats_new_registry_->RegisterModule(
-        WhatsNewModule(&kTestModuleDisabled, "", BrowserCommand::kMinValue));
+        WhatsNewModule(kTestModuleDisabled, "", BrowserCommand::kMinValue));
     whats_new_registry_->RegisterModule(
-        WhatsNewModule(&kTestModuleEnabledByDefault, ""));
+        WhatsNewModule(kTestModuleEnabledByDefault, ""));
     whats_new_registry_->RegisterModule(
-        WhatsNewModule(&kTestModuleDisabledByDefault, ""));
+        WhatsNewModule(kTestModuleDisabledByDefault, ""));
+    whats_new_registry_->RegisterModule(
+        WhatsNewModule("", BrowserCommand::kUnknownCommand));
   }
 
   void RegisterModulesAndEditions(
@@ -139,11 +141,11 @@ class WhatsNewRegistryTest : public testing::Test {
 
     // Editions
     whats_new_registry_->RegisterEdition(
-        WhatsNewEdition(&kTestEditionEnabled1, ""));
+        WhatsNewEdition(kTestEditionEnabled1, ""));
     whats_new_registry_->RegisterEdition(
-        WhatsNewEdition(&kTestEditionEnabled2, ""));
+        WhatsNewEdition(kTestEditionEnabled2, ""));
     whats_new_registry_->RegisterEdition(
-        WhatsNewEdition(&kTestEditionDisabled, ""));
+        WhatsNewEdition(kTestEditionDisabled, ""));
   }
 
   void TearDown() override {
@@ -165,8 +167,9 @@ TEST_F(WhatsNewRegistryTest, CommandsAreActiveForEnabledFeatures) {
   RegisterModules(std::move(mock_storage_service));
 
   auto active_commands = whats_new_registry_->GetActiveCommands();
-  EXPECT_EQ(static_cast<size_t>(1), active_commands.size());
+  EXPECT_EQ(static_cast<size_t>(2), active_commands.size());
   EXPECT_EQ(BrowserCommand::kNoOpCommand, active_commands.at(0));
+  EXPECT_EQ(BrowserCommand::kUnknownCommand, active_commands.at(1));
 }
 
 TEST_F(WhatsNewRegistryTest, FindModulesForActiveFeatures) {

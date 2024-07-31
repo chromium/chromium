@@ -15,29 +15,50 @@ constexpr int kRequestEntropyLimit = 15;
 
 using BrowserCommand = browser_command::mojom::Command;
 
+bool WhatsNewModule::HasFeature() const {
+  return feature_ != nullptr;
+}
+
 bool WhatsNewModule::HasActiveFeature() const {
+  if (!HasFeature()) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(*feature_) &&
          feature_->default_state == base::FEATURE_DISABLED_BY_DEFAULT;
 }
 
 bool WhatsNewModule::HasRolledFeature() const {
+  if (!HasFeature()) {
+    return false;
+  }
   return feature_->default_state == base::FEATURE_ENABLED_BY_DEFAULT;
 }
 
 bool WhatsNewModule::IsFeatureEnabled() const {
+  CHECK(HasFeature());
   return base::FeatureList::IsEnabled(*feature_);
 }
 
 const char* WhatsNewModule::GetFeatureName() const {
+  CHECK(feature_);
   return feature_->name;
 }
 
-bool WhatsNewModule::IsAvailable() const {
-  return HasActiveFeature() || HasRolledFeature();
+bool WhatsNewEdition::HasActiveFeature() const {
+  return base::FeatureList::IsEnabled(*feature_) &&
+         feature_->default_state == base::FEATURE_DISABLED_BY_DEFAULT;
+}
+
+bool WhatsNewEdition::IsFeatureEnabled() const {
+  return base::FeatureList::IsEnabled(*feature_);
+}
+
+const char* WhatsNewEdition::GetFeatureName() const {
+  return feature_->name;
 }
 
 void WhatsNewRegistry::RegisterModule(WhatsNewModule module) {
-  if (module.IsFeatureEnabled()) {
+  if (module.HasFeature() && module.IsFeatureEnabled()) {
     storage_service_->SetModuleEnabled(module.GetFeatureName());
   }
   modules_.emplace_back(std::move(module));
@@ -49,12 +70,18 @@ void WhatsNewRegistry::RegisterEdition(WhatsNewEdition edition) {
 
 const std::vector<BrowserCommand> WhatsNewRegistry::GetActiveCommands() const {
   std::vector<BrowserCommand> commands;
-  base::ranges::for_each(modules_, [&commands](const WhatsNewModule& module) {
-    auto browser_command = module.browser_command();
-    if (module.IsAvailable() && browser_command.has_value()) {
-      commands.emplace_back(browser_command.value());
+  for (const WhatsNewModule& module : modules_) {
+    if (module.browser_command().has_value()) {
+      // Modules without a feature are default-enabled.
+      const bool module_is_default_enabled = !module.HasFeature();
+      // If the module is tied to a feature, ensure the feature is available.
+      const bool module_is_available =
+          module.HasActiveFeature() || module.HasRolledFeature();
+      if (module_is_default_enabled || module_is_available) {
+        commands.emplace_back(module.browser_command().value());
+      }
     }
-  });
+  }
   return commands;
 }
 
@@ -88,11 +115,13 @@ const std::vector<std::string_view> WhatsNewRegistry::GetActiveFeatureNames()
       break;
     }
     const std::string& module_name = module_value.GetString();
-    auto module = std::find_if(modules_.begin(), modules_.end(),
-                               [&module_name](WhatsNewModule const& module) {
-                                 return module.GetFeatureName() == module_name;
-                               });
-    if (module->HasActiveFeature()) {
+    auto module = std::find_if(
+        modules_.begin(), modules_.end(),
+        [&module_name](WhatsNewModule const& module) {
+          return module.HasFeature() ? module.GetFeatureName() == module_name
+                                     : false;
+        });
+    if (module != modules_.end() && module->HasActiveFeature()) {
       feature_names.emplace_back(module->GetFeatureName());
     }
   }
@@ -112,11 +141,13 @@ const std::vector<std::string_view> WhatsNewRegistry::GetRolledFeatureNames()
       break;
     }
     auto module_name = module_value.GetString();
-    auto module = std::find_if(modules_.begin(), modules_.end(),
-                               [&module_name](WhatsNewModule const& module) {
-                                 return module.GetFeatureName() == module_name;
-                               });
-    if (module->HasRolledFeature()) {
+    auto module = std::find_if(
+        modules_.begin(), modules_.end(),
+        [&module_name](WhatsNewModule const& module) {
+          return module.HasFeature() ? module.GetFeatureName() == module_name
+                                     : false;
+        });
+    if (module != modules_.end() && module->HasRolledFeature()) {
       feature_names.emplace_back(module->GetFeatureName());
     }
   }
@@ -140,7 +171,9 @@ void WhatsNewRegistry::ClearUnregisteredModules() {
     auto found_module = std::find_if(
         modules_.begin(), modules_.end(),
         [&module_value](WhatsNewModule const& module) {
-          return module.GetFeatureName() == module_value.GetString();
+          return module.HasFeature()
+                     ? module.GetFeatureName() == module_value.GetString()
+                     : false;
         });
     // If the stored module cannot be found in the current registered
     // modules, clear its data.
