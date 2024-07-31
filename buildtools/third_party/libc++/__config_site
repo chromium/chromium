@@ -63,9 +63,8 @@
 // does not match ours.  Only has an effect on Windows.
 #define _LIBCPP_NO_AUTO_LINK
 
-// TODO(crbug.com/354741399): Re-enable on Fuchsia once SDK is fixed.
 // TODO(crbug.com/354741410): Re-enable on swangle bots once VK-GL-CTS is fixed.
-#if !defined(__Fuchsia__) && !defined(ANGLE_DEQP_DATA_DIR)
+#if !defined(ANGLE_DEQP_DATA_DIR)
 #define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
 #endif
 
