@@ -132,29 +132,21 @@ wgpu::StencilFaceState AsDawnType(const GPUStencilFaceState* webgpu_desc) {
   return dawn_desc;
 }
 
-void GPUPrimitiveStateAsWGPUPrimitiveState(
-    const GPUPrimitiveState* webgpu_desc, OwnedPrimitiveState* dawn_state) {
+wgpu::PrimitiveState AsDawnType(const GPUPrimitiveState* webgpu_desc) {
   DCHECK(webgpu_desc);
-  DCHECK(dawn_state);
 
-  dawn_state->dawn_desc.nextInChain = nullptr;
-  dawn_state->dawn_desc.topology = AsDawnEnum(webgpu_desc->topology());
+  wgpu::PrimitiveState dawn_desc = {};
+  dawn_desc.topology = AsDawnEnum(webgpu_desc->topology());
+
   if (webgpu_desc->hasStripIndexFormat()) {
-    dawn_state->dawn_desc.stripIndexFormat =
-        AsDawnEnum(webgpu_desc->stripIndexFormat());
+    dawn_desc.stripIndexFormat = AsDawnEnum(webgpu_desc->stripIndexFormat());
   }
-  dawn_state->dawn_desc.frontFace = AsDawnEnum(webgpu_desc->frontFace());
-  dawn_state->dawn_desc.cullMode = AsDawnEnum(webgpu_desc->cullMode());
 
-#ifdef WGPU_BREAKING_CHANGE_DEPTH_CLIP_CONTROL
-  dawn_state->dawn_desc.unclippedDepth = webgpu_desc->unclippedDepth();
-#else
-  if (webgpu_desc->unclippedDepth()) {
-    auto* depth_clip_control = &dawn_state->depth_clip_control;
-    depth_clip_control->unclippedDepth = webgpu_desc->unclippedDepth();
-    dawn_state->dawn_desc.nextInChain = depth_clip_control;
-  }
-#endif
+  dawn_desc.frontFace = AsDawnEnum(webgpu_desc->frontFace());
+  dawn_desc.cullMode = AsDawnEnum(webgpu_desc->cullMode());
+  dawn_desc.unclippedDepth = webgpu_desc->unclippedDepth();
+
+  return dawn_desc;
 }
 
 void GPUDepthStencilStateAsWGPUDepthStencilState(
@@ -401,9 +393,7 @@ void ConvertToDawnType(v8::Isolate* isolate,
   GPUVertexStateAsWGPUVertexState(device, vertex, dawn_vertex);
 
   // Primitive
-  GPUPrimitiveStateAsWGPUPrimitiveState(
-      webgpu_desc->primitive(), &dawn_desc_info->primitive);
-  dawn_desc_info->dawn_desc.primitive = dawn_desc_info->primitive.dawn_desc;
+  dawn_desc_info->dawn_desc.primitive = AsDawnType(webgpu_desc->primitive());
 
   // DepthStencil
   if (webgpu_desc->hasDepthStencil()) {
