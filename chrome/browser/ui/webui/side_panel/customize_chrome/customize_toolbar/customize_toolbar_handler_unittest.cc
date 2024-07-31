@@ -9,12 +9,14 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/lens/lens_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -79,14 +81,18 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
   CustomizeToolbarHandlerTest() = default;
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {TestingProfile::TestingFactory{
-        PinnedToolbarActionsModelFactory::GetInstance(),
-        base::BindRepeating([](content::BrowserContext* context)
-                                -> std::unique_ptr<KeyedService> {
-          return std::make_unique<
-              testing::NiceMock<MockPinnedToolbarActionsModel>>(
-              Profile::FromBrowserContext(context));
-        })}};
+    return {
+        TestingProfile::TestingFactory{
+            PinnedToolbarActionsModelFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  testing::NiceMock<MockPinnedToolbarActionsModel>>(
+                  Profile::FromBrowserContext(context));
+            })},
+        TestingProfile::TestingFactory{
+            TemplateURLServiceFactory::GetInstance(),
+            base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)}};
   }
 
   void SetUp() override {
@@ -109,6 +115,10 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
     EXPECT_EQ(handler_.get(), pinned_toolbar_actions_model_observer_);
 
     task_environment()->RunUntilIdle();
+
+    auto* const template_url_service =
+        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+    search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
   }
 
   void TearDown() override {

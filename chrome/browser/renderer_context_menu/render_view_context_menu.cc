@@ -90,10 +90,12 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
@@ -2040,7 +2042,10 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
   }
 
   const int search_for_image_idc = GetSearchForImageIdc();
-  if (LensOverlayController::IsEnabled(GetBrowser()) &&
+  if (GetBrowser()
+          ->GetFeatures()
+          .lens_overlay_entry_point_controller()
+          ->IsEnabled() &&
       lens::features::UseLensOverlayForImageSearch()) {
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -2134,7 +2139,10 @@ void RenderViewContextMenu::AppendVideoItems() {
   if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame)) {
     const int search_for_video_frame_idc = GetSearchForVideoFrameIdc();
 
-    if (LensOverlayController::IsEnabled(GetBrowser()) &&
+    if (GetBrowser()
+            ->GetFeatures()
+            .lens_overlay_entry_point_controller()
+            ->IsEnabled() &&
         lens::features::UseLensOverlayForVideoFrameSearch()) {
       const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -2728,7 +2736,10 @@ void RenderViewContextMenu::AppendClickToCallItem() {
 }
 
 void RenderViewContextMenu::AppendRegionSearchItem() {
-  if (LensOverlayController::IsEnabled(GetBrowser())) {
+  if (GetBrowser()
+          ->GetFeatures()
+          .lens_overlay_entry_point_controller()
+          ->IsEnabled()) {
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
@@ -3914,7 +3925,10 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
     return false;
   }
 
-  if (LensOverlayController::IsEnabled(GetBrowser())) {
+  if (GetBrowser()
+          ->GetFeatures()
+          .lens_overlay_entry_point_controller()
+          ->IsEnabled()) {
     return true;
   }
 
@@ -4336,7 +4350,10 @@ void RenderViewContextMenu::ExecSearchLensForImage(bool is_image_translate) {
       lens::AmbientSearchEntryPoint::
           CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS);
 
-  if (LensOverlayController::IsEnabled(GetBrowser()) &&
+  if (GetBrowser()
+          ->GetFeatures()
+          .lens_overlay_entry_point_controller()
+          ->IsEnabled() &&
       lens::features::UseLensOverlayForImageSearch()) {
     auto view_bounds = render_frame_host->GetView()->GetViewBounds();
     auto tab_bounds = source_web_contents_->GetViewBounds();
@@ -4391,7 +4408,9 @@ void RenderViewContextMenu::ExecRegionSearch(
   Browser* browser = GetBrowser();
   CHECK(browser);
 
-  if (LensOverlayController::IsEnabled(browser)) {
+  if (browser->GetFeatures()
+          .lens_overlay_entry_point_controller()
+          ->IsEnabled()) {
     LensOverlayController* const controller =
         LensOverlayController::GetController(embedder_web_contents_);
     CHECK(controller);
@@ -4687,7 +4706,10 @@ void RenderViewContextMenu::SearchForVideoFrame(
     return;
   }
 
-  if (LensOverlayController::IsEnabled(GetBrowser()) &&
+  if (GetBrowser()
+          ->GetFeatures()
+          .lens_overlay_entry_point_controller()
+          ->IsEnabled() &&
       lens::features::UseLensOverlayForVideoFrameSearch()) {
     RenderFrameHost* render_frame_host = GetRenderFrameHost();
     if (!render_frame_host) {

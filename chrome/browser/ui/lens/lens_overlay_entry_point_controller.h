@@ -15,15 +15,21 @@
 
 namespace lens {
 
-// Class responsible for keeping Lens Overlay entry points in their correct
-// state. This functionality needs to be separate from LensOverlayController,
-// since LensOverlayController exist per tab, while entry points are per browser
-// window.
+// Per-browser-window class responsible for keeping Lens Overlay entry points in
+// their correct state. This functionality needs to be separate from
+// LensOverlayController, since LensOverlayController exist per tab, while entry
+// points are per browser window.
 class LensOverlayEntryPointController : public FullscreenObserver,
                                         public TemplateURLServiceObserver {
  public:
   explicit LensOverlayEntryPointController(Browser* browser);
   ~LensOverlayEntryPointController() override;
+
+  // This class does nothing if not initialized. IsEnabled returns false.
+  void Initialize();
+
+  // Whether the entry points should be enabled.
+  bool IsEnabled();
 
  private:
   // FullscreenObserver:

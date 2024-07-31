@@ -61,6 +61,12 @@ void BrowserWindowFeatures::Init(Browser* browser) {
         std::make_unique<commerce::ProductSpecificationsEntryPointController>(
             browser);
   }
+
+  // The LensOverlayEntryPointController is constructed for all browser types
+  // but is only initialized for normal browser windows. This simplifies the
+  // logic for code shared by both normal and non-normal windows.
+  lens_overlay_entry_point_controller_ =
+      std::make_unique<lens::LensOverlayEntryPointController>(browser);
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
@@ -74,8 +80,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     // Cannot be in Init since needs to listen to the fullscreen controller
     // which is initialized after Init.
     if (lens::features::IsLensOverlayEnabled()) {
-      lens_overlay_entry_point_controller_ =
-          std::make_unique<lens::LensOverlayEntryPointController>(browser);
+      lens_overlay_entry_point_controller_->Initialize();
     }
   }
 }

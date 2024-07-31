@@ -13,10 +13,11 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #import "chrome/browser/ui/cocoa/browser_window_command_handler.h"
 #import "chrome/browser/ui/cocoa/chrome_command_dispatcher_delegate.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -267,7 +268,9 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
           prefs->GetBoolean(omnibox::kShowGoogleLensShortcut);
       // Disable this menu option if the LensOverlay feature is not enabled.
       result->enable = lens::features::IsOmniboxEntryPointEnabled() &&
-                       LensOverlayController::IsEnabled(browser);
+                       browser->GetFeatures()
+                           .lens_overlay_entry_point_controller()
+                           ->IsEnabled();
       break;
     }
     case IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS: {

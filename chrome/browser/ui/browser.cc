@@ -1116,7 +1116,7 @@ const SessionID& Browser::GetSessionID() {
 }
 
 bool Browser::IsTabStripVisible() {
-  return window_->IsToolbarShowing();
+  return window_ && window_->IsToolbarShowing();
 }
 
 views::View* Browser::TopContainer() {

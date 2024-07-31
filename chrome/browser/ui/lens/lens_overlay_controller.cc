@@ -277,52 +277,6 @@ LensOverlayController::SearchQuery::operator=(
 
 LensOverlayController::SearchQuery::~SearchQuery() = default;
 
-// static
-bool LensOverlayController::IsEnabled(Browser* browser) {
-  // Exit early if browser is null.
-  if (!browser) {
-    return false;
-  }
-
-  // Feature is disabled via finch.
-  if (!lens::features::IsLensOverlayEnabled()) {
-    return false;
-  }
-
-  // Disable on non-normal windows (those without omnibox and toolbar).
-  if (!browser->is_type_normal()) {
-    return false;
-  }
-
-  // Disable in fullscreen without top-chrome. Need to check that
-  // browser->window() exists to avoid to skip this check during initialization.
-  // We skip this check since during initialization, it is too early to know if
-  // the top-chrome exists or not.
-  if (!lens::features::GetLensOverlayEnableInFullscreen() &&
-      browser->window() && !browser->IsTabStripVisible()) {
-    return false;
-  }
-
-  // Lens Overlay is disabled via enterprise policy.
-  lens::prefs::LensOverlaySettingsPolicyValue policy_value =
-      static_cast<lens::prefs::LensOverlaySettingsPolicyValue>(
-          browser->profile()->GetPrefs()->GetInteger(
-              lens::prefs::kLensOverlaySettings));
-  if (policy_value == lens::prefs::LensOverlaySettingsPolicyValue::kDisabled) {
-    return false;
-  }
-
-  // Lens Overlay is only enabled if the user's default search engine is Google.
-  if (lens::features::IsLensOverlayGoogleDseRequired() &&
-      !search::DefaultSearchProviderIsGoogle(browser->profile())) {
-    return false;
-  }
-
-  // Finally, only enable the overlay if user meets our minimum RAM requirement.
-  static int phys_mem_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
-  return phys_mem_mb > lens::features::GetLensOverlayMinRamMb();
-}
-
 void LensOverlayController::ShowUIWithPendingRegion(
     lens::LensOverlayInvocationSource invocation_source,
     const gfx::Rect& tab_bounds,
