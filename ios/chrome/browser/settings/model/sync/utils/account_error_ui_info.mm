@@ -20,4 +20,29 @@
   return self;
 }
 
+- (BOOL)isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (!other || ![other isKindOfClass:[self class]]) {
+    return NO;
+  }
+  return [self isEqualToAccountErrorUIInfo:other];
+}
+
+- (BOOL)isEqualToAccountErrorUIInfo:(AccountErrorUIInfo*)info {
+  if (self == info) {
+    return YES;
+  }
+  return _errorType == info.errorType &&
+         _userActionableType == info.userActionableType &&
+         _messageID == info.messageID && _buttonLabelID == info.buttonLabelID;
+}
+
+- (NSUInteger)hash {
+  return [@[
+    @(static_cast<int>(_errorType)), @(static_cast<int>(_userActionableType)),
+    @(_messageID), @(_buttonLabelID)
+  ] hash];
+}
 @end

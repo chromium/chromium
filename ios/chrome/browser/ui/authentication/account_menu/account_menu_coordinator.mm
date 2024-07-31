@@ -50,10 +50,15 @@
     SignoutActionSheetCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate,
     UINavigationControllerDelegate>
+
+// The view controller.
+@property(nonatomic, strong) AccountMenuViewController* viewController;
+// The mediator.
+@property(nonatomic, strong) AccountMenuMediator* mediator;
+
 @end
 
 @implementation AccountMenuCoordinator {
-  AccountMenuViewController* _viewController;
   UINavigationController* _navigationController;
   AuthenticationService* _authenticationService;
   // Dismiss callback for account details view.
@@ -61,7 +66,6 @@
       _accountDetailsControllerDismissCallback;
   // The coordinators for the "Edit account list"
   AccountsCoordinator* _accountsCoordinator;
-  AccountMenuMediator* _mediator;
   // The coordinator for the action sheet to sign out.
   SignoutActionSheetCoordinator* _signoutActionSheetCoordinator;
   raw_ptr<syncer::SyncService> _syncService;
@@ -189,7 +193,8 @@
   [_accountsCoordinator start];
 }
 
-- (void)signOutFromTargetRect:(CGRect)targetRect {
+- (void)signOutFromTargetRect:(CGRect)targetRect
+                     callback:(void (^)(BOOL))callback {
   if (_mediator.signOutFlowInProgress ||
       _mediator.addAccountOperationInProgress) {
     return;
@@ -213,6 +218,9 @@
     [weakSelf stopSignoutActionSheetCoordinator];
     if (success) {
       [weakSelf.delegate acountMenuCoordinatorShouldStop:weakSelf];
+    }
+    if (callback) {
+      callback(success);
     }
   };
   [_signoutActionSheetCoordinator start];

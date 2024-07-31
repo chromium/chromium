@@ -251,6 +251,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 - (void)userTappedOnClose {
+  base::RecordAction(base::UserMetricsAction("Signin_AccountMenu_Close"));
   [self.delegate viewControllerWantsToBeClosed:self];
 }
 
@@ -350,7 +351,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_Signout"));
         CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
-        [self.delegate signOutFromTargetRect:cellRect];
+        [self.delegate signOutFromTargetRect:cellRect callback:nil];
         break;
     }
   }
