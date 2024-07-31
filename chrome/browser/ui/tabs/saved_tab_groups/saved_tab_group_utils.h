@@ -102,7 +102,7 @@ class SavedTabGroupUtils {
 
   // Returns the set of urls currently stored in the saved tab group.
   static std::unordered_set<std::string> GetURLsInSavedTabGroup(
-      const tab_groups::SavedTabGroupKeyedService& saved_tab_group_service,
+      Profile* profile,
       const base::Uuid& saved_id);
 
   // Moves an open saved tab group from `source_browser` to `target_browser`.

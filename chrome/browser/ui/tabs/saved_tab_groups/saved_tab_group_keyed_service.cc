@@ -41,6 +41,7 @@
 #include "components/saved_tab_groups/stats.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -57,6 +58,32 @@
 
 namespace tab_groups {
 namespace {
+
+class ScopedLocalObservationPauserImpl : public ScopedLocalObservationPauser {
+ public:
+  explicit ScopedLocalObservationPauserImpl(
+      SavedTabGroupModelListener* listener);
+  ~ScopedLocalObservationPauserImpl() override;
+
+  // Disallow copy/assign.
+  ScopedLocalObservationPauserImpl(const ScopedLocalObservationPauserImpl&) =
+      delete;
+  ScopedLocalObservationPauserImpl& operator=(
+      const ScopedLocalObservationPauserImpl&) = delete;
+
+ private:
+  raw_ptr<SavedTabGroupModelListener> listener_;
+};
+
+ScopedLocalObservationPauserImpl::ScopedLocalObservationPauserImpl(
+    SavedTabGroupModelListener* listener)
+    : listener_(listener) {
+  listener_->PauseLocalObservation();
+}
+
+ScopedLocalObservationPauserImpl::~ScopedLocalObservationPauserImpl() {
+  listener_->ResumeLocalObservation();
+}
 
 constexpr base::TimeDelta kDelayBeforeMetricsLogged = base::Hours(1);
 
@@ -193,6 +220,11 @@ void SavedTabGroupKeyedService::UpdateAttributions(
 std::optional<std::string> SavedTabGroupKeyedService::GetLocalCacheGuid()
     const {
   return sync_bridge_mediator_.GetLocalCacheGuidForSavedBridge();
+}
+
+std::unique_ptr<ScopedLocalObservationPauser>
+SavedTabGroupKeyedService::CreateScopedLocalObserverPauser() {
+  return std::make_unique<ScopedLocalObservationPauserImpl>(&listener_);
 }
 
 void SavedTabGroupKeyedService::OnTabAddedToGroupLocally(

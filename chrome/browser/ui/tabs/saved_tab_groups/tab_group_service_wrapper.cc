@@ -338,7 +338,7 @@ TabGroupServiceWrapper::CreateScopedLocalObserverPauser() {
   if (ShouldUseSyncService()) {
     return sync_service_->CreateScopedLocalObserverPauser();
   } else {
-    return nullptr;
+    return saved_keyed_service_->CreateScopedLocalObserverPauser();
   }
 }
 

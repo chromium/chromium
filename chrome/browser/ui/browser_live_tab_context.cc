@@ -276,7 +276,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
 
     std::unordered_set<std::string> saved_urls =
         tab_groups::SavedTabGroupUtils::GetURLsInSavedTabGroup(
-            *saved_tab_group_service, saved_group_id.value());
+            browser_->profile(), saved_group_id.value());
     const sessions::SerializedNavigationEntry& entry =
         tab.navigations.at(tab.normalized_navigation_index());
     if (!saved_urls.contains(entry.virtual_url().spec())) {
