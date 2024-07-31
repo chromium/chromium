@@ -360,7 +360,9 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       scoring_signals(match.scoring_signals),
       culled_by_provider(match.culled_by_provider),
       shortcut_boosted(match.shortcut_boosted),
-      iph_type(match.iph_type) {}
+      iph_type(match.iph_type),
+      iph_link_text(match.iph_link_text),
+      iph_link_url(match.iph_link_url) {}
 
 AutocompleteMatch::AutocompleteMatch(AutocompleteMatch&& match) noexcept {
   *this = std::move(match);
@@ -422,6 +424,8 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   culled_by_provider = std::move(match.culled_by_provider);
   shortcut_boosted = std::move(match.shortcut_boosted);
   iph_type = std::move(match.iph_type);
+  iph_link_text = std::move(match.iph_link_text);
+  iph_link_url = std::move(match.iph_link_url);
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
   std::swap(java_match_, match.java_match_);
@@ -501,6 +505,8 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   culled_by_provider = match.culled_by_provider;
   shortcut_boosted = match.shortcut_boosted;
   iph_type = match.iph_type;
+  iph_link_text = match.iph_link_text;
+  iph_link_url = match.iph_link_url;
 
 #if BUILDFLAG(IS_ANDROID)
   // In case the target element previously held a java object, release it.
@@ -610,6 +616,8 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
           return omnibox::kSparkIcon;
         case IphType::kFeaturedEnterpriseSearch:
           return omnibox::kEnterpriseIcon;
+        case IphType::kHistoryEmbeddingsSettingsPromo:
+          return omnibox::kSparkIcon;
       }
 
     case Type::SEARCH_SUGGEST_TAIL:
@@ -1464,6 +1472,8 @@ int AutocompleteMatch::GetSortingOrder() const {
       shortcut_boosted) {
     return 2;
   }
+  if (IsIPHSuggestion())
+    return 5;
   return 4;
 }
 
@@ -1477,13 +1487,7 @@ bool AutocompleteMatch::IsTrendSuggestion() const {
 }
 
 bool AutocompleteMatch::IsIPHSuggestion() const {
-  if (!OmniboxFieldTrial::IsFeaturedSearchIPHEnabled()) {
-    return false;
-  }
-
-  return type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
-         (provider &&
-          provider->type() == AutocompleteProvider::TYPE_FEATURED_SEARCH);
+  return iph_type != IphType::kNone;
 }
 
 void AutocompleteMatch::FilterOmniboxActions(

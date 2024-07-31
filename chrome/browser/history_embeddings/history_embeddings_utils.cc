@@ -24,4 +24,16 @@ bool IsHistoryEmbeddingsEnabledForProfile(Profile* profile) {
                  optimization_guide::UserVisibleFeatureKey::kHistorySearch);
 }
 
+bool IsHistoryEmbeddingsSettingVisible(Profile* profile) {
+  if (!IsHistoryEmbeddingsEnabled()) {
+    return false;
+  }
+
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  return optimization_guide_keyed_service &&
+         optimization_guide_keyed_service->IsSettingVisible(
+             optimization_guide::UserVisibleFeatureKey::kHistorySearch);
+}
+
 }  // namespace history_embeddings

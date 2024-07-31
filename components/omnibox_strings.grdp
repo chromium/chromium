@@ -327,7 +327,14 @@
     Type @ to search <ph name="FEATURED_SEARCH_LIST">$1<ex>jira.atlassian.com, office.com, salesforce.com</ex></ph>
   </message>
 
-  <message name="IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE" desc = "The string displayed when a calculator answer is suggested.">
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH" desc="The string displayed as the last row in the Omnibox as IPH directing users to the chrome://settings/ai page to enable the history embeddings setting.">
+    For a more powerful way to search your browsing history, turn on
+  </message>
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH_LINK_TEXT" desc="The string displayed as the last row in the Omnibox as IPH directing users to the chrome://settings/ai page to enable the history embeddings setting.">
+    History search, powered by AI
+  </message>
+
+  <message name="IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE" desc="The string displayed when a calculator answer is suggested.">
     <ph name="EXPRESSION">$1</ph> = <ph name="ANSWER">$2</ph>
   </message>
 

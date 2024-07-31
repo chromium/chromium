@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -44,8 +45,10 @@
 #include "ui/gfx/render_text.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/style/typography.h"
 
 namespace {
 
@@ -244,6 +247,8 @@ OmniboxMatchCellView::OmniboxMatchCellView(OmniboxResultView* result_view) {
       AddChildView(std::make_unique<OmniboxTextView>(result_view));
   separator_view_->SetText(
       l10n_util::GetStringUTF16(IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR));
+  iph_link_view_ = AddChildView(std::make_unique<views::Link>(
+      u"", ChromeTextContext::CONTEXT_OMNIBOX_POPUP, views::style::STYLE_LINK));
 }
 
 OmniboxMatchCellView::~OmniboxMatchCellView() = default;
@@ -281,6 +286,10 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                    match.description.empty()
                                ? gfx::Size()
                                : separator_view_->GetPreferredSize());
+
+  // Set up the IPH link following the main IPH text.
+  iph_link_view_->SetText(match.iph_link_text);
+  iph_link_view_->SetVisible(is_iph_type_);
 
   // Set up the small icon.
   icon_view_->SetSize(has_image_ ? gfx::Size()
@@ -521,21 +530,20 @@ void OmniboxMatchCellView::Layout(PassKey) {
                                             row_height);
     }
     content_view_->SetBounds(x, y, content_width, row_height);
+    x += content_view_->width();
     if (description_width) {
-      x += content_view_->width();
       separator_view_->SetSize(separator_size);
       separator_view_->SetBounds(x, y, separator_view_->width(), row_height);
       x += separator_view_->width();
       description_view_->SetBounds(x, y, description_width, row_height);
+      x += description_view_->width();
     } else {
       separator_view_->SetSize(gfx::Size());
       description_view_->SetSize(gfx::Size());
     }
+    iph_link_view_->SetBounds(x, y, iph_link_view_->GetPreferredSize().width(),
+                              row_height);
   }
-}
-
-bool OmniboxMatchCellView::GetCanProcessEventsWithinSubtree() const {
-  return false;
 }
 
 gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
@@ -556,6 +564,8 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
   if (description_width > 0) {
     width += separator_view_->GetPreferredSize().width() + description_width;
   }
+
+  width += iph_link_view_->GetPreferredSize().width();
 
   return gfx::Size(width, height);
 }

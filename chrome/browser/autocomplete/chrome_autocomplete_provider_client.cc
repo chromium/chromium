@@ -489,6 +489,11 @@ bool ChromeAutocompleteProviderClient::IsHistoryEmbeddingsEnabled() const {
   return history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile_);
 }
 
+bool ChromeAutocompleteProviderClient::IsHistoryEmbeddingsSettingVisible()
+    const {
+  return history_embeddings::IsHistoryEmbeddingsSettingVisible(profile_);
+}
+
 base::WeakPtr<AutocompleteProviderClient>
 ChromeAutocompleteProviderClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

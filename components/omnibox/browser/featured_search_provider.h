@@ -51,7 +51,9 @@ class FeaturedSearchProvider : public AutocompleteProvider {
   // to the starter pack feature.
   void AddIPHMatch(IphType iph_type,
                    const std::u16string& iph_contents,
-                   const std::u16string& matched_term);
+                   const std::u16string& matched_term,
+                   const std::u16string& iph_link_text,
+                   const GURL& iph_link_url);
 
   void AddFeaturedEnterpriseSearchMatch(const TemplateURL& template_url,
                                         const AutocompleteInput& input);
@@ -75,11 +77,19 @@ class FeaturedSearchProvider : public AutocompleteProvider {
 
   void AddFeaturedEnterpriseSearchIPHMatch();
 
+  bool ShouldShowHistoryEmbeddingsSettingsPromoIphMatch() const;
+
+  void AddHistoryEmbeddingsSettingsPromoIphMatch();
+
   raw_ptr<AutocompleteProviderClient> client_;
   raw_ptr<TemplateURLService> template_url_service_;
 
   // The number of times the IPH row has been shown so far in this session.
   size_t iph_shown_count_{0};
+
+  // Whether an IPH match was shown during the current omnibox session. Used to
+  // avoid incrementing `iph_shown_count_` more than once per session.
+  bool iph_shown_this_session_ = false;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FEATURED_SEARCH_PROVIDER_H_
