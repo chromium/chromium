@@ -19,6 +19,28 @@ namespace {
 constexpr const char kUserActionFinish[] = "finished";
 constexpr const char kUserActionLoaded[] = "loaded";
 
+bool CheckPayloadFormat(const growth::Payload* payload) {
+  const base::Value::List* perks = payload->FindList("perks");
+  if (!perks) {
+    return false;
+  }
+  for (const auto& perk : *perks) {
+    if (!perk.GetDict().FindString("id") ||
+        !perk.GetDict().FindString("title") ||
+        !perk.GetDict().FindString("text") ||
+        !perk.GetDict().FindString("icon") ||
+        !perk.GetDict().FindStringByDottedPath("content.illustration.url") ||
+        !perk.GetDict().FindStringByDottedPath("content.illustration.height") ||
+        !perk.GetDict().FindStringByDottedPath("content.illustration.width") ||
+        !perk.GetDict().FindStringByDottedPath("primaryButton.label") ||
+        !perk.GetDict().FindStringByDottedPath("secondaryButton.label") ||
+        !perk.GetDict().FindDictByDottedPath("primaryButton.action")) {
+      return false;
+    }
+  }
+  return true;
+}
+
 std::vector<SinglePerkDiscoveryPayload> ParsePayload(
     const growth::Payload* payload) {
   std::vector<SinglePerkDiscoveryPayload> perks_result;
@@ -27,7 +49,12 @@ std::vector<SinglePerkDiscoveryPayload> ParsePayload(
     return perks_result;
   }
 
-  // TODO(b:353480634) Add sanity check for the payload data format.
+  if (!CheckPayloadFormat(payload)) {
+    // TODO(b/347181006) add a metric to track this error
+    LOG(ERROR) << "Payload malformed.";
+    return perks_result;
+  }
+
   const base::Value::List* perks = payload->FindList("perks");
   for (const auto& perk : *perks) {
     perks_result.push_back(SinglePerkDiscoveryPayload(perk.GetDict()));
