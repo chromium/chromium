@@ -2823,6 +2823,20 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.{feature}.InitializationLatency"
+    units="ms" expires_after="2025-02-28">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records how long it takes to initialize {feature} in Screen AI service.
+  </summary>
+  <token key="feature">
+    <variant name="MainContentExtraction"
+        summary="Main Content Extraction functionality"/>
+    <variant name="OCR" summary="OCR functionality"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.{Feature}.Successful"
     enum="BooleanSuccess" expires_after="2025-02-28">
   <owner>rhalavati@chromium.org</owner>
