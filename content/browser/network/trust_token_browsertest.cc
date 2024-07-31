@@ -72,12 +72,12 @@ MATCHER_P2(HasHeader,
            other_matcher,
            "has header " + std::string(name) + " that " +
                DescribeMatcher<std::string>(other_matcher)) {
-  std::string header;
-  if (!arg.headers.GetHeader(name, &header)) {
+  std::optional<std::string> header = arg.headers.GetHeader(name);
+  if (!header) {
     *result_listener << base::StringPrintf("%s wasn't present", name);
     return false;
   }
-  return ExplainMatchResult(other_matcher, header, result_listener);
+  return ExplainMatchResult(other_matcher, *header, result_listener);
 }
 
 MATCHER(

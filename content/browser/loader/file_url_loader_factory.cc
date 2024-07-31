@@ -641,14 +641,14 @@ class FileURLLoader : public network::mojom::URLLoader {
 
     uint64_t initial_read_size = read_result.bytes_read;
 
-    std::string range_header;
     net::HttpByteRange byte_range;
-    if (request.headers.GetHeader(net::HttpRequestHeaders::kRange,
-                                  &range_header)) {
+    if (std::optional<std::string> range_header =
+            request.headers.GetHeader(net::HttpRequestHeaders::kRange);
+        range_header) {
       // Handle a simple Range header for a single range.
       std::vector<net::HttpByteRange> ranges;
       bool fail = false;
-      if (net::HttpUtil::ParseRangeHeader(range_header, &ranges) &&
+      if (net::HttpUtil::ParseRangeHeader(*range_header, &ranges) &&
           ranges.size() == 1) {
         byte_range = ranges[0];
         if (!byte_range.ComputeBounds(info.size)) {
