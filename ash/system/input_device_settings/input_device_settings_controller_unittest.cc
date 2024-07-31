@@ -988,6 +988,9 @@ TEST_F(InputDeviceSettingsControllerTest, PrefsInitializedBasedOnLoginState) {
 }
 
 TEST_F(InputDeviceSettingsControllerTest, UpdateLoginScreenSettings) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+
   controller_->OnLoginScreenFocusedPodChanged(kAccountId1);
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardUsb});
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id,
@@ -2004,6 +2007,38 @@ TEST_F(InputDeviceSettingsControllerTest,
 
   ASSERT_EQ(1u, keyboard_pref_handler_
                     ->num_force_initialize_with_default_settings_calls());
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       KeyboardSplitModifierTopRowAreKeysUpdated) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+
+  fake_device_manager_->AddFakeKeyboard(kSampleSplitModifierKeyboard,
+                                        kKbdTopRowLayout1Tag);
+
+  PrefService* active_pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  base::Value::Dict updated_defaults;
+  updated_defaults.Set(prefs::kKeyboardSettingTopRowAreFKeys,
+                       !kDefaultTopRowAreFKeys);
+  active_pref_service->SetDict(prefs::kKeyboardDefaultChromeOSSettings,
+                               std::move(updated_defaults));
+
+  ASSERT_EQ(controller_->GetKeyboard(kSampleSplitModifierKeyboard.id)
+                ->settings->top_row_are_fkeys,
+            !kDefaultTopRowAreFKeys);
+
+  // Change session from oobe to login primary will update the
+  // kKeyboardHasSplitModifierKeyboard pref value.
+  ASSERT_EQ(
+      active_pref_service->GetBoolean(prefs::kKeyboardHasSplitModifierKeyboard),
+      false);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  ASSERT_EQ(
+      active_pref_service->GetBoolean(prefs::kKeyboardHasSplitModifierKeyboard),
+      true);
 }
 
 TEST_F(InputDeviceSettingsControllerTest,

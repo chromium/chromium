@@ -57,6 +57,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/known_user.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -855,6 +856,9 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
   pref_registry->RegisterDictionaryPref(
       prefs::kKeyboardDefaultSplitModifierSettings,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  pref_registry->RegisterBooleanPref(
+      prefs::kKeyboardHasSplitModifierKeyboard, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   pref_registry->RegisterDictionaryPref(
       prefs::kKeyboardUpdateSettingsMetricInfo);
@@ -908,6 +912,22 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
                                   base::Time());
   pref_registry->RegisterTimePref(prefs::kInsertRemappingNudgeLastShown,
                                   base::Time());
+}
+
+void InputDeviceSettingsControllerImpl::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  if (state != session_manager::SessionState::OOBE &&
+      last_session_ == session_manager::SessionState::OOBE) {
+    RefreshCachedKeyboardSettings();
+
+    for (auto& [id, keyboard] : keyboards_) {
+      if (IsSplitModifierKeyboard(*keyboard)) {
+        active_pref_service_->SetBoolean(
+            prefs::kKeyboardHasSplitModifierKeyboard, true);
+      }
+    }
+  }
+  last_session_ = state;
 }
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
@@ -1068,6 +1088,12 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
             weak_ptr_factory_.GetWeakPtr()));
     pref_change_registrar_->Add(
         prefs::kKeyboardDefaultSplitModifierSettings,
+        base::BindRepeating(
+            &InputDeviceSettingsControllerImpl::
+                ForceInitializeDefaultSplitModifierKeyboardSettings,
+            weak_ptr_factory_.GetWeakPtr()));
+    pref_change_registrar_->Add(
+        prefs::kKeyboardHasSplitModifierKeyboard,
         base::BindRepeating(
             &InputDeviceSettingsControllerImpl::
                 ForceInitializeDefaultSplitModifierKeyboardSettings,
@@ -2606,6 +2632,24 @@ void InputDeviceSettingsControllerImpl::
   }
 
   for (auto& [id, keyboard] : keyboards_) {
+    // Only forward sync top_row_are_fkeys pref value from ChromeOS keyboard
+    // settings to split modifier keyboard settings.
+    if (IsSplitModifierKeyboard(*keyboard)) {
+      auto top_row_are_fkeys =
+          active_pref_service_->GetDict(prefs::kKeyboardDefaultChromeOSSettings)
+              .FindBool(prefs::kKeyboardSettingTopRowAreFKeys);
+
+      if (!top_row_are_fkeys || active_pref_service_->GetBoolean(
+                                    prefs::kKeyboardHasSplitModifierKeyboard)) {
+        continue;
+      }
+      keyboard->settings->top_row_are_fkeys = top_row_are_fkeys.value();
+      keyboard_pref_handler_->UpdateKeyboardSettings(
+          active_pref_service_, policy_handler_->keyboard_policies(),
+          *keyboard);
+      continue;
+    }
+
     if (!IsChromeOSKeyboard(*keyboard)) {
       continue;
     }
@@ -2656,6 +2700,11 @@ void InputDeviceSettingsControllerImpl::RefreshCachedMouseSettings() {
 }
 
 void InputDeviceSettingsControllerImpl::RefreshCachedKeyboardSettings() {
+  // Only refresh the settings after the OOBE session to avoid a race condition
+  // in the order we receive synced prefs.
+  if (IsOobe()) {
+    return;
+  }
   RefreshStoredLoginScreenKeyboardSettings();
   RefreshKeyboardDefaultSettings();
 }

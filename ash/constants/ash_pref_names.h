@@ -2262,6 +2262,10 @@ inline constexpr char kKeyboardDefaultNonChromeOSSettings[] =
 inline constexpr char kKeyboardDefaultSplitModifierSettings[] =
     "ash.settings.keyboard.split_modifier_defaults";
 
+// A boolean pref of whether the user has used a split modifier keyboard before.
+inline constexpr char kKeyboardHasSplitModifierKeyboard[] =
+    "ash.settings.keyboard.has_split_modifier_keyboard";
+
 // A dictionary pref containing the set of default touchpad settings for the
 // user. These are applied to new touchpads that are connected to the system.
 // This is synced for all user devices.

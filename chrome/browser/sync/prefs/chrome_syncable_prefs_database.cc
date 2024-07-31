@@ -353,6 +353,7 @@ enum {
   kDesktopToiOSAddressPromoOptOut = 100293,
   kMahiNudgeShownCount = 100294,
   kAccessibilityMagnifierFollowsChromeVox = 100295,
+  kKeyboardHasSplitModifierKeyboard = 100296,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1187,6 +1188,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {ash::prefs::kMahiNudgeShownCount,
      {syncable_prefs_ids::kMahiNudgeShownCount, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kKeyboardHasSplitModifierKeyboard,
+     {syncable_prefs_ids::kKeyboardHasSplitModifierKeyboard,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
