@@ -33,8 +33,9 @@ constexpr char kFileNameToIntercept[] = "update_manifest.xml";
 std::unique_ptr<net::test_server::HttpResponse> InterceptMockHttp(
     net::EmbeddedTestServer* embedded_test_server,
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().ExtractFileName() != kFileNameToIntercept)
+  if (request.GetURL().ExtractFileName() != kFileNameToIntercept) {
     return nullptr;
+  }
 
   base::FilePath test_data_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);

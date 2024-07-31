@@ -21,9 +21,10 @@ namespace {
 void ReportExtensionDisabledRemotely(bool should_be_remotely_disabled,
                                      ExtensionUpdateCheckDataKey reason) {
   // Report that the extension is newly disabled due to Omaha attributes.
-  if (should_be_remotely_disabled)
+  if (should_be_remotely_disabled) {
     base::UmaHistogramEnumeration("Extensions.ExtensionDisabledRemotely2",
                                   reason);
+  }
 
   // Report that the extension has added a new disable reason.
   base::UmaHistogramEnumeration(

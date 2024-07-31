@@ -28,8 +28,9 @@ namespace {
 // Returns a response whose body is request's origin.
 std::unique_ptr<net::test_server::HttpResponse> HandleEchoOrigin(
     const net::test_server::HttpRequest& request) {
-  if (request.relative_url != "/echo-origin")
+  if (request.relative_url != "/echo-origin") {
     return nullptr;
+  }
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_code(net::HTTP_OK);

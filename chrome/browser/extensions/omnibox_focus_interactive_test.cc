@@ -51,8 +51,9 @@ class OmniboxFocusInteractiveTest : public ExtensionBrowserTest {
         } )";
     test_dir_.WriteManifest(kManifest);
     const Extension* extension = LoadExtension(test_dir_.UnpackedPath());
-    if (!extension)
+    if (!extension) {
       return nullptr;
+    }
 
     // Prevent a focus-stealing focus bubble that warns the user that "An
     // extension has changed what page is shown when you open a new tab."

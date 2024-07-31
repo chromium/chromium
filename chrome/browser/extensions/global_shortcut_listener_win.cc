@@ -35,8 +35,9 @@ GlobalShortcutListenerWin::GlobalShortcutListenerWin()
 }
 
 GlobalShortcutListenerWin::~GlobalShortcutListenerWin() {
-  if (is_listening_)
+  if (is_listening_) {
     StopListening();
+  }
 }
 
 void GlobalShortcutListenerWin::StartListening() {

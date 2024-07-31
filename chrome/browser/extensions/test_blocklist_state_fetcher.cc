@@ -78,14 +78,16 @@ bool TestBlocklistStateFetcher::HandleFetcher(const std::string& id) {
     }
   }
 
-  if (!url_loader)
+  if (!url_loader) {
     return false;
+  }
 
   ClientCRXListInfoResponse response;
-  if (base::Contains(verdicts_, id))
+  if (base::Contains(verdicts_, id)) {
     response.set_verdict(verdicts_[id]);
-  else
+  } else {
     response.set_verdict(ClientCRXListInfoResponse::NOT_IN_BLOCKLIST);
+  }
 
   std::string response_str;
   response.SerializeToString(&response_str);
