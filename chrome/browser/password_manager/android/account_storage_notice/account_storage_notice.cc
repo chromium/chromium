@@ -28,17 +28,21 @@ std::unique_ptr<AccountStorageNotice> AccountStorageNotice::MaybeShow(
     PrefService* pref_service,
     ui::WindowAndroid* window_android,
     base::OnceClosure done_cb) {
-  base::android::ScopedJavaLocalRef<jobject> java_coordinator =
-      Java_AccountStorageNoticeCoordinator_create(
-          AttachCurrentThread(),
-          sync_service ? sync_service->HasSyncConsent() : false,
-          password_manager::sync_util::HasChosenToSyncPasswords(sync_service),
-          password_manager::IsGmsCoreUpdateRequired(
-              pref_service, sync_service,
-              base::android::BuildInfo::GetInstance()->gms_version_code()),
-          pref_service->GetJavaObject(), window_android->GetJavaObject(),
-          Java_SettingsLauncherImpl_create(AttachCurrentThread()));
-  if (java_coordinator) {
+  bool can_show = Java_AccountStorageNoticeCoordinator_canShow(
+      AttachCurrentThread(),
+      sync_service ? sync_service->HasSyncConsent() : false,
+      password_manager::sync_util::HasChosenToSyncPasswords(sync_service),
+      password_manager::IsGmsCoreUpdateRequired(
+          pref_service, sync_service,
+          base::android::BuildInfo::GetInstance()->gms_version_code()),
+      pref_service->GetJavaObject(),
+      window_android ? window_android->GetJavaObject() : nullptr);
+  if (can_show) {
+    base::android::ScopedJavaLocalRef<jobject> java_coordinator =
+        Java_AccountStorageNoticeCoordinator_createAndShow(
+            AttachCurrentThread(), window_android->GetJavaObject(),
+            pref_service->GetJavaObject(),
+            Java_SettingsLauncherImpl_create(AttachCurrentThread()));
     return base::WrapUnique(
         new AccountStorageNotice(java_coordinator, std::move(done_cb)));
   }

@@ -6,14 +6,10 @@ package org.chromium.chrome.browser.password_manager.account_storage_notice;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -35,7 +31,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -73,14 +68,11 @@ public class AccountStorageNoticeCoordinatorUnitTest {
     @Mock private PrefService mPrefService;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Context mContext;
-    @Mock private SettingsLauncher mSettingsLauncher;
 
     @Before
     public void setUp() {
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference(mContext));
         ShadowBottomSheetControllerProvider.setBottomSheetController(mBottomSheetController);
-        // TODO(crbug.com/341176706): Shadow the AccountStorageNoticeView constructor instead.
-        AccountStorageNoticeView.setSkipLayoutForTesting(true);
     }
 
     @Test
@@ -88,19 +80,15 @@ public class AccountStorageNoticeCoordinatorUnitTest {
     public void testShouldNotCreateIfNotSyncingPasswords() {
         when(mPrefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)).thenReturn(false);
 
-        @Nullable
-        AccountStorageNoticeCoordinator coordinator =
-                AccountStorageNoticeCoordinator.create(
+        boolean canShow =
+                AccountStorageNoticeCoordinator.canShow(
                         /* hasSyncConsent= */ false,
                         /* hasChosenToSyncPasswords= */ false,
                         /* isGmsCoreUpdateRequired= */ false,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
-        Assert.assertEquals(coordinator, null);
-        verify(mPrefService, never())
-                .setBoolean(eq(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN), anyBoolean());
+        Assert.assertFalse(canShow);
     }
 
     @Test
@@ -108,19 +96,15 @@ public class AccountStorageNoticeCoordinatorUnitTest {
     public void testShouldNotCreateIfHasSyncConsent() {
         when(mPrefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)).thenReturn(false);
 
-        @Nullable
-        AccountStorageNoticeCoordinator coordinator =
-                AccountStorageNoticeCoordinator.create(
+        boolean canShow =
+                AccountStorageNoticeCoordinator.canShow(
                         /* hasSyncConsent= */ true,
                         /* hasChosenToSyncPasswords= */ true,
                         /* isGmsCoreUpdateRequired= */ false,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
-        Assert.assertEquals(coordinator, null);
-        verify(mPrefService, never())
-                .setBoolean(eq(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN), anyBoolean());
+        Assert.assertFalse(canShow);
     }
 
     @Test
@@ -128,19 +112,15 @@ public class AccountStorageNoticeCoordinatorUnitTest {
     public void testShouldNotCreateIfGmsCoreOutdated() {
         when(mPrefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)).thenReturn(false);
 
-        @Nullable
-        AccountStorageNoticeCoordinator coordinator =
-                AccountStorageNoticeCoordinator.create(
+        boolean canShow =
+                AccountStorageNoticeCoordinator.canShow(
                         /* hasSyncConsent= */ false,
                         /* hasChosenToSyncPasswords= */ true,
                         /* isGmsCoreUpdateRequired= */ true,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
-        Assert.assertEquals(coordinator, null);
-        verify(mPrefService, never())
-                .setBoolean(eq(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN), anyBoolean());
+        Assert.assertFalse(canShow);
     }
 
     @Test
@@ -148,19 +128,15 @@ public class AccountStorageNoticeCoordinatorUnitTest {
     public void testShouldNotCreateIfAlreadyShown() {
         when(mPrefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)).thenReturn(true);
 
-        @Nullable
-        AccountStorageNoticeCoordinator coordinator =
-                AccountStorageNoticeCoordinator.create(
+        boolean canShow =
+                AccountStorageNoticeCoordinator.canShow(
                         /* hasSyncConsent= */ false,
                         /* hasChosenToSyncPasswords= */ true,
                         /* isGmsCoreUpdateRequired= */ false,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
-        Assert.assertEquals(coordinator, null);
-        verify(mPrefService, never())
-                .setBoolean(eq(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN), anyBoolean());
+        Assert.assertFalse(canShow);
     }
 
     @Test
@@ -169,40 +145,65 @@ public class AccountStorageNoticeCoordinatorUnitTest {
     public void testShouldNotCreateIfFlagDisabled() {
         when(mPrefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)).thenReturn(false);
 
-        @Nullable
-        AccountStorageNoticeCoordinator coordinator =
-                AccountStorageNoticeCoordinator.create(
+        boolean canShow =
+                AccountStorageNoticeCoordinator.canShow(
                         /* hasSyncConsent= */ false,
                         /* hasChosenToSyncPasswords= */ true,
                         /* isGmsCoreUpdateRequired= */ false,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
-        Assert.assertEquals(coordinator, null);
-        verify(mPrefService, never())
-                .setBoolean(eq(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN), anyBoolean());
+        Assert.assertFalse(canShow);
     }
 
     @Test
     @SmallTest
-    public void testShouldNotCreateIfRequestShowContentFailed() {
+    public void testShouldNotCreateIfNoWindowAndroid() {
         when(mPrefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)).thenReturn(false);
-        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
 
-        @Nullable
-        AccountStorageNoticeCoordinator coordinator =
-                AccountStorageNoticeCoordinator.create(
+        boolean canShow =
+                AccountStorageNoticeCoordinator.canShow(
                         /* hasSyncConsent= */ false,
                         /* hasChosenToSyncPasswords= */ true,
                         /* isGmsCoreUpdateRequired= */ false,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        /* windowAndroid= */ null);
 
-        Assert.assertEquals(coordinator, null);
-        verify(mPrefService, never())
-                .setBoolean(eq(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN), anyBoolean());
+        Assert.assertFalse(canShow);
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldNotCreateIfNoBottomSheetController() {
+        when(mPrefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)).thenReturn(false);
+        ShadowBottomSheetControllerProvider.setBottomSheetController(null);
+
+        boolean canShow =
+                AccountStorageNoticeCoordinator.canShow(
+                        /* hasSyncConsent= */ false,
+                        /* hasChosenToSyncPasswords= */ true,
+                        /* isGmsCoreUpdateRequired= */ false,
+                        mPrefService,
+                        mWindowAndroid);
+
+        Assert.assertFalse(canShow);
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldNotCreateIfNoContext() {
+        when(mPrefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)).thenReturn(false);
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference(null));
+
+        boolean canShow =
+                AccountStorageNoticeCoordinator.canShow(
+                        /* hasSyncConsent= */ false,
+                        /* hasChosenToSyncPasswords= */ true,
+                        /* isGmsCoreUpdateRequired= */ false,
+                        mPrefService,
+                        mWindowAndroid);
+
+        Assert.assertFalse(canShow);
     }
 
     @Test
@@ -211,17 +212,14 @@ public class AccountStorageNoticeCoordinatorUnitTest {
         when(mPrefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)).thenReturn(false);
         when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
 
-        @Nullable
-        AccountStorageNoticeCoordinator coordinator =
-                AccountStorageNoticeCoordinator.create(
+        boolean canShow =
+                AccountStorageNoticeCoordinator.canShow(
                         /* hasSyncConsent= */ false,
                         /* hasChosenToSyncPasswords= */ true,
                         /* isGmsCoreUpdateRequired= */ false,
                         mPrefService,
-                        mWindowAndroid,
-                        mSettingsLauncher);
+                        mWindowAndroid);
 
-        Assert.assertNotEquals(coordinator, null);
-        verify(mPrefService).setBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN, true);
+        Assert.assertTrue(canShow);
     }
 }
