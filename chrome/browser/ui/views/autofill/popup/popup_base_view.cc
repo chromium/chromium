@@ -226,13 +226,10 @@ PopupBaseView::PopupBaseView(
     base::WeakPtr<AutofillPopupViewDelegate> delegate,
     views::Widget* parent_widget,
     views::Widget::InitParams::Activatable new_widget_activatable,
-    base::span<const views::BubbleArrowSide> preferred_popup_sides,
     bool show_arrow_pointer)
     : delegate_(delegate),
       parent_widget_(parent_widget),
       new_widget_activatable_(new_widget_activatable),
-      preferred_popup_sides_(
-          {preferred_popup_sides.begin(), preferred_popup_sides.end()}),
       show_arrow_pointer_(show_arrow_pointer) {}
 
 PopupBaseView::~PopupBaseView() {
@@ -451,7 +448,8 @@ gfx::Rect PopupBaseView::GetTopWindowBounds() const {
 gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
     const gfx::Rect& element_bounds,
     const gfx::Rect& max_bounds_for_popup,
-    const gfx::Size& preferred_size) {
+    const gfx::Size& preferred_size,
+    base::span<const views::BubbleArrowSide> preferred_popup_sides) {
   views::BubbleBorder* border = static_cast<views::BubbleBorder*>(
       GetWidget()->GetRootView()->GetBorder());
   DCHECK(border);
@@ -475,7 +473,7 @@ gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
       maximum_pixel_offset_to_center,
       /*maximum_width_percentage_to_center=*/
       kMaximumWidthPercentageToMoveTheSuggestionToCenter,
-      /*popup_bounds=*/popup_bounds, preferred_popup_sides_,
+      /*popup_bounds=*/popup_bounds, preferred_popup_sides,
       /*anchor_type=*/delegate_->anchor_type());
 
   // Those values are not supported for adding an arrow.
@@ -535,7 +533,8 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   }
 
   gfx::Rect popup_bounds = GetOptionalPositionAndPlaceArrowOnPopup(
-      element_bounds, max_bounds_for_popup, preferred_size);
+      element_bounds, max_bounds_for_popup, preferred_size,
+      kDefaultPreferredPopupSides);
 
   if (BoundsOverlapWithPictureInPictureWindow(popup_bounds)) {
     HideController(

@@ -14,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -147,6 +148,14 @@ BrowserView* GetLastActiveBrowserView() {
   return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
 }
 
+std::vector<views::BubbleArrowSide> GetPreferredPopupSides(bool is_root_popup) {
+  if (is_root_popup) {
+    return base::ToVector(PopupBaseView::kDefaultPreferredPopupSides);
+  }
+  return base::ToVector(base::i18n::IsRTL() ? kDefaultSubPopupSidesRTL
+                                            : kDefaultSubPopupSides);
+}
+
 }  // namespace
 
 // Creates a new popup view instance. The Widget parent is taken either from
@@ -160,8 +169,6 @@ PopupViewViews::PopupViewViews(
     : PopupBaseView(controller,
                     parent_widget,
                     views::Widget::InitParams::Activatable::kDefault,
-                    base::i18n::IsRTL() ? kDefaultSubPopupSidesRTL
-                                        : kDefaultSubPopupSides,
                     /*show_arrow_pointer=*/false),
       controller_(controller),
       parent_(parent) {
@@ -1177,8 +1184,11 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
                                       kAutofillPopupMinWidth,
                                       kAutofillPopupMaxWidth));
 
+  std::vector<views::BubbleArrowSide> preferred_popup_sides =
+      GetPreferredPopupSides(/*is_root_popup=*/!parent_);
   popup_bounds = GetOptionalPositionAndPlaceArrowOnPopup(
-      element_bounds, content_area_bounds, preferred_size);
+      element_bounds, content_area_bounds, preferred_size,
+      preferred_popup_sides);
 
   if (BoundsOverlapWithAnyOpenPrompt(popup_bounds,
                                      controller_->GetWebContents())) {
