@@ -142,8 +142,6 @@ static_library("ui") {
     "managed_ui.h",
     "monogram_utils.cc",
     "monogram_utils.h",
-    "omnibox/omnibox_pedal_implementations.cc",
-    "omnibox/omnibox_pedal_implementations.h",
     "page_info/chrome_page_info_delegate.cc",
     "page_info/chrome_page_info_delegate.h",
     "page_info/chrome_page_info_ui_delegate.cc",
@@ -474,6 +472,8 @@ static_library("ui") {
     "//chrome/browser/signin:identity_manager_provider",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/webui",
     "//chrome/common",
     "//chrome/common/net",
@@ -742,6 +742,7 @@ static_library("ui") {
 
   # TODO(crbug.com/41437292): Remove this circular dependency.
   # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
+  # These are all-platform circular includes.
   allow_circular_includes_from = [
     # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
@@ -753,6 +754,7 @@ static_library("ui") {
 
     "//chrome/browser/permissions",
     "//chrome/browser/search",
+    "//chrome/browser/ui/omnibox:impl",
 
     # TODO(crbug.com/344921703): Remove circular dependencies.
     "//chrome/browser/sync",
@@ -1264,17 +1266,6 @@ static_library("ui") {
       "media_router/query_result_manager.h",
       "media_router/ui_media_sink.cc",
       "media_router/ui_media_sink.h",
-      "omnibox/alternate_nav_infobar_delegate.cc",
-      "omnibox/alternate_nav_infobar_delegate.h",
-      "omnibox/chrome_omnibox_client.cc",
-      "omnibox/chrome_omnibox_client.h",
-      "omnibox/chrome_omnibox_navigation_observer.cc",
-      "omnibox/chrome_omnibox_navigation_observer.h",
-      "omnibox/clipboard_utils.cc",
-      "omnibox/clipboard_utils.h",
-      "omnibox/omnibox_tab_helper.cc",
-      "omnibox/omnibox_tab_helper.h",
-      "omnibox/omnibox_theme.h",
       "page_action/page_action_icon_type.h",
       "page_info/about_this_site_side_panel.h",
       "page_info/page_info_dialog.cc",
@@ -2126,6 +2117,7 @@ static_library("ui") {
     ]
 
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
+    # Non-android circular dependencies
     allow_circular_includes_from += [
       # TODO(crbug.com/40110173): Resolve circular dependencies.
       "//chrome/browser/media/router",

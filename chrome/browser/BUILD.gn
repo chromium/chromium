@@ -1931,6 +1931,7 @@ static_library("browser") {
     # TODO(crbug.com/40228447): break this dep when favicon is in its own target
     "//chrome/browser/share",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/top_level_storage_access_api:permissions",
     "//chrome/browser/safe_browsing",
@@ -2061,6 +2062,8 @@ static_library("browser") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/color:mixers",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/webui/top_chrome",
