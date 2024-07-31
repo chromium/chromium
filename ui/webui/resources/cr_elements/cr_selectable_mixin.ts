@@ -86,8 +86,7 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
     // or to turn it off completely. By default it listens for any changes on
     // the first <slot> node in this shadowRoot.
     observeItems() {
-      this.getSlot_().addEventListener(
-          'slotchange', () => this.itemsChanged());
+      this.getSlot().addEventListener('slotchange', () => this.itemsChanged());
     }
 
     override connectedCallback() {
@@ -148,7 +147,7 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
       return this.items_;
     }
 
-    private getSlot_(): HTMLSlotElement {
+    getSlot(): HTMLSlotElement {
       const slot = this.shadowRoot!.querySelector('slot');
       assert(slot);
       return slot;
@@ -267,6 +266,7 @@ export interface CrSelectableMixinInterface {
   selectOnClick: boolean;
 
   getItemsForTest(): Element[];
+  getSlot(): HTMLSlotElement;
   itemsChanged(): void;
   selectNext(): void;
   selectPrevious(): void;
