@@ -5129,6 +5129,23 @@
             ]
         }
     ],
+    "ClassifyUrlOnProcessResponseEvent": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240730",
+                    "enable_features": [
+                        "ClassifyUrlOnProcessResponseEvent"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClearDeviceDataOnSignOutForManagedUsers": [
         {
             "platforms": [
