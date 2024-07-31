@@ -3,13 +3,7 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <title>Test for input type range drag slider thumb.</title>
-<style>
-input {
-  writing-mode: vertical-lr;
-}
-</style>
-<body></body>
-
+<body>
 <script>
 function dragMouse(x, y0, y1) {
   eventSender.mouseMoveTo(x, y0);
@@ -18,46 +12,49 @@ function dragMouse(x, y0, y1) {
   eventSender.mouseUp();
 }
 
-async_test(t => {
-  if (!window.eventSender)
-        return;
-
+for (const mode of ['vertical-rl', 'vertical-lr', 'sideways-rl', 'sideways-lr']) {
   for (const dir of ['rtl', 'ltr']) {
     for (const app of ['none', 'auto']) {
-      let range = document.createElement('input');
-      range.type = 'range';
-      range.style.direction = dir;
-      range.style.appearance = app;
-      range.min = 0;
-      range.max = 100;
-      range.value = 50;
-      document.body.appendChild(range);
+      test(() => {
+        if (!window.eventSender)
+          return;
 
-      const centerX = range.offsetLeft + range.offsetWidth / 2;
-      const centerY = range.offsetTop + range.offsetHeight / 2;
-      const topY = range.offsetTop;
-      const bottomY = range.offsetTop + range.offsetHeight;
+        let range = document.createElement('input');
+        range.type = 'range';
+        range.style.writingMode = mode;
+        range.style.direction = dir;
+        range.style.appearance = app;
+        range.min = 0;
+        range.max = 100;
+        range.value = 50;
+        document.body.appendChild(range);
 
-      if (dir == 'rtl') {
-        dragMouse(centerX, centerY, topY);
-        assert_equals(range.value, '100', 'drag slider thumb up will increase value.');
-        dragMouse(centerX, topY, bottomY);
-        assert_equals(range.value, '0', 'drag slider thumb down will decrease value.');
-      } else {
-        dragMouse(centerX, centerY, topY);
-        assert_equals(range.value, '0', 'drag slider thumb up will decrease value.');
-        dragMouse(centerX, topY, bottomY);
-        assert_equals(range.value, '100', 'drag slider thumb down will increase value.');
-      }
+        const centerX = range.offsetLeft + range.offsetWidth / 2;
+        const centerY = range.offsetTop + range.offsetHeight / 2;
+        const topY = range.offsetTop;
+        const bottomY = range.offsetTop + range.offsetHeight;
 
-      let currentValue = range.value;
-      range.disabled = true;
-      dragMouse(centerX, bottomY, topY);
-      assert_equals(range.value, currentValue, 'drag slider thumb will not change value if disabled.');
+        if ((dir == 'rtl' && mode != 'sideways-lr') || (dir != 'rtl' && mode == 'sideways-lr')) {
+          dragMouse(centerX, centerY, topY);
+          assert_equals(range.value, '100', 'drag slider thumb up will increase value.');
+          dragMouse(centerX, topY, bottomY);
+          assert_equals(range.value, '0', 'drag slider thumb down will decrease value.');
+        } else {
+          dragMouse(centerX, centerY, topY);
+          assert_equals(range.value, '0', 'drag slider thumb up will decrease value.');
+          dragMouse(centerX, topY, bottomY);
+          assert_equals(range.value, '100', 'drag slider thumb down will increase value.');
+        }
+
+        let currentValue = range.value;
+        range.disabled = true;
+        dragMouse(centerX, bottomY, topY);
+        assert_equals(range.value, currentValue, 'drag slider thumb will not change value if disabled.');
+        range.remove();
+      }, `writing-mode:${mode}, direction:${dir}, appearance:${app}; All input[range] with vertical writing mode should change value on drag.`);
     }
   }
-  t.done();
-}, 'All input[range] with vertical writing mode should change value on drag.');
+}
 </script>
 </body>
 </html>
