@@ -729,7 +729,7 @@ TEST_P(ReportingCacheTest, ReportingCacheImplConstructionWithFeatureEnabled) {
       {"endpoint-3", GURL("https://report-collector.example")},
   };
   std::unique_ptr<ReportingCache> reporting_cache_impl =
-      cache()->Create(context(), test_enterprise_endpoints);
+      ReportingCache::Create(context(), test_enterprise_endpoints);
 
   std::vector<ReportingEndpoint> expected_enterprise_endpoints = {
       {ReportingEndpointGroupKey(
@@ -760,7 +760,7 @@ TEST_P(ReportingCacheTest, ReportingCacheImplConstructionWithFeatureDisabled) {
       {"endpoint-3", GURL("https://report-collector.example")},
   };
   std::unique_ptr<ReportingCache> reporting_cache_impl =
-      cache()->Create(context(), test_enterprise_endpoints);
+      ReportingCache::Create(context(), test_enterprise_endpoints);
 
   std::vector<ReportingEndpoint> expected_enterprise_endpoints = {
       {ReportingEndpointGroupKey(
