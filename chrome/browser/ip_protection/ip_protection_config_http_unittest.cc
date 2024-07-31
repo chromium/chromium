@@ -19,6 +19,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -66,15 +67,13 @@ TEST_F(IpProtectionConfigHttpTest, DoRequestSendsCorrectRequestInitialData) {
         ASSERT_TRUE(request.url.is_valid());
         ASSERT_EQ(request.url, token_server_get_initial_data_url_);
 
-        std::string value;
-        ASSERT_TRUE(request.headers.GetHeader(
-            net::HttpRequestHeaders::kAuthorization, &value));
-        ASSERT_EQ(value, base::StrCat({"Bearer ", authorization_header}));
+        ASSERT_THAT(
+            request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization),
+            testing::Optional(base::StrCat({"Bearer ", authorization_header})));
         EXPECT_FALSE(
             request.headers.HasHeader("Ip-Protection-Debug-Experiment-Arm"));
-        ASSERT_TRUE(request.headers.GetHeader(net::HttpRequestHeaders::kAccept,
-                                              &value));
-        ASSERT_EQ(value, kProtobufContentType);
+        ASSERT_THAT(request.headers.GetHeader(net::HttpRequestHeaders::kAccept),
+                    testing::Optional(std::string(kProtobufContentType)));
 
         std::string response_str = "Response body";
         auto head = network::mojom::URLResponseHead::New();
@@ -122,16 +121,14 @@ TEST_F(IpProtectionConfigHttpTest,
         ASSERT_TRUE(request.url.is_valid());
         ASSERT_EQ(request.url, token_server_get_tokens_url_);
 
-        std::string value;
-        ASSERT_TRUE(request.headers.GetHeader(
-            net::HttpRequestHeaders::kAuthorization, &value));
-        ASSERT_EQ(value, base::StrCat({"Bearer ", authorization_header}));
-        ASSERT_TRUE(request.headers.GetHeader(
-            "Ip-Protection-Debug-Experiment-Arm", &value));
-        ASSERT_EQ(value, "42");
-        ASSERT_TRUE(request.headers.GetHeader(net::HttpRequestHeaders::kAccept,
-                                              &value));
-        ASSERT_EQ(value, kProtobufContentType);
+        ASSERT_THAT(
+            request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization),
+            testing::Optional(base::StrCat({"Bearer ", authorization_header})));
+        ASSERT_THAT(
+            request.headers.GetHeader("Ip-Protection-Debug-Experiment-Arm"),
+            testing::Optional(std::string("42")));
+        ASSERT_THAT(request.headers.GetHeader(net::HttpRequestHeaders::kAccept),
+                    testing::Optional(std::string(kProtobufContentType)));
 
         std::string response_str = "Response body";
         auto head = network::mojom::URLResponseHead::New();
