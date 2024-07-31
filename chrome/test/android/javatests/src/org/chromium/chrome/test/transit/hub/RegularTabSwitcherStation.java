@@ -14,6 +14,7 @@ import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.R;
 
 /** Regular tab switcher pane station. */
@@ -25,6 +26,15 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
 
     public RegularTabSwitcherStation(boolean regularTabsExist, boolean incognitoTabsExist) {
         super(/* isIncognito= */ false, regularTabsExist, incognitoTabsExist);
+    }
+
+    /**
+     * Build a {@link RegularTabSwitcherStation} assuming the tab model doesn't change in the
+     * transition.
+     */
+    public static RegularTabSwitcherStation from(TabModelSelector selector) {
+        return new RegularTabSwitcherStation(
+                selector.getModel(false).getCount() > 0, selector.getModel(true).getCount() > 0);
     }
 
     @Override

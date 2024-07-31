@@ -70,8 +70,7 @@ public class TabSwitcherPanePublicTransitTest {
         page = appMenu.openNewIncognitoTab();
         assertTrue(cta.getCurrentTabModel().isIncognito());
 
-        IncognitoTabSwitcherStation incognitoTabSwitcher =
-                page.openHub(IncognitoTabSwitcherStation.class);
+        IncognitoTabSwitcherStation incognitoTabSwitcher = page.openIncognitoTabSwitcher();
         RegularTabSwitcherStation regularTabSwitcher =
                 incognitoTabSwitcher.closeTabAtIndex(0, RegularTabSwitcherStation.class);
 
@@ -96,8 +95,7 @@ public class TabSwitcherPanePublicTransitTest {
         PageAppMenuFacility appMenu = page.openGenericAppMenu();
         page = appMenu.openNewTab();
 
-        RegularTabSwitcherStation regularTabSwitcher =
-                page.openHub(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation regularTabSwitcher = page.openRegularTabSwitcher();
         TabSwitcherAppMenuFacility tabSwitcherAppMenu = regularTabSwitcher.openAppMenu();
         TabSwitcherListEditorFacility listEditor = tabSwitcherAppMenu.clickSelectTabs();
 
@@ -117,8 +115,7 @@ public class TabSwitcherPanePublicTransitTest {
         page = appMenu.openNewIncognitoTab();
         assertTrue(cta.getCurrentTabModel().isIncognito());
 
-        IncognitoTabSwitcherStation incognitoTabSwitcher =
-                page.openHub(IncognitoTabSwitcherStation.class);
+        IncognitoTabSwitcherStation incognitoTabSwitcher = page.openIncognitoTabSwitcher();
         onView(RegularTabSwitcherStation.EMPTY_STATE_TEXT.getViewMatcher()).check(doesNotExist());
 
         RegularTabSwitcherStation regularTabSwitcher = incognitoTabSwitcher.selectRegularTabList();

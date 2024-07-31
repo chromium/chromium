@@ -55,7 +55,7 @@ public class HubLayoutPublicTransitTest {
     public void testEnterAndExitHub() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
-        RegularTabSwitcherStation tabSwitcher = page.openHub(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = page.openRegularTabSwitcher();
 
         PageStation previousTab = tabSwitcher.leaveHubToPreviousTabViaBack();
 
@@ -67,7 +67,7 @@ public class HubLayoutPublicTransitTest {
     public void testEnterHubAndLeaveViaAppMenuNewTab() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
-        RegularTabSwitcherStation tabSwitcher = page.openHub(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = page.openRegularTabSwitcher();
 
         TabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
 
@@ -81,7 +81,7 @@ public class HubLayoutPublicTransitTest {
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
-        RegularTabSwitcherStation tabSwitcher = page.openHub(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = page.openRegularTabSwitcher();
 
         TabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
 
@@ -99,7 +99,7 @@ public class HubLayoutPublicTransitTest {
         IncognitoNewTabPageStation incognitoNewTabPage = appMenu.openNewIncognitoTab();
 
         IncognitoTabSwitcherStation incognitoTabSwitcher =
-                incognitoNewTabPage.openHub(IncognitoTabSwitcherStation.class);
+                incognitoNewTabPage.openIncognitoTabSwitcher();
         assertEquals(
                 incognitoTabSwitcher,
                 incognitoTabSwitcher.selectPane(
@@ -125,10 +125,10 @@ public class HubLayoutPublicTransitTest {
         PageAppMenuFacility appMenu = page.openGenericAppMenu();
         RegularNewTabPageStation newTabPage = appMenu.openNewTab();
 
-        RegularTabSwitcherStation tabSwitcher = newTabPage.openHub(RegularTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = newTabPage.openRegularTabSwitcher();
         page = tabSwitcher.selectTabAtIndex(0);
 
-        tabSwitcher = page.openHub(RegularTabSwitcherStation.class);
+        tabSwitcher = page.openRegularTabSwitcher();
         newTabPage = pauseAndResumeActivity(tabSwitcher);
 
         assertFinalDestination(newTabPage);
