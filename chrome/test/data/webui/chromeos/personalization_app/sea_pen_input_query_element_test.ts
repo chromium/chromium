@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenInputQueryElement, SeaPenRouterElement, SeaPenSuggestionsElement, setSeaPenThumbnailsAction} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenActionName, SeaPenInputQueryElement, SeaPenRouterElement, SeaPenSuggestionsElement, setSeaPenThumbnailsAction} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrTextareaElement} from 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -520,5 +520,33 @@ suite('SeaPenInputQueryElementTest', function() {
         seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
             '#queryInput');
     assertTrue(!!inputElement?.value, 'input should show text');
+  });
+
+  test('rejects HTML query', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: true});
+    personalizationStore.setReducersEnabled(true);
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    initElement(SeaPenRouterElement, {basePath: '/base'});
+    await waitAfterNextRender(seaPenInputQueryElement);
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
+            '#queryInput');
+    assertTrue(!!inputElement, 'textInput should exist');
+    inputElement.value = '<div style="blue">';
+    const searchButton =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            '#searchButton');
+    personalizationStore.expectAction(
+        SeaPenActionName.SET_THUMBNAIL_RESPONSE_STATUS_CODE);
+
+    searchButton?.click();
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    await personalizationStore.waitForAction(
+        SeaPenActionName.SET_THUMBNAIL_RESPONSE_STATUS_CODE);
+    const seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+    assertFalse(!!seaPenSuggestions, 'suggestions element should be hidden');
   });
 });

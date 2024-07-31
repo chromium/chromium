@@ -24,11 +24,13 @@ import {CrTextareaElement} from 'chrome://resources/ash/common/cr_elements/cr_te
 import {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.js';
 import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {QUERY} from './constants.js';
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
-import {MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {MantaStatusCode, MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {setThumbnailResponseStatusCodeAction} from './sea_pen_actions.js';
 import {getSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
@@ -210,6 +212,15 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
       return;
     }
     assert(this.textValue_, 'input query should not be empty.');
+    try {
+      // Throws an error if the textValue_ contains insecure HTML/javascript.
+      parseHtmlSubset(this.textValue_);
+    } catch (error) {
+      this.getStore().dispatch(setThumbnailResponseStatusCodeAction(
+          MantaStatusCode.kBlockedOutputs));
+      this.shouldShowSuggestions_ = false;
+      return;
+    }
     // This only works for English. We only support English queries for now.
     logNumWordsInTextQuery(this.textValue_.split(/\s+/).length);
     const query: SeaPenQuery = {

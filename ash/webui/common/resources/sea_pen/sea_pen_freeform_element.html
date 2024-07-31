@@ -68,7 +68,7 @@
   }
 </style>
 <div id="heading">
-  <template is="dom-if" if="[[isTabContainerEnabled_(seaPenQuery_)]]" restamp>
+  <template is="dom-if" if="[[isTabContainerEnabled_(seaPenQuery_, thumbnailResponseStatusCode_)]]" restamp>
     <div id="tabContainer">
       <cr-button id="resultsTab"
           aria-pressed="[[isResultsTabSelected_(freeformTab_)]]"
@@ -82,7 +82,7 @@
       </cr-button>
     </div>
   </template>
-  <template is="dom-if" if="[[!isTabContainerEnabled_(seaPenQuery_)]]" restamp>
+  <template is="dom-if" if="[[!isTabContainerEnabled_(seaPenQuery_, thumbnailResponseStatusCode_)]]" restamp>
     <h2 id="samplesTitle" class="wallpaper-collections-heading">
       [[i18n('seaPenFreeformSamplePromptsLabel')]]
     </h2>
