@@ -12,9 +12,12 @@
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_style.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/system_shadow.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/highlight_border.h"
@@ -37,6 +40,17 @@ std::unique_ptr<views::Separator> CreateSeparator() {
 }  // namespace
 
 PickerMainContainerView::PickerMainContainerView() {
+  SetPaintToLayer();
+  layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF{kPickerContainerBorderRadius});
+  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetIsFastRoundedCorner(true);
+  // We set background blur even though the main container background is opaque,
+  // to avoid a flickering issue related to the container's scroll view
+  // gradient. See b/351051291.
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+
   SetBackground(views::CreateThemedRoundedRectBackground(
       kPickerContainerBackgroundColor, kPickerContainerBorderRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
