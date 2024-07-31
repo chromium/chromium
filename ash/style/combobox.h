@@ -106,6 +106,7 @@ class ASH_EXPORT Combobox : public views::Button,
   bool OnKeyPressed(const ui::KeyEvent& e) override;
 
   void UpdateExpandedCollapsedAccessibleState() const;
+  void UpdateAccessibleAccessibleActiveDescendantId();
 
   // Optionally used to tie the lifetime of the model to this combobox. See
   // constructor.
