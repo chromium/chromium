@@ -530,6 +530,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   blink::ServiceWorkerStatusCode DeduceStartWorkerFailureReason(
       blink::ServiceWorkerStatusCode default_code);
 
+  // Gets the main script net::Error. If there isn't an error, returns net::OK.
+  net::Error GetMainScriptNetError();
+
   // Returns nullptr if the main script is not loaded yet and:
   //  1) The worker is a new one.
   //  OR

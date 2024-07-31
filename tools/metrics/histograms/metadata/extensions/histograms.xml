@@ -4728,6 +4728,20 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.ServiceWorkerBackground.WorkerScriptFetchNetError"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-02-01">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the underlying net::Error that was encountered when the content
+    service worker layer tries to fetch the worker script (from disk) but
+    encounters a network error.
+
+    It is emitted each time a worker script fetch fails for a
+    blink::ServiceWorkerBackground::kErrorNetwork reason.
+  </summary>
+</histogram>
+
 <histogram
     name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_DeactivateExtension_NotCurrentActivation"
     enum="ServiceWorkerStatusCode" expires_after="2025-03-25">

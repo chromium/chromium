@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -534,9 +535,17 @@ void ServiceWorkerRegisterJob::OnScriptFetchCompleted(
         version->script_cache_map()->main_script_status_message();
     if (message.empty())
       message = ServiceWorkerConsts::kServiceWorkerFetchScriptError;
-    Complete(version->DeduceStartWorkerFailureReason(
-                 blink::ServiceWorkerStatusCode::kErrorFailed),
-             message);
+    blink::ServiceWorkerStatusCode script_fetch_status_code =
+        version->DeduceStartWorkerFailureReason(
+            blink::ServiceWorkerStatusCode::kErrorFailed);
+    Complete(script_fetch_status_code, message);
+    if (script_fetch_status_code ==
+            blink::ServiceWorkerStatusCode::kErrorNetwork &&
+        version->scope().SchemeIs("chrome-extension")) {
+      base::UmaHistogramSparse(
+          "Extensions.ServiceWorkerBackground.WorkerScriptFetchNetError",
+          (int)version->GetMainScriptNetError());
+    }
     return;
   }
 
