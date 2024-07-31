@@ -445,16 +445,8 @@ void PickerController::InsertResultOnNextFocus(
                                  : std::nullopt;
                     },
                     weak_ptr_factory_.GetWeakPtr()),
-                base::BindOnce(
-                    [](const PickerRichMedia& media,
-                       PickerInsertMediaRequest::Result result) {
-                      // Fallback to copying to the clipboard on failure.
-                      if (result !=
-                          PickerInsertMediaRequest::Result::kSuccess) {
-                        CopyMediaToClipboard(media);
-                      }
-                    },
-                    media));
+                base::BindOnce(&PickerController::OnInsertCompleted,
+                               weak_ptr_factory_.GetWeakPtr(), media));
           },
           [&](PickerSearchResult::ClipboardData data) {
             // This cancels the previous request if there was one.
@@ -720,6 +712,15 @@ void PickerController::ShowWidgetPostFeatureTour() {
 
 std::optional<PickerWebPasteTarget> PickerController::GetWebPasteTarget() {
   return client_ ? client_->GetWebPasteTarget() : std::nullopt;
+}
+
+void PickerController::OnInsertCompleted(
+    const PickerRichMedia& media,
+    PickerInsertMediaRequest::Result result) {
+  // Fallback to copying to the clipboard on failure.
+  if (result != PickerInsertMediaRequest::Result::kSuccess) {
+    CopyMediaToClipboard(media);
+  }
 }
 
 }  // namespace ash

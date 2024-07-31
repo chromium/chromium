@@ -15,6 +15,7 @@
 #include "ash/picker/metrics/picker_feature_usage_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/picker_asset_fetcher_impl_delegate.h"
+#include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/views/picker_feature_tour.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_web_paste_target.h"
@@ -35,7 +36,6 @@ class PickerCapsLockStateView;
 class PickerClient;
 class PickerEmojiHistoryModel;
 class PickerEmojiSuggester;
-class PickerInsertMediaRequest;
 class PickerModel;
 class PickerPasteRequest;
 class PickerSearchController;
@@ -136,6 +136,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void OnFeatureTourCompleted(bool had_focus_before_feature_tour);
   void ShowWidgetPostFeatureTour();
   void CloseCapsLockStateView();
+  void OnInsertCompleted(const PickerRichMedia& media,
+                         PickerInsertMediaRequest::Result result);
 
   std::optional<PickerWebPasteTarget> GetWebPasteTarget();
 
