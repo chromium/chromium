@@ -1781,17 +1781,8 @@ void AuthenticatorGpmPinSheetModel::SetPin(std::u16string pin) {
 std::u16string AuthenticatorGpmPinSheetModel::GetAccessibleName() const {
   std::u16string pin_digits_typed_str = base::NumberToString16(
       std::min(static_cast<int>(pin_.length()) + 1, pin_digits_count_));
-
-  switch (mode_) {
-    case Mode::kPinCreate:
-      return l10n_util::GetStringFUTF16(
-          IDS_WEBAUTHN_GPM_CREATE_SIX_DIGIT_PIN_ACCESSIBILITY_WITH_FOCUSED_DIGIT,
-          pin_digits_typed_str);
-    case Mode::kPinEntry:
-      return l10n_util::GetStringFUTF16(
-          IDS_WEBAUTHN_GPM_ENTER_SIX_DIGIT_PIN_ACCESSIBILITY_WITH_FOCUSED_DIGIT,
-          GetRelyingPartyIdString(dialog_model()), pin_digits_typed_str);
-  }
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_GPM_SIX_DIGIT_PIN_ACCESSIBILITY_LABEL, pin_digits_typed_str);
 }
 
 bool AuthenticatorGpmPinSheetModel::FullPinTyped() const {

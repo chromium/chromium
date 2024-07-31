@@ -16620,6 +16620,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_ENTER_PIN_DESC" desc="The description of a dialog that is shown when a user is verifying their presence in passkey creation / sign-in flows explaining that the website requires that.">
         <ph name="SITE">$1<ex>example.com</ex></ph> wants to verify it's you
       </message>
+      <message name="IDS_WEBAUTHN_GPM_SIX_DIGIT_PIN_ACCESSIBILITY_LABEL" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield when entering a 6-digit pin, informing which digit should be entered now and how to remove the last typed digit.">
+        Enter PIN digit <ph name="NUM_DIGIT">$1<ex>3</ex></ph> of 6. Use backspace or delete to remove the last digit.
+      </message>
       <message name="IDS_WEBAUTHN_FORGOT_GPM_PIN_BUTTON" desc="The label of a button that is displayed in a user verification dialog with a Google Password Manager PIN that allows to reset it.">
         Forgot PIN
       </message>
