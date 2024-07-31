@@ -253,6 +253,8 @@ public class HubManagerImpl implements HubManager, HubController {
             mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
                     menuOrKeyboardActionHandler);
         }
-        mSnackbarOverrideToken = mSnackbarManager.pushParentViewToOverrideStack(mHubContainerView);
+        mSnackbarOverrideToken =
+                mSnackbarManager.pushParentViewToOverrideStack(
+                        mHubCoordinator.getSnackbarContainer());
     }
 }

@@ -201,7 +201,7 @@ public class HubManagerImplUnitTest {
 
         FrameLayout containerView = hubController.getContainerView();
         assertNotNull(containerView);
-        verify(mSnackbarManager).pushParentViewToOverrideStack(containerView);
+        verify(mSnackbarManager).pushParentViewToOverrideStack(any());
 
         // Attach the container to the parent view.
         mRootView.addView(containerView);
@@ -213,7 +213,7 @@ public class HubManagerImplUnitTest {
         verify(mMenuOrKeyboardActionController)
                 .unregisterMenuOrKeyboardActionHandler(mTabSwitcherMenuOrKeyboardActionHandler);
         verify(mIncognitoTabSwitcherPane).setPaneHubController(coordinator);
-        verify(mSnackbarManager, times(2)).pushParentViewToOverrideStack(containerView);
+        verify(mSnackbarManager, times(2)).pushParentViewToOverrideStack(any());
         verify(mMenuOrKeyboardActionController)
                 .registerMenuOrKeyboardActionHandler(
                         mIncognitoTabSwitcherMenuOrKeyboardActionHandler);

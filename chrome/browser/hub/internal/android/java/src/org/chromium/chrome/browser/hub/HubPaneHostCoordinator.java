@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
@@ -37,5 +38,10 @@ public class HubPaneHostCoordinator {
     /** Returns the button view for the floating action button if present. */
     public @Nullable View getFloatingActionButton() {
         return mMediator.getFloatingActionButton();
+    }
+
+    /** Returns the view group to contain the snackbar. */
+    public ViewGroup getSnackbarContainer() {
+        return mMediator.getSnackbarContainer();
     }
 }
