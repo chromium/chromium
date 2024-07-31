@@ -228,8 +228,9 @@ MaybeCreateClassifyUrlNavigationThrottleFor(
   CHECK(profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  CHECK(identity_manager);
-
+  if (identity_manager == nullptr) {
+    return nullptr;
+  }
   if (IsPrimaryAccountSubjectToParentalControls(identity_manager) !=
       signin::Tribool::kTrue) {
     return nullptr;
