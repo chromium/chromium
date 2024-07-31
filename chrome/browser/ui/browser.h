@@ -894,6 +894,11 @@ class Browser : public TabStripModelObserver,
   void DidBecomeActive();
   void DidBecomeInactive();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool IsLockedForOnTask();
+  void SetLockedForOnTask(bool locked);
+#endif
+
  private:
   friend class BrowserTest;
   friend class ExclusiveAccessTest;
@@ -1451,6 +1456,14 @@ class Browser : public TabStripModelObserver,
 
   // If true, immediately updates the UI when scheduled.
   bool update_ui_immediately_for_testing_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // OnTask is a ChromeOS feature that is not related to web browsers, but
+  // happens to be implemented using code in //chrome/browser. The feature,
+  // when enabled, disables certain functionality that a web browser would
+  // never typically disable.
+  bool on_task_locked_ = false;
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionBrowserWindowHelper>
