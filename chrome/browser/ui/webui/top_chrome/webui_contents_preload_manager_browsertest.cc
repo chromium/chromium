@@ -22,11 +22,14 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/top_chrome/preload_candidate_selector.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/webview.h"
@@ -211,24 +214,73 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(GetAllPreloadManagerModes()),
     WebUIContentsPreloadManagerBrowserSmokeTest::PrintParam());
 
+namespace {
+
+constexpr char kTestWebUIHost[] = "test-host";
+constexpr char kTestWebUIOrigin[] = "chrome://test-host";
+// This URL will be served with the content of //chrome/test/data/title1.html
+constexpr char kTestWebUIURL[] = "chrome://test-host/title1.html";
+
+class TestTopChromeWebUIController : public TopChromeWebUIController {
+ public:
+  explicit TestTopChromeWebUIController(content::WebUI* web_ui)
+      : TopChromeWebUIController(web_ui) {}
+  static std::string GetWebUIName() { return "Test"; }
+};
+
+class TestTopChromeWebUIConfig
+    : public DefaultTopChromeWebUIConfig<TestTopChromeWebUIController> {
+ public:
+  explicit TestTopChromeWebUIConfig(std::string_view host)
+      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme, host) {}
+
+  // DefaultTopChromeWebUIConfig:
+  bool IsPreloadable() override { return true; }
+};
+
+}  // namespace
+
 class WebUIContentsPreoloadManagerPageLoadMetricsTest
     : public WebUIContentsPreloadManagerBrowserTestBase {
  public:
   void SetUpFeature() override {
-    feature_list()->InitAndEnableFeature(features::kPreloadTopChromeWebUI);
+    feature_list()->InitAndEnableFeatureWithParameters(
+        features::kPreloadTopChromeWebUI,
+        {{features::kPreloadTopChromeWebUISmartPreloadName, "true"}});
   }
   void SetUpPreloadURL() override {
+    // Intentionally use a simple HTML as test WebUI. Testing more complex WebUI
+    // (e.g. Tab Search) sparadically times out on waiting for FCP because the
+    // first image paint event arrives unexpectedly earlier than the first
+    // paint. See crbug.com/353803591#comment4
+    config_registration_ =
+        std::make_unique<content::ScopedWebUIConfigRegistration>(
+            std::make_unique<TestTopChromeWebUIConfig>(kTestWebUIHost));
     ON_CALL(*mock_preload_candidate_selector(), GetURLToPreload(_))
-        .WillByDefault(Return(GURL(chrome::kChromeUITabSearchURL)));
+        .WillByDefault(Return(GURL(kTestWebUIURL)));
   }
+
+ private:
+  std::unique_ptr<content::ScopedWebUIConfigRegistration> config_registration_;
 };
 
-// TODO(crbug.com/353803591): the page metrics propagation is stopped due
-// to first_image_paint being earlier than first_paint.
-// Tests that the time from the WebUI request is requested to when First
-// Contentful Paint (FCP) is recorded.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// The page load metrics test is flaky on LaCrOS because sometimes viz::Display
+// reports a negative frame latency that causes page load metrics to stop
+// propagation.
+#define MAYBE_RequestToFCP DISABLED_RequestToFCP
+#else
+#define MAYBE_RequestToFCP RequestToFCP
+#endif
+// Tests that the time from the WebUI is requested to when First Contentful
+// Paint (FCP) is recorded.
 IN_PROC_BROWSER_TEST_F(WebUIContentsPreoloadManagerPageLoadMetricsTest,
-                       DISABLED_RequestToFCP) {
+                       MAYBE_RequestToFCP) {
+  // Serves the test origin with files from the test data folder.
+  auto url_loader_interceptor =
+      content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+          GetChromeTestDataDir().MaybeAsASCII(), GURL(kTestWebUIOrigin));
+
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       chrome::kNonTabWebUIRequestToFCPHistogramName, 0);
@@ -249,7 +301,9 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreoloadManagerPageLoadMetricsTest,
   content::WebContents* web_contents = request_result.web_contents.get();
   ASSERT_NE(web_contents, nullptr);
 
-  // Show the WebContents in a WebView.
+  // Show the WebContents in a WebView. The FCP is recorded on viz frame commit,
+  // so we must attach the WebUI to a rendering surface (e.g. WebView in a
+  // Widget).
   auto widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
