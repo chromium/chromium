@@ -739,9 +739,6 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColorInternal(
   // The parsing was successful, so we need to consume the input.
   savepoint.Release();
 
-  // TODO(b/40949047): Counters for out-of-gamut are disabled because of
-  // repeated merge-conflict creating reverts. Remove this parameter.
-  const bool kEnableCounters = true;
   if (is_relative_color_) {
     context.Count(WebFeature::kCSSRelativeColor);
   } else {
@@ -752,20 +749,16 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColorInternal(
       case Color::ColorSpace::kA98RGB:
       case Color::ColorSpace::kProPhotoRGB:
       case Color::ColorSpace::kRec2020:
-        if (kEnableCounters) {
-          context.Count(WebFeature::kCSSColor_SpaceRGB);
-          if (!IsInGamutRec2020(result)) {
-            context.Count(WebFeature::kCSSColor_SpaceRGB_outOfRec2020);
-          }
+        context.Count(WebFeature::kCSSColor_SpaceRGB);
+        if (!IsInGamutRec2020(result)) {
+          context.Count(WebFeature::kCSSColor_SpaceRGB_outOfRec2020);
         }
         break;
       case Color::ColorSpace::kOklab:
       case Color::ColorSpace::kOklch:
-        if (kEnableCounters) {
-          context.Count(WebFeature::kCSSColor_SpaceOkLxx);
-          if (!IsInGamutRec2020(result)) {
-            context.Count(WebFeature::kCSSColor_SpaceOkLxx_outOfRec2020);
-          }
+        context.Count(WebFeature::kCSSColor_SpaceOkLxx);
+        if (!IsInGamutRec2020(result)) {
+          context.Count(WebFeature::kCSSColor_SpaceOkLxx_outOfRec2020);
         }
         break;
       case Color::ColorSpace::kXYZD50:
