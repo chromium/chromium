@@ -60,7 +60,8 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
           state_directory_path,
           base::SingleThreadTaskRunner::GetCurrentDefault().get(),
           pref_registry, browser_state_policy_connector_->GetPolicyService(),
-          browser_policy_connector_.get(), /*supervised_user_prefs=*/nullptr);
+          browser_policy_connector_.get(), /*supervised_user_prefs=*/nullptr,
+          /*async=*/false);
 
   TestChromeBrowserState::Builder builder;
   builder.SetName(kProfileName);

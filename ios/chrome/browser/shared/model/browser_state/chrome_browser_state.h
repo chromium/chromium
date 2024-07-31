@@ -47,6 +47,7 @@ class ChromeBrowserState : public web::BrowserState {
  public:
   enum class CreationMode {
     kSynchronous,
+    kAsynchronous,
   };
 
   // Delegate notified of ChromeBrowserState creation events.

@@ -169,7 +169,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   // BrowserState is loaded synchronously.
   user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
       state_path, policy_schema_registry_.get(),
-      /*force_immediate_load=*/true, GetIOTaskRunner(),
+      creation_mode == CreationMode::kSynchronous, GetIOTaskRunner(),
       base::BindRepeating(&ApplicationContext::GetNetworkConnectionTracker,
                           base::Unretained(GetApplicationContext())));
 
@@ -194,12 +194,9 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
       state_path, GetIOTaskRunner().get(), pref_registry_,
       policy_connector_ ? policy_connector_->GetPolicyService() : nullptr,
       GetApplicationContext()->GetBrowserPolicyConnector(),
-      supervised_user_prefs);
+      supervised_user_prefs, creation_mode == CreationMode::kAsynchronous);
   // Register on BrowserState.
   user_prefs::UserPrefs::Set(this, prefs_.get());
-
-  // Migrate obsolete prefs.
-  MigrateObsoleteBrowserStatePrefs(state_path, prefs_.get());
 
   // In //chrome/browser, SupervisedUserSettingsService is a SimpleKeyedService
   // and can be created to initialize SupervisedUserPrefStore.
@@ -211,7 +208,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
 
   // Initialize the settings service and have the pref store subscribe to it.
   supervised_user_settings->Init(state_path, GetIOTaskRunner(),
-                                 /*load_synchronously=*/true);
+                                 creation_mode == CreationMode::kSynchronous);
 
   supervised_user_prefs->Init(supervised_user_settings);
 
@@ -227,35 +224,23 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   base::FilePath cache_path = GetCachePath(base_cache_path);
   int cache_max_size = 0;
 
-  // `storage_uuid_` can be empty when the profile is newly created or already
-  // existed.
-  storage_uuid_ = GetPrefs()->GetString(prefs::kBrowserStateStorageIdentifier);
-  // For newly created profiles, generate a UUID and use a separated data store.
-  // TODO(crbug.com/346754380): Remove a default data store completely.
-  if (storage_uuid_.empty() &&
-      directories_created == BrowserStateCreationResult::kCreated) {
-    storage_uuid_ = base::SysNSStringToUTF8([NSUUID UUID].UUIDString);
-    // Store the UUID value to PrefService locally.
-    GetPrefs()->SetString(prefs::kBrowserStateStorageIdentifier, storage_uuid_);
-  }
-
   // Make sure we initialize the io_data_ after everything else has been
   // initialized that we might be reading from the IO thread.
   io_data_->Init(cookie_path, cache_path, cache_max_size, state_path);
 
-  // DO NOT ADD ANY INITIALISATION AFTER THIS LINE.
+  const bool is_new_browser_state =
+      directories_created == BrowserStateCreationResult::kCreated;
 
-  // The initialisation of the ChromeBrowserState is now complete and the
-  // service can be safely created.
-  BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(
-      this);
-
-  if (delegate_) {
-    // TODO(crbug.com/333865629): pass correct values for `success` and
-    // `is_new_browser_state`. Also, split creation and initialisation
-    // to support asynchronous loading.
-    delegate_->OnChromeBrowserStateCreationFinished(
-        this, creation_mode, /*is_new_browser_state=*/false, /*success=*/true);
+  if (creation_mode == CreationMode::kAsynchronous) {
+    // It is safe to use base::Unretained(...) here since `this` owns the
+    // PrefService and the callback will not be invoked after destruction
+    // of the PrefService.
+    prefs_->AddPrefInitObserver(base::BindOnce(
+        &ChromeBrowserStateImpl::OnPrefsLoaded, base::Unretained(this),
+        creation_mode, is_new_browser_state));
+  } else {
+    // Prefs were loaded synchronously so we can continue immediately.
+    OnPrefsLoaded(creation_mode, is_new_browser_state, true);
   }
 }
 
@@ -333,6 +318,46 @@ void ChromeBrowserStateImpl::SetOffTheRecordChromeBrowserState(
     std::unique_ptr<ChromeBrowserState> otr_state) {
   DCHECK(!otr_state_);
   otr_state_ = std::move(otr_state);
+}
+
+void ChromeBrowserStateImpl::OnPrefsLoaded(CreationMode creation_mode,
+                                           bool is_new_browser_state,
+                                           bool success) {
+  // Early return in case of failure to load the preferences.
+  if (!success) {
+    if (delegate_) {
+      delegate_->OnChromeBrowserStateCreationFinished(
+          this, creation_mode, is_new_browser_state, false);
+    }
+    return;
+  }
+
+  // Migrate obsolete prefs.
+  MigrateObsoleteBrowserStatePrefs(GetStatePath(), prefs_.get());
+
+  // Initialize `storage_uuid_` from the prefs. In case of a new BrowserState,
+  // generate a new value (this avoid losing data when migrating from an old
+  // BrowserState).
+  //
+  // TODO(crbug.com/346754380): Remove when all BrowserState use a non-default
+  // storage (since there is no automatic migration, this could take years).
+  storage_uuid_ = GetPrefs()->GetString(prefs::kBrowserStateStorageIdentifier);
+  if (storage_uuid_.empty() && is_new_browser_state) {
+    storage_uuid_ = base::SysNSStringToUTF8([NSUUID UUID].UUIDString);
+    GetPrefs()->SetString(prefs::kBrowserStateStorageIdentifier, storage_uuid_);
+  }
+
+  // DO NOT ADD ANY INITIALISATION AFTER THIS LINE.
+
+  // The initialisation of the ChromeBrowserState is now complete and the
+  // service can be safely created.
+  BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(
+      this);
+
+  if (delegate_) {
+    delegate_->OnChromeBrowserStateCreationFinished(
+        this, creation_mode, is_new_browser_state, success);
+  }
 }
 
 ChromeBrowserStateIOData* ChromeBrowserStateImpl::GetIOData() {
