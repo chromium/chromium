@@ -162,6 +162,8 @@ const CGFloat kSpinnerButtonPadding = 18;
 
   SceneState* sceneState = self.browser->GetSceneState();
   _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+  self.view.accessibilityIdentifier =
+      kSyncEncryptionPassphraseTableViewAccessibilityIdentifier;
 }
 
 - (void)didReceiveMemoryWarning {

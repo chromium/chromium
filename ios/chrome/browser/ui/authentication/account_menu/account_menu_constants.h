@@ -11,5 +11,17 @@
 extern NSString* const kAccountMenuTableViewId;
 // The accessibility identifier of the view controlle's close button.
 extern NSString* const kAccountMenuCloseButtonId;
+// The accessibility identifier of the view controlle's ellipsis button.
+extern NSString* const kAccountMenuSecondaryActionMenuButtonId;
+// The accessibility identifier of the Error mmesage.
+extern NSString* const kAccountMenuErrorMessageId;
+// The accessibility identifier of the Error button.
+extern NSString* const kAccountMenuErrorActionButtonId;
+// The accessibility identifier of the Add Account.
+extern NSString* const kAccountMenuAddAccountButtonId;
+// The accessibility identifier of the Sign out.
+extern NSString* const kAccountMenuSignoutButtonId;
+// The accessibility identifier for the secondary accounts buttons.
+extern NSString* const kAccountMenuSecondaryAccountButtonId;
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_MENU_ACCOUNT_MENU_CONSTANTS_H_
