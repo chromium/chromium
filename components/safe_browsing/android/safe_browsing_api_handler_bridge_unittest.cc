@@ -12,10 +12,12 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/span.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/types/fixed_array.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
@@ -99,15 +101,14 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
                                          expected_threats_of_interest) {
     ScopedJavaLocalRef<jstring> j_url =
         ConvertUTF8ToJavaString(env_, url.spec());
-    int int_threats_of_interest[expected_threats_of_interest.size()];
-    int* itr = &int_threats_of_interest[0];
+    base::FixedArray<int> int_threats_of_interest(
+        expected_threats_of_interest.size());
+    auto itr = int_threats_of_interest.begin();
     for (auto threat_type : expected_threats_of_interest) {
       *itr++ = static_cast<int>(threat_type);
     }
     Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setExpectedSafetyNetApiHandlerThreatsOfInterest(
-        env_, j_url,
-        ToJavaIntArray(env_, int_threats_of_interest,
-                       expected_threats_of_interest.size()));
+        env_, j_url, ToJavaIntArray(env_, base::span(int_threats_of_interest)));
     Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafetyNetApiHandlerMetadata(
         env_, j_url, ConvertUTF8ToJavaString(env_, metadata));
   }
@@ -123,23 +124,25 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
       const SafeBrowsingJavaProtocol& expected_protocol) {
     ScopedJavaLocalRef<jstring> j_url =
         ConvertUTF8ToJavaString(env_, url.spec());
-    int int_threat_types[expected_threat_types.size()];
-    int* itr = &int_threat_types[0];
+    base::FixedArray<int> int_threat_types(expected_threat_types.size());
+    auto itr = int_threat_types.begin();
     for (auto expected_threat_type : expected_threat_types) {
       *itr++ = static_cast<int>(expected_threat_type);
     }
-    int int_threat_attributes[returned_threat_attributes.size()];
-    itr = &int_threat_attributes[0];
+    base::FixedArray<int> int_threat_attributes(
+        returned_threat_attributes.size());
+    itr = int_threat_attributes.begin();
     for (auto returned_threat_attribute : returned_threat_attributes) {
       *itr++ = static_cast<int>(returned_threat_attribute);
     }
     Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafeBrowsingApiHandlerResponse(
         env_, j_url,
-        ToJavaIntArray(env_, int_threat_types, expected_threat_types.size()),
+        ToJavaIntArray(env_, int_threat_types.data(),
+                       expected_threat_types.size()),
         static_cast<int>(expected_protocol),
         static_cast<int>(returned_lookup_result),
         static_cast<int>(returned_threat_type),
-        ToJavaIntArray(env_, int_threat_attributes,
+        ToJavaIntArray(env_, int_threat_attributes.data(),
                        returned_threat_attributes.size()),
         static_cast<int>(returned_response_status));
   }

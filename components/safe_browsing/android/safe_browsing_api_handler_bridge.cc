@@ -17,12 +17,14 @@
 #include "base/android/jni_string.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/fixed_array.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -309,13 +311,13 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafetyNetJavaArray(
     JNIEnv* env,
     const SBThreatTypeSet& threat_types) {
   DCHECK_LT(0u, threat_types.size());
-  int int_threat_types[threat_types.size()];
-  int* itr = &int_threat_types[0];
+  base::FixedArray<int> int_threat_types(threat_types.size());
+  auto itr = int_threat_types.begin();
   for (auto threat_type : threat_types) {
     *itr++ =
         static_cast<int>(SBThreatTypeToSafetyNetJavaThreatType(threat_type));
   }
-  return ToJavaIntArray(env, int_threat_types, threat_types.size());
+  return ToJavaIntArray(env, base::span(int_threat_types));
 }
 
 // Convert a Java threat type for SafeBrowsing to a SBThreatType.
@@ -370,8 +372,8 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafeBrowsingJavaArray(
                      SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER)
           ? threat_types.size() + 1
           : threat_types.size();
-  int int_threat_types[threat_type_size];
-  int* itr = &int_threat_types[0];
+  base::FixedArray<int> int_threat_types(threat_type_size);
+  auto itr = int_threat_types.begin();
   for (auto threat_type : threat_types) {
     if (threat_type == SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
       *itr++ = static_cast<int>(
@@ -383,7 +385,7 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafeBrowsingJavaArray(
           SBThreatTypeToSafeBrowsingApiJavaThreatType(threat_type));
     }
   }
-  return ToJavaIntArray(env, int_threat_types, threat_type_size);
+  return ToJavaIntArray(env, base::span(int_threat_types));
 }
 
 // The map that holds the callback_id used to reference each pending SafetyNet
