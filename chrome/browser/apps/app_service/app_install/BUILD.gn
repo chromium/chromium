@@ -200,6 +200,7 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crosapi:test_support",
+      "//chrome/browser/ui/webui/ash/app_install:test_support",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
     ]

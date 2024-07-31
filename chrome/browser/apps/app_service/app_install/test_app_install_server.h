@@ -10,9 +10,12 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/webapps/common/web_app_id.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_response.h"
 
 namespace apps {
 
@@ -37,7 +40,13 @@ class TestAppInstallServer {
   void SetUpInstallUrlResponse(PackageId package_id, GURL install_url);
 
   // Set up an arbitrary response to the App Install endpoint.
-  void SetUpResponse(std::string_view package_id, std::string_view response);
+  void SetUpResponse(std::string_view package_id,
+                     const apps::proto::AppInstallResponse& response);
+
+  // Make the App Install response endpoint return with an HTTP `response_code`
+  // for a particular app.
+  void SetUpResponseCode(PackageId package_id,
+                         net::HttpStatusCode response_code);
 
   GURL GetUrl(std::string_view relative_url) {
     return server_.GetURL(relative_url);
@@ -48,7 +57,8 @@ class TestAppInstallServer {
       const net::test_server::HttpRequest& request);
 
   net::EmbeddedTestServer server_;
-  std::map<std::string, std::string> response_map_;
+  std::map<std::string, std::unique_ptr<net::test_server::BasicHttpResponse>>
+      response_map_;
 };
 
 }  // namespace apps

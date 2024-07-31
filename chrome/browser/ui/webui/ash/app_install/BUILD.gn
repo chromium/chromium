@@ -80,6 +80,7 @@ source_set("browser_tests") {
 
   deps = [
     ":app_install",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/apps/almanac_api_client",
@@ -87,6 +88,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service/app_install",
     "//chrome/browser/apps/app_service/app_install:proto",
+    "//chrome/browser/apps/app_service/app_install:test_support",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -98,5 +100,21 @@ source_set("browser_tests") {
     "//components/webapps/browser",
     "//content/test:test_support",
     "//net:test_support",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "app_install_dialog_test_helpers.cc",
+    "app_install_dialog_test_helpers.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui/webui/ash",
+    "//chrome/common",
+    "//content/test:test_support",
   ]
 }

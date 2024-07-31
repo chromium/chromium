@@ -42,39 +42,47 @@ TestAppInstallServer::SetupDefaultServerResponse() {
   PackageId package_id(apps::PackageType::kWeb, manifest_id.spec());
 
   // Set Almanac server payload.
-  response_map_[package_id.ToString()] = [&] {
-    proto::AppInstallResponse response;
-    proto::AppInstallResponse_AppInstance& instance =
-        *response.mutable_app_instance();
-    instance.set_package_id(package_id.ToString());
-    instance.set_name("Test");
-    proto::AppInstallResponse_WebExtras& web_extras =
-        *instance.mutable_web_extras();
-    web_extras.set_document_url(start_url.spec());
-    web_extras.set_original_manifest_url(manifest_url.spec());
-    web_extras.set_scs_url(manifest_url.spec());
-    return response.SerializeAsString();
-  }();
+  proto::AppInstallResponse response;
+  proto::AppInstallResponse_AppInstance& instance =
+      *response.mutable_app_instance();
+  instance.set_package_id(package_id.ToString());
+  instance.set_name("Test");
+  proto::AppInstallResponse_WebExtras& web_extras =
+      *instance.mutable_web_extras();
+  web_extras.set_document_url(start_url.spec());
+  web_extras.set_original_manifest_url(manifest_url.spec());
+  web_extras.set_scs_url(manifest_url.spec());
+  SetUpResponse(package_id.ToString(), response);
 
   return {app_id, package_id};
 }
 
 void TestAppInstallServer::SetUpInstallUrlResponse(PackageId package_id,
                                                    GURL install_url) {
-  response_map_[package_id.ToString()] = [&] {
-    proto::AppInstallResponse response;
-    proto::AppInstallResponse_AppInstance& instance =
-        *response.mutable_app_instance();
-    instance.set_package_id(package_id.ToString());
-    instance.set_name("Test");
-    instance.set_install_url(install_url.spec());
-    return response.SerializeAsString();
-  }();
+  proto::AppInstallResponse response;
+  proto::AppInstallResponse_AppInstance& instance =
+      *response.mutable_app_instance();
+  instance.set_package_id(package_id.ToString());
+  instance.set_name("Test");
+  instance.set_install_url(install_url.spec());
+  SetUpResponse(package_id.ToString(), response);
 }
 
-void TestAppInstallServer::SetUpResponse(std::string_view package_id,
-                                         std::string_view response) {
-  response_map_[std::string(package_id)] = response;
+void TestAppInstallServer::SetUpResponse(
+    std::string_view package_id,
+    const apps::proto::AppInstallResponse& response) {
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_OK);
+  http_response->set_content(response.SerializeAsString());
+  response_map_[std::string(package_id)] = std::move(http_response);
+}
+
+void TestAppInstallServer::SetUpResponseCode(
+    PackageId package_id,
+    net::HttpStatusCode response_code) {
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(response_code);
+  response_map_[package_id.ToString()] = std::move(http_response);
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
@@ -97,9 +105,7 @@ TestAppInstallServer::HandleRequest(
     return std::move(http_response);
   }
 
-  http_response->set_code(net::HTTP_OK);
-  http_response->set_content(it->second);
-  return std::move(http_response);
+  return std::move(it->second);
 }
 
 }  // namespace apps

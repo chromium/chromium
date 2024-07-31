@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install_dialog_test_helpers.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/package_id.h"
@@ -104,10 +105,13 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
   instance.set_package_id(test_package_id);
   instance.set_name("Test app");
 
-  app_install_server()->SetUpResponse(test_package_id,
-                                      response.SerializeAsString());
+  app_install_server()->SetUpResponse(test_package_id, response);
 
   base::test::TestFuture<void> completion_future;
+
+  content::TestNavigationObserver navigation_observer_dialog(
+      (GURL(chrome::kChromeUIAppInstallDialogURL)));
+  navigation_observer_dialog.StartWatchingNewWebContents();
 
   AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->AppInstallService()
@@ -116,10 +120,12 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
                   /*anchor_window=*/std::nullopt,
                   completion_future.GetCallback());
 
-  ASSERT_TRUE(completion_future.Wait());
+  navigation_observer_dialog.Wait();
+  content::WebContents* contents = ash::app_install::GetWebContentsFromDialog();
+  ASSERT_TRUE(contents);
+  EXPECT_EQ(ash::app_install::GetDialogTitle(contents), "App not available");
 
-  // TODO(b/334733649): Verify that the error dialog shows up in the correct
-  // state.
+  ASSERT_TRUE(completion_future.Wait());
   histograms.ExpectUniqueSample(
       "Apps.AppInstallService.AppInstallResult.AppInstallUriUnknown",
       AppInstallResult::kAppDataCorrupted, 1);

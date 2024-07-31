@@ -223,8 +223,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
   proto::AppInstallResponse_AppInstance& instance =
       *response.mutable_app_instance();
   instance.set_install_url(install_url.spec());
-  app_install_server()->SetUpResponse("unknown package id format",
-                                      response.SerializeAsString());
+  app_install_server()->SetUpResponse("unknown package id format", response);
 
   {
     content::TestNavigationObserver observer(install_url);
