@@ -15,14 +15,6 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-// TODO(crbug.com/40945317): Remove those imports and the corresponding deps
-// when support for legacy session storage is removed.
-#import "ios/chrome/browser/sessions/model/session_restoration_service.h"
-#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/web/public/session/crw_navigation_item_storage.h"
-#import "ios/web/public/session/crw_session_storage.h"
-
 namespace {
 
 // Helper to access the correct NavigationItem, accounting for pending entries.
@@ -36,26 +28,10 @@ web::NavigationItem* GetPossiblyPendingItemAtIndex(web::WebState* web_state,
              : web_state->GetNavigationManager()->GetItemAtIndex(index);
 }
 
-// Returns whether the session restoration service requires the support of
-// placeholder tabs to be used.
-bool PlaceholderTabsSupportEnabled(web::WebState* web_state) {
-  // Some unit tests create WebStates without a BrowserState. Don't crash.
-  web::BrowserState* browser_state = web_state->GetBrowserState();
-  if (!browser_state) {
-    return false;
-  }
-
-  return SessionRestorationServiceFactory::GetForBrowserState(
-             ChromeBrowserState::FromBrowserState(browser_state))
-      ->PlaceholderTabsEnabled();
-}
-
 }  // namespace
 
 IOSChromeSyncedTabDelegate::IOSChromeSyncedTabDelegate(web::WebState* web_state)
-    : web_state_(web_state),
-      placeholder_tabs_support_enabled_(
-          PlaceholderTabsSupportEnabled(web_state_)) {
+    : web_state_(web_state) {
   DCHECK(web_state);
 }
 
@@ -96,51 +72,21 @@ std::string IOSChromeSyncedTabDelegate::GetExtensionAppId() const {
 
 bool IOSChromeSyncedTabDelegate::IsInitialBlankNavigation() const {
   DCHECK(!IsPlaceholderTab());
-  if (GetSessionStorageIfNeeded()) {
-    return session_storage_.itemStorages.count == 0;
-  }
   return web_state_->GetNavigationItemCount() == 0;
 }
 
 int IOSChromeSyncedTabDelegate::GetCurrentEntryIndex() const {
   DCHECK(!IsPlaceholderTab());
-  if (GetSessionStorageIfNeeded()) {
-    NSInteger lastCommittedIndex = session_storage_.lastCommittedItemIndex;
-    if (lastCommittedIndex < 0 ||
-        lastCommittedIndex >=
-            static_cast<NSInteger>(session_storage_.itemStorages.count)) {
-      // It has been observed that lastCommittedIndex can be invalid (see
-      // crbug.com/1060553). Returning an invalid index will cause a crash.
-      // If lastCommittedIndex is invalid, consider the last index as the
-      // current one.
-      // As GetSessionStorageIfNeeded just returned true,
-      // session_storage_.itemStorages.count is not 0 and
-      // session_storage_.itemStorages.count - 1 is valid.
-      return session_storage_.itemStorages.count - 1;
-    }
-    return session_storage_.lastCommittedItemIndex;
-  }
   return web_state_->GetNavigationManager()->GetLastCommittedItemIndex();
 }
 
 int IOSChromeSyncedTabDelegate::GetEntryCount() const {
   DCHECK(!IsPlaceholderTab());
-  if (GetSessionStorageIfNeeded()) {
-    return static_cast<int>(session_storage_.itemStorages.count);
-  }
   return web_state_->GetNavigationItemCount();
 }
 
 GURL IOSChromeSyncedTabDelegate::GetVirtualURLAtIndex(int i) const {
   DCHECK(!IsPlaceholderTab());
-  if (GetSessionStorageIfNeeded()) {
-    DCHECK_GE(i, 0);
-    NSArray<CRWNavigationItemStorage*>* item_storages =
-        session_storage_.itemStorages;
-    DCHECK_LT(i, static_cast<int>(item_storages.count));
-    CRWNavigationItemStorage* item = item_storages[i];
-    return item.virtualURL;
-  }
   web::NavigationItem* item = GetPossiblyPendingItemAtIndex(web_state_, i);
   return item ? item->GetVirtualURL() : GURL();
 }
@@ -149,17 +95,6 @@ void IOSChromeSyncedTabDelegate::GetSerializedNavigationAtIndex(
     int i,
     sessions::SerializedNavigationEntry* serialized_entry) const {
   DCHECK(!IsPlaceholderTab());
-  if (GetSessionStorageIfNeeded()) {
-    NSArray<CRWNavigationItemStorage*>* item_storages =
-        session_storage_.itemStorages;
-    DCHECK_GE(i, 0);
-    DCHECK_LT(i, static_cast<int>(item_storages.count));
-    CRWNavigationItemStorage* item = item_storages[i];
-    *serialized_entry =
-        sessions::IOSSerializedNavigationBuilder::FromNavigationStorageItem(
-            i, item);
-    return;
-  }
   web::NavigationItem* item = GetPossiblyPendingItemAtIndex(web_state_, i);
   if (item) {
     *serialized_entry =
@@ -179,12 +114,6 @@ IOSChromeSyncedTabDelegate::GetBlockedNavigations() const {
 }
 
 bool IOSChromeSyncedTabDelegate::IsPlaceholderTab() const {
-  // Can't be a placeholder tab if the support for placeholder tabs is not
-  // enabled.
-  if (!placeholder_tabs_support_enabled_) {
-    return false;
-  }
-
   // A tab is considered as "placeholder" if it is not fully loaded. This
   // corresponds to "unrealized" tabs or tabs that are still restoring their
   // navigation history.
@@ -255,44 +184,6 @@ IOSChromeSyncedTabDelegate::ReadPlaceholderTabSnapshotIfItShouldSync(
       << "ReadPlaceholderTabSnapshotIfItShouldSync is not supported for the "
          "iOS platform.";
   return nullptr;
-}
-
-bool IOSChromeSyncedTabDelegate::GetSessionStorageIfNeeded() const {
-  // Never use the session storage when placeholder tabs support is enabled.
-  // In fact, using the session storage is a workaround to missing placeholder
-  // tab support.
-  if (placeholder_tabs_support_enabled_) {
-    return false;
-  }
-
-  // Unrealized web states should always use session storage, regardless of
-  // navigation items.
-  if (!web_state_->IsRealized()) {
-    if (!session_storage_) {
-      session_storage_ = web_state_->BuildSessionStorage();
-    }
-    return true;
-  }
-
-  // With slim navigation, the navigation manager is only restored when the tab
-  // is displayed. Before restoration, the session storage must be used.
-  bool should_use_storage =
-      web_state_->GetNavigationManager()->IsRestoreSessionInProgress();
-  bool storage_has_navigation_items = false;
-  if (should_use_storage) {
-    if (!session_storage_) {
-      session_storage_ = web_state_->BuildSessionStorage();
-    }
-    storage_has_navigation_items = session_storage_.itemStorages.count != 0;
-#if DCHECK_IS_ON()
-    if (storage_has_navigation_items) {
-      DCHECK_GE(session_storage_.lastCommittedItemIndex, 0);
-      DCHECK_LT(session_storage_.lastCommittedItemIndex,
-                static_cast<int>(session_storage_.itemStorages.count));
-    }
-#endif
-  }
-  return should_use_storage && storage_has_navigation_items;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(IOSChromeSyncedTabDelegate)

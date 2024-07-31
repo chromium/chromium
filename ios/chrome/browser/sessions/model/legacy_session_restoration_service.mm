@@ -263,11 +263,6 @@ void LegacySessionRestorationService::PurgeUnassociatedData(
       purgeUnassociatedDataWithCompletion:std::move(closure)];
 }
 
-bool LegacySessionRestorationService::PlaceholderTabsEnabled() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return false;
-}
-
 void LegacySessionRestorationService::ParseDataForBrowserAsync(
     Browser* browser,
     WebStateStorageIterationCallback iter_callback,

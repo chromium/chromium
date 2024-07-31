@@ -9,12 +9,10 @@
 #include <string>
 #include <vector>
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
-#import "ios/web/public/web_state_user_data.h"
-
-@class CRWSessionStorage;
+#include "ios/web/public/web_state_user_data.h"
 
 class IOSChromeSyncedTabDelegate
     : public sync_sessions::SyncedTabDelegate,
@@ -59,21 +57,8 @@ class IOSChromeSyncedTabDelegate
 
   explicit IOSChromeSyncedTabDelegate(web::WebState* web_state);
 
-  // Returns whether the navigation data must be read from session storage.
-  // Can only be used if placeholder tabs support is not enabled. If this
-  // method returns true, then `session_storage_` must be used to get the
-  // navigation information.
-  bool GetSessionStorageIfNeeded() const;
-
   // The associated WebState.
   const raw_ptr<web::WebState> web_state_;
-
-  // Whether placeholder tabs support is enabled.
-  const bool placeholder_tabs_support_enabled_;
-
-  // The session storage for the WebState. Used only when the support for
-  // placeholder tabs is not enabled. Invalid to use otherwise.
-  mutable CRWSessionStorage* session_storage_;
 
   // Cached value of last_active_time, sometimes returned instead of the
   // last_active_time from the WebState.
