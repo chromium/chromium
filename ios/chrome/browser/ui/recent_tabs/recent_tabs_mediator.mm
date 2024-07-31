@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "base/timer/timer.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -23,7 +24,6 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -87,18 +87,13 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 @interface RecentTabsMediator () <IdentityManagerObserverBridgeDelegate,
                                   SyncedSessionsObserver,
-                                  TabGridToolbarsGridDelegate,
-                                  WebStateListObserving> {
-  std::unique_ptr<AllWebStateListObservationRegistrar> _registrar;
+                                  TabGridToolbarsGridDelegate> {
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   std::unique_ptr<recent_tabs::ClosedTabsObserverBridge> _closedTabsObserver;
   SessionsSyncUserState _userState;
-  // The list of web state list currently processing batch operations (e.g.
-  // Closing All, or Undoing a Close All).
-  std::set<WebStateList*> _webStateListsWithBatchOperations;
   // Current scene state.
   SceneState* _sceneState;
   // YES if remote grid is disabled by policy.
@@ -109,6 +104,9 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   BOOL _selectedGrid;
   // Feature engagement tracker for notifying promo events.
   feature_engagement::Tracker* _engagementTracker;
+  // Time to ensure that the updates to the consumer are only happening once all
+  // the updates are complete.
+  std::unique_ptr<base::RetainingOneShotTimer> _timer;
 }
 
 // Return the user's current sign-in and chrome-sync state.
@@ -150,6 +148,11 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     _sceneState = sceneState;
     _isDisabled = disabled;
     _engagementTracker = engagementTracker;
+    __weak __typeof(self) weakSelf = self;
+    _timer = std::make_unique<base::RetainingOneShotTimer>(
+        FROM_HERE, base::Milliseconds(100), base::BindRepeating(^{
+          [weakSelf updateConsumerTabs];
+        }));
   }
   return self;
 }
@@ -157,11 +160,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 #pragma mark - Public Interface
 
 - (void)initObservers {
-  if (!_registrar) {
-    _registrar = std::make_unique<AllWebStateListObservationRegistrar>(
-        _browserList, std::make_unique<WebStateListObserverBridge>(self),
-        AllWebStateListObservationRegistrar::Mode::REGULAR);
-  }
   if (!_syncedSessionsObserver) {
     _syncedSessionsObserver =
         std::make_unique<synced_sessions::SyncedSessionsObserverBridge>(
@@ -183,7 +181,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 }
 
 - (void)disconnect {
-  _registrar.reset();
   _syncedSessionsObserver.reset();
   _identityManagerObserver.reset();
 
@@ -244,55 +241,11 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 #pragma mark - ClosedTabsObserving
 
 - (void)tabRestoreServiceChanged:(sessions::TabRestoreService*)service {
-  self.restoreService->LoadTabsFromLastSession();
-  // A WebStateList batch operation can result in batch changes to the
-  // TabRestoreService (e.g., closing or restoring all tabs). To properly batch
-  // process TabRestoreService changes, those changes must be executed after the
-  // WebStateList batch operation ended. This allows RecentTabs to ignore
-  // individual tabRestoreServiceChanged calls that correspond to a WebStateList
-  // batch operation. The consumer is updated once after all batch operations
-  // have completed.
-  if (_webStateListsWithBatchOperations.empty()) {
-    [self.consumer refreshRecentlyClosedTabs];
-  }
+  _timer->Reset();
 }
 
 - (void)tabRestoreServiceDestroyed:(sessions::TabRestoreService*)service {
   [self.consumer setTabRestoreService:nullptr];
-}
-
-#pragma mark - WebStateListObserving
-
-- (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
-  _webStateListsWithBatchOperations.insert(webStateList);
-}
-
-- (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
-  _webStateListsWithBatchOperations.erase(webStateList);
-  // A WebStateList batch operation can result in batch changes to the
-  // TabRestoreService (e.g., closing or restoring all tabs). Individual
-  // TabRestoreService updates are ignored between
-  // `-webStateListWillBeginBatchOperation:` and
-  // `-webStateListBatchOperationEnded:` for all observed WebStateLists. The
-  // consumer is updated once after all batch operations have completed.
-  if (_webStateListsWithBatchOperations.empty()) {
-    [self.consumer refreshRecentlyClosedTabs];
-  }
-}
-
-- (void)webStateListDestroyed:(WebStateList*)webStateList {
-  if (_webStateListsWithBatchOperations.contains(webStateList)) {
-    // This means a WebStateList was in a batch operation (received
-    // `-webStateListWillBeginBatchOperation:`) that didn't finish (didn't
-    // receive `-webStateListBatchOperationEnded:`). This is not supposed to
-    // happen, but if it did, handle it by removing the web state list from the
-    // set and dump without crashing.
-    base::debug::DumpWithoutCrashing();
-    _webStateListsWithBatchOperations.erase(webStateList);
-    if (_webStateListsWithBatchOperations.empty()) {
-      [self.consumer refreshRecentlyClosedTabs];
-    }
-  }
 }
 
 #pragma mark - TableViewFaviconDataSource
@@ -371,6 +324,12 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   toolbarsConfiguration.doneButton = tabsInOtherGrid;
   toolbarsConfiguration.searchButton = YES;
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
+}
+
+// Update consumer tabs.
+- (void)updateConsumerTabs {
+  self.restoreService->LoadTabsFromLastSession();
+  [self.consumer refreshRecentlyClosedTabs];
 }
 
 #pragma mark - RecentTabsTableViewControllerDelegate

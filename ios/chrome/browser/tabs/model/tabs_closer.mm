@@ -211,18 +211,6 @@ void TabsCloser::UndoStorage::Undo() {
 }
 
 void TabsCloser::UndoStorage::Drop() {
-  // Pretend that the original Browser's WebStateList is going through a
-  // batched operation. This is a fix for https://crbug.com/1521867 where
-  // RecentTabsMediator observes the TabRestoreService for modifications
-  // and updates its state each time it is notified by the service.
-  //
-  // Using a ScopedBatchOperation causes RecentTabsMediator to consider
-  // that a batch operation is in progress for one of the WebStateList
-  // it is observing and to avoid updating its state for each closed
-  // WebState.
-  WebStateList::ScopedBatchOperation original_browser_lock =
-      original_browser_->GetWebStateList()->StartBatchOperation();
-
   CloseAllWebStates(*temporary_browser_->GetWebStateList(),
                     WebStateList::CLOSE_USER_ACTION);
 
