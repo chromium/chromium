@@ -76,7 +76,8 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 // Tests that a page load is blocked when the URLBlocklist policy is set to
 // block all URLs.
-- (void)testWildcardBlocklist {
+// TODO(crbug.com/356495438): Re-enable when fixed when building with Xcode 16.
+- (void)DISABLED_testWildcardBlocklist {
   [PolicyAppInterface
       setPolicyValue:@"[\"*\"]"
               forKey:base::SysUTF8ToNSString(policy::key::kURLBlocklist)];
@@ -90,7 +91,8 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 }
 
 // Tests that the NTP is not blocked by the wildcard blocklist.
-- (void)testNTPIsNotBlocked {
+// TODO(crbug.com/356495438): Re-enable when fixed when building with Xcode 16.
+- (void)DISABLED_testNTPIsNotBlocked {
   [PolicyAppInterface
       setPolicyValue:@"[\"*\"]"
               forKey:base::SysUTF8ToNSString(policy::key::kURLBlocklist)];
