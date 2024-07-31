@@ -629,7 +629,11 @@ crbug.com/1470373 [ android-oreo android-nexus-5x passthrough ] conformance/text
 
 crbug.com/1294071 [ android-pie android-shield-android-tv ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 # Flakily returning RGBA(0,0,0,0) for all pixels
-crbug.com/1357064 [ android android-shield-android-tv no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/40236526 [ android android-shield-android-tv no-passthrough ] conformance/rendering/blending.html [ Failure ]
+
+## Pixel 2 ##
+
+crbug.com/40236526 [ android android-pixel-2 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
 ## Pixel 4 ##
 
@@ -654,7 +658,7 @@ crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_WEBGL_color_buffer_float [ Failure ]
 crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
-crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
 crbug.com/1495573 [ android-14 android-pixel-6 arm graphite-disabled passthrough renderer-skia-vulkan ] conformance/extensions/oes-texture-half-float-with-image.html [ RetryOnFailure ]
 crbug.com/1495573 [ android-pixel-6 arm graphite-disabled passthrough renderer-skia-vulkan ] conformance/extensions/oes-vertex-array-object.html [ RetryOnFailure ]
