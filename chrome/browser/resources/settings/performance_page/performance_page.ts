@@ -53,14 +53,6 @@ export class SettingsPerformancePageElement extends
 
   static get properties() {
     return {
-      isDiscardRingImprovementsEnabled_: {
-        readOnly: true,
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isDiscardRingImprovementsEnabled');
-        },
-      },
-
       isPerformanceInterventionUiEnabled_: {
         readOnly: true,
         type: Boolean,
@@ -74,7 +66,6 @@ export class SettingsPerformancePageElement extends
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 
-  private isDiscardRingImprovementsEnabled_: boolean;
   private isPerformanceInterventionUiEnabled_: boolean;
 
   override ready() {

@@ -545,10 +545,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(
-      "isDiscardRingImprovementsEnabled",
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kDiscardRingImprovements));
-  html_source->AddBoolean(
       "isPerformanceInterventionUiEnabled",
       base::FeatureList::IsEnabled(
           performance_manager::features::kPerformanceInterventionUI));

@@ -557,56 +557,6 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                  /*baseline_cl=*/"5280502"));
 }
 
-class MemorySaverFaviconTreatmentTest
-    : public MemorySaverInteractiveTestMixin<InteractiveBrowserTest> {
- public:
-  MemorySaverFaviconTreatmentTest() = default;
-  ~MemorySaverFaviconTreatmentTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        performance_manager::features::kDiscardRingImprovements);
-    InteractiveBrowserTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    MemorySaverInteractiveTestMixin::SetUpOnMainThread();
-    SetMemorySaverModeEnabled(true);
-  }
-  TabStrip* GetTabStrip() {
-    return BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
-  }
-
-  TabIcon* GetTabIcon(int tab_index) {
-    return GetTabStrip()->tab_at(tab_index)->GetTabIconForTesting();
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(MemorySaverFaviconTreatmentTest,
-                       FaviconTreatmentOnDiscard) {
-  constexpr char kFirstTabFavicon[] = "first_tab_favicon";
-
-  RunTestSequence(
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                              kSkipPixelTestsReason),
-      InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      Do(base::BindLambdaForTesting(
-          [=]() { GetTabStrip()->StopAnimating(true); })),
-      TryDiscardTab(0), CheckTabIsDiscarded(0, true),
-      NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
-                 return views::AsViewClass<views::View>(GetTabIcon(0));
-               })),
-      WaitForEvent(kFirstTabFavicon, kDiscardAnimationFinishes), FlushEvents(),
-      Screenshot(kFirstTabFavicon,
-                 /*screenshot_name=*/"FadeSmallFaviconOnDiscard",
-                 /*baseline_cl=*/"4786929"));
-}
-
 class MemorySaverDiscardIndicatorIPHTest
     : public MemorySaverInteractiveTestMixin<InteractiveFeaturePromoTest> {
  public:
@@ -637,18 +587,25 @@ IN_PROC_BROWSER_TEST_F(MemorySaverDiscardIndicatorIPHTest,
 }
 
 class MemorySaverImprovedFaviconTreatmentTest
-    : public WebUiInteractiveTestMixin<MemorySaverFaviconTreatmentTest> {
+    : public WebUiInteractiveTestMixin<
+          MemorySaverInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        performance_manager::features::kDiscardRingImprovements);
-    InteractiveBrowserTest::SetUp();
-  }
-
   static auto IsShowingDiscardIndicator(bool showing) {
     return [showing](TabIcon* tab_icon) {
       return showing == tab_icon->GetShowingDiscardIndicator();
     };
+  }
+
+  void SetUpOnMainThread() override {
+    MemorySaverInteractiveTestMixin::SetUpOnMainThread();
+    SetMemorySaverModeEnabled(true);
+  }
+  TabStrip* GetTabStrip() {
+    return BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
+  }
+
+  TabIcon* GetTabIcon(int tab_index) {
+    return GetTabStrip()->tab_at(tab_index)->GetTabIconForTesting();
   }
 };
 

@@ -684,19 +684,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, TabDiscardExceptionList) {
           "runMochaSuite('TabDiscardExceptionList')");
 }
 
-class SettingsPerformancePageDiscardIndicatorTest : public SettingsBrowserTest {
- protected:
-  SettingsPerformancePageDiscardIndicatorTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        performance_manager::features::kDiscardRingImprovements);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsPerformancePageDiscardIndicatorTest,
-                       DiscardIndicator) {
+IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, DiscardIndicator) {
   RunTest("settings/performance_page_test.js",
           "runMochaSuite('DiscardIndicator')");
 }

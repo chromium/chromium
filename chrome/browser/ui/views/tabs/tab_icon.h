@@ -89,8 +89,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   class CrashAnimation;
   friend CrashAnimation;
   friend class TabTest;
-  FRIEND_TEST_ALL_PREFIXES(TabTestWithDiscardRingImprovements,
-                           DiscardIndicatorResponsiveness);
+  FRIEND_TEST_ALL_PREFIXES(TabTest, DiscardIndicatorResponsiveness);
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
