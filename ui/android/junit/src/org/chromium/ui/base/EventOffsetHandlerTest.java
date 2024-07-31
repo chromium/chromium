@@ -61,12 +61,12 @@ public class EventOffsetHandlerTest {
         assertOffsets(-200);
 
         MotionEvent motionStart = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 100, 0);
-        mHandler.onInterceptTouchEvent(motionStart);
+        mHandler.onInterceptTouchDownEvent(motionStart);
 
         assertOffsets(-200);
 
         MotionEvent motionEnd = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 100, 100, 0);
-        mHandler.onInterceptTouchEvent(motionStart);
+        mHandler.onInterceptTouchDownEvent(motionStart);
 
         assertOffsets(-200);
 

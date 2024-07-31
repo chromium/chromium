@@ -84,6 +84,7 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
+import org.chromium.ui.base.SPenSupport;
 import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.UiAndroidFeatureMap;
 import org.chromium.ui.base.ViewUtils;
@@ -672,7 +673,10 @@ public class CompositorViewHolder extends FrameLayout
 
         if (mLayoutManager == null) return false;
 
-        mEventOffsetHandler.onInterceptTouchEvent(e);
+        int actionMasked = SPenSupport.convertSPenEventAction(e.getActionMasked());
+        if (actionMasked == MotionEvent.ACTION_DOWN) {
+            mEventOffsetHandler.onInterceptTouchDownEvent(e);
+        }
         return mLayoutManager.onInterceptMotionEvent(e, mIsKeyboardShowing, EventType.TOUCH);
     }
 
