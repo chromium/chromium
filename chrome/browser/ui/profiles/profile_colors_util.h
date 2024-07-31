@@ -34,6 +34,11 @@ struct ProfileThemeColors {
                          const ProfileThemeColors&) = default;
 };
 
+struct DefaultAvatarColors {
+  SkColor stroke_color = SK_ColorRED;
+  SkColor fill_color = SK_ColorRED;
+};
+
 // Returns whether we are using an extension theme, or a system theme different
 // from the default theme, which implies that default profile colors should be
 // used.
@@ -82,9 +87,11 @@ SkColor GetProfileForegroundTextColor(SkColor profile_highlight_color);
 // highlight color.
 SkColor GetProfileForegroundIconColor(SkColor profile_highlight_color);
 
-// Returns the color that should be used to generate the default avatar icon.
-SkColor GetAvatarStrokeColor(const ui::ColorProvider& color_provider,
-                             SkColor avatar_fill_color);
+// Returns the colors that should be used to generate the default avatar
+// icon.
+DefaultAvatarColors GetDefaultAvatarColors(
+    const ui::ColorProvider& color_provider,
+    SkColor profile_highlight_color);
 
 // Filters used for generating colors for a new profile. Exposed for tests.
 bool IsSaturatedForAutoselection(SkColor color);
