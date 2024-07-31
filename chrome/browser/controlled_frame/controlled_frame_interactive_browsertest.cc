@@ -13,7 +13,9 @@ namespace controlled_frame {
 using ControlledFramePermissionRequestInteractiveTest =
     ControlledFramePermissionRequestTestBase;
 
-#if !BUILDFLAG(IS_MAC)  // Pointer lock isn't available on MacOS bots.
+// Pointer lock & Fullscreen are not available on MacOS bots.
+#if !BUILDFLAG(IS_MAC)
+
 // This is an interactive_ui_test because pointer locks affect global system
 // state, which could interact poorly with other concurrently run tests.
 IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestInteractiveTest,
@@ -37,6 +39,31 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestInteractiveTest,
   RunTestAndVerify(test_case, test_param);
 }
 
+IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestInteractiveTest,
+                       Fullscreen) {
+  PermissionRequestTestCase test_case;
+  test_case.test_script = R"(
+    (async function() {
+      try {
+        if (document.fullscreenElement){
+          return 'FAIL: Already fullscreen';
+        }
+        document.body.requestFullscreen();
+        // Wait for 2 seconds;
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return (document.fullscreenElement  === document.body) ?
+               'SUCCESS' : 'FAIL: document.body is not fullscreen';
+      } catch (err) {
+        return 'FAIL: ${err.name}: ${err.message}';
+      }
+    })();
+  )";
+  test_case.permission_name = "fullscreen";
+
+  PermissionRequestTestParam test_param = GetParam();
+  RunTestAndVerify(test_case, test_param);
+}
+
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/
                          ,
                          ControlledFramePermissionRequestInteractiveTest,
@@ -46,6 +73,7 @@ INSTANTIATE_TEST_SUITE_P(/*no prefix*/
                              PermissionRequestTestParam>& info) {
                            return info.param.name;
                          });
+
 #endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace controlled_frame

@@ -181,8 +181,14 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
 
   extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
   ASSERT_TRUE(web_view_guest);
+
   content::RenderFrameHost* controlled_frame =
       web_view_guest->GetGuestMainFrame();
+
+  // Focus <controlledframe> with a fake click.
+  content::SimulateMouseClick(
+      content::WebContents::FromRenderFrameHost(controlled_frame),
+      /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft);
 
   SetUpPermissionRequestEventListener(app_frame, test_case.permission_name,
                                       test_param.calls_allow);
