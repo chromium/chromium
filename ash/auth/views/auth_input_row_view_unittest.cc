@@ -130,9 +130,23 @@ TEST_F(InputRowWithPasswordUnitTest, OnSubmitTestWithEnter) {
   PressAndReleaseKey(ui::VKEY_RETURN);
 }
 
+// Testing press enter with disabled state.
+TEST_F(InputRowWithPasswordUnitTest, TestDisabledEnter) {
+  auth_input_->SetInputEnabled(false);
+  EXPECT_CALL(*mock_observer_, OnSubmit(kPassword)).Times(0);
+  PressAndReleaseKey(ui::VKEY_RETURN);
+}
+
 // Testing clicking on the submit button calls the submit with the password.
 TEST_F(InputRowWithPasswordUnitTest, OnSubmitTestWithClick) {
   EXPECT_CALL(*mock_observer_, OnSubmit(kPassword)).Times(1);
+  LeftClickOn(test_api_->GetSubmitButton());
+}
+
+// Testing clicking on the submit button with disabled state.
+TEST_F(InputRowWithPasswordUnitTest, DisabledSubmitClickTest) {
+  auth_input_->SetInputEnabled(false);
+  EXPECT_CALL(*mock_observer_, OnSubmit(kPassword)).Times(0);
   LeftClickOn(test_api_->GetSubmitButton());
 }
 
@@ -248,6 +262,14 @@ TEST_F(InputRowWithPinUnitTest, OnContentsChangedTest) {
   PressAndReleaseKey(ui::VKEY_5);
 }
 
+// Testing PIN OnContentsChanged observer with disabled input area.
+TEST_F(InputRowWithPinUnitTest, DisabledDigitPressTest) {
+  auth_input_->SetInputEnabled(false);
+  const std::u16string modifiedPIN = kPIN + u"5";
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(0);
+  PressAndReleaseKey(ui::VKEY_5);
+}
+
 // Testing PIN OnContentsChanged observer with letter.
 TEST_F(InputRowWithPinUnitTest, OnContentsChangedWithLetterTest) {
   EXPECT_CALL(*mock_observer_, OnContentsChanged(kPIN)).Times(0);
@@ -257,6 +279,28 @@ TEST_F(InputRowWithPinUnitTest, OnContentsChangedWithLetterTest) {
 
 // Testing PIN backspace press.
 TEST_F(InputRowWithPinUnitTest, BackspacePressTest) {
+  std::u16string modifiedPIN = kPIN;
+  modifiedPIN.pop_back();
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);
+  PressAndReleaseKey(ui::VKEY_BACK);
+}
+
+// Testing PIN backspace press with disabled input area.
+TEST_F(InputRowWithPinUnitTest, DisabledBackspacePressTest) {
+  auth_input_->SetInputEnabled(false);
+  std::u16string modifiedPIN = kPIN;
+  modifiedPIN.pop_back();
+  EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(0);
+  PressAndReleaseKey(ui::VKEY_BACK);
+}
+
+// Testing PIN backspace press with disabled and after that re-enabled input
+// area.
+TEST_F(InputRowWithPinUnitTest, ReenabledBackspacePressTest) {
+  auth_input_->SetInputEnabled(false);
+  auth_input_->SetInputEnabled(true);
+  auth_input_->RequestFocus();
+
   std::u16string modifiedPIN = kPIN;
   modifiedPIN.pop_back();
   EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);

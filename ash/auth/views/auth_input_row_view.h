@@ -116,6 +116,15 @@ class ASH_EXPORT AuthInputRowView : public views::View,
 
   void SetAccessibleNameOnTextfield(const std::u16string& new_name);
 
+  // Enables or disables the following UI elements:
+  // - View
+  // - Auth textfield
+  // - Submit button
+  // - Display text button
+  // No "Get" function is needed since the state is the same as
+  // the GetEnabled return value.
+  void SetInputEnabled(bool enabled);
+
   // Clear the textfield and set the display text button to hide state.
   void ResetState();
 
