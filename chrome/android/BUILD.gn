@@ -3061,11 +3061,16 @@ if (current_toolchain == default_toolchain) {
     chrome_public_test_apk_tmpl("monochrome_public_test_ar_apk") {
       apk_name = "MonochromePublicTestAr"
       deps = [ ":chrome_test_ar_java" ]
+
+      if (target_cpu == "arm64") {
+        arcore_current_path = "//third_party/arcore-android-sdk/test-apks/arcore/arcore_current_arm64.apk"
+      } else {
+        arcore_current_path = "//third_party/arcore-android-sdk/test-apks/arcore/arcore_current_arm32.apk"
+      }
+
       extra_args = [
         "--additional-apk",
-        rebase_path(
-            "//third_party/arcore-android-sdk/test-apks/arcore/arcore_current.apk",
-            root_build_dir),
+        rebase_path(arcore_current_path, root_build_dir),
         "--remove-system-package=com.google.ar.core",
       ]
     }
