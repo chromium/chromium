@@ -211,6 +211,11 @@ public class BuildInfo {
         return Holder.INSTANCE;
     }
 
+    /** The versionCode of Play Services. */
+    public String getGmsVersionCode() {
+        return gmsVersionCode;
+    }
+
     private BuildInfo() {
         sInitialized = true;
         Context appContext = ContextUtils.getApplicationContext();

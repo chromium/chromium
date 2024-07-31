@@ -125,7 +125,7 @@ public abstract class PureJavaExceptionReporter
         // SDK should be maintained for potential custom monitoring.
         mReportContent.put(SDK, String.valueOf(Build.VERSION.SDK_INT));
         mReportContent.put(ANDROID_SDK_INT, String.valueOf(Build.VERSION.SDK_INT));
-        mReportContent.put(GMS_CORE_VERSION, buildInfo.gmsVersionCode);
+        mReportContent.put(GMS_CORE_VERSION, buildInfo.getGmsVersionCode());
         mReportContent.put(INSTALLER_PACKAGE_NAME, buildInfo.installerPackageName);
         mReportContent.put(ABI_NAME, buildInfo.abiString);
         mReportContent.put(

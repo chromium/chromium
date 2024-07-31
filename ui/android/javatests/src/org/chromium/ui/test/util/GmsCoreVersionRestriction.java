@@ -58,7 +58,8 @@ public final class GmsCoreVersionRestriction {
     private static int getVersion() {
         if (sGmsVersion == null) {
             String gmsVersionStr =
-                    ThreadUtils.runOnUiThreadBlocking(() -> BuildInfo.getInstance().gmsVersionCode);
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> BuildInfo.getInstance().getGmsVersionCode());
             sGmsVersion = tryParseInt(gmsVersionStr, 0);
         }
         return sGmsVersion;
