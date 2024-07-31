@@ -126,12 +126,10 @@ class PrefetchManagerTest : public testing::TestWithParam<bool> {
   }
 
   void CheckHeaders(network::ResourceRequest& request) {
-    std::string purpose;
-    EXPECT_TRUE(request.headers.GetHeader("Purpose", &purpose));
-    EXPECT_EQ(purpose, "prefetch");
-    std::string sec_purpose;
-    EXPECT_TRUE(request.headers.GetHeader("Sec-Purpose", &sec_purpose));
-    EXPECT_EQ(sec_purpose, "prefetch");
+    EXPECT_THAT(request.headers.GetHeader("Purpose"),
+                testing::Optional(std::string("prefetch")));
+    EXPECT_THAT(request.headers.GetHeader("Sec-Purpose"),
+                testing::Optional(std::string("prefetch")));
   }
 
   base::test::ScopedFeatureList features_;
