@@ -1581,12 +1581,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.ScreenCaptureTime" units="ms"
-    expires_after="2020-10-18">
-  <owner>jiayl@chromium.org</owner>
-  <summary>Time for capturing one frame in screen capturing.</summary>
-</histogram>
-
 <histogram name="WebRTC.Screenshare.DesktopCapturerFullscreenDetector"
     enum="Boolean" expires_after="2025-06-30">
   <owner>kron@chromium.org</owner>
