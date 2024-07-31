@@ -452,7 +452,6 @@ public class BuildInfo {
                                 ContextUtils.getApplicationContext().getPackageName(),
                                 getPackageInfoFlags());
 
-                // TODO(crbug.com/355206387): Allow multiple signers.
                 Signature[] signatures = getPackageSignatures(pi);
                 if (signatures != null) {
                     try {
