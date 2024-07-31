@@ -20,19 +20,29 @@ static_library("boca_ui") {
     "boca_app_page_handler.h",
     "boca_ui.cc",
     "boca_ui.h",
+    "provider/tab_info_collector.cc",
+    "provider/tab_info_collector.h",
     "url_constants.h",
   ]
 
   deps = [
     "resources:resources",
+    "//ash",
     "//ash/constants:constants",
+    "//ash/public/cpp",
     "//ash/webui/boca_ui/mojom",
     "//ash/webui/boca_ui/proto",
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/resources:boca_app_bundle_resources",
     "//ash/webui/system_apps/public:system_web_app_config",
+    "//base",
+    "//components/app_constants",
+    "//components/app_restore",
     "//content/public/browser",
+    "//skia",
+    "//ui/gfx",
     "//ui/webui",
+    "//ui/wm",
   ]
 }
 

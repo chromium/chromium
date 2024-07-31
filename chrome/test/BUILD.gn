@@ -4764,6 +4764,7 @@ if (!is_android) {
         "../browser/web_applications/app_service/web_apps_browsertest.cc",
         "../browser/web_applications/app_service/web_apps_chromeos_browsertest.cc",
         "../browser/webshare/chromeos/sharesheet_client_browsertest.cc",
+        "//ash/webui/boca_ui/provider/tab_info_collector_browsertest.cc",
         "base/chromeos/demo_ash_requires_lacros_browsertest.cc",
       ]
       data += [
@@ -4833,6 +4834,8 @@ if (!is_android) {
         "//ash/style:style",
         "//ash/webui/annotator",
         "//ash/webui/annotator:test_support",
+        "//ash/webui/boca_ui",
+        "//ash/webui/boca_ui/mojom",
         "//ash/webui/common:trusted_types_util",
         "//ash/webui/demo_mode_app_ui",
         "//ash/webui/diagnostics_ui",

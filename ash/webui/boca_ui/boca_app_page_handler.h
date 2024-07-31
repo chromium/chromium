@@ -6,6 +6,8 @@
 #define ASH_WEBUI_BOCA_UI_BOCA_APP_PAGE_HANDLER_H_
 
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
+#include "ash/webui/boca_ui/provider/tab_info_collector.h"
+#include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -17,7 +19,8 @@ class BocaAppHandler : public boca::mojom::PageHandler {
  public:
   BocaAppHandler(BocaUI* boca_ui,
                  mojo::PendingReceiver<boca::mojom::PageHandler> receiver,
-                 mojo::PendingRemote<boca::mojom::Page> remote);
+                 mojo::PendingRemote<boca::mojom::Page> remote,
+                 content::WebUI* webui);
 
   BocaAppHandler(const BocaAppHandler&) = delete;
   BocaAppHandler& operator=(const BocaAppHandler&) = delete;
@@ -25,8 +28,10 @@ class BocaAppHandler : public boca::mojom::PageHandler {
   ~BocaAppHandler() override;
 
   // boca::mojom::PageHandler:
+  void GetWindowsTabsList(GetWindowsTabsListCallback callback) override;
 
  private:
+  TabInfoCollector tab_info_collector_;
   mojo::Receiver<boca::mojom::PageHandler> receiver_;
   mojo::Remote<boca::mojom::Page> remote_;
   raw_ptr<BocaUI> boca_ui_;  // Owns |this|.

@@ -23,7 +23,6 @@
 namespace ash {
 
 namespace {
-
 content::WebUIDataSource* CreateAndAddHostDataSource(
     content::BrowserContext* browser_context) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -37,10 +36,10 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
       kChromeosBocaAppBundleResources, kChromeosBocaAppBundleResourcesSize));
   return source;
 }
-
 }  // namespace
 
-BocaUI::BocaUI(content::WebUI* web_ui) : UntrustedWebUIController(web_ui) {
+BocaUI::BocaUI(content::WebUI* web_ui)
+    : UntrustedWebUIController(web_ui), web_ui_(web_ui) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* host_source =
@@ -97,7 +96,7 @@ void BocaUI::Create(
     mojo::PendingReceiver<boca::mojom::PageHandler> page_handler,
     mojo::PendingRemote<boca::mojom::Page> page) {
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
-      this, std::move(page_handler), std::move(page));
+      this, std::move(page_handler), std::move(page), web_ui_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaUI)
