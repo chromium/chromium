@@ -769,8 +769,7 @@ crbug.com/1196414 compositing/composited-replaced-subpixel-location.html [ Failu
 crbug.com/1299442 external/wpt/css/css-paint-api/custom-property-animation-on-main-thread.https.html [ Failure Pass ]
 
 # Flaky virtual/off-main-thread-css-paint tests. Skipping whole test suite for now.
-# Open issues: 1339051, 1288136, 1286944, 1254382, 1250666, 1233826, 1123886, 1345205, 1299442, 1288136
-virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/* [ Failure Skip ]
+crbug.com/355693577 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/* [ Failure Skip ]
 
 crbug.com/1339051 [ Linux ] virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
 
