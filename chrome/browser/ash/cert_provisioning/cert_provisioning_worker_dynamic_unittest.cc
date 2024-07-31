@@ -1643,6 +1643,152 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
   }
 }
 
+// Test that with kCertProvisioningUseOnlyInvalidationsForTesting feature flag
+// enabled the worker only progresses when it receives an invalidation.
+TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitForInvalidation) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kCertProvisioningUseOnlyInvalidationsForTesting};
+
+  const CertProfile cert_profile(
+      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+      ProtocolVersion::kDynamic);
+  const std::string process_id = GenerateCertProvisioningId();
+  const CertProvisioningClient::ProvisioningProcess provisioning_process(
+      process_id, CertScope::kUser, kCertProfileId, kCertProfileVersion,
+      GetPublicKeyBin());
+
+  MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
+  CertProvisioningWorkerDynamic worker(
+      process_id, CertScope::kUser, GetProfile(), &testing_pref_service_,
+      cert_profile, &cert_provisioning_client_, MakeInvalidator(),
+      GetStateChangeCallback(), GetResultCallback());
+
+  const base::TimeDelta very_long_delay = base::Days(7);
+
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
+  {
+    testing::InSequence seq;
+
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
+
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+
+    worker.DoStep();
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kReadyForNextOperation);
+  }
+
+  {
+    // Verify that the worker doesn't progress without an invalidation.
+    FastForwardBy(very_long_delay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
+  }
+
+  {
+    testing::InSequence seq;
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionAuthorize());
+
+    EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
+                             StartSignChallengeStep(kChallenge,
+                                                    /*callback=*/_));
+
+    EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
+
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin()));
+
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKeyBin(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
+
+    EXPECT_AUTHORIZE(
+        Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,
+                  /*callback=*/_),
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+
+    // Emulate an invalidation.
+    worker.DoStep();
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kReadyForNextOperation);
+  }
+
+  {
+    // Verify that the worker doesn't progress without an invalidation.
+    FastForwardBy(very_long_delay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
+  }
+
+  {
+    testing::InSequence seq;
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
+
+    EXPECT_SIGN_RSAPKC1_RAW_OK(
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
+                        GetPublicKeyBin(), /*callback=*/_));
+
+    EXPECT_UPLOAD_PROOF_OF_POSSESSION(
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
+                                /*callback=*/_),
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+
+    // Emulate an invalidation.
+    worker.DoStep();
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kReadyForNextOperation);
+  }
+
+  {
+    // Verify that the worker doesn't progress without an invalidation.
+    FastForwardBy(very_long_delay);
+    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
+  }
+
+  {
+    testing::InSequence seq;
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeCertificate));
+
+    EXPECT_IMPORT_CERTIFICATE_OK(
+        ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
+
+    // Emulate an invalidation.
+    worker.DoStep();
+    EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
+  }
+}
+
 // Checks that when the server returns an error in the "DM Status", the worker
 // will enter an error state and stop the provisioning.
 TEST_F(CertProvisioningWorkerDynamicTest, StatusErrorHandling) {

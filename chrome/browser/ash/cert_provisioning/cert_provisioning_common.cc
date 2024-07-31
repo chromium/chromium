@@ -32,6 +32,10 @@
 namespace ash {
 namespace cert_provisioning {
 
+BASE_FEATURE(kCertProvisioningUseOnlyInvalidationsForTesting,
+             "CertProvisioningUseOnlyInvalidationsForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 std::optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
   switch (scope) {
@@ -359,6 +363,11 @@ std::string MakeInvalidationListenerType(const std::string& cert_prov_id) {
   // Server-side stores the type and expects it to be <=128 characters long.
   CHECK_LE(result.size(), 128u);
   return result;
+}
+
+bool ShouldOnlyUseInvalidations() {
+  return base::FeatureList::IsEnabled(
+      kCertProvisioningUseOnlyInvalidationsForTesting);
 }
 
 }  // namespace cert_provisioning

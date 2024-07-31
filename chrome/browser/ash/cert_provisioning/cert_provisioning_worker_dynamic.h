@@ -127,7 +127,12 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   void ImportCert();
   void OnImportCertDone(chromeos::platform_keys::Status status);
 
-  void ScheduleNextStep(base::TimeDelta delay);
+  // Schedule the next step after the `delay`. If `try_provisioning_on_timeout`
+  // is true, the worker will automatically try contacting the server-side after
+  // it doesn't receive an invalidation for long enough. If it's false, it will
+  // require an invalidation to continue.
+  void ScheduleNextStep(base::TimeDelta delay,
+                        bool try_provisioning_on_timeout);
   void CancelScheduledTasks();
 
   enum class ContinueReason {

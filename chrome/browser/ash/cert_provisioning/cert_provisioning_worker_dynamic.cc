@@ -424,7 +424,8 @@ void CertProvisioningWorkerDynamic::OnGenerateKeyForVaDone(
         {"Failed to get certificate for a key", GetLogInfoBlock()});
     request_backoff_.InformOfRequest(false);
     // Next DoStep will retry generating the key.
-    ScheduleNextStep(request_backoff_.GetTimeUntilRelease());
+    ScheduleNextStep(request_backoff_.GetTimeUntilRelease(),
+                     /*try_provisioning_on_timeout=*/true);
     return;
   }
 
@@ -893,7 +894,8 @@ void CertProvisioningWorkerDynamic::ProcessResponseErrors(
     last_backend_server_error_ =
         BackendServerError(status, base::Time::NowFromSystemTime());
     request_backoff_.InformOfRequest(false);
-    ScheduleNextStep(request_backoff_.GetTimeUntilRelease());
+    ScheduleNextStep(request_backoff_.GetTimeUntilRelease(),
+                     /*try_provisioning_on_timeout=*/true);
     return;
   }
 
@@ -921,7 +923,9 @@ void CertProvisioningWorkerDynamic::ProcessResponseErrors(
     // Don't change state, just retry the operation in this state in a delay (or
     // when an invalidation is triggered).
     // TODO(b/289983352): Use a backoff strategy for the delay.
-    ScheduleNextStep(base::Seconds(30));
+    ScheduleNextStep(
+        base::Seconds(30),
+        /*try_provisioning_on_timeout=*/!ShouldOnlyUseInvalidations());
     return;
   }
 
@@ -951,20 +955,22 @@ void CertProvisioningWorkerDynamic::ProcessResponseErrors(
   return;
 }
 
-void CertProvisioningWorkerDynamic::ScheduleNextStep(base::TimeDelta delay) {
+void CertProvisioningWorkerDynamic::ScheduleNextStep(
+    base::TimeDelta delay,
+    bool try_provisioning_on_timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  delay = std::max(delay, kMinumumTryAgainLaterDelay);
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&CertProvisioningWorkerDynamic::OnShouldContinue,
-                     weak_factory_.GetWeakPtr(), ContinueReason::kTimeout),
-      delay);
+  if (try_provisioning_on_timeout) {
+    delay = std::max(delay, kMinumumTryAgainLaterDelay);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&CertProvisioningWorkerDynamic::OnShouldContinue,
+                       weak_factory_.GetWeakPtr(), ContinueReason::kTimeout),
+        delay);
+    VLOG(0) << "Next step scheduled in " << delay << GetLogInfoBlock();
+  }
 
   is_waiting_ = true;
-  VLOG(0) << "Next step scheduled in " << delay << GetLogInfoBlock();
-
   last_update_time_ = base::Time::NowFromSystemTime();
   state_change_callback_.Run();
 }

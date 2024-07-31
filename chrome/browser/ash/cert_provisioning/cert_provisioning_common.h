@@ -34,6 +34,14 @@ class PlatformKeysService;
 
 namespace cert_provisioning {
 
+// A feature to prevent Certificate Provisioning workers from attempting to
+// continue the provisioning process on timeout (without receiving an
+// invalidation). It is intended to be used for testing only to verify that new
+// invalidations actually work. Also see `ShouldOnlyUseInvalidations`.
+// TODO(b/336989561): Remove this after the migration to new invalidations is
+// done.
+BASE_DECLARE_FEATURE(kCertProvisioningUseOnlyInvalidationsForTesting);
+
 // Used for both DeleteVaKey and DeleteVaKeysByPrefix
 using DeleteVaKeyCallback = base::OnceCallback<void(bool)>;
 
@@ -273,6 +281,10 @@ std::string GenerateCertProvisioningId();
 // invalidations from the server-side.
 std::string MakeInvalidationListenerType(
     const std::string& cert_prov_process_id);
+
+// Returns true if workers should only progress when they receive an
+// invalidation (not on timeout).
+bool ShouldOnlyUseInvalidations();
 
 }  // namespace cert_provisioning
 }  // namespace ash
