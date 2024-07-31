@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -163,6 +164,11 @@ class DeviceSettingsInteractiveUiTest : public InteractiveAshTest {
       "settings-device-page",
       "settings-per-device-keyboard",
       "settings-per-device-keyboard-subsection",
+  };
+
+  const DeepQuery kDisplayPageQuery{
+      "os-settings-ui",       "os-settings-main", "#mainPageContainer",
+      "settings-device-page", "settings-display",
   };
 
   // Query to pierce through Shadow DOM to find the Settings search box.
@@ -901,6 +907,38 @@ class KeyboardAmbientLightSensorStateObserver
   bool keyboard_ambient_light_sensor_enabled_;
 };
 
+class AmbientLightSensorStateObserver
+    : public ui::test::ObservationStateObserver<
+          bool,
+          chromeos::PowerManagerClient,
+          chromeos::PowerManagerClient::Observer> {
+ public:
+  explicit AmbientLightSensorStateObserver(
+      chromeos::PowerManagerClient* power_manager_client)
+      : ObservationStateObserver(power_manager_client) {
+    ambient_light_sensor_enabled_ = true;
+  }
+  ~AmbientLightSensorStateObserver() override = default;
+
+ private:
+  // chromeos::PowerManagerClient::Observer
+  void AmbientLightSensorEnabledChanged(
+      const power_manager::AmbientLightSensorChange& change) override {
+    const bool enabled = change.sensor_enabled();
+    if (enabled == ambient_light_sensor_enabled_) {
+      return;
+    }
+    ambient_light_sensor_enabled_ = enabled;
+    OnStateObserverStateChanged(
+        /*state=*/ambient_light_sensor_enabled_);
+  }
+
+  // ui::test::ObservationStateObserver:
+  bool GetStateObserverInitialState() const override { return true; }
+  bool GetAmbientLightSensorEnabled() { return ambient_light_sensor_enabled_; }
+  bool ambient_light_sensor_enabled_;
+};
+
 class DeviceSettingsBrightnessInteractiveUiTest
     : public DeviceSettingsInteractiveUiTest {
  public:
@@ -909,10 +947,67 @@ class DeviceSettingsBrightnessInteractiveUiTest
     feature_list_.InitWithFeatures(
         {features::kInputDeviceSettingsSplit,
          features::kPeripheralCustomization,
-         features::kEnableKeyboardBacklightControlInSettings},
+         features::kEnableKeyboardBacklightControlInSettings,
+         features::kEnableBrightnessControlInSettings},
         {});
   }
 };
+
+IN_PROC_BROWSER_TEST_F(DeviceSettingsBrightnessInteractiveUiTest,
+                       ToggleDisplayAutoBrightness) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(AmbientLightSensorStateObserver,
+                                      kAmbientLightSensorEnabledState);
+  const DeepQuery kAmbientLightSensorToggle{
+      "os-settings-ui",     "os-settings-main",
+      "#mainPageContainer", "settings-device-page",
+      "settings-display",   "cr-toggle#autoBrightnessToggle",
+  };
+  chromeos::FakePowerManagerClient::Get()->set_has_ambient_light_sensor(true);
+
+  RunTestSequence(
+      Log("Opening OS settings system web app"),
+      LaunchSettingsApp(webcontents_id_,
+                        chromeos::settings::mojom::kDisplaySubpagePath),
+
+      Log("Verifying ambient light sensor state"),
+      ObserveState(kAmbientLightSensorEnabledState,
+                   std::make_unique<AmbientLightSensorStateObserver>(
+                       chromeos::PowerManagerClient::Get())),
+      WaitForState(kAmbientLightSensorEnabledState, true),
+      WaitForElementExists(webcontents_id_, kDisplayPageQuery),
+      ExecuteJsAt(
+          webcontents_id_, kDisplayPageQuery,
+          "(display_page) => { if (display_page) { "
+          "display_page.selectedDisplay = {"
+          "  isInternal: true"
+          "};"
+          "display_page.notifyPath('selectedDisplay.isInternal', true); "
+          "}}"),
+
+      Log("Waiting for ambient light sensor toggle to exist"),
+      WaitForElementExists(webcontents_id_, kAmbientLightSensorToggle),
+
+      Log("Waiting for toggle to be checked"),
+      WaitForToggleState(webcontents_id_, kAmbientLightSensorToggle, true),
+
+      Log("Clicking ambient light sensor toggle"),
+      ClickElement(webcontents_id_, kAmbientLightSensorToggle),
+
+      Log("Waiting for ambient light sensor to be disabled"),
+      WaitForState(kAmbientLightSensorEnabledState, false),
+
+      Log("Waiting for the toggle to be unchecked"),
+      WaitForToggleState(webcontents_id_, kAmbientLightSensorToggle, false),
+
+      Log("Clicking ambient light sensor toggle again"),
+      ClickElement(webcontents_id_, kAmbientLightSensorToggle),
+
+      Log("Waiting for ambient light sensor to be enabled"),
+      WaitForState(kAmbientLightSensorEnabledState, true),
+
+      Log("Waiting for the toggle to be checked again"),
+      WaitForToggleState(webcontents_id_, kAmbientLightSensorToggle, true));
+}
 
 IN_PROC_BROWSER_TEST_F(DeviceSettingsBrightnessInteractiveUiTest,
                        ToggleKeyboardAutoBrightness) {
