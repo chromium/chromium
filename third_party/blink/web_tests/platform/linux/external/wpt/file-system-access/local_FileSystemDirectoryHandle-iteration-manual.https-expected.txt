@@ -1,19 +1,19 @@
 This is a testharness.js-based test.
 [FAIL] User succesfully selected an empty directory.
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] User granted write access.
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] returning early from an iteration doesn't crash
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] @@asyncIterator: full iteration works
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] entries: full iteration works
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] values: full iteration works
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] keys: full iteration works
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] iteration while iterator gets garbage collected
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 Harness: the test ran to completion.
 

@@ -535,6 +535,10 @@ CORE_EXPORT bool IsInParallelAlgorithmRunnable(
     ExecutionContext* execution_context,
     ScriptState* script_state);
 
+CORE_EXPORT void ApplyContextToException(ScriptState*,
+                                         v8::Local<v8::Value> exception,
+                                         const ExceptionContext&);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_BINDING_FOR_CORE_H_

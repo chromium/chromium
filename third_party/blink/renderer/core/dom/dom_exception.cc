@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 
 namespace blink {
 
@@ -278,6 +279,15 @@ String DOMException::ToStringForConsole() const {
   return message_for_console.empty()
              ? String()
              : "Uncaught " + name() + ": " + message_for_console;
+}
+
+void DOMException::AddContextToMessages(const ExceptionContext& context) {
+  sanitized_message_ =
+      ExceptionMessages::AddContextToMessage(context, sanitized_message_);
+  if (!unsanitized_message_.IsNull()) {
+    unsanitized_message_ =
+        ExceptionMessages::AddContextToMessage(context, unsanitized_message_);
+  }
 }
 
 }  // namespace blink

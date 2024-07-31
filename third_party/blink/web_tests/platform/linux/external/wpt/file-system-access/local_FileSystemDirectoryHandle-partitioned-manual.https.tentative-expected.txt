@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Uncaught SyntaxError: await is only valid in async functions and the top level bodies of modules
 [FAIL] User succesfully selected an empty directory.
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] User granted write access.
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 Harness: the test ran to completion.
 

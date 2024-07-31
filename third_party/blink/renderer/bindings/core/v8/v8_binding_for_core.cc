@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_state_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_target.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_link_element.h"
@@ -964,6 +965,16 @@ bool IsInParallelAlgorithmRunnable(ExecutionContext* execution_context,
     return false;
 
   return true;
+}
+
+void ApplyContextToException(ScriptState* script_state,
+                             v8::Local<v8::Value> exception,
+                             const ExceptionContext& exception_context) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  auto* dom_exception = V8DOMException::ToWrappable(isolate, exception);
+  // TODO(crbug.com/328104148): Support errors besides DOMExceptions.
+  CHECK(dom_exception);
+  dom_exception->AddContextToMessages(exception_context);
 }
 
 }  // namespace blink

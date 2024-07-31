@@ -1,69 +1,69 @@
 This is a testharness.js-based test.
 [FAIL] User succesfully selected an empty directory.
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] User granted write access.
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() with an empty blob to an empty file
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() a blob to an empty file
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() with WriteParams without position to an empty file
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() a string to an empty file with zero offset
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() a blob to an empty file with zero offset
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() called consecutively appends
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() WriteParams without position and string appends
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() WriteParams without position and blob appends
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() called with a string and a valid offset
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() called with a string and a valid offset after seek
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() called with a blob and a valid offset
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() called with an offset beyond the end of the file
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() with an empty string to an empty file
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() with a valid utf-8 string
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() with a string with unix line ending preserved
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() with a string with windows line ending preserved
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() with an empty array buffer to an empty file
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() with a valid typed array buffer
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] atomic writes: writable file streams make atomic changes on close
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] atomic writes: write() after close() fails
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] atomic writes: truncate() after close() fails
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] atomic writes: close() after close() fails
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] atomic writes: only one close() operation may succeed
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] getWriter() can be used
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] WriteParams: truncate missing size param
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] WriteParams: write missing data param
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] WriteParams: write null data param
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] WriteParams: seek missing position param
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] write() with an invalid blob to an empty file should reject
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] an errored writable stream releases its lock
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 [FAIL] an errored writable stream should reject the next write call
-  promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'showDirectoryPicker' on 'Window': The user aborted a request."
 Harness: the test ran to completion.
 
