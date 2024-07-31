@@ -48,7 +48,7 @@ ElementCheckPseudoHasResultMap& CheckPseudoHasCacheScope::GetResultMap(
   // To increase the cache hit ratio, we need to have a same cache key
   // for multiple selector instances those are actually has a same selector.
   // TODO(blee@igalia.com) Find a way to get hash key without serialization.
-  String selector_text = selector->SelectorText();
+  String selector_text = selector->SelectorTextExpandingPseudoParent();
 
   DCHECK(document);
   DCHECK(document->GetCheckPseudoHasCacheScope());

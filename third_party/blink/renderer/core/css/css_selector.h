@@ -156,6 +156,11 @@ class CORE_EXPORT CSSSelector {
   ~CSSSelector();
 
   String SelectorText() const;
+  // Like `SelectorText`, but replaces any '&' selectors
+  // with ':is(<parent rule selector list>)'. This is needed
+  // by the :has() cache, because it uses the serialization of
+  // the selector as a key.
+  String SelectorTextExpandingPseudoParent() const;
   String SimpleSelectorTextForDebug() const;
 
   CSSSelector& operator=(const CSSSelector&) = delete;
@@ -712,8 +717,19 @@ class CORE_EXPORT CSSSelector {
 
   unsigned SpecificityForOneSelector() const;
   unsigned SpecificityForPage() const;
+
+  template <bool expand_pseudo_parent>
   bool SerializeSimpleSelector(WTF::StringBuilder& builder) const;
+
+  template <bool expand_pseudo_parent>
   const CSSSelector* SerializeCompound(WTF::StringBuilder&) const;
+
+  template <bool expand_pseudo_parent>
+  static void SerializeSelectorList(const CSSSelectorList* selector_list,
+                                    WTF::StringBuilder& builder);
+
+  template <bool expand_pseudo_parent>
+  String SelectorTextInternal() const;
 
   struct RareData : public GarbageCollected<RareData> {
     explicit RareData(const AtomicString& value);
