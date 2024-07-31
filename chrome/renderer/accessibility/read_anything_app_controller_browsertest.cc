@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
+#include "chrome/renderer/accessibility/read_anything_test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
 #include "services/strings/grit/services_strings.h"
@@ -140,22 +141,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
 
     // Create simple AXTreeUpdate with a root node and 3 children.
-    ui::AXTreeUpdate snapshot;
-    ui::AXNodeData root;
-    root.id = 1;
-
-    ui::AXNodeData child1;
-    child1.id = 2;
-
-    ui::AXNodeData child2;
-    child2.id = 3;
-
-    ui::AXNodeData child3;
-    child3.id = 4;
-
-    root.child_ids = {child1.id, child2.id, child3.id};
-    snapshot.root_id = root.id;
-    snapshot.nodes = {root, child1, child2, child3};
+    ui::AXTreeUpdate snapshot = test::CreateInitialUpdate();
     SetUpdateTreeID(&snapshot);
 
     // Send the snapshot to the controller and set its tree ID to be the active
@@ -174,14 +160,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   void SetUpdateTreeID(ui::AXTreeUpdate* update) {
-    SetUpdateTreeID(update, tree_id_);
-  }
-
-  void SetUpdateTreeID(ui::AXTreeUpdate* update, ui::AXTreeID tree_id) {
-    ui::AXTreeData tree_data;
-    tree_data.tree_id = tree_id;
-    update->has_tree_data = true;
-    update->tree_data = tree_data;
+    test::SetUpdateTreeID(update, tree_id_);
   }
 
   void OnSettingsRestoredFromPrefs(
@@ -896,7 +875,7 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_SvgReturnsDivIfGoogleDocs) {
   std::string div = "div";
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  SetUpdateTreeID(&update, id_1);
+  test::SetUpdateTreeID(&update, id_1);
   ui::AXNodeData node;
   node.id = 2;
   node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, svg);
@@ -926,7 +905,7 @@ TEST_F(ReadAnythingAppControllerTest,
   std::string p = "p";
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  SetUpdateTreeID(&update, id_1);
+  test::SetUpdateTreeID(&update, id_1);
   ui::AXNodeData paragraph_node;
   paragraph_node.id = 2;
   paragraph_node.role = ax::mojom::Role::kParagraph;
@@ -983,7 +962,7 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_PDF) {
   // Send pdf iframe update with html tags to test.
   SetIsPdf();
   ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update, tree_id_);
+  test::SetUpdateTreeID(&update, tree_id_);
   ui::AXNodeData node1;
   node1.id = 2;
   node1.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
@@ -1013,7 +992,7 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_IncorrectlyFormattedPDF) {
   // other should be spans. A heading that's too long should be turned into a
   // paragraph.
   ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update, tree_id_);
+  test::SetUpdateTreeID(&update, tree_id_);
   ui::AXNodeData heading_node1;
   heading_node1.id = 2;
   heading_node1.role = ax::mojom::Role::kHeading;
@@ -1058,7 +1037,7 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_InaccessiblePDF) {
 
   // Send pdf iframe update with html tags to test.
   ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update, tree_id_);
+  test::SetUpdateTreeID(&update, tree_id_);
   ui::AXNodeData node;
   node.id = 2;
   node.role = ax::mojom::Role::kContentInfo;
@@ -1197,7 +1176,7 @@ TEST_F(ReadAnythingAppControllerTest,
        GetTextContent_IgoreStaticTextIfGoogleDocs) {
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  SetUpdateTreeID(&update, id_1);
+  test::SetUpdateTreeID(&update, id_1);
   ui::AXNodeData node1 = TextNode(/* id= */ 2, u"Hello");
 
   ui::AXNodeData node2;
@@ -1232,7 +1211,7 @@ TEST_F(ReadAnythingAppControllerTest,
   std::string more_text_content = "world";
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  SetUpdateTreeID(&update, id_1);
+  test::SetUpdateTreeID(&update, id_1);
   ui::AXNodeData node1;
   node1.id = 2;
   node1.AddStringAttribute(ax::mojom::StringAttribute::kName, text_content);
@@ -1269,7 +1248,7 @@ TEST_F(ReadAnythingAppControllerTest,
   std::string more_text_content = "world";
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  SetUpdateTreeID(&update, id_1);
+  test::SetUpdateTreeID(&update, id_1);
   ui::AXNodeData node1;
   node1.id = 2;
   node1.AddStringAttribute(ax::mojom::StringAttribute::kName, text_content);
@@ -1520,7 +1499,7 @@ TEST_F(ReadAnythingAppControllerTest, Draw_RecomputeDisplayNodes) {
 TEST_F(ReadAnythingAppControllerTest, Draw_DoNotRecomputeDisplayNodesForDocs) {
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  SetUpdateTreeID(&update, id_1);
+  test::SetUpdateTreeID(&update, id_1);
   ui::AXNodeData node;
   node.id = 2;
 
@@ -1721,7 +1700,7 @@ TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
   std::vector<ui::AXTreeUpdate> updates;
   for (int i = 0; i < 3; i++) {
     ui::AXTreeUpdate update;
-    SetUpdateTreeID(&update, tree_ids[i]);
+    test::SetUpdateTreeID(&update, tree_ids[i]);
     ui::AXNodeData node =
         TextNode(/* id= */ 1, u"Tree " + base::NumberToString16(i));
     update.root_id = node.id;
@@ -1749,7 +1728,7 @@ TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
 TEST_F(ReadAnythingAppControllerTest, IsGoogleDocs) {
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  SetUpdateTreeID(&update, id_1);
+  test::SetUpdateTreeID(&update, id_1);
   update.root_id = 1;
 
   ui::AXNodeData node;
@@ -1766,7 +1745,7 @@ TEST_F(ReadAnythingAppControllerTest, IsGoogleDocs) {
   Mock::VerifyAndClearExpectations(distiller_);
 
   ui::AXTreeUpdate update_1;
-  SetUpdateTreeID(&update_1, tree_id_);
+  test::SetUpdateTreeID(&update_1, tree_id_);
   ui::AXNodeData root;
   root.id = 1;
   root.AddStringAttribute(
@@ -1808,7 +1787,7 @@ TEST_F(ReadAnythingAppControllerTest, AddAndRemoveTrees) {
   std::vector<ui::AXTreeUpdate> updates;
   for (int i = 0; i < 2; i++) {
     ui::AXTreeUpdate update;
-    SetUpdateTreeID(&update, tree_ids[i]);
+    test::SetUpdateTreeID(&update, tree_ids[i]);
     ui::AXNodeData node;
     node.id = 1;
     update.root_id = node.id;
@@ -2270,7 +2249,7 @@ TEST_F(ReadAnythingAppControllerTest, RequestImageDataUrl) {
 TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
   ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update, new_tree_id);
+  test::SetUpdateTreeID(&update, new_tree_id);
   ui::AXNodeData node;
   node.id = 1;
   update.root_id = node.id;
@@ -2404,7 +2383,7 @@ TEST_F(ReadAnythingAppControllerTest,
        OnSelectionChange_DistillationInProgress) {
   ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update, new_tree_id);
+  test::SetUpdateTreeID(&update, new_tree_id);
   ui::AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kStaticText;
@@ -2610,7 +2589,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  SetUpdateTreeID(&update, id_1);
+  test::SetUpdateTreeID(&update, id_1);
   update.root_id = 1;
 
   ui::AXNodeData node;
@@ -2985,7 +2964,7 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_AfterAXTreeRefresh) {
       u"life begin.";
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update2;
-  SetUpdateTreeID(&update2, id_1);
+  test::SetUpdateTreeID(&update2, id_1);
   ui::AXNodeData root;
   root.id = 1;
 
@@ -3156,7 +3135,7 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence4 = u"]";
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  SetUpdateTreeID(&update, id_1);
+  test::SetUpdateTreeID(&update, id_1);
 
   ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
   ui::AXNodeData static_text2 = TextNode(/* id= */ 3, sentence2);
@@ -3286,7 +3265,7 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence4 = u"]";
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  SetUpdateTreeID(&update, id_1);
+  test::SetUpdateTreeID(&update, id_1);
 
   ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
 
@@ -3352,7 +3331,7 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence5 = u"People gon' come here from everywhere.";
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  SetUpdateTreeID(&update, id_1);
+  test::SetUpdateTreeID(&update, id_1);
 
   ui::AXNodeData static_text1 = TextNode(/* id= */ 2, sentence1);
 
@@ -3426,7 +3405,7 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_IncludesListMarkers) {
   std::u16string sentence2 = u"Fix it.";
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  SetUpdateTreeID(&update, id_1);
+  test::SetUpdateTreeID(&update, id_1);
 
   ui::AXNodeData list_marker1;
   list_marker1.id = 2;
@@ -3751,7 +3730,7 @@ TEST_F(ReadAnythingAppControllerTest, GetPreviousText_AfterAXTreeRefresh) {
       u"Everybody knows that we used to be six wives. ";
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update2;
-  SetUpdateTreeID(&update2, id_1);
+  test::SetUpdateTreeID(&update2, id_1);
   ui::AXNodeData root;
   root.id = 1;
 
