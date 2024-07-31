@@ -28,6 +28,7 @@
 
 - (instancetype)initWithChannel:(device::BluetoothRfcommChannelMac*)channel
                   rfcommChannel:(IOBluetoothRFCOMMChannel*)rfcommChannel;
+- (void)setRfcommChannel:(IOBluetoothRFCOMMChannel*)rfcommChannel;
 
 @end
 
@@ -45,6 +46,7 @@
 
 - (void)rfcommChannelOpenComplete:(IOBluetoothRFCOMMChannel*)rfcommChannel
                            status:(IOReturn)error {
+  CHECK(_rfcommChannel);
   if (error == kIOReturnSuccess) {
     // Keep the delegate alive until rfcommChannelClosed.
     _strongSelf = self;
@@ -92,6 +94,11 @@
   _channel = nullptr;
 }
 
+- (void)setRfcommChannel:(IOBluetoothRFCOMMChannel*)rfcommChannel {
+  CHECK(!_rfcommChannel);
+  _rfcommChannel = rfcommChannel;
+}
+
 @end
 
 namespace device {
@@ -130,6 +137,7 @@ std::unique_ptr<BluetoothRfcommChannelMac> BluetoothRfcommChannelMac::OpenAsync(
                                   delegate:channel->delegate_];
   if (*status == kIOReturnSuccess) {
     channel->channel_ = rfcomm_channel;
+    [channel->delegate_ setRfcommChannel:rfcomm_channel];
   } else {
     channel.reset();
   }
