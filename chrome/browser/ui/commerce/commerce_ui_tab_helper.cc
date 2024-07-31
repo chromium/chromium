@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -178,6 +179,8 @@ void CommerceUiTabHelper::DidFinishNavigation(
   if (!shopping_service_) {
     return;
   }
+
+  page_action_icon_compute_start_time_ = base::TimeTicks::Now();
 
   discounts_page_action_controller_->ResetForNewNavigation(
       web_contents()->GetLastCommittedURL());
@@ -544,7 +547,13 @@ bool CommerceUiTabHelper::IsShowingDiscountsIcon() {
 }
 
 void CommerceUiTabHelper::ComputePageActionToExpand() {
+  CHECK(!page_action_icon_compute_start_time_.is_null());
+  base::UmaHistogramTimes(
+      "Commerce.IconComputationTime",
+      base::TimeTicks::Now() - page_action_icon_compute_start_time_);
+
   page_action_to_expand_ = std::nullopt;
+  page_action_icon_compute_start_time_ = base::TimeTicks();
 
   if (!web_contents() || !web_contents()->GetBrowserContext()) {
     page_action_to_expand_ = std::nullopt;

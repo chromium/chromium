@@ -285,6 +285,18 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.IconComputationTime" units="ms"
+    expires_after="2024-12-27">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping-eng@google.com</owner>
+  <summary>
+    Records the page action icon to expand computation time. This is the
+    duration between finished navigation and received all commerce page action
+    server responses. This histogram is emitted after all server responses are
+    received and ready to compute which page action to expand.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.ParcelTracking.{ParcelRequestTypes}.RequestStatus"
     enum="ParcelRequestStatus" expires_after="2024-12-24">
   <owner>ayman@chromium.org</owner>
