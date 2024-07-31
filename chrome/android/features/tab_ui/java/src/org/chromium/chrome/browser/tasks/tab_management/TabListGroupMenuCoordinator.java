@@ -7,13 +7,17 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.res.Resources;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
+import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 /**
@@ -25,19 +29,25 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
      * @param onItemClickedCallback A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
      * @param shouldShowDeleteGroup Whether to show the delete group option.
+     * @param identityManager Used for checking the current account.
+     * @param tabGroupSyncService Used to checking if a group is shared or synced.
+     * @param dataSharingService Used for checking the user is the owner of a group.
      */
     public TabListGroupMenuCoordinator(
             OnItemClickedCallback onItemClicked,
             Supplier<TabModel> tabModelSupplier,
-            boolean shouldShowDeleteGroup) {
+            boolean shouldShowDeleteGroup,
+            @Nullable IdentityManager identityManager,
+            @Nullable TabGroupSyncService tabGroupSyncService,
+            @Nullable DataSharingService dataSharingService) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
                 tabModelSupplier,
                 shouldShowDeleteGroup,
-                /* identityManager= */ null,
-                /* tabGroupSyncService= */ null,
-                /* dataSharingService= */ null);
+                identityManager,
+                tabGroupSyncService,
+                dataSharingService);
     }
 
     /**
@@ -84,7 +94,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                         isIncognito,
                         true));
         // Delete does not make sense for incognito since the tab group is not saved to sync.
-        if (shouldShowDeleteGroup && !isIncognito) {
+        if (shouldShowDeleteGroup && !isIncognito && !hasCollaborationData) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.delete_tab_group_menu_item,
@@ -102,7 +112,28 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             ModelList itemList,
             IdentityManager identityManager,
             GroupDataOrFailureOutcome outcome) {
-        // Intentional no-op.
+        @MemberRole int memberRole = TabShareUtils.getSelfMemberRole(outcome, identityManager);
+        if (memberRole == MemberRole.OWNER) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.delete_tab_group_menu_item,
+                            R.id.delete_shared_group,
+                            /* startIconId= */ Resources.ID_NULL,
+                            /* iconTintColorStateList= */ Resources.ID_NULL,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            /* isIncognito= */ false,
+                            /* enabled= */ true));
+        } else if (memberRole == MemberRole.MEMBER) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.leave_tab_group_menu_item,
+                            R.id.leave_group,
+                            /* startIconId= */ Resources.ID_NULL,
+                            /* iconTintColorStateList= */ Resources.ID_NULL,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            /* isIncognito= */ false,
+                            /* enabled= */ true));
+        }
     }
 
     @Override

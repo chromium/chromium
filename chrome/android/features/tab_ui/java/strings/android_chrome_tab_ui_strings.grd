@@ -349,6 +349,15 @@
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_CLOSE_GROUP" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the tab group is closed. It may still be possible to access the group from tab group sync if enabled.">
         Close group
       </message>
+      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_MANAGE_SHARING" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the manage sharing UI is shown.">
+        Manage sharing
+      </message>
+      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_RECENT_ACTIVITY" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the recent activity UI is shown.">
+        Recent activity
+      </message>
+      <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_LEAVE_GROUP" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the user leaves a collaboration for a tab group. All references to the group go away including those in sync.">
+        Leave group
+      </message>
 
       <!-- Tab Grid Dialog accessibility strings -->
       <message name="IDS_ACCESSIBILITY_EXPAND_TAB_GROUP" desc="The accessibility text to read when a card representing a tab group is clicked in grid tab switcher. NUMBER_OF_TABS is the number of tabs within this group.">

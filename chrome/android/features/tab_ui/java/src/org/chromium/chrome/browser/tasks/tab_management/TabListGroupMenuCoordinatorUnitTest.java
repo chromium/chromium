@@ -58,10 +58,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/** Unit tests for {@link TabGridDialogMenuCoordinator}. */
+/** Unit tests for {@link TabListGroupMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-public class TabGridDialogMenuCoordinatorUnitTest {
+public class TabListGroupMenuCoordinatorUnitTest {
     private static final int TAB_ID = 123;
     private static final String COLLABORATION_ID1 = "A";
     private static final String GAIA_ID1 = "Z";
@@ -87,7 +87,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
     @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
     @Captor private ArgumentCaptor<ModelList> mModelListCaptor;
 
-    private TabGridDialogMenuCoordinator mMenuCoordinator;
+    private TabListGroupMenuCoordinator mMenuCoordinator;
     private Activity mActivity;
     private View mView;
 
@@ -114,10 +114,9 @@ public class TabGridDialogMenuCoordinatorUnitTest {
 
         mMenuCoordinator =
                 spy(
-                        new TabGridDialogMenuCoordinator(
+                        new TabListGroupMenuCoordinator(
                                 mOnItemClickedCallback,
                                 () -> mTabModel,
-                                () -> TAB_ID,
                                 /* shouldShowDeleteGroup= */ true,
                                 mIdentityManager,
                                 mTabGroupSyncService,
@@ -130,7 +129,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
     }
 
     @Test
-    public void testBuildMenuItems_NoCollaborationData() {
+    public void testBuildMenuItems_WithDelete() {
         ModelList modelList = new ModelList();
         mMenuCoordinator.buildMenuActionItems(
                 modelList,
@@ -139,48 +138,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                 /* hasCollaborationData= */ false);
 
         List<Integer> menuIds =
-                List.of(
-                        R.id.select_tabs,
-                        R.id.edit_group_name,
-                        R.id.edit_group_color,
-                        R.id.close_tab,
-                        R.id.delete_tab);
-        assertListMenuItemsAre(modelList, menuIds);
-    }
-
-    @Test
-    public void testBuildMenuItems_HasCollaborationData() {
-        ModelList modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ false,
-                /* shouldShowDeleteGroup= */ true,
-                /* hasCollaborationData= */ true);
-
-        List<Integer> menuIds =
-                List.of(
-                        R.id.select_tabs,
-                        R.id.edit_group_name,
-                        R.id.edit_group_color,
-                        R.id.close_tab);
-        assertListMenuItemsAre(modelList, menuIds);
-    }
-
-    @Test
-    public void testBuildMenuItems_Incognito() {
-        ModelList modelList = new ModelList();
-        mMenuCoordinator.buildMenuActionItems(
-                modelList,
-                /* isIncognito= */ true,
-                /* shouldShowDeleteGroup= */ true,
-                /* hasCollaborationData= */ false);
-
-        List<Integer> menuIds =
-                List.of(
-                        R.id.select_tabs,
-                        R.id.edit_group_name,
-                        R.id.edit_group_color,
-                        R.id.close_tab);
+                List.of(R.id.close_tab, R.id.edit_group_name, R.id.ungroup_tab, R.id.delete_tab);
         assertListMenuItemsAre(modelList, menuIds);
     }
 
@@ -190,15 +148,28 @@ public class TabGridDialogMenuCoordinatorUnitTest {
         mMenuCoordinator.buildMenuActionItems(
                 modelList,
                 /* isIncognito= */ false,
+                /* shouldShowDeleteGroup= */ true,
+                /* hasCollaborationData= */ true);
+
+        List<Integer> menuIds = List.of(R.id.close_tab, R.id.edit_group_name, R.id.ungroup_tab);
+        assertListMenuItemsAre(modelList, menuIds);
+
+        modelList = new ModelList();
+        mMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ false,
                 /* shouldShowDeleteGroup= */ false,
                 /* hasCollaborationData= */ false);
 
-        List<Integer> menuIds =
-                List.of(
-                        R.id.select_tabs,
-                        R.id.edit_group_name,
-                        R.id.edit_group_color,
-                        R.id.close_tab);
+        assertListMenuItemsAre(modelList, menuIds);
+
+        modelList = new ModelList();
+        mMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ true,
+                /* shouldShowDeleteGroup= */ true,
+                /* hasCollaborationData= */ false);
+
         assertListMenuItemsAre(modelList, menuIds);
     }
 
@@ -253,8 +224,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
         GroupDataOrFailureOutcome outcome =
                 new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
 
-        View.OnClickListener clickListener = mMenuCoordinator.getOnClickListener();
-        clickListener.onClick(mView);
+        mMenuCoordinator.getTabActionListener().run(mView, TAB_ID);
 
         verify(mDataSharingService)
                 .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
@@ -265,14 +235,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                 .buildCollaborationMenuItems(mModelListCaptor.capture(), any(), any());
 
         List<Integer> menuIds =
-                List.of(
-                        R.id.select_tabs,
-                        R.id.edit_group_name,
-                        R.id.edit_group_color,
-                        R.id.manage_sharing,
-                        R.id.recent_activity,
-                        R.id.close_tab,
-                        R.id.leave_group);
+                List.of(R.id.close_tab, R.id.edit_group_name, R.id.ungroup_tab, R.id.leave_group);
         assertListMenuItemsAre(mModelListCaptor.getValue(), menuIds);
 
         mMenuCoordinator.dismissForTesting();
@@ -297,8 +260,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
         GroupDataOrFailureOutcome outcome =
                 new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
 
-        View.OnClickListener clickListener = mMenuCoordinator.getOnClickListener();
-        clickListener.onClick(mView);
+        mMenuCoordinator.getTabActionListener().run(mView, TAB_ID);
 
         verify(mDataSharingService)
                 .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
@@ -310,12 +272,9 @@ public class TabGridDialogMenuCoordinatorUnitTest {
 
         List<Integer> menuIds =
                 List.of(
-                        R.id.select_tabs,
-                        R.id.edit_group_name,
-                        R.id.edit_group_color,
-                        R.id.manage_sharing,
-                        R.id.recent_activity,
                         R.id.close_tab,
+                        R.id.edit_group_name,
+                        R.id.ungroup_tab,
                         R.id.delete_shared_group);
         assertListMenuItemsAre(mModelListCaptor.getValue(), menuIds);
 

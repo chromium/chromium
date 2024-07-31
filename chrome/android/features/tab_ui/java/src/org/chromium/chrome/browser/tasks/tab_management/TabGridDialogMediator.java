@@ -16,6 +16,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
@@ -167,7 +168,6 @@ public class TabGridDialogMediator
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private boolean mIsUpdatingTitle;
     private String mCurrentGroupModifiedTitle;
-    private TabGroupOverflowMenuCoordinator.OnItemClickedCallback mToolbarMenuCallback;
     private Activity mActivity;
 
     TabGridDialogMediator(
@@ -428,41 +428,6 @@ public class TabGridDialogMediator
         mTabGroupTitleEditor = tabGroupTitleEditor;
 
         assert mCurrentTabModelFilterSupplier.get() instanceof TabGroupModelFilter;
-
-        mToolbarMenuCallback =
-                (menuId, tabId) -> {
-                    assert tabId == mCurrentTabId;
-                    if (menuId == R.id.ungroup_tab || menuId == R.id.select_tabs) {
-                        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
-                        if (setupAndShowTabListEditor(tabId)) {
-                            TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
-                                    TabListEditorOpenMetricGroups.OPEN_FROM_DIALOG, mContext);
-                        }
-                    } else if (menuId == R.id.edit_group_name) {
-                        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
-                    } else if (menuId == R.id.edit_group_color) {
-                        mShowColorPickerPopupRunnable.run();
-                        TabUiMetricsHelper.recordTabGroupColorChangeActionMetrics(
-                                TabGroupColorChangeActionType.VIA_OVERFLOW_MENU);
-                    } else if (menuId == R.id.close_tab || menuId == R.id.delete_tab) {
-                        boolean hideTabGroups = menuId == R.id.close_tab;
-                        TabUiUtils.closeTabGroup(
-                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
-                                mActionConfirmationManager,
-                                tabId,
-                                hideTabGroups);
-                    } else if (menuId == R.id.delete_shared_group) {
-                        TabUiUtils.deleteSharedTabGroup(
-                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
-                                mActionConfirmationManager,
-                                tabId);
-                    } else if (menuId == R.id.leave_group) {
-                        TabUiUtils.leaveTabGroup(
-                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
-                                mActionConfirmationManager,
-                                tabId);
-                    }
-                };
 
         setupToolbarClickHandlers();
         setupToolbarEditText();
@@ -853,6 +818,57 @@ public class TabGridDialogMediator
         };
     }
 
+    @VisibleForTesting
+    public void onToolbarMenuItemClick(int menuId, int tabId) {
+        assert tabId == mCurrentTabId;
+        if (menuId == R.id.ungroup_tab || menuId == R.id.select_tabs) {
+            RecordUserAction.record("TabGridDialogMenu.SelectTabs");
+            mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
+            if (setupAndShowTabListEditor(tabId)) {
+                TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
+                        TabListEditorOpenMetricGroups.OPEN_FROM_DIALOG, mContext);
+            }
+        } else if (menuId == R.id.edit_group_name) {
+            RecordUserAction.record("TabGridDialogMenu.Rename");
+            mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
+        } else if (menuId == R.id.edit_group_color) {
+            RecordUserAction.record("TabGridDialogMenu.EditColor");
+            mShowColorPickerPopupRunnable.run();
+            TabUiMetricsHelper.recordTabGroupColorChangeActionMetrics(
+                    TabGroupColorChangeActionType.VIA_OVERFLOW_MENU);
+        } else if (menuId == R.id.manage_sharing) {
+            RecordUserAction.record("TabGridDialogMenu.ManageSharing");
+            // TODO(crbug.com/348731625): Make this do something.
+        } else if (menuId == R.id.recent_activity) {
+            RecordUserAction.record("TabGridDialogMenu.RecentActivity");
+            // TODO(crbug.com/348731625): Make this do something.
+        } else if (menuId == R.id.close_tab || menuId == R.id.delete_tab) {
+            boolean hideTabGroups = menuId == R.id.close_tab;
+            if (hideTabGroups) {
+                RecordUserAction.record("TabGridDialogMenu.Close");
+            } else {
+                RecordUserAction.record("TabGridDialogMenu.Delete");
+            }
+            TabUiUtils.closeTabGroup(
+                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                    mActionConfirmationManager,
+                    tabId,
+                    hideTabGroups);
+        } else if (menuId == R.id.delete_shared_group) {
+            RecordUserAction.record("TabGridDialogMenu.DeleteShared");
+            TabUiUtils.deleteSharedTabGroup(
+                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                    mActionConfirmationManager,
+                    tabId);
+        } else if (menuId == R.id.leave_group) {
+            RecordUserAction.record("TabGridDialogMenu.LeaveShared");
+            TabUiUtils.leaveTabGroup(
+                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                    mActionConfirmationManager,
+                    tabId);
+        }
+    }
+
     private View.OnClickListener getMenuButtonClickListener() {
         assert mTabListEditorControllerSupplier != null;
         TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
@@ -871,7 +887,7 @@ public class TabGridDialogMediator
         if (mTabGridDialogMenuCoordinator == null) {
             mTabGridDialogMenuCoordinator =
                     new TabGridDialogMenuCoordinator(
-                            mToolbarMenuCallback,
+                            this::onToolbarMenuItemClick,
                             () -> mCurrentTabModelFilterSupplier.get().getTabModel(),
                             () -> mCurrentTabId,
                             shouldShowDeleteGroup,
@@ -1096,10 +1112,6 @@ public class TabGridDialogMediator
 
     String getCurrentGroupModifiedTitleForTesting() {
         return mCurrentGroupModifiedTitle;
-    }
-
-    TabGroupOverflowMenuCoordinator.OnItemClickedCallback getToolbarMenuCallbackForTesting() {
-        return mToolbarMenuCallback;
     }
 
     Runnable getScrimClickRunnableForTesting() {

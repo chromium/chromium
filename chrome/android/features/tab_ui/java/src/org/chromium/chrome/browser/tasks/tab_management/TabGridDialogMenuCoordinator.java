@@ -20,6 +20,7 @@ import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailur
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 /**
@@ -133,10 +134,35 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
             IdentityManager identityManager,
             GroupDataOrFailureOutcome outcome) {
         @MemberRole int memberRole = TabShareUtils.getSelfMemberRole(outcome, identityManager);
+        if (memberRole != MemberRole.UNKNOWN) {
+            // Insert these items above the close group menu item.
+            int insertionIndex = getMenuItemIndex(itemList, R.id.close_tab);
+            itemList.add(
+                    insertionIndex++,
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.tab_grid_dialog_toolbar_manage_sharing,
+                            R.id.manage_sharing,
+                            R.drawable.ic_group_24dp,
+                            R.color.default_icon_color_light_tint_list,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            /* isIncognito= */ false,
+                            /* enabled= */ true));
+            itemList.add(
+                    insertionIndex++,
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.tab_grid_dialog_toolbar_recent_activity,
+                            R.id.recent_activity,
+                            R.drawable.ic_update_24dp,
+                            R.color.default_icon_color_light_tint_list,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            /* isIncognito= */ false,
+                            /* enabled= */ true));
+        }
+
         if (memberRole == MemberRole.OWNER) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                            R.string.leave_tab_group_menu_item,
+                            R.string.tab_grid_dialog_toolbar_delete_group,
                             R.id.delete_shared_group,
                             R.drawable.material_ic_delete_24dp,
                             R.color.default_icon_color_light_tint_list,
@@ -146,7 +172,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
         } else if (memberRole == MemberRole.MEMBER) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                            R.string.leave_tab_group_menu_item,
+                            R.string.tab_grid_dialog_toolbar_leave_group,
                             R.id.leave_group,
                             R.drawable.material_ic_delete_24dp,
                             R.color.default_icon_color_light_tint_list,
@@ -159,5 +185,14 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
     @Override
     protected @DimenRes int getMenuWidth() {
         return R.dimen.menu_width;
+    }
+
+    private int getMenuItemIndex(ModelList itemList, int menuItemId) {
+        for (int i = 0; i < itemList.size(); i++) {
+            if (itemList.get(i).model.get(ListMenuItemProperties.MENU_ITEM_ID) == menuItemId) {
+                return i;
+            }
+        }
+        return itemList.size();
     }
 }

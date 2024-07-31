@@ -40388,6 +40388,87 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGridDialogMenu.Close">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the close group menu item in the tab grid dialog
+    menu.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.Delete">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the delete group menu item in the tab grid
+    dialog menu.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.DeleteShared">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the delete group menu item in the tab grid
+    dialog menu for a group with a collaboration.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.EditColor">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the edit color menu item in the tab grid dialog
+    menu.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.LeaveShared">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the leave group menu item in the tab grid dialog
+    menu for a group with a collaboration.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.ManageSharing">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the manage sharing menu item in the tab grid
+    dialog menu.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.RecentActivity">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the recent activity menu item in the tab grid
+    dialog menu.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.Rename">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the edit title menu item in the tab grid dialog
+    menu.
+  </description>
+</action>
+
+<action name="TabGridDialogMenu.SelectTabs">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the select tabs menu item in the tab grid dialog
+    menu.
+  </description>
+</action>
+
 <action name="TabGridSheet.UndoCloseTab">
   <obsolete>Deprecated as of 11/2019. Sheet UI is no longer used.</obsolete>
   <owner>yusufo@chromium.org</owner>
@@ -40647,6 +40728,24 @@ should be able to be added at any place in this file.
   <description>
     Recorded when a user clicks the delete option on a tab group item in the tab
     switcher.
+  </description>
+</action>
+
+<action name="TabGroupItemMenu.DeleteShared">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the delete option on a collaboration tab group
+    item in the tab switcher.
+  </description>
+</action>
+
+<action name="TabGroupItemMenu.LeaveShared">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the leave option on a collaboration tab group
+    item in the tab switcher.
   </description>
 </action>
 
