@@ -29,6 +29,11 @@ BASE_FEATURE(kHistorySearchSettingsVisibility,
              "HistorySearchSettingsVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<std::string> kPerformanceClassListForHistorySearch(
+    &kHistorySearchSettingsVisibility,
+    "PerformanceClassListForHistorySearch",
+    "*");
+
 // Graduation features.
 
 // Note: ComposeGraduated is enabled by default because the feature is

@@ -449,7 +449,7 @@ void OptimizationGuideKeyedService::Initialize() {
       model_execution_features_controller_ = std::make_unique<
           optimization_guide::ModelExecutionFeaturesController>(
           profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-          dogfood_status);
+          g_browser_process->local_state(), dogfood_status);
 
       // Don't create logs uploader service when feature is disabled. All the
       // logs upload get route through this service which exists one per
