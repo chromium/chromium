@@ -108,8 +108,8 @@ export class EventGenerator {
    */
   static sendMousePress(
       x: number, y: number,
-      mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton):
-      boolean {
+      mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton,
+      isDoubleClick = false): boolean {
     if (EventGenerator.midMouseClickButton !== undefined) {
       return false;
     }
@@ -123,7 +123,7 @@ export class EventGenerator {
 
     const type = chrome.accessibilityPrivate.SyntheticMouseEventType.PRESS;
     chrome.accessibilityPrivate.sendSyntheticMouseEvent(
-        {type, x, y, mouseButton});
+        {type, x, y, mouseButton, isDoubleClick});
     return true;
   }
 
@@ -133,7 +133,8 @@ export class EventGenerator {
    * If we are not mid mouse click, returns false as no release event
    * was sent.
    */
-  static sendMouseRelease(x: number, y: number): boolean {
+  static sendMouseRelease(x: number, y: number, isDoubleClick = false):
+      boolean {
     if (EventGenerator.midMouseClickButton === undefined) {
       return false;
     }
@@ -144,8 +145,13 @@ export class EventGenerator {
     y = Math.round(y);
 
     const type = chrome.accessibilityPrivate.SyntheticMouseEventType.RELEASE;
-    chrome.accessibilityPrivate.sendSyntheticMouseEvent(
-        {type, x, y, mouseButton: EventGenerator.midMouseClickButton});
+    chrome.accessibilityPrivate.sendSyntheticMouseEvent({
+      type,
+      x,
+      y,
+      mouseButton: EventGenerator.midMouseClickButton,
+      isDoubleClick,
+    });
 
     EventGenerator.midMouseClickButton = undefined;
 

@@ -444,4 +444,43 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ToggleVirtualKeyboard) {
   waiter.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DoubleClick) {
+  utils()->EnableFaceGaze(
+      Config()
+          .Default()
+          .WithGesturesToMacros({{FaceGazeGesture::MOUTH_FUNNEL,
+                                  MacroName::MOUSE_CLICK_LEFT_DOUBLE}})
+          .WithGestureConfidences({{FaceGazeGesture::MOUTH_FUNNEL, 50}}));
+  event_handler().ClearEvents();
+
+  // Mouth funnel to trigger double click event.
+  utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
+      MediapipeGesture::MOUTH_FUNNEL, 60));
+  auto press_events =
+      event_handler().mouse_events(ui::EventType::kMousePressed);
+  auto release_events =
+      event_handler().mouse_events(ui::EventType::kMouseReleased);
+
+  ASSERT_EQ(1u, press_events.size());
+  ASSERT_EQ(1u, release_events.size());
+  const auto& press_event = press_events.back();
+  const auto& release_event = release_events.back();
+
+  ASSERT_TRUE(press_event.IsOnlyLeftMouseButton());
+  ASSERT_EQ(gfx::Point(600, 400), press_event.root_location());
+  // Assert that the press event is for a double click.
+  ASSERT_TRUE(ui::EF_IS_DOUBLE_CLICK & press_event.flags());
+
+  ASSERT_TRUE(release_event.IsOnlyLeftMouseButton());
+  ASSERT_EQ(gfx::Point(600, 400), release_event.root_location());
+  // Assert that the release event is for a double click.
+  ASSERT_TRUE(ui::EF_IS_DOUBLE_CLICK & release_event.flags());
+
+  // Release doesn't trigger anything else.
+  event_handler().ClearEvents();
+  utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
+      MediapipeGesture::MOUTH_FUNNEL, 30));
+  ASSERT_EQ(0u, event_handler().mouse_events().size());
+}
+
 }  // namespace ash

@@ -17,6 +17,7 @@ export const FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF =
 // Currently supported macros in FaceGaze.
 export const FaceGazeActions: MacroName[] = [
   MacroName.MOUSE_CLICK_LEFT,
+  MacroName.MOUSE_CLICK_LEFT_DOUBLE,
   MacroName.MOUSE_CLICK_RIGHT,
   MacroName.MOUSE_LONG_CLICK_LEFT,
   MacroName.RESET_CURSOR,
@@ -116,6 +117,8 @@ export class FaceGazeUtils {
     switch (macro) {
       case MacroName.MOUSE_CLICK_LEFT:
         return 'Click a mouse button';
+      case MacroName.MOUSE_CLICK_LEFT_DOUBLE:
+        return 'Double click the mouse';
       case MacroName.MOUSE_CLICK_RIGHT:
         return 'Right-click the mouse';
       case MacroName.MOUSE_LONG_CLICK_LEFT:

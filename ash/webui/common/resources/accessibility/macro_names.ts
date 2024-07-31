@@ -171,6 +171,9 @@ export enum MacroName {
   // Shows/hides the virtual keyboard.
   TOGGLE_VIRTUAL_KEYBOARD = 48,
 
+  // Generates a synthetic double left click event.
+  MOUSE_CLICK_LEFT_DOUBLE = 49,
+
   // Any new actions should match with Voice Access's semantic tags where
   // possible.
 }

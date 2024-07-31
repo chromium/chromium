@@ -6,7 +6,7 @@ import {CustomCallbackMacro} from '/common/action_fulfillment/macros/custom_call
 import {KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
 import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
-import {MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
+import {MouseClickLeftDoubleMacro, MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
 import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
 import {AsyncUtil} from '/common/async_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
@@ -216,6 +216,9 @@ export class GestureHandler {
         return new MouseClickMacro(
             this.mouseController_.mouseLocation(), /*leftClick=*/ true,
             /*clickImmediately=*/ false);
+      case MacroName.MOUSE_CLICK_LEFT_DOUBLE:
+        return new MouseClickLeftDoubleMacro(
+            this.mouseController_.mouseLocation());
       case MacroName.RESET_CURSOR:
         return new ResetCursorMacro(this.mouseController_);
       case MacroName.KEY_PRESS_SPACE:

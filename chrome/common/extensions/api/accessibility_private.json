@@ -165,6 +165,11 @@
             "$ref": "SyntheticMouseEventButton",
             "description": "The default mouse button is set to left if mouseButton is not specified.",
             "optional": true
+          },
+          "isDoubleClick": {
+            "type": "boolean",
+            "description": "True if the double click flag should be set.",
+            "optional": true
           }
         }
       },
