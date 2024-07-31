@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
@@ -72,13 +73,19 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
     @Test
     public void testUpdateHeight() {
-        mMediator.onToEdgeChange(60);
+        mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
         assertEquals(
                 "The height should have adjusted to 60 to match the edge-to-edge bottom inset.",
                 60,
                 mModel.get(HEIGHT));
 
-        mMediator.onToEdgeChange(0);
+        mMediator.onToEdgeChange(100, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        assertEquals(
+                "The height should have been increased to match the edge-to-edge bottom inset.",
+                100,
+                mModel.get(HEIGHT));
+
+        mMediator.onToEdgeChange(0, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
         assertEquals(
                 "The height should have been cleared to 0 to match the edge-to-edge bottom inset.",
                 0,
@@ -115,21 +122,35 @@ public class EdgeToEdgeBottomChinMediatorTest {
                 "The chin should not be visible as it has just been initialized.",
                 mModel.get(IS_VISIBLE));
 
-        mMediator.onStartedShowing(LayoutType.BROWSING);
-        mMediator.onToEdgeChange(0);
-        assertFalse(
-                "The chin should not be visible as the edge-to-edge bottom inset is still 0.",
-                mModel.get(IS_VISIBLE));
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        assertTrue("The chin should be visible as all conditions are met.", mModel.get(IS_VISIBLE));
+    }
 
-        mMediator.onStartedShowing(LayoutType.NONE);
-        mMediator.onToEdgeChange(60);
+    @Test
+    public void testUpdateVisibility_NoInsets() {
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        mMediator.onToEdgeChange(0, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        assertFalse(
+                "The chin should not be visible as the edge-to-edge bottom inset is 0.",
+                mModel.get(IS_VISIBLE));
+    }
+
+    @Test
+    public void testUpdateVisibility_NoneLayoutType() {
+        doReturn(LayoutType.NONE).when(mLayoutManager).getActiveLayoutType();
+        mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
         assertFalse(
                 "The chin should not be visible as the layout type does not support showing the"
                         + " chin.",
                 mModel.get(IS_VISIBLE));
+    }
 
-        mMediator.onStartedShowing(LayoutType.BROWSING);
-        mMediator.onToEdgeChange(60);
-        assertTrue("The chin should be visible as all conditions are met.", mModel.get(IS_VISIBLE));
+    @Test
+    public void testUpdateVisibility_NotToEdge() {
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ false, /* isPageOptInToEdge= */ false);
+        assertFalse(
+                "The chin should not be visible when not drawing to edge.", mModel.get(IS_VISIBLE));
     }
 }

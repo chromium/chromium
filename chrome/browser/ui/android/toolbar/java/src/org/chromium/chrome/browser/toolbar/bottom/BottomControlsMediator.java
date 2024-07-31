@@ -134,10 +134,7 @@ class BottomControlsMediator
 
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         if (mEdgeToEdgeControllerSupplier.get() != null) {
-            mEdgeToEdgeChangeObserver =
-                    (bottomInset) -> {
-                        onEdgeToEdgeChanged(bottomInset);
-                    };
+            mEdgeToEdgeChangeObserver = this::onEdgeToEdgeChanged;
             mEdgeToEdgeControllerSupplier.get().registerObserver(mEdgeToEdgeChangeObserver);
         }
         mReadAloudRestoringSupplier = readAloudRestoringSupplier;
@@ -226,8 +223,9 @@ class BottomControlsMediator
         updateAndroidViewVisibility();
     }
 
-    private void onEdgeToEdgeChanged(int bottomInset) {
-        mEdgeToEdgePaddingPx = bottomInset;
+    private void onEdgeToEdgeChanged(
+            int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge) {
+        mEdgeToEdgePaddingPx = isDrawingToEdge ? bottomInset : 0;
 
         updateBrowserControlsHeight();
 
@@ -358,7 +356,8 @@ class BottomControlsMediator
         return mEdgeToEdgeChangeObserver;
     }
 
-    void simulateEdgeToEdgeChangeForTesting(int bottomInset) {
-        onEdgeToEdgeChanged(bottomInset);
+    void simulateEdgeToEdgeChangeForTesting(
+            int bottomInset, boolean isDrawingToEdge, boolean isPageOptedIntoEdgeToEdge) {
+        onEdgeToEdgeChanged(bottomInset, isDrawingToEdge, isPageOptedIntoEdgeToEdge);
     }
 }

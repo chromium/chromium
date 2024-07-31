@@ -214,9 +214,7 @@ class TabbedNavigationBarColorController
                     @Override
                     public void onBackgroundColorChanged(Tab tab, int color) {
                         updateNavigationBarColor(
-                                getBottomInset(),
-                                /* forceShowDivider= */ false,
-                                /* disableAnimation= */ false);
+                                /* forceShowDivider= */ false, /* disableAnimation= */ false);
                     }
                 };
         mFullscreenObserver =
@@ -245,9 +243,8 @@ class TabbedNavigationBarColorController
                     }
                     mEdgeToEdgeController = controller;
                     mEdgeToEdgeChangeObserver =
-                            (bottomInset) -> {
+                            (bottomInset, isDrawingToEdge, isPageOptInToEdge) -> {
                                 updateNavigationBarColor(
-                                        bottomInset,
                                         /* forceShowDivider= */ false,
                                         /* disableAnimation= */ false);
                             };
@@ -294,7 +291,7 @@ class TabbedNavigationBarColorController
     public void onBottomAttachedColorChanged(
             @Nullable @ColorInt Integer color, boolean forceShowDivider, boolean disableAnimation) {
         mBottomAttachedUiColor = color;
-        updateNavigationBarColor(null, forceShowDivider, disableAnimation);
+        updateNavigationBarColor(forceShowDivider, disableAnimation);
     }
 
     /**
@@ -342,13 +339,11 @@ class TabbedNavigationBarColorController
         if (mActiveTab != null) mActiveTab.removeObserver(mTabObserver);
         mActiveTab = activeTab;
         if (mActiveTab != null) mActiveTab.addObserver(mTabObserver);
-        updateNavigationBarColor(
-                getBottomInset(), /* forceShowDivider= */ false, /* disableAnimation= */ false);
+        updateNavigationBarColor(/* forceShowDivider= */ false, /* disableAnimation= */ false);
     }
 
     @SuppressLint("NewApi")
-    private void updateNavigationBarColor(
-            @Nullable Integer bottomInset, boolean forceShowDivider, boolean disableAnimation) {
+    private void updateNavigationBarColor(boolean forceShowDivider, boolean disableAnimation) {
         // 1. Calculate if we force / override the navigation bar color.
         boolean toEdge = isDrawingToEdge();
         boolean forceDarkNavigation = mTabModelSelector.isIncognitoSelected();
@@ -444,8 +439,7 @@ class TabbedNavigationBarColorController
 
     @SuppressLint("NewApi")
     private void updateNavigationBarColor() {
-        updateNavigationBarColor(
-                null, /* forceShowDivider= */ false, /* disableAnimation= */ false);
+        updateNavigationBarColor(/* forceShowDivider= */ false, /* disableAnimation= */ false);
     }
 
     @SuppressLint("NewApi")
@@ -524,12 +518,6 @@ class TabbedNavigationBarColorController
                 && mLayoutManager != null
                 && mLayoutManager.getActiveLayoutType() == LayoutType.BROWSING
                 && mActiveTab != null;
-    }
-
-    private int getBottomInset() {
-        return mEdgeToEdgeControllerSupplier != null && mEdgeToEdgeControllerSupplier.get() != null
-                ? mEdgeToEdgeControllerSupplier.get().getBottomInset()
-                : 0;
     }
 
     /**

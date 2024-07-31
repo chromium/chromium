@@ -143,14 +143,10 @@ public class EdgeToEdgeControllerImpl
                 : "The inset observer should have non-null insets by the time the"
                         + " EdgeToEdgeControllerImpl is initialized.";
         mSystemInsets = getSystemInsets(mInsetObserver.getLastRawWindowInsets());
-        View contentView = mActivity.findViewById(ROOT_UI_VIEW_ID);
-        assert contentView != null : "Root view for Edge To Edge not found!";
-        adjustEdgePaddings(false, contentView);
-
         mEdgeToEdgeOSWrapper.setDecorFitsSystemWindows(mActivity.getWindow(), false);
         drawToEdge(
                 EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
-                /* changedWindowInsets= */ false);
+                /* changedWindowInsets= */ true);
     }
 
     @VisibleForTesting
@@ -283,7 +279,6 @@ public class EdgeToEdgeControllerImpl
                         pageOptedIntoEdgeToEdge,
                         mLayoutManager.getActiveLayoutType(),
                         mSystemInsets.bottom);
-
         boolean changedPageOptedIn = pageOptedIntoEdgeToEdge != mIsPageOptedIntoEdgeToEdge;
         boolean changedDrawToEdge = shouldDrawToEdge != mIsDrawingToEdge;
         mIsPageOptedIntoEdgeToEdge = pageOptedIntoEdgeToEdge;
@@ -316,7 +311,8 @@ public class EdgeToEdgeControllerImpl
                         shouldPad && !mBottomControlsAreVisible ? mSystemInsets.bottom : 0);
             }
             for (var observer : mEdgeChangeObservers) {
-                observer.onToEdgeChange(isPageOptedIntoEdgeToEdge() ? mSystemInsets.bottom : 0);
+                observer.onToEdgeChange(
+                        mSystemInsets.bottom, isDrawingToEdge(), isPageOptedIntoEdgeToEdge());
             }
         }
     }

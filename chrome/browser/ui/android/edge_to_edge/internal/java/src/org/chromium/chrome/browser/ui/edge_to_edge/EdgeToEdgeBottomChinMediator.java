@@ -15,18 +15,19 @@ import androidx.annotation.NonNull;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 class EdgeToEdgeBottomChinMediator
         implements LayoutStateProvider.LayoutStateObserver,
                 EdgeToEdgeSupplier.ChangeObserver,
                 NavigationBarColorProvider.Observer {
+    private static final String TAG = "E2EBottomChin";
+
     /** The model for the bottom controls component that holds all of its view state. */
     private final PropertyModel mModel;
 
-    private @LayoutType int mCurrentLayoutType;
     private int mEdgeToEdgeBottomInset;
+    private boolean mIsDrawingToEdge;
 
     private final @NonNull LayoutManager mLayoutManager;
     private final @NonNull EdgeToEdgeController mEdgeToEdgeController;
@@ -63,6 +64,12 @@ class EdgeToEdgeBottomChinMediator
         mLayoutManager.addObserver(this);
         mEdgeToEdgeController.registerObserver(this);
         mNavigationBarColorProvider.addObserver(this);
+
+        // Call observer methods to trigger initial value.
+        onToEdgeChange(
+                mEdgeToEdgeController.getBottomInsetPx(),
+                mEdgeToEdgeController.isDrawingToEdge(),
+                mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
     }
 
     void destroy() {
@@ -78,23 +85,29 @@ class EdgeToEdgeBottomChinMediator
     private void updateVisibility() {
         // TODO(crbug.com/350754745) Check if other bottom browser controls are showing
         // TODO add check for E2E website opt-in
+        boolean isChinAllowed =
+                isBottomChinAllowed(mLayoutManager.getActiveLayoutType(), mEdgeToEdgeBottomInset);
 
-        mModel.set(IS_VISIBLE, isBottomChinAllowed(mCurrentLayoutType, mEdgeToEdgeBottomInset));
+        mModel.set(IS_VISIBLE, isChinAllowed && mIsDrawingToEdge);
     }
 
     // LayoutStateProvider.LayoutStateObserver
 
     @Override
     public void onStartedShowing(int layoutType) {
-        mCurrentLayoutType = layoutType;
         updateVisibility();
     }
 
     // EdgeToEdgeSupplier.ChangeObserver
 
     @Override
-    public void onToEdgeChange(int bottomInset) {
+    public void onToEdgeChange(
+            int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge) {
+        if (mEdgeToEdgeBottomInset == bottomInset && mIsDrawingToEdge == isDrawingToEdge) return;
+
         mEdgeToEdgeBottomInset = bottomInset;
+        mIsDrawingToEdge = isDrawingToEdge;
+
         mModel.set(HEIGHT, bottomInset);
         updateVisibility();
     }
