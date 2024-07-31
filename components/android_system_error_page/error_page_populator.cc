@@ -23,6 +23,10 @@ namespace {
 constexpr char kThrottledErrorDescription[] =
     "Request throttled. Visit http://dev.chromium.org/throttling for more "
     "information.";
+
+constexpr char kSupervisedUserLearnMoreUrl[] =
+    "https://support.google.com/families/answer/7087030?hl=en&"
+    "sjid=4826868072406146340-SA#zippy=%2Cchange-website-permission-settings";
 }  // namespace
 
 void PopulateErrorPageHtml(const blink::WebURLError& error,
@@ -53,6 +57,9 @@ void PopulateErrorPageHtml(const blink::WebURLError& error,
               blink::ResourceRequestBlockedReason::kSupervisedUserUrlBlocked)) {
     replacements.push_back(l10n_util::GetStringUTF8(
         IDS_ANDROID_ERROR_PAGE_SUPERVISED_USER_URL_BLOCKED_MESSAGE));
+    replacements.push_back(kSupervisedUserLearnMoreUrl);
+    replacements.push_back(l10n_util::GetStringUTF8(
+        IDS_ANDROID_ERROR_PAGE_SUPERVISED_USER_LEARN_MORE));
     *error_html = base::ReplaceStringPlaceholders(
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_ANDROID_SUPERVISED_USER_URL_BLOCKED_HTML),
