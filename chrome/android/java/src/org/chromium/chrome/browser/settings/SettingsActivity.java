@@ -94,7 +94,6 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -139,9 +138,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private boolean mIsNewlyCreated;
 
     private static boolean sActivityNotExportedChecked;
-
-    /** An instance of settings launcher that can be injected into a fragment */
-    private SettingsLauncher mSettingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
 
     private SnackbarManager mSnackbarManager;
 
@@ -524,7 +520,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof FragmentSettingsLauncher) {
             FragmentSettingsLauncher fragmentSettingsLauncher = (FragmentSettingsLauncher) fragment;
-            fragmentSettingsLauncher.setSettingsLauncher(mSettingsLauncher);
+            fragmentSettingsLauncher.setSettingsLauncher(
+                    SettingsLauncherFactory.createSettingsLauncher());
         }
 
         // Settings screen specific attachments.
@@ -568,7 +565,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             SearchEngineSettings settings = (SearchEngineSettings) fragment;
             settings.setDisableAutoSwitchRunnable(
                     () -> LocaleManager.getInstance().setSearchEngineAutoSwitch(false));
-            settings.setSettingsLauncher();
         }
         if (fragment instanceof ImageDescriptionsSettings) {
             ImageDescriptionsSettings imageFragment = (ImageDescriptionsSettings) fragment;

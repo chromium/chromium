@@ -85,16 +85,6 @@ public class SearchEngineSettings extends ListFragment implements ProfileDepende
         mSearchEngineAdapter.setDisableAutoSwitchRunnable(runnable);
     }
 
-    /**
-     * Sets an instance of SettingsLauncher in a fragment.
-     *
-     * <p>TODO(crbug.com/354019554): Remove this since SettingsLauncher does not need to be set
-     * anymore.
-     */
-    public void setSettingsLauncher() {
-        createAdapterIfNecessary();
-    }
-
     private void createAdapterIfNecessary() {
         if (mSearchEngineAdapter != null) return;
         assert mProfile != null;
