@@ -230,6 +230,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
 
+  // PaintHolding for OOPIFs. This should be a no-op since WebView doesn't use
+  // site isolation but field trial testing doesn't indicate that. Revisit when
+  // enabling site isolation. See crbug.com/356170748.
+  aw_feature_overrides.DisableFeature(blink::features::kPaintHoldingForIframes);
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kDebugBsa)) {
     // Feature parameters can only be set via a field trial.
     const char kTrialName[] = "StudyDebugBsa";
