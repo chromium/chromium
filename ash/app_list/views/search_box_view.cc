@@ -594,11 +594,16 @@ void SearchBoxView::ResetForShow() {
   ClearSearchAndDeactivateSearchBox();
 }
 
-void SearchBoxView::UpdateSearchTextfieldAccessibleNodeData(
-    ui::AXNodeData* node_data) {
+void SearchBoxView::UpdateSearchTextfieldAccessibleActiveDescendantId() {
+  auto* const textfield = search_box();
+  if (!textfield) {
+    return;
+  }
   if (a11y_active_descendant_) {
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
-                               *a11y_active_descendant_);
+    textfield->GetViewAccessibility().SetActiveDescendant(
+        *a11y_active_descendant_);
+  } else {
+    textfield->GetViewAccessibility().ClearActiveDescendant();
   }
 }
 
@@ -1422,10 +1427,9 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
 }
 
 void SearchBoxView::SetA11yActiveDescendant(
-    const std::optional<int32_t>& active_descendant) {
+    const std::optional<ui::AXPlatformNodeId>& active_descendant) {
   a11y_active_descendant_ = active_descendant;
-  search_box()->NotifyAccessibilityEvent(
-      ax::mojom::Event::kActiveDescendantChanged, true);
+  UpdateSearchTextfieldAccessibleActiveDescendantId();
 }
 
 void SearchBoxView::UseFixedPlaceholderTextForTest() {

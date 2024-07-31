@@ -42,6 +42,8 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider_manager.h"
@@ -62,6 +64,9 @@
 namespace {
 // kBestMatch is the second result container for productivity launcher search.
 constexpr int kBestMatchIndex = 1;
+
+// Copied from ash/app_list/views/app_list_search_view.cc
+constexpr base::TimeDelta kNotifyA11yDelay = base::Milliseconds(1500);
 
 bool IsValidSearchBoxAccessibilityHint(const std::u16string& hint) {
   SCOPED_TRACE(testing::Message() << "Hint Text: " << hint);
@@ -124,7 +129,10 @@ class KeyPressCounterView : public ContentsView {
 class SearchBoxViewTest : public views::test::WidgetTest,
                           public SearchBoxViewDelegate {
  public:
-  SearchBoxViewTest() {
+  SearchBoxViewTest()
+      : views::test::WidgetTest(std::make_unique<base::test::TaskEnvironment>(
+            base::test::TaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {
     scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
   }
 
@@ -229,6 +237,11 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   SearchResultBaseView* GetFirstResultView() {
     return search_view_->result_container_views_for_test()[kBestMatchIndex]
         ->GetFirstResultView();
+  }
+
+  SearchResultBaseView* GetResultViewAt(size_t index) {
+    return search_view_->result_container_views_for_test()[kBestMatchIndex]
+        ->GetResultViewAt(index);
   }
 
   ResultSelectionController* GetResultSelectionController() {
@@ -647,6 +660,64 @@ TEST_F(SearchBoxViewTest, NewSearchQueryActionRecordedWhenUserType) {
   KeyPress(ui::VKEY_BACK);
   KeyPress(ui::VKEY_C);
   EXPECT_EQ(2, user_action_tester.GetActionCount("AppList_SearchQueryStarted"));
+}
+
+// Tests that changing selection in the search box results updates the active
+// descendent id in the search box textfield.
+TEST_F(SearchBoxViewTest, SearchTextfieldAccessibleActiveDescendantId) {
+  ui::AXNodeData data_textfield;
+  auto* textfield = view()->search_box();
+  base::test::TaskEnvironment* task_environment_ = task_environment();
+  textfield->GetViewAccessibility().GetAccessibleNodeData(&data_textfield);
+  EXPECT_FALSE(data_textfield.HasIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId));
+
+  SimulateQuery(u"test");
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7, u"tester",
+                     std::u16string(), ash::AppListSearchResultCategory::kWeb);
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"testing",
+                     std::u16string(), ash::AppListSearchResultCategory::kWeb);
+  base::RunLoop().RunUntilIdle();  // Finish search results update.
+  task_environment_->FastForwardBy(
+      kNotifyA11yDelay);  // Advance time to trigger a11y notification.
+
+  // First result selected by default.
+  data_textfield = ui::AXNodeData();
+  textfield->GetViewAccessibility().GetAccessibleNodeData(&data_textfield);
+  EXPECT_TRUE(data_textfield.HasIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId));
+  EXPECT_EQ(GetResultViewAt(0)->GetViewAccessibility().GetUniqueId(),
+            data_textfield.GetIntAttribute(
+                ax::mojom::IntAttribute::kActivedescendantId));
+
+  // Move down to select the second result.
+  KeyPress(ui::VKEY_DOWN);
+  base::RunLoop().RunUntilIdle();
+  task_environment_->FastForwardBy(kNotifyA11yDelay);
+  data_textfield = ui::AXNodeData();
+  textfield->GetViewAccessibility().GetAccessibleNodeData(&data_textfield);
+  EXPECT_EQ(GetResultViewAt(1)->GetViewAccessibility().GetUniqueId(),
+            data_textfield.GetIntAttribute(
+                ax::mojom::IntAttribute::kActivedescendantId));
+
+  // Removing selected result resets the selection to default.
+  results()->RemoveAt(1);
+  base::RunLoop().RunUntilIdle();
+  task_environment_->FastForwardBy(kNotifyA11yDelay);
+  data_textfield = ui::AXNodeData();
+  textfield->GetViewAccessibility().GetAccessibleNodeData(&data_textfield);
+  EXPECT_EQ(GetResultViewAt(0)->GetViewAccessibility().GetUniqueId(),
+            data_textfield.GetIntAttribute(
+                ax::mojom::IntAttribute::kActivedescendantId));
+
+  // Clear search results.
+  results()->RemoveAt(0);
+  base::RunLoop().RunUntilIdle();
+  task_environment_->FastForwardBy(kNotifyA11yDelay);
+  data_textfield = ui::AXNodeData();
+  textfield->GetViewAccessibility().GetAccessibleNodeData(&data_textfield);
+  EXPECT_FALSE(data_textfield.HasIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId));
 }
 
 class SearchBoxViewAssistantButtonTest : public SearchBoxViewTest {

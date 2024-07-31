@@ -254,8 +254,6 @@ void AppListSearchView::OnSearchResultContainerResultsChanged() {
   last_search_result_count_ = result_count;
   last_result_metadata_.swap(search_result_metadata);
 
-  ScheduleResultsChangedA11yNotification();
-
   // Reset selection to first when things change. The first result is set as
   // as the default result.
   result_selection_controller_->set_block_selection_changes(false);
@@ -268,6 +266,8 @@ void AppListSearchView::OnSearchResultContainerResultsChanged() {
   } else {
     search_box_view_->ClearAutocompleteText();
   }
+
+  ScheduleResultsChangedA11yNotification();
 }
 
 void AppListSearchView::VisibilityChanged(View* starting_from,
