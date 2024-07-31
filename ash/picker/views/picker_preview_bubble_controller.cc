@@ -193,7 +193,7 @@ void PickerPreviewBubbleController::CreateBubbleWidget(
                           base::Unretained(this)));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       std::move(get_file_info),
       base::BindOnce(&PickerPreviewBubbleController::UpdateBubbleMetadata,
                      weak_ptr_factory_.GetWeakPtr()));
