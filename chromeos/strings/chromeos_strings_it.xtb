@@ -118,6 +118,7 @@
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Imposta come sfondo</translation>
 <translation id="1578784163189013834">Scegli lo sfondo del salvaschermo</translation>
+<translation id="1588438908519853928">Normale</translation>
 <translation id="1591562245178063882">Questo mese</translation>
 <translation id="1593528591614229756">Assicurati di impostare solo gli APN forniti dal tuo operatore mobile o dall'amministratore. La selezione di un APN disattiverà gli APN personalizzati. Gli APN non validi potrebbero interrompere la connessione mobile. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Immagine di anteprima</translation>
@@ -178,6 +179,7 @@
 <translation id="1827738518074806965">Galleria d'arte</translation>
 <translation id="1836553715834333258">Colore sistema</translation>
 <translation id="183675228220305365">realista</translation>
+<translation id="1837537071599385610">Guida ai prompt</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
 <translation id="1840474674287087346">Colore desktop</translation>
 <translation id="184095011128924488">creativo</translation>
@@ -192,6 +194,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">farfalle</translation>
 <translation id="188114911237521550">Disattiva la modalità Buio</translation>
+<translation id="1884794756658039602">Scopri di più sulle etichette di chi parla.</translation>
 <translation id="1885577615937958993">manda avanti velocemente i contenuti multimediali</translation>
 <translation id="1887850431809612466">Revisione hardware</translation>
 <translation id="189221451253258459">verde neon</translation>
@@ -238,6 +241,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Oggi</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
+<translation id="2156072344042480449">I tuoi 2 prompt più recenti. Puoi utilizzare questi prompt solo mentre sei su questa pagina.</translation>
 <translation id="2157660087437850958">selettore di emoji</translation>
 <translation id="2157959690810728433">IN CODA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Riprova</translation>
@@ -318,6 +322,7 @@
 <translation id="2538719227433767804">+ altri <ph name="NUM_HIDDEN_OPTIONS" /></translation>
 <translation id="2561093647892030937">limoni</translation>
 <translation id="2570743873672969996">Esecuzione del test <ph name="TEST_NAME" /> in corso…</translation>
+<translation id="2575552334616524665">Puoi attivare questa funzionalità nelle Impostazioni o nel menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Questa operazione occuperà fino a 2 GB di spazio di archiviazione</translation>
 <translation id="2584547424703650812">Paesaggi brillanti</translation>
 <translation id="2584559707064218956">Vai alle Impostazioni per la configurazione</translation>
@@ -335,6 +340,7 @@
 <translation id="2645380101799517405">Controlli</translation>
 <translation id="2652403576514495859">attivare o attivare la dettatura</translation>
 <translation id="2653659639078652383">Invia</translation>
+<translation id="2653807227758181366">Descrivi lo sfondo che vuoi creare o utilizza un prompt di esempio</translation>
 <translation id="2654647726140493436">Non spegnere <ph name="DEVICE_TYPE" /> o scollegare il cavo di alimentazione di <ph name="DEVICE_TYPE" /> durante l'aggiornamento</translation>
 <translation id="2656001153562991489">Solo per Chromebook Plus</translation>
 <translation id="2665671725390405060">Ascolta la pronuncia</translation>
@@ -344,7 +350,6 @@
 <translation id="2712812801627182647">Chiave di autenticazione TLS</translation>
 <translation id="2713444072780614174">Bianco</translation>
 <translation id="2715723665057727940">un fiume</translation>
-<translation id="271640182849234126">Impossibile eseguire questa operazione. Prova con un'altra richiesta</translation>
 <translation id="2717139507051041123">Attiva la modalità Colore scuro</translation>
 <translation id="2728460467788544679">Cancella l'intera cronologia di stampa</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -380,6 +385,7 @@
 <translation id="3017079585324758401">Sfondo</translation>
 <translation id="3027578600144895987">Chiudi la videocamera</translation>
 <translation id="3031560714565892478">Il dispositivo è una videocamera.</translation>
+<translation id="3042927241478734594">Uscire dalla registrazione?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Prospetti</translation>
@@ -412,6 +418,9 @@
 <translation id="3199982728237701504">Alimentatore di documenti (fronte e retro)</translation>
 <translation id="3201315366910775591">Gli album condivisi possono essere aggiornati da altri utenti</translation>
 <translation id="3211671540163313381">Mappatura tasti per il D-pad</translation>
+<translation id="3224812403568276799">Se consenti questa opzione, Registratore userà un'analisi audio avanzata per rilevare automaticamente le voci distinte e assegnare a ciascuna un'etichetta generica come Persona 1 e Persona 2.
+
+Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="3226405216343213872">Ricerca di scanner in corso…</translation>
 <translation id="3226657629376379887">Menu azioni del layout</translation>
 <translation id="3227186760713762082">Dividi il valore <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
@@ -475,6 +484,7 @@
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
 <translation id="357889014807611375">Wi-Fi a consumo</translation>
 <translation id="3583278742022654445">Intensità segnale debole. Prova ad avvicinarti alla fonte del segnale Wi-Fi.</translation>
+<translation id="3588034708467091142">Assicurati di avere una connessione a internet attiva e riprova.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> è il nome facile da usare per <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batteria carica</translation>
 <translation id="3600339377155080675">Mirroring dello schermo</translation>
@@ -550,11 +560,13 @@
 <translation id="4021031199988160623">Passa alla modalità laptop per eseguire il test</translation>
 <translation id="4034824040120875894">Stampante</translation>
 <translation id="4035877632587724847">Non consentire</translation>
+<translation id="4042658354407913408">Riepilogo non attivo</translation>
 <translation id="4044093238444069296">Impossibile contattare il gateway</translation>
 <translation id="4046123991198612571">Traccia successiva</translation>
 <translation id="404928562651467259">AVVISO</translation>
 <translation id="4050208988451295487">Ecco alcune opzioni:</translation>
 <translation id="4054683689023980771">Download dell'immagine in corso…</translation>
+<translation id="4059839844193047929">Se esci da questa pagina, la registrazione in corso verrà interrotta</translation>
 <translation id="4063039537646912479">azzurro</translation>
 <translation id="4070799384363688067">anime</translation>
 <translation id="4086271957099059213">Crea un altro controllo</translation>
@@ -629,6 +641,7 @@
 <translation id="4429881212383817840">La richiesta di Kerberos scade a breve</translation>
 <translation id="4431821876790500265">Visualizza rapporto</translation>
 <translation id="4443192710976771874">rosso</translation>
+<translation id="4447592701292766824">Impossibile creare un riepilogo per questi contenuti</translation>
 <translation id="4448096106102522892">isola</translation>
 <translation id="445059817448385655">Vecchia password</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
@@ -659,6 +672,7 @@
 <translation id="4573777384450697571">Non riuscito - Certificato scaduto</translation>
 <translation id="458794348635939462">impossibile risolvere tutti gli host</translation>
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
+<translation id="4594021849294327751">Crea trascrizione</translation>
 <translation id="4609350030397390689">Riduci la luminosità della tastiera</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> di <ph name="TOTAL_PAGE_NUMBER" />. Premi Invio per annullare il processo di stampa.</translation>
 <translation id="463791356324567266">Annullamento scansione in corso…</translation>
@@ -731,6 +745,7 @@
 <translation id="4981003703840817201">blu e rosa</translation>
 <translation id="498186245079027698">Controlla lo scanner e riprova. Assicurati di avere spazio locale sufficiente per salvare i file sottoposti a scansione.</translation>
 <translation id="4982627662315910959">Scorciatoia non disponibile. Premi una nuova scorciatoia utilizzando Maiusc e 1 altro tasto di modifica (Ctrl, Alt o <ph name="META_KEY" />).</translation>
+<translation id="4983216687482551672">Audio di Chromebook</translation>
 <translation id="4985509611418653372">Esegui</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Pagine</translation>
@@ -772,6 +787,7 @@
 <translation id="5220549459260334974">Avanzamento download: <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="522307662484862935">Non includere l'indirizzo email</translation>
+<translation id="5223226274641517059">Le trascrizioni istantanee verranno mostrate durante la registrazione. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="5226879510707344687">Esporta trascrizione</translation>
 <translation id="5227902338748591677">Programmazione tema scuro</translation>
 <translation id="5229344016299762883">Esci da schermo intero</translation>
@@ -795,6 +811,7 @@
 <translation id="5315873049536339193">Identità</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5318334351163689047">Errori delle richieste TCP</translation>
+<translation id="53196409393069519">Attivare la trascrizione?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Scegline ora una nuova</translation>
 <translation id="5333530671332546086">Stato del portale sconosciuto</translation>
@@ -853,6 +870,7 @@
 <translation id="5680504961595602662"><ph name="SURREAL_LANDSCAPE" /> surreale con <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">ciliegie</translation>
 <translation id="5691511426247308406">Famiglia</translation>
+<translation id="5692395212036914927">Riepilogo della registrazione e creazione del nome</translation>
 <translation id="5695599963893094957">Premi un tasto qualsiasi della tastiera. Puoi premere fino a 4 tasti contemporaneamente.</translation>
 <translation id="5701381305118179107">Centra</translation>
 <translation id="5703716265115423771">abbassa volume</translation>
@@ -895,6 +913,7 @@
 <translation id="5928411637936685857">Pulsante Elimina per <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">Dreamscape</translation>
 <translation id="5931523347251946569">File non trovato</translation>
+<translation id="5938286923316838007">Impossibile creare nomi di registrazioni per questi contenuti</translation>
 <translation id="5939518447894949180">Reimposta</translation>
 <translation id="594552776027197022">Genera coppia di chiavi casuale</translation>
 <translation id="5946538341867151940">La connessione non è stata ancora stabilita. Se il tuo operatore di telefonia mobile consiglia un APN personalizzato, inserisci le relative informazioni selezionando "+ Nuovo APN"</translation>
@@ -933,6 +952,7 @@
 <translation id="6113701710518389813">Freccia su</translation>
 <translation id="6116005346231504406">Crea il primo controllo</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> + altri <ph name="NUMBER" /> album</translation>
+<translation id="6120815036186828722">Ascolto del parlato in corso…</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Servizio metodo di immissione di ChromeOS</translation>
 <translation id="6127426868813166163">bianco</translation>
@@ -981,6 +1001,7 @@
 <translation id="6348738456043757611">Nome utente e password</translation>
 <translation id="6352210854422428614">un altro pianeta</translation>
 <translation id="6359706544163531585">Disabilita il tema chiaro</translation>
+<translation id="6359919876285606596">Questa azione è definitiva e non può essere annullata</translation>
 <translation id="636850387210749493">Registrazione aziendale</translation>
 <translation id="6373461326814131011">stagno</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
@@ -1089,6 +1110,7 @@
 <translation id="6910312834584889076">Il coperchio dello scanner è aperto. Chiudilo e riprova.</translation>
 <translation id="6911383237894364323">Impossibile connettersi ai server multimediali</translation>
 <translation id="6930597342185648547">Informazioni sullo sfondo</translation>
+<translation id="6939667434404433010">Cerca nome registrazione</translation>
 <translation id="6939766318048400022">Bar</translation>
 <translation id="6943893908656559156">Identità remota (facoltativa)</translation>
 <translation id="6953137545147683679">oro</translation>
@@ -1195,6 +1217,8 @@
 <translation id="7359657277149375382">Tipo di file</translation>
 <translation id="73631062356239394">Condividi dati diagnostici</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378170410161264436">Registratore può creare trascrizioni per le registrazioni con parlato.
+Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizioni.</translation>
 <translation id="7384004438856720753">palazzo</translation>
 <translation id="7388959671917308825">Touchpad integrato</translation>
 <translation id="7397270852490618635">Disattiva il tema chiaro</translation>
@@ -1210,6 +1234,7 @@
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Indirizzo MAC</translation>
 <translation id="7497215489070763236">Certificato CA del server</translation>
+<translation id="7500205272584643581">Consentire a Registratore di rilevare ed etichettare le persone che parlano?</translation>
 <translation id="7501957181231305652">oppure</translation>
 <translation id="7502658306369382406">Indirizzo IPv6</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> dai colori vivaci</translation>
@@ -1232,6 +1257,7 @@
 <translation id="7613724632293948900">Riposiziona con il mouse o i tasti Freccia.</translation>
 <translation id="7618774594543487847">Neutra</translation>
 <translation id="7620771111601174153">Scopri di più nel Centro assistenza</translation>
+<translation id="7625095758347640998">Sfondi AI</translation>
 <translation id="763165478673169849">Data/ora ultima reimpostazione</translation>
 <translation id="7633068090678117093">Immagine di sfondo</translation>
 <translation id="763873111564339966">indaco</translation>
@@ -1425,6 +1451,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilizza i tasti Freccia destra o Freccia sinistra per gestire la funzionalità.</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="871560550817059752">Operazione non riuscita - Inchiostro esaurito</translation>
+<translation id="8721554916373590179">Prompt di esempio</translation>
 <translation id="8723108084122415655">la rete non predefinita è al di sopra della soglia di latenza</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8726019395068607495">Operazione interrotta - Sportello aperto</translation>
@@ -1434,6 +1461,7 @@
 <translation id="8749478549112817787">Sfondo fotocamera</translation>
 <translation id="8755946156089753497">torre</translation>
 <translation id="8756235582947991808">Come creare con l'AI e alcuni aspetti da ricordare</translation>
+<translation id="8760616037557661287">Prompt precedenti</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album di Google Foto</translation>
 <translation id="8775713578693478175">APN modem</translation>
@@ -1497,6 +1525,8 @@
 <translation id="9025198690966128418">Utilizza come dispositivo personale</translation>
 <translation id="902638246363752736">Impostazioni tastiera</translation>
 <translation id="9028832514430399253">Usa l'opzione di attivazione/disattivazione per selezionare le opzioni per il salvaschermo</translation>
+<translation id="9030883440316693822">Eliminare la registrazione?</translation>
+<translation id="9036971622563146214">Risultati</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9045842401566197375">libri</translation>
 <translation id="9049868303458988905">Il pulsante Salva APN è ora attivo</translation>

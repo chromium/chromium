@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Deaktiv edin</translation>
 <translation id="1044891598689252897">Saytlar normal qaydada işləyəcək</translation>
 <translation id="1073417869336441572">Üçüncü tərəf kukilərinə icazə vermə səbəbinizi bildirərək Chrome-u təkmilləşdirməyə kömək edin. <ph name="BEGIN_LINK" />Rəy göndərin<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Qiymətin düşməsi kartını gizlədin</translation>
 <translation id="1178581264944972037">Durdurun</translation>
 <translation id="1181037720776840403">Silin</translation>
 <translation id="1192844206376121885"><ph name="ORIGIN" /> tərəfindən saxlanan data və kukilər silinəcək.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Yardım və geri əlaqə</translation>
 <translation id="2501278716633472235">Geri qayıdın</translation>
 <translation id="2546283357679194313">Kukilər və sayt datası</translation>
-<translation id="2550801787432930915">Qiymətin düşməsi kartı</translation>
 <translation id="2570922361219980984">Bu cihazda məkan girişi də deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> girişi aktiv edin.</translation>
 <translation id="257931822824936280">Geniş - Qısaltmaq üçün klikləyin</translation>
 <translation id="2586657967955657006">Mübadilə buferi</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Geri</translation>
 <translation id="3859306556332390985">İrəli axtarın</translation>
 <translation id="3895926599014793903">Zoom'a icazə verməyə məcbur edin</translation>
+<translation id="3905475044299942653">Çoxlu bildirişləri dayandırın</translation>
 <translation id="3908288065506437185">Anonim rejimdə üçüncü tərəf kukilərini bloklayın</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Bəzi funksiyalar işləməyə bilər. Əlaqədar saytlar hələ də üçüncü tərəf kukilərindən istifadə edə bilər.</translation>
@@ -243,7 +242,7 @@
 <translation id="5091663350197390230">Aktiv ediləndə saytlar JavaScript istifadə edə bilər. Deaktiv ediləndə saytlar JavaScript istifadə edə bilməz.</translation>
 <translation id="5099358668261120049">Əsas ekranda <ph name="ORIGIN" /> və ya onun tətbiqi tərəfindən saxlanan data və kukilər silinəcək.</translation>
 <translation id="5100237604440890931">Yığcamlaşdırıldı - genişləndirmək üçün klikləyin.</translation>
-<translation id="5123685120097942451">Aanonim tab</translation>
+<translation id="5123685120097942451">Anonim tab</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Açıq tablarda qiymət düşməsi}other{Açıq tablarda qiymət düşməsi}}</translation>
 <translation id="5186036860380548585">Seçim ekranın yuxarısına yaxın yerdə əlçatandır</translation>
 <translation id="5197729504361054390">Seçdiyiniz kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ilə paylaşılacaq.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Qorunan kontent</translation>
 <translation id="662080504995468778">Qalın</translation>
 <translation id="6653342741369270081">Tam ekrandan çıxmaq üçün geri düyməsinə basın.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Bu tabda "Davam edin" seçimini gizlədin}other{Bu tablarda "Davam edin" seçimini gizlədin}}</translation>
 <translation id="6689172468748959065">Profil fotoları</translation>
 <translation id="6697925417670533197">Aktiv endirmələr</translation>
 <translation id="6722828510648505498">Kimlik xidmətlərindən daxil olma sorğularını bloklayın.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> üçün seçim edin</translation>
 <translation id="6790428901817661496">Oxudun</translation>
 <translation id="6818926723028410516">Element seçin</translation>
+<translation id="6840760312327750441">Panelləri qruplaşdırmaq üçün panelə toxunub saxlayın. Daha sonra digər panelin üzərinə çəkin.</translation>
 <translation id="6864395892908308021">Bu cihazda NFC dəstəklənmir</translation>
 <translation id="6912998170423641340">Saytların buferdəki mətn və şəkillərə girişini blok edin</translation>
 <translation id="6945221475159498467">Seçin</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Bu səhifə təhlükəlidir</translation>
 <translation id="930525582205581608">Bu sayt unudulsun?</translation>
 <translation id="947156494302904893">Daxil olduğunuz saytlar bot yox, real insan olduğunuzu təsdiqləyə bilər</translation>
+<translation id="959682366969460160">Sistemləşdirin</translation>
 <translation id="967624055006145463">Yadda saxlanmış data</translation>
 </translationbundle>

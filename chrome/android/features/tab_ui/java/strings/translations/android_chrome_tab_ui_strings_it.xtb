@@ -36,12 +36,14 @@
 <translation id="2569352796411618312">Suggerimento: <ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
 <translation id="2662028055331606429">Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visita il sito</translation>
+<translation id="2677748264148917807">Esci</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creato <ph name="NUM_HOURS_ONE" /> ora fa}other{Creato <ph name="NUM_HOURS_MANY" /> ore fa}}</translation>
 <translation id="2801787514987684416">Vuoi visualizzare le informazioni sul negozio?</translation>
 <translation id="2928243913527329289">Google | Informazioni su questo negozio</translation>
 <translation id="2977480621796371840">Rimuovi dal gruppo</translation>
 <translation id="3008554597174452548">Interrompi il monitoraggio del prodotto</translation>
 <translation id="3026391124054406831">Crea gruppi per organizzare le tue schede.</translation>
+<translation id="3051031624272448591">Puoi ripristinarle nella cronologia in qualsiasi momento</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> in meno su <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Icona del colore del gruppo di schede <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">valutazione</translation>
@@ -65,9 +67,10 @@
 <translation id="4159784952369912983">Viola</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda.}other{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="427987768447457592">Nuovo gruppo di schede</translation>
-<translation id="4338724047016295066">Le schede inattive verranno chiuse automaticamente. Puoi trovarle nella cronologia in qualsiasi momento.</translation>
 <translation id="4371591986692297148">Non attivo</translation>
 <translation id="4460014764210899310">Separa</translation>
+<translation id="4590027107044272416">Ora puoi aprire una nuova scheda qui</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Chiudere 1 scheda inattiva?}other{Chiudere <ph name="TAB_COUNT_MANY" /> schede inattive?}}</translation>
 <translation id="4648718555153979859">Le schede sono raggruppate qui</translation>
 <translation id="4686942373615810936">Creato un attimo fa</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Chiudi dopo 1 giorno}other{Chiudi dopo <ph name="DAY_COUNT_MANY" /> giorni}}</translation>
@@ -75,6 +78,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recensione)}other{(<ph name="REVIEWS_COUNT_MANY" /> recensioni)}}</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="4870911314065352661">Vuoi chiudere tutte le schede?</translation>
+<translation id="4871719318659334896">Chiudi gruppo</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Chiudi scheda}other{Chiudi schede}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> gruppi salvati (le schede verranno chiuse e i gruppi eliminati)</translation>
@@ -100,6 +104,7 @@
 <translation id="5972844218283131174">Deseleziona tutte</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6040143037577758943">Chiudi</translation>
+<translation id="6051432659151380973">I gruppi di schede vengono salvati automaticamente</translation>
 <translation id="6054741997831917303">Il prezzo di questo articolo è recentemente sceso da <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Seleziona schede</translation>
 <translation id="6228793724645064692">(valutazione del negozio)</translation>
@@ -115,7 +120,6 @@
 <translation id="6562820390860419811">Sposta scheda a sinistra</translation>
 <translation id="6615455863669487791">Mostrami</translation>
 <translation id="6744956528665271406">Modifica il colore del gruppo</translation>
-<translation id="6840760312327750441">Per raggruppare le schede, tocca e tienine premuta una. Poi trascinala su un'altra scheda.</translation>
 <translation id="6856809498882026482">Nascondi modalità di selezione multipla</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Condividi scheda}other{Condividi schede}}</translation>
 <translation id="7129458170538955174">Informazioni su questo negozio aperte nella parte inferiore dello schermo</translation>
@@ -152,12 +156,14 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Chiudi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Chiudi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="8398929769197326728">Nuova cartella - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Impostazioni</translation>
+<translation id="870736955561925754">Chiudere la scheda ed eliminare il gruppo?</translation>
 <translation id="8714939927607906138">Prezzo più basso</translation>
 <translation id="8730621377337864115">Fine</translation>
 <translation id="8730999928494395583">La tua attività in queste schede di navigazione in incognito verrà rimossa da questo dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creato <ph name="NUM_MONTHS_ONE" /> mese fa}other{Creato <ph name="NUM_MONTHS_MANY" /> mesi fa}}</translation>
 <translation id="8820741577754260431">Visualizza i cali di prezzo nelle tue schede</translation>
 <translation id="8887921976452567404">Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede.</translation>
+<translation id="8915916167043355778">Chiudi tutte</translation>
 <translation id="8926389886865778422">Non visualizzare più questo avviso</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda.}other{Espandi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="9090098097337832354">Informazioni su questo negozio chiuse</translation>
@@ -165,6 +171,5 @@
 <translation id="9169594135889675189">Aggiungi una nuova scheda al gruppo</translation>
 <translation id="9216898458513705996">Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
-<translation id="959682366969460160">Organizzazione</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

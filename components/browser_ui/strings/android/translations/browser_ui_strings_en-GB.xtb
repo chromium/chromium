@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1044891598689252897">Sites will work normally</translation>
 <translation id="1073417869336441572">Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Hide price drop card</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1192844206376121885">This will delete all data and cookies stored by <ph name="ORIGIN" />.</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">URL truncated</translation>
 <translation id="1448064542941920355">Decrease zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
+<translation id="1500473259453106018">Hide price drops on tabs card</translation>
 <translation id="1510341833810331442">Sites aren't allowed to save data on your device</translation>
 <translation id="1547123415014299762">Third-party cookies are allowed</translation>
 <translation id="1568470248891039841">Sites you visit can embed content from other sites. For example, images, ads and text. These other sites can ask for permission to use info they've saved about you as you browse the site. <ph name="BEGIN_LINK" />Learn more about embedded content<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">Help and feedback</translation>
 <translation id="2501278716633472235">Go back</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
-<translation id="2550801787432930915">Price drop card</translation>
 <translation id="2570922361219980984">Location access is also off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expanded – click to collapse.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3232293466644486101">Delete browsing data…</translation>
 <translation id="3242646949159196181">When on, sites can play sound. When off, sites can't play sound.</translation>
+<translation id="3273479183583863618">Price drops on tabs</translation>
 <translation id="3277252321222022663">Allow sites to access sensors (recommended)</translation>
 <translation id="3285500645985761267">Allow related sites to see your activity in the group</translation>
 <translation id="3295019059349372795">Chapter 11: The Wonderful Emerald City of Oz</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Back</translation>
 <translation id="3859306556332390985">Seek forward</translation>
 <translation id="3895926599014793903">Force enable zoom</translation>
+<translation id="3905475044299942653">Stop lots of notifications</translation>
 <translation id="3908288065506437185">Block third-party cookies in Incognito mode</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Some features may not work. Related sites can still use third-party cookies.</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">Protected content</translation>
 <translation id="662080504995468778">Stay</translation>
 <translation id="6653342741369270081">Press the back button to exit full screen.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Hide continue with this tab}other{Hide continue with these tabs}}</translation>
 <translation id="6689172468748959065">Profile photos</translation>
 <translation id="6697925417670533197">Active downloads</translation>
 <translation id="6722828510648505498">Block sign-in prompts from identity services.</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251">Select an option for <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6818926723028410516">Select items</translation>
+<translation id="6840760312327750441">To group tabs, touch and hold a tab. Then, drag it onto another tab.</translation>
 <translation id="6864395892908308021">This device can't read NFC</translation>
+<translation id="6870169401250095575">Hide safety check card</translation>
 <translation id="6912998170423641340">Block sites from reading text and images from the clipboard</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6950072572526089586">A site you visit can save info about what you’re doing so that it works as expected – for example, to keep you signed in to a site or to save items in your shopping cart. Often sites save this info temporarily on your device.</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">Select a contact</translation>
 <translation id="7990211076305263060">When on, sites can ask to use your microphone. When off, sites can't use your microphone.</translation>
 <translation id="8007176423574883786">Turned off for this device</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Hide continue with this tab card}other{Hide continue with these tabs card}}</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8042586301629853791">Sort by:</translation>
 <translation id="8067883171444229417">Play video</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">This page is dangerous</translation>
 <translation id="930525582205581608">Forget this site?</translation>
 <translation id="947156494302904893">Sites that you visit can verify that you're a real person and not a bot</translation>
+<translation id="959682366969460160">Get organised</translation>
 <translation id="967624055006145463">Data stored</translation>
 </translationbundle>

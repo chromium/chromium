@@ -36,6 +36,7 @@
 <translation id="2569352796411618312">Soovitus: <ph name="NUMBER_OF_TABS" /> vahelehte pole hiljuti kasutatud. Kas sulgeda need?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang</translation>
 <translation id="266935134738038806">Külasta saiti</translation>
+<translation id="2677748264148917807">Lahku</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Loodud <ph name="NUM_HOURS_ONE" /> tund tagasi}other{Loodud <ph name="NUM_HOURS_MANY" /> tundi tagasi}}</translation>
 <translation id="2801787514987684416">Kas kuvada poe teave?</translation>
 <translation id="2928243913527329289">Google | Teave selle poe kohta</translation>
@@ -65,9 +66,9 @@
 <translation id="4159784952369912983">Lilla</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Laienda <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}other{Laienda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}}</translation>
 <translation id="427987768447457592">Uus vahelehegrupp</translation>
-<translation id="4338724047016295066">Passiivsed vahelehed sulguvad automaatselt. Leiate need alati jaotisest Ajalugu.</translation>
 <translation id="4371591986692297148">Mitteaktiivne</translation>
 <translation id="4460014764210899310">Tühista grupeerimine</translation>
+<translation id="4590027107044272416">Nüüd saate uue vahekaardi avada siin</translation>
 <translation id="4648718555153979859">Teie vahelehed on siin grupeeritud</translation>
 <translation id="4686942373615810936">Loodud just praegu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Sule 1 päeva pärast}other{Sule <ph name="DAY_COUNT_MANY" /> päeva pärast}}</translation>
@@ -75,6 +76,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> arvustus)}other{(<ph name="REVIEWS_COUNT_MANY" /> arvustust)}}</translation>
 <translation id="4850886885716139402">Kuva</translation>
 <translation id="4870911314065352661">Kas sulgeda kõik vahelehed?</translation>
+<translation id="4871719318659334896">Grupi sulgemine</translation>
 <translation id="4881695831933465202">Ava</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Sule vaheleht}other{Sule vahelehed}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> grupid on salvestatud (sulgeb vahelehed ja kustutab grupid)</translation>
@@ -100,7 +102,9 @@
 <translation id="5972844218283131174">Tühista kõik valikud</translation>
 <translation id="6017514345406065928">Roheline</translation>
 <translation id="6040143037577758943">Sulge</translation>
+<translation id="6051432659151380973">Teie vahelehegrupid salvestatakse automaatselt.</translation>
 <translation id="6054741997831917303">Selle üksuse hind <ph name="PREVIOUS_PRICE" /> langes hiljuti ja uus hind on <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Kaotate kohe juurdepääsu vahelehegrupile <ph name="GROUP_NAME" /></translation>
 <translation id="6193448654517602979">Valige vahelehed</translation>
 <translation id="6228793724645064692">(hinnang poes)</translation>
 <translation id="6271513594716432922">Sule kõik passiivsed vahelehed</translation>
@@ -115,7 +119,6 @@
 <translation id="6562820390860419811">Teisalda vaheleht vasakule</translation>
 <translation id="6615455863669487791">Kuva mulle</translation>
 <translation id="6744956528665271406">Muuda grupi värvi</translation>
-<translation id="6840760312327750441">Vahelehtede rühmitamiseks puudutage vahelehte pikalt. Seejärel lohistage see teise vahelehe peale.</translation>
 <translation id="6856809498882026482">Peida mitmikvalimise režiim</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Jaga vahelehte}other{Jaga vahelehti}}</translation>
 <translation id="7129458170538955174">Selle poe teave on avatud poolel kõrgusel</translation>
@@ -125,6 +128,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> on valitud</translation>
 <translation id="7326879924029668159">Vaadake tagastuseeskirju ja muud</translation>
 <translation id="7352298686197644113">Vaadake, millisel avatud vahelehtedel olevatest toodetest on soodsaim hind</translation>
+<translation id="7421293530411019405">Kas soovite vahelehegrupist lahkuda?</translation>
 <translation id="7452985128687107478">Vahelehegrupid salvestuvad automaatselt ja värskendatakse kõikides teie seadmetes</translation>
 <translation id="747459581954555080">Taasta kõik</translation>
 <translation id="753732157349120914">Vahelehtede vaheti</translation>
@@ -152,6 +156,8 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> valitud vaheleht}other{Sule <ph name="TABS_COUNT_MANY" /> valitud vahelehte}}</translation>
 <translation id="8398929769197326728">Uus kaust – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Seaded</translation>
+<translation id="8631711675211020168">Kõik kaotavad kohe juurdepääsu vahelehegrupile <ph name="GROUP_NAME" /> ja see kustutatakse kõigist seadmetest</translation>
+<translation id="870736955561925754">Kas sulgeda vaheleht ja kustutada grupp?</translation>
 <translation id="8714939927607906138">Soodsam hind</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8730999928494395583">Teie tegevused nendel inkognito vahelehtedel eemaldatakse sellest seadmest</translation>
@@ -165,6 +171,5 @@
 <translation id="9169594135889675189">Lisa gruppi uus vaheleht</translation>
 <translation id="9216898458513705996">Vahelehegrupid jäävad selles seadmes avatuks, aga grupp kustutatakse kõikidest teistest seadmetest, mis on kontoga <ph name="USER_EMAIL" /> sisse logitud</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Laienda <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegruppi, värv on <ph name="COLOR_NAME" />.}other{Laienda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegruppi, värv on <ph name="COLOR_NAME" />.}}</translation>
-<translation id="959682366969460160">Lööge kord majja</translation>
 <translation id="992256792861109788">Roosa</translation>
 </translationbundle>

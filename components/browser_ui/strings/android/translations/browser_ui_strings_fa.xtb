@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1044891598689252897">عملکرد سایت‌ها عادی خواهد بود</translation>
 <translation id="1073417869336441572">‏با گفتن دلیل مجاز کردن کوکی‌های شخص ثالث، به ما در بهبود Chrome کمک کنید. <ph name="BEGIN_LINK" />ارسال بازخورد<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">پنهان کردن کارت کاهش قیمت</translation>
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1192844206376121885">با این کار همه داده‌ها و کوکی‌های ذخیره‌شده توسط <ph name="ORIGIN" /> حذف می‌شود.</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">نشانی وب کوتاه‌شده</translation>
 <translation id="1448064542941920355">کاهش بزرگ‌نمایی</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سایت}one{<ph name="SITE_COUNT" /> سایت}other{<ph name="SITE_COUNT" /> سایت}}</translation>
+<translation id="1500473259453106018">پنهان کردن کارت «کاهش قیمت در برگه‌ها»</translation>
 <translation id="1510341833810331442">سایت‌ها نمی‌توانند در دستگاه داده ذخیره کنند</translation>
 <translation id="1547123415014299762">کوکی‌های شخص ثالث مجاز است</translation>
 <translation id="1568470248891039841">سایت‌هایی که بازدید می‌کنید می‌توانند از سایت‌های دیگر محتوایی مثل تصویر، آگهی، و نوشتار جاسازی کنند. این سایت‌های دیگر می‌توانند از شما اجازه بخواهند تا از اطلاعاتی که هنگام مرور کردن سایت درباره شما ذخیره کرده‌اند استفاده کنند. <ph name="BEGIN_LINK" />درباره محتوای جاسازی‌شده بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">راهنمایی و بازخورد</translation>
 <translation id="2501278716633472235">بازگشت</translation>
 <translation id="2546283357679194313">کوکی‌ها و داده‌های سایت</translation>
-<translation id="2550801787432930915">کارت کاهش قیمت</translation>
 <translation id="2570922361219980984">‏دسترسی به مکان برای این دستگاه نیز خاموش است. آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="257931822824936280">بزرگ‌شده - برای کوچک کردن کلیک کنید.</translation>
 <translation id="2586657967955657006">بریده‌دان</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">میکروفن</translation>
 <translation id="3232293466644486101">حذف کردن داده‌های مرور…</translation>
 <translation id="3242646949159196181">هرگاه روشن باشد، سایت‌ها می‌توانند صدا پخش کنند. هرگاه روشن باشد، سایت‌ها نمی‌توانند صدا پخش کنند.</translation>
+<translation id="3273479183583863618">کاهش قیمت در برگه‌ها</translation>
 <translation id="3277252321222022663">مجاز بودن دسترسی سایت‌ها به حسگرها (توصیه می‌شود)</translation>
 <translation id="3285500645985761267">به سایت‌های مرتبط اجازه دهید فعالیت شما را در گروه ببینند</translation>
 <translation id="3295019059349372795">فصل ۱۱: شهر زمردی شگفت‌انگیز اُز</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">برگشتن</translation>
 <translation id="3859306556332390985">جستجو به جلو</translation>
 <translation id="3895926599014793903">فعال کردن اجباری بزرگ‌نمایی</translation>
+<translation id="3905475044299942653">این حجم از اعلان را متوقف کنید</translation>
 <translation id="3908288065506437185">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شود</translation>
 <translation id="3913461097001554748">‫<ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">ممکن است برخی‌از ویژگی‌ها کار نکنند. سایت‌های مرتبط همچنان می‌توانند از کوکی‌های شخص ثالث استفاده کنند.</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">محتوای محافظت‌شده</translation>
 <translation id="662080504995468778">ماندن</translation>
 <translation id="6653342741369270081">برای خروج از حالت تمام‌صفحه، دکمه برگشت را فشار دهید.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{پنهان کردن ادامه دادن با این برگه}one{پنهان کردن ادامه دادن با این برگه}other{پنهان کردن ادامه دادن با این برگه‌ها}}</translation>
 <translation id="6689172468748959065">عکس‌های نمایه</translation>
 <translation id="6697925417670533197">بارگیری‌های فعال</translation>
 <translation id="6722828510648505498">پیام‌واره‌های ورود به سیستم سرویس‌های تعیین هویت مسدود می‌شود.</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251">گزینه‌ای برای <ph name="SITE_NAME" /> انتخاب کنید</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6818926723028410516">انتخاب موارد</translation>
+<translation id="6840760312327750441">برای ایجاد برگه‌های گروهی، برگه‌ای را لمس کنید و نگه‌دارید. سپس آن را به برگه‌ای دیگر بکشید.</translation>
 <translation id="6864395892908308021">‏این دستگاه نمی‌تواند NFC را بخواند</translation>
+<translation id="6870169401250095575">پنهان کردن کارت «کنترل ایمنی»</translation>
 <translation id="6912998170423641340">سایت‌ها از خواندن نوشتار و تصاویر بریده‌دان منع شوند</translation>
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6950072572526089586">سایتی که بازدید می‌کنید می‌تواند اطلاعاتی درباره کاری که انجام می‌دهید ذخیره کند تا عملکردی مطابق انتظار داشته باشد — برای مثال، برای اینکه در سیستم سایت باقی بمانید یا برای ذخیره کردن مواردی که در سبد خریدتان است. سایت‌ها در اغلب موارد این اطلاعات را به‌صورت موقتی در دستگاهتان ذخیره می‌کنند.</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">مخاطبی انتخاب کنید</translation>
 <translation id="7990211076305263060">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از میکروفون را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از میکروفون استفاده کنند.</translation>
 <translation id="8007176423574883786">برای این دستگاه غیرفعال شد</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{پنهان کردن کارت «ادامه دادن با این برگه»}one{پنهان کردن کارت «ادامه دادن با این برگه»}other{پنهان کردن کارت «ادامه دادن با این برگه‌ها»}}</translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
 <translation id="8042586301629853791">مرتب‌سازی براساس:</translation>
 <translation id="8067883171444229417">پخش ویدیو</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">این صفحه خطرناک است</translation>
 <translation id="930525582205581608">این سایت فراموش شود؟</translation>
 <translation id="947156494302904893">سایت‌هایی که بازدید می‌کنید می‌توانند تأیید کنند که شما شخص واقعی هستید و روبات نیستید</translation>
+<translation id="959682366969460160">سازمان‌دهی شوید</translation>
 <translation id="967624055006145463">داده ذخیره شد</translation>
 </translationbundle>

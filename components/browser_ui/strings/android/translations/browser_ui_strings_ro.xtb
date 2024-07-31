@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Dezactivează</translation>
 <translation id="1044891598689252897">Site-urile vor funcționa normal</translation>
 <translation id="1073417869336441572">Ajută-ne să îmbunătățim Chrome spunându-ne de ce ai permis cookie-urile terță parte. <ph name="BEGIN_LINK" />Trimite feedback<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Ascunde cardul de scădere de preț</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1181037720776840403">Elimină</translation>
 <translation id="1192844206376121885">Astfel, se vor șterge toate datele și cookie-urile stocate de <ph name="ORIGIN" />.</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
 <translation id="1448064542941920355">Micșorează nivelul de zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}few{<ph name="SITE_COUNT" /> site-uri}other{<ph name="SITE_COUNT" /> de site-uri}}</translation>
+<translation id="1500473259453106018">Ascunde scăderile de preț din cardul File</translation>
 <translation id="1510341833810331442">Site-urile nu au permisiunea de a salva date pe dispozitiv</translation>
 <translation id="1547123415014299762">Sunt permise cookie-urile terță parte</translation>
 <translation id="1568470248891039841">Site-urile pe care le accesezi pot încorpora conținut de pe alte site-uri, de exemplu, imagini, anunțuri și text. Aceste site-uri pot solicita permisiunea de a folosi informațiile pe care le salvează despre tine în timp ce navighezi pe site. <ph name="BEGIN_LINK" />Află mai multe despre conținutul încorporat<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">Ajutor și feedback</translation>
 <translation id="2501278716633472235">Înapoi</translation>
 <translation id="2546283357679194313">Cookie-uri și date privind site-ul</translation>
-<translation id="2550801787432930915">Card de scădere de preț</translation>
 <translation id="2570922361219980984">Accesul la locație este dezactivat și pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Afișare extinsă – dă clic pentru a restrânge.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">Microfon</translation>
 <translation id="3232293466644486101">Șterge datele de navigare…</translation>
 <translation id="3242646949159196181">Când opțiunea este activată, site-urile pot reda sunet. Când opțiunea este dezactivată, site-urile nu pot reda sunet.</translation>
+<translation id="3273479183583863618">Scăderi de preț în file</translation>
 <translation id="3277252321222022663">Permite accesul site-urilor la senzori (recomandat)</translation>
 <translation id="3285500645985761267">Permite site-urilor conexe să-ți vadă activitatea în grup</translation>
 <translation id="3295019059349372795">Capitolul 11: Minunatul Oraș de Smarald Oz</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="3859306556332390985">Derulează înainte</translation>
 <translation id="3895926599014793903">Forțează activarea zoomului</translation>
+<translation id="3905475044299942653">Oprește numărul mare de notificări</translation>
 <translation id="3908288065506437185">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Este posibil ca unele funcții să nu ruleze. Site-urile asociate pot folosi în continuare cookie-uri terță parte.</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">Conținut protejat</translation>
 <translation id="662080504995468778">Rămâi pe pagină</translation>
 <translation id="6653342741369270081">Apasă butonul Înapoi pentru a ieși din ecranul complet.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Ascunde opțiunea Continuă cu această filă}few{Ascunde opțiunea Continuă cu aceste file}other{Ascunde opțiunea Continuă cu aceste file}}</translation>
 <translation id="6689172468748959065">Fotografii de profil</translation>
 <translation id="6697925417670533197">Descărcări active</translation>
 <translation id="6722828510648505498">Blochează solicitările de conectare de la serviciile de identitate.</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251">Selectează o opțiune pentru <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6818926723028410516">Selectează elementele</translation>
+<translation id="6840760312327750441">Pentru a grupa filele, atinge lung o filă. Apoi trage-o peste o altă filă.</translation>
 <translation id="6864395892908308021">Dispozitivul nu poate citi comunicările NFC</translation>
+<translation id="6870169401250095575">Ascunde cardul Verificarea de siguranță</translation>
 <translation id="6912998170423641340">Blochează accesul de citire a textului și imaginilor din clipboard pentru site-uri</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6950072572526089586">Un site pe care îl accesezi poate salva informații despre ce faci, astfel încât să funcționeze conform așteptărilor, de exemplu, pentru a te menține conectat(ă) la un site sau pentru a salva articole în coșul de cumpărături. Adesea, site-urile salvează temporar aceste informații pe dispozitiv.</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">Selectează o persoană de contact</translation>
 <translation id="7990211076305263060">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi microfonul. Când opțiunea este dezactivată, site-urile nu pot folosi microfonul.</translation>
 <translation id="8007176423574883786">Dezactivată pentru acest dispozitiv</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ascunde cardul Continuă cu această filă}few{Ascunde cardul Continuă cu aceste file}other{Ascunde cardul Continuă cu aceste file}}</translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
 <translation id="8042586301629853791">Sortează după:</translation>
 <translation id="8067883171444229417">Redă videoclipul</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">Pagina este periculoasă</translation>
 <translation id="930525582205581608">Elimini acest site?</translation>
 <translation id="947156494302904893">Site-urile pe care le accesezi pot confirma că ești o persoană reală, nu o aplicație bot</translation>
+<translation id="959682366969460160">Organizează-te</translation>
 <translation id="967624055006145463">Date stocate</translation>
 </translationbundle>

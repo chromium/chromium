@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1044891598689252897">Strony będą działać normalnie</translation>
 <translation id="1073417869336441572">Pomóż nam ulepszyć Chrome, informując nas, dlaczego zezwalasz na pliki cookie innych firm. <ph name="BEGIN_LINK" />Prześlij opinię<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Ukryj kartę obniżki ceny</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1192844206376121885">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez stronę <ph name="ORIGIN" />.</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">URL obcięty</translation>
 <translation id="1448064542941920355">Zmniejsz powiększenie</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> witryna}few{<ph name="SITE_COUNT" /> witryny}many{<ph name="SITE_COUNT" /> witryn}other{<ph name="SITE_COUNT" /> witryny}}</translation>
+<translation id="1500473259453106018">Ukryj kartę Obniżki cen na kartach</translation>
 <translation id="1510341833810331442">Witryny nie mogą zapisywać danych na Twoim urządzeniu</translation>
 <translation id="1547123415014299762">Pliki cookie innych firm są dozwolone</translation>
 <translation id="1568470248891039841">Witryny, które odwiedzasz, mogą wykorzystywać treści z innych witryn, np. obrazy, reklamy i tekst. Te inne witryny mogą prosić o zgodę na korzystanie z informacji o Tobie zapisanych przez nie podczas przeglądania tych witryn. <ph name="BEGIN_LINK" />Więcej informacji o ustawieniu „Umieszczona treść”<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">Pomoc i opinie</translation>
 <translation id="2501278716633472235">Wróć</translation>
 <translation id="2546283357679194313">Pliki cookie i dane witryn</translation>
-<translation id="2550801787432930915">Karta obniżki ceny</translation>
 <translation id="2570922361219980984">Dostęp do lokalizacji jest wyłączony też na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozwinięty – kliknij, by zwinąć.</translation>
 <translation id="2586657967955657006">Schowek</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Usuń dane przeglądania…</translation>
 <translation id="3242646949159196181">Gdy ta opcja jest włączona, strony internetowe mogą odtwarzać dźwięk. Gdy jest wyłączona, nie mogą tego robić.</translation>
+<translation id="3273479183583863618">Obniżki cen na kartach</translation>
 <translation id="3277252321222022663">Zezwalaj stronom na dostęp do czujników (zalecane)</translation>
 <translation id="3285500645985761267">Zezwalaj powiązanym witrynom na dostęp do danych o Twojej aktywności w grupie</translation>
 <translation id="3295019059349372795">Rozdział 11: Szmaragdowe Miasto</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="3859306556332390985">Przewiń do przodu</translation>
 <translation id="3895926599014793903">Wymuś powiększenie</translation>
+<translation id="3905475044299942653">Zatrzymaj wiele powiadomień</translation>
 <translation id="3908288065506437185">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Niektóre funkcje mogą nie działać prawidłowo. Powiązane witryny mogą nadal używać plików cookie innych firm.</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">Treść chroniona</translation>
 <translation id="662080504995468778">Zostań</translation>
 <translation id="6653342741369270081">Naciśnij przycisk Wstecz, aby zamknąć pełny ekran.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Ukryj opcję Kontynuuj na tej karcie}few{Ukryj opcję Kontynuuj na tych kartach}many{Ukryj opcję Kontynuuj na tych kartach}other{Ukryj opcję Kontynuuj na tych kartach}}</translation>
 <translation id="6689172468748959065">Zdjęcia profilowe</translation>
 <translation id="6697925417670533197">W trakcie pobierania</translation>
 <translation id="6722828510648505498">Blokuj prośby o zalogowanie się pochodzące od usług tożsamości.</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251">Wybierz opcję dla <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6818926723028410516">Wybierz elementy</translation>
+<translation id="6840760312327750441">Aby pogrupować karty, naciśnij i przytrzymaj jedną z nich. Następnie przeciągnij ją na inną kartę.</translation>
 <translation id="6864395892908308021">To urządzenie nie obsługuje NFC</translation>
+<translation id="6870169401250095575">Ukryj kartę Kontrola zabezpieczeń</translation>
 <translation id="6912998170423641340">Zablokuj stronom możliwość odczytywania tekstu i obrazów ze schowka</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6950072572526089586">Aby strona, na którą wchodzisz, działała zgodnie z oczekiwaniami – na przykład nie wylogowywała Cię lub pokazywała produkty w koszyku na zakupy – może ona zapisywać informacje o tym, co robisz. Strony często zapisują te informacje tymczasowo na Twoim urządzeniu.</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">Wybierz kontakt</translation>
 <translation id="7990211076305263060">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do mikrofonu. Gdy jest wyłączona, strony nie mogą go używać.</translation>
 <translation id="8007176423574883786">Wyłączona na tym urządzeniu</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ukryj kartę Kontynuuj na tej karcie}few{Ukryj kartę Kontynuuj na tych kartach}many{Ukryj kartę Kontynuuj na tych kartach}other{Ukryj kartę Kontynuuj na tych kartach}}</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
 <translation id="8042586301629853791">Sortuj według:</translation>
 <translation id="8067883171444229417">Odtwórz film</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">Ten pakiet jest niebezpieczny</translation>
 <translation id="930525582205581608">Zapomnieć tę stronę?</translation>
 <translation id="947156494302904893">Witryny, które odwiedzasz, mogą sprawdzać, czy jesteś prawdziwą osobą, a nie botem</translation>
+<translation id="959682366969460160">Większy porządek</translation>
 <translation id="967624055006145463">Zapisane dane</translation>
 </translationbundle>

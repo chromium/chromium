@@ -36,12 +36,14 @@
 <translation id="2569352796411618312">Зөвлөмж: Таны табуудаас <ph name="NUMBER_OF_TABS" />-г нь сүүлийн үед ашиглаагүй байна. Тэдгээрийг хаах уу?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> үнэлгээ</translation>
 <translation id="266935134738038806">Сайтад зочлох</translation>
+<translation id="2677748264148917807">Үлдээх</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> цагийн өмнө үүсгэсэн}other{<ph name="NUM_HOURS_MANY" /> цагийн өмнө үүсгэсэн}}</translation>
 <translation id="2801787514987684416">Дэлгүүрийн мэдээллийг үзэх үү?</translation>
 <translation id="2928243913527329289">Google | Энэ дэлгүүрийн тухай</translation>
 <translation id="2977480621796371840">Бүлгээс хасах</translation>
 <translation id="3008554597174452548">Бүтээгдэхүүн хянахаа зогсоох</translation>
 <translation id="3026391124054406831">Табуудаа цэгцлэхийн тулд бүлэг үүсгэнэ үү.</translation>
+<translation id="3051031624272448591">Та тэдгээрийг түүхээс хүссэн үедээ буцааж авах боломжтой</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-н үнэ <ph name="PRICE_DROP" />-р буурсан</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> табын бүлгийн өнгөний дүрс тэмдэг</translation>
 <translation id="3194464645767632461">үнэлгээ</translation>
@@ -65,9 +67,10 @@
 <translation id="4159784952369912983">Нил ягаан</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб бүхий <ph name="TITLE_OF_GROUP" />-н бүлгийг дэлгэх.}other{<ph name="TABS_COUNT_MANY" /> таб бүхий <ph name="TITLE_OF_GROUP" />-н бүлгийг дэлгэх.}}</translation>
 <translation id="427987768447457592">Шинэ табын бүлэг</translation>
-<translation id="4338724047016295066">Идэвхгүй табуудыг автоматаар хаана. Та хүссэн үедээ тухайн табуудыг Түүхээс олох боломжтой.</translation>
 <translation id="4371591986692297148">Идэвхгүй</translation>
 <translation id="4460014764210899310">Бүлгийг болих</translation>
+<translation id="4590027107044272416">Та одоо энд шинэ таб нээх боломжтой</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Идэвхгүй 1 табыг хаах уу?}other{Идэвхгүй <ph name="TAB_COUNT_MANY" /> табыг хаах уу?}}</translation>
 <translation id="4648718555153979859">Таны табуудыг энд бүлэглэсэн болно</translation>
 <translation id="4686942373615810936">Дөнгөж сая үүсгэсэн</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 хоногийн дараа хаах}other{<ph name="DAY_COUNT_MANY" /> хоногийн дараа хаах}}</translation>
@@ -75,6 +78,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> шүүмж)}other{(<ph name="REVIEWS_COUNT_MANY" /> шүүмж)}}</translation>
 <translation id="4850886885716139402">Харах</translation>
 <translation id="4870911314065352661">Бүх табыг хаах уу?</translation>
+<translation id="4871719318659334896">Бүлгийг хаах</translation>
 <translation id="4881695831933465202">Нээх</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Табыг хаах}other{Табуудыг хаах}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> бүлгийг хадгалсан (табыг хааж, бүлгийг устгана)</translation>
@@ -100,6 +104,7 @@
 <translation id="5972844218283131174">Бүх сонголтыг цуцлах</translation>
 <translation id="6017514345406065928">Ногоон</translation>
 <translation id="6040143037577758943">Хаах</translation>
+<translation id="6051432659151380973">Таны табын бүлгүүдийг автоматаар хадгалдаг</translation>
 <translation id="6054741997831917303">Энэ зүйлийн үнэ саяхан <ph name="PREVIOUS_PRICE" />-с <ph name="NEW_PRICE" /> болж буурсан</translation>
 <translation id="6193448654517602979">Таб сонгох</translation>
 <translation id="6228793724645064692">(дэлгүүрийн үнэлгээ)</translation>
@@ -115,7 +120,6 @@
 <translation id="6562820390860419811">Табыг зүүн тийш зөөх</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
 <translation id="6744956528665271406">Бүлгийн өнгийг засах</translation>
-<translation id="6840760312327750441">Табуудыг бүлэглэхийн тулд таб дээр хүрээд, удаан дарна уу. Тэгээд уг табыг нөгөө рүү нь чирж зөөнө үү.</translation>
 <translation id="6856809498882026482">Олон сонголттой горимыг нуух</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Табыг хуваалцах}other{Табуудыг хуваалцах}}</translation>
 <translation id="7129458170538955174">Энэ дэлгүүрийн талаарх мэдээллийг тал өндөртэйгээр нээсэн</translation>
@@ -152,12 +156,14 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хаах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хаах}}</translation>
 <translation id="8398929769197326728">Шинэ фолдер - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
+<translation id="870736955561925754">Табыг хааж, бүлгийг устгах уу?</translation>
 <translation id="8714939927607906138">Илүү хямд үнэ</translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8730999928494395583">Эдгээр Нууцлалтай таб дахь таны үйл ажиллагааг энэ төхөөрөмжөөс хасна</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> сарын өмнө үүсгэсэн}other{<ph name="NUM_MONTHS_MANY" /> сарын өмнө үүсгэсэн}}</translation>
 <translation id="8820741577754260431">Табууд дээрх үнэ бууралтыг хараарай</translation>
 <translation id="8887921976452567404">Та хаасан таб, бүлгээ Саяхны табын хэсэг, Табын бүлгийн хэсгээс дахин нээх боломжтой.</translation>
+<translation id="8915916167043355778">Бүгдийг хаах</translation>
 <translation id="8926389886865778422">Дахиж бүү асуу</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб бүхий табын бүлгийг дэлгэх.}other{<ph name="TABS_COUNT_MANY" /> таб бүхий табын бүлгийг дэлгэх.}}</translation>
 <translation id="9090098097337832354">Энэ дэлгүүрийн талаарх мэдээллийг хаасан</translation>
@@ -165,6 +171,5 @@
 <translation id="9169594135889675189">Бүлэгт шинэ таб нэмэх</translation>
 <translation id="9216898458513705996">Таб энэ төхөөрөмж дээр нээлттэй үлдэх хэдий ч бүлгийг <ph name="USER_EMAIL" />-д нэвтэрсэн бүх төхөөрөмжөөс устгана</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб, <ph name="COLOR_NAME" /> өнгөтэй табын бүлгийг дэлгэнэ үү.}other{<ph name="TABS_COUNT_MANY" /> таб, <ph name="COLOR_NAME" /> өнгөтэй табын бүлгийг дэлгэнэ үү.}}</translation>
-<translation id="959682366969460160">Зохион байгуулалттай болох</translation>
 <translation id="992256792861109788">Ягаан</translation>
 </translationbundle>

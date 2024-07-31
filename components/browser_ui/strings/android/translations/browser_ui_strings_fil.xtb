@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1044891598689252897">Gagana nang normal ang mga site</translation>
 <translation id="1073417869336441572">Tulungan kaming pahusayin ang Chrome sa pamamagitan ng pagsasabi sa amin kung bakit mo pinayagan ang third-party na cookies. <ph name="BEGIN_LINK" />Magpadala ng feedback<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">I-hide ang card tungkol sa pagbaba ng presyo</translation>
 <translation id="1178581264944972037">I-pause</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1192844206376121885">Ide-delete nito ang lahat ng data at cookies na na-store ng <ph name="ORIGIN" />.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Tulong at feedback</translation>
 <translation id="2501278716633472235">Bumalik</translation>
 <translation id="2546283357679194313">Cookies at data ng site</translation>
-<translation id="2550801787432930915">Card tungkol sa pagbaba ng presyo</translation>
 <translation id="2570922361219980984">Naka-off din ang access sa lokasyon para sa device na ito. I-on ito sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Pinalawak - i-click upang i-collapse.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3859306556332390985">Maghanap nang pasulong</translation>
 <translation id="3895926599014793903">Puwersahang i-enable ang zoom</translation>
+<translation id="3905475044299942653">Ihinto ang napakaraming notification</translation>
 <translation id="3908288065506437185">I-block ang mga third-party na cookie sa Incognito mode</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Posibleng hindi gumana ang ilang feature. Puwede pa ring gumamit ng third-party na cookie ang mga nauugnay na site.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Pinoprotektahang content</translation>
 <translation id="662080504995468778">Manatili</translation>
 <translation id="6653342741369270081">Pindutin ang button na bumalik para lumabas sa full screen.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{I-hide ang magpatuloy sa tab na ito}one{I-hide ang magpatuloy sa mga tab na ito}other{I-hide ang magpatuloy sa mga tab na ito}}</translation>
 <translation id="6689172468748959065">Mga larawan sa profile</translation>
 <translation id="6697925417670533197">Mga aktibong pag-download</translation>
 <translation id="6722828510648505498">I-block ang mga prompt sa pag-sign in mula sa mga serbisyo ng pagkakakilanlan.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251">Pumili ng opsyon para sa <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">I-play</translation>
 <translation id="6818926723028410516">Pumili ng mga item</translation>
+<translation id="6840760312327750441">Sa mga tab ng grupo, pindutin nang matagal ang isang tab. Pagkatapos, i-drag ito sa isa pang tab.</translation>
 <translation id="6864395892908308021">Hindi nababasa ng device na ito ang NFC</translation>
 <translation id="6912998170423641340">I-block ang mga site sa pag-read ng text at mga larawan mula sa clipboard</translation>
 <translation id="6945221475159498467">Pumili</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Mapanganib ang page na ito</translation>
 <translation id="930525582205581608">Kalimutan ang site na ito?</translation>
 <translation id="947156494302904893">Magagawa ng mga site na binibisita mo na i-verify na totoong tao ka at hindi ka bot</translation>
+<translation id="959682366969460160">Maging organisado</translation>
 <translation id="967624055006145463">Naka-store na data</translation>
 </translationbundle>

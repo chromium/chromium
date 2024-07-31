@@ -30,6 +30,8 @@
           i provjerite je li konfiguracija postavljena na "bez proxyja" ili "izravno".</translation>
 <translation id="6549378540556750549">Chromium je omogućio i drugi <ph name="BEGIN_LINK_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Promjene će početi vrijediti sljedeći put kad ponovo pokrenete Chromium.</translation>
+<translation id="691026815377248078">Chromium treba pristup Bluetoothu za nastavak 
+ uparivanja. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="7681937895330411637">Chromium je omogućio <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />, projekt otvorenog izvornog koda.</translation>
 <translation id="7861509383340276692">Otvorite
         izbornik Chromiuma &gt;

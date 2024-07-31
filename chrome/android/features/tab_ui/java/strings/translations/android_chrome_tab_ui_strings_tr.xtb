@@ -36,6 +36,7 @@
 <translation id="2569352796411618312">Öneri: <ph name="NUMBER_OF_TABS" /> sekmeyi son zamanlarda hiç kullanmadınız. Bunlar kapatılsın mı?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan</translation>
 <translation id="266935134738038806">Siteye git</translation>
+<translation id="2677748264148917807">Çık</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> saat önce oluşturuldu}other{<ph name="NUM_HOURS_MANY" /> saat önce oluşturuldu}}</translation>
 <translation id="2801787514987684416">Mağaza bilgileri görüntülensin mi?</translation>
 <translation id="2928243913527329289">Google | Bu mağaza hakkında</translation>
@@ -65,9 +66,9 @@
 <translation id="4159784952369912983">Mor</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişlet.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişlet.}}</translation>
 <translation id="427987768447457592">Yeni sekme grubu</translation>
-<translation id="4338724047016295066">Etkin olmayan sekmeler otomatik olarak kapatılır. Bu sekmeleri dilediğiniz zaman Geçmiş'te bulabilirsiniz.</translation>
 <translation id="4371591986692297148">Etkin değil</translation>
 <translation id="4460014764210899310">Grubu Çöz</translation>
+<translation id="4590027107044272416">Buradan yeni bir sekme açabilirsiniz</translation>
 <translation id="4648718555153979859">Sekmeleriniz burada gruplandırılır</translation>
 <translation id="4686942373615810936">Az önce oluşturuldu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 gün sonra kapat}other{<ph name="DAY_COUNT_MANY" /> gün sonra kapat}}</translation>
@@ -75,6 +76,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> yorum)}other{(<ph name="REVIEWS_COUNT_MANY" /> yorum)}}</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
 <translation id="4870911314065352661">Tüm sekmeler kapatılsın mı?</translation>
+<translation id="4871719318659334896">Grubu kapat</translation>
 <translation id="4881695831933465202">Aç</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Sekmeyi kapat}other{Sekmeleri kapat}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> grup kaydedildi (sekmeler kapatılıp gruplar silinecek)</translation>
@@ -100,6 +102,7 @@
 <translation id="5972844218283131174">Tümünün seçimini kaldır</translation>
 <translation id="6017514345406065928">Yeşil</translation>
 <translation id="6040143037577758943">Kapat</translation>
+<translation id="6051432659151380973">Sekme gruplarınız otomatik olarak kaydedilir</translation>
 <translation id="6054741997831917303">Yakın zamanda bu ürünün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
 <translation id="6193448654517602979">Sekmeleri seç</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
@@ -115,7 +118,6 @@
 <translation id="6562820390860419811">Sekmeyi sola taşı</translation>
 <translation id="6615455863669487791">Göster</translation>
 <translation id="6744956528665271406">Grup rengini düzenle</translation>
-<translation id="6840760312327750441">Sekmeleri gruplamak için bir sekmeye dokunup basılı tutun. Ardından başka bir sekmenin üzerine sürükleyin.</translation>
 <translation id="6856809498882026482">Çoklu seçim modunu gizle</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Sekmeyi paylaş}other{Sekmeleri paylaş}}</translation>
 <translation id="7129458170538955174">Bu mağazayla ilgili bilgiler ekranın yarısına kadar açıldı</translation>
@@ -152,6 +154,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi kapat}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi kapat}}</translation>
 <translation id="8398929769197326728">Yeni Klasör - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Ayarlar</translation>
+<translation id="870736955561925754">Sekme kapatılıp grup silinsin mi?</translation>
 <translation id="8714939927607906138">Daha düşük fiyat</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8730999928494395583">Bu gizli sekmelerdeki etkinliğiniz bu cihazdan silinecektir</translation>
@@ -165,6 +168,5 @@
 <translation id="9169594135889675189">Gruba yeni sekme ekler</translation>
 <translation id="9216898458513705996">Sekmeler bu cihazda açık kalır ancak grup, <ph name="USER_EMAIL" /> hesabında oturum açılmış tüm cihazlardan silinir</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu genişletin.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu genişletin.}}</translation>
-<translation id="959682366969460160">Organize çalışın</translation>
 <translation id="992256792861109788">Pembe</translation>
 </translationbundle>

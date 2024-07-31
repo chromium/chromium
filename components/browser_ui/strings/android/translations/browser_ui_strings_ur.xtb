@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
 <translation id="1073417869336441572">‏ہمیں یہ بتا کر Chrome کو بہتر بنانے میں ہماری مدد کریں کہ آپ نے فریق ثالث کوکیز کی اجازت کیوں دی۔ <ph name="BEGIN_LINK" />تاثرات بھیجیں<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">قیمت میں کمی کے کارڈ کو چھپائیں</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1192844206376121885">اس سے <ph name="ORIGIN" /> کے ذریعے اسٹور کردہ سبھی ڈیٹا اور کوکیز حذف ہو جائیں گی۔</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">‏URL کو چھوٹا کیا گیا</translation>
 <translation id="1448064542941920355">زوم آؤٹ کریں</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سائٹ}other{<ph name="SITE_COUNT" /> سائٹس}}</translation>
+<translation id="1500473259453106018">ٹیبز کارڈ پر قیمت میں گرواٹ کو چھپائیں</translation>
 <translation id="1510341833810331442">سائٹس کو آپ کے آلے پر ڈیٹا محفوظ کرنے کی اجازت نہیں ہے</translation>
 <translation id="1547123415014299762">فریق ثالث کوکیز کی اجازت ہے</translation>
 <translation id="1568470248891039841">آپ کی ملاحظہ کی جانے والی سائٹس دوسری سائٹس سے مواد کو سرایت کر سکتی ہیں، مثال کے طور پر تصاویر، اشتہارات اور ٹیکسٹ۔ یہ دوسری سائٹس سائٹ کو براؤز کرتے وقت آپ کے بارے میں محفوظ کردہ معلومات کو استعمال کرنے کی اجازت طلب کر سکتی ہیں۔ <ph name="BEGIN_LINK" />سرایت کردہ مواد کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">مدد اور تاثرات</translation>
 <translation id="2501278716633472235">پیچھے جائیں</translation>
 <translation id="2546283357679194313">کوکیز اور سائٹ ڈیٹا</translation>
-<translation id="2550801787432930915">قیمت میں کمی کا کارڈ</translation>
 <translation id="2570922361219980984">‏مقام کی رسائی بھی اس آلہ کے لیے آف ہے۔ <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" />.میں اسے آن کریں۔</translation>
 <translation id="257931822824936280">پھیلایا ہوا - سکیڑنے کیلئے کلک کریں۔</translation>
 <translation id="2586657967955657006">کلپ بورڈ</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">مائیکروفون</translation>
 <translation id="3232293466644486101">براؤزنگ ڈیٹا حذف کریں…</translation>
 <translation id="3242646949159196181">آن ہونے پر، سائٹس آواز چلا سکتی ہیں۔ آف ہونے پر، سائٹس آواز نہیں چلا سکتی ہیں۔</translation>
+<translation id="3273479183583863618">ٹیبز پر قیمت کی گراوٹ</translation>
 <translation id="3277252321222022663">سائٹس کو سینسرز تک رسائی حاصل کرنے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="3285500645985761267">متعلقہ سائٹس کو گروپ میں آپ کی سرگرمی دیکھنے کی اجازت دیں</translation>
 <translation id="3295019059349372795">گیارھواں باب: اوز کا شاندار زمردی شہر</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3859306556332390985">آگے لے جائیں</translation>
 <translation id="3895926599014793903">زوم کو زبردستی فعال کریں</translation>
+<translation id="3905475044299942653">بہت ساری اطلاعات کو روکیں</translation>
 <translation id="3908288065506437185">پوشیدگی وضع میں فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">ہو سکتا ہے کچھ خصوصیات کام نہ کریں۔ متعلقہ سائٹس اب بھی فریق ثالث کوکیز استعمال کر سکتی ہیں۔</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">تحفظ یافتہ مواد</translation>
 <translation id="662080504995468778">رکیں</translation>
 <translation id="6653342741369270081">پوری اسکرین سے باہر نکلنے کیلئے پیچھے جائیں بٹن کو دبائیں۔</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{'اس ٹیب کے ساتھ جاری رکھیں' اختیار کو چھپائیں}other{'ان ٹیبز کے ساتھ جاری رکھیں' اختیار کو چھپائیں}}</translation>
 <translation id="6689172468748959065">پروفائل کی تصاویر</translation>
 <translation id="6697925417670533197">فعال ڈاؤن لوڈز</translation>
 <translation id="6722828510648505498">شناختی سروسز سے سائن ان کے پرامپٹس مسدود کریں۔</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> کے لیے ایک اختیار منتخب کریں</translation>
 <translation id="6790428901817661496">چلائیں</translation>
 <translation id="6818926723028410516">آئٹمز منتخب کریں</translation>
+<translation id="6840760312327750441">ٹیبز کا گروپ بنانے کے لیے، کسی ٹیب کو ٹچ کریں اور دبائے رکھیں۔ پھر، اسے کسی دوسرے ٹیب پر گھسیٹیں۔</translation>
 <translation id="6864395892908308021">‏یہ آلہ NFC کو نہیں پڑھ سکتا</translation>
+<translation id="6870169401250095575">سیفٹی چیک کارڈ چھپائیں</translation>
 <translation id="6912998170423641340">سائٹس کو کلپ بورڈ سے ٹیکسٹ اور تصاویر پڑھنے سے مسدود کریں</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6950072572526089586">آپ جو بھی سائٹ ملاحظہ کرتے ہیں، وہ اس بارے میں معلومات کو محفوظ کر سکتی ہے کہ آپ کیا کر رہے ہیں تاکہ وہ آپ کی توقع کے مطابق کام کرے — مثال کے طور پر، آپ کو کسی سائٹ میں سائن ان رکھنے یا آپ کے شاپنگ کارٹ میں آئٹمز کو محفوظ کرنے کیلئے۔ اکثر سائٹس اس معلومات کو آپ کے آلے پر عارضی طور پر محفوظ کرتی ہیں۔</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">رابطہ منتخب کریں</translation>
 <translation id="7990211076305263060">آن ہونے پر، سائٹس آپ کا مائیکروفون استعمال کرنے کیلئے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس آپ کا مائیکروفون استعمال نہیں کر سکتیں۔</translation>
 <translation id="8007176423574883786">اس آلے کیلئے آف کر دیا گیا</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{اس ٹیب کارڈ کے ساتھ جاری رکھیں چھپائیں}other{ان ٹیبز کارڈ کے ساتھ جاری رکھیں چھپائیں}}</translation>
 <translation id="802154636333426148">ڈاؤن لوڈ ناکام ہوگیا</translation>
 <translation id="8042586301629853791">ترتیب دیں بلحاظ:</translation>
 <translation id="8067883171444229417">ویڈیو چلائیں</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">یہ صفحہ خطرناک ہے</translation>
 <translation id="930525582205581608">اس سائٹ کو بھول جائیں؟</translation>
 <translation id="947156494302904893">آپ کی ملاحظہ کردہ سائٹس اس بات کی تصدیق کر سکتی ہیں کہ آپ ایک حقیقی شخص ہیں نہ کہ ایک بوٹ</translation>
+<translation id="959682366969460160">منظم رہیں</translation>
 <translation id="967624055006145463">اسٹور کردہ ڈیٹا</translation>
 </translationbundle>

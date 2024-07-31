@@ -36,12 +36,14 @@
 <translation id="2569352796411618312">我有建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近冇用過，係咪要閂咗佢？</translation>
 <translation id="2662028055331606429">評分：<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">瀏覽網站</translation>
+<translation id="2677748264148917807">離開</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 小時前建立}other{<ph name="NUM_HOURS_MANY" /> 小時前建立}}</translation>
 <translation id="2801787514987684416">要查看商店資料嗎？</translation>
 <translation id="2928243913527329289">Google | 關於此商店</translation>
 <translation id="2977480621796371840">從群組中移除</translation>
 <translation id="3008554597174452548">停止追蹤產品</translation>
 <translation id="3026391124054406831">建立群組，以便整理分頁。</translation>
+<translation id="3051031624272448591">你可隨時在記錄中重新開啟這些分頁</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 降價 <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" />分頁群組顏色圖示</translation>
 <translation id="3194464645767632461">評分</translation>
@@ -65,9 +67,10 @@
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{打開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅<ph name="TITLE_OF_GROUP" />分頁群組。}other{打開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅<ph name="TITLE_OF_GROUP" />分頁群組。}}</translation>
 <translation id="427987768447457592">新分頁群組</translation>
-<translation id="4338724047016295066">閒置分頁會自動關閉，你可以隨時在「記錄」中查看。</translation>
 <translation id="4371591986692297148">未啟用</translation>
 <translation id="4460014764210899310">未分組</translation>
+<translation id="4590027107044272416">你現可在此開啟新分頁</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{要關閉 1 個閒置分頁嗎？}other{要關閉 <ph name="TAB_COUNT_MANY" /> 個閒置分頁嗎？}}</translation>
 <translation id="4648718555153979859">您的分頁在這裡分組顯示</translation>
 <translation id="4686942373615810936">剛才建立</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 天後關閉}other{<ph name="DAY_COUNT_MANY" /> 天後關閉}}</translation>
@@ -75,6 +78,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> 則評論)}other{(<ph name="REVIEWS_COUNT_MANY" /> 則評論)}}</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4870911314065352661">要關閉所有分頁嗎？</translation>
+<translation id="4871719318659334896">關閉群組</translation>
 <translation id="4881695831933465202">開啟</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{關閉分頁}other{關閉分頁}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> 已儲存群組 (將關閉分頁並刪除群組)</translation>
@@ -100,7 +104,9 @@
 <translation id="5972844218283131174">全部取消選取</translation>
 <translation id="6017514345406065928">綠色</translation>
 <translation id="6040143037577758943">關閉</translation>
+<translation id="6051432659151380973">分頁群組將會自動儲存</translation>
 <translation id="6054741997831917303">呢件商品嘅價格最近由 <ph name="PREVIOUS_PRICE" /> 減到 <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">你將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6228793724645064692">(商店評分)</translation>
 <translation id="6271513594716432922">關閉所有閒置分頁</translation>
@@ -115,7 +121,6 @@
 <translation id="6562820390860419811">將分頁左移</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="6744956528665271406">編輯群組顏色</translation>
-<translation id="6840760312327750441">如要將分頁加入群組，請輕觸並按住分頁，然後將它拖曳到其他分頁上。</translation>
 <translation id="6856809498882026482">隱藏多重選取模式</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享分頁}other{分享分頁}}</translation>
 <translation id="7129458170538955174">關於呢間商店嘅資料宜家顯示喺畫面下半部</translation>
@@ -125,6 +130,7 @@
 <translation id="731648547091221002">揀咗<ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">查看退貨政策等資料</translation>
 <translation id="7352298686197644113">查看已開啟分頁中有哪項產品降價</translation>
+<translation id="7421293530411019405">要離開分頁群組嗎？</translation>
 <translation id="7452985128687107478">分頁群組會自動儲存並同步至所有裝置</translation>
 <translation id="747459581954555080">全部還原</translation>
 <translation id="753732157349120914">分頁切換工具</translation>
@@ -152,12 +158,15 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{閂 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁}other{閂 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁}}</translation>
 <translation id="8398929769197326728">新增資料夾 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">設定</translation>
+<translation id="8631711675211020168">所有人將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從所有裝置刪除</translation>
+<translation id="870736955561925754">要關閉分頁並刪除群組嗎？</translation>
 <translation id="8714939927607906138">較低價格</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8730999928494395583">系統將會從此裝置移除你在這些無痕式分頁中的活動</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> 個月前建立}other{<ph name="NUM_MONTHS_MANY" /> 個月前建立}}</translation>
 <translation id="8820741577754260431">在分頁上查看降價資料</translation>
 <translation id="8887921976452567404">你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。</translation>
+<translation id="8915916167043355778">全部關閉</translation>
 <translation id="8926389886865778422">不要再問我</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{打開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅分頁群組。}other{打開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組。}}</translation>
 <translation id="9090098097337832354">閂咗關於呢間商店嘅資料</translation>
@@ -165,6 +174,5 @@
 <translation id="9169594135889675189">喺群組入面加新嘅分頁</translation>
 <translation id="9216898458513705996">分頁會在此裝置上保持開啟，但該群組會從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{展開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}other{展開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
-<translation id="959682366969460160">讓所有內容變得井井有條</translation>
 <translation id="992256792861109788">粉紅色</translation>
 </translationbundle>

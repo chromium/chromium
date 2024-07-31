@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1044891598689252897">Weby budú fungovať normálne</translation>
 <translation id="1073417869336441572">Pomôžte nám zlepšiť Chrome tým, že nám poviete, prečo ste povolili súbory cookie tretích strán. <ph name="BEGIN_LINK" />Odoslať spätnú väzbu<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Skryť kartu poklesu ceny</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1192844206376121885">Týmto odstránite všetky dáta a súbory cookie uložené webom <ph name="ORIGIN" />.</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">Skrátená webová adresa</translation>
 <translation id="1448064542941920355">Znížiť úroveň lupy</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webe}few{<ph name="SITE_COUNT" /> weboch}many{<ph name="SITE_COUNT" /> sites}other{<ph name="SITE_COUNT" /> weboch}}</translation>
+<translation id="1500473259453106018">Skryť kartu Poklesy cien na kartách</translation>
 <translation id="1510341833810331442">Weby nemôžu ukladať údaje vo vašom zariadení</translation>
 <translation id="1547123415014299762">Súbory cookie tretích strán sú povolené</translation>
 <translation id="1568470248891039841">Na weboch, ktoré navštívite, môže byť vložený obsah z iných webov, napríklad obrázky, reklamy a text. Tieto iné weby môžu žiadať o povolenia používať informácie, ktoré o vás uložili, keď ich prehliadate. <ph name="BEGIN_LINK" />Ďalšie informácie o vloženom obsahu<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">Pomocník a spätná väzba</translation>
 <translation id="2501278716633472235">Prejsť späť</translation>
 <translation id="2546283357679194313">Súbory cookie a dáta webov</translation>
-<translation id="2550801787432930915">Karta poklesu ceny</translation>
 <translation id="2570922361219980984">Prístup k polohe je vypnutý aj v tomto zariadení. Zapnite ho v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozbalená (zbalíte ju kliknutím)</translation>
 <translation id="2586657967955657006">Schránka</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">Mikrofón</translation>
 <translation id="3232293466644486101">Odstrániť dáta prehliadania…</translation>
 <translation id="3242646949159196181">Keď je táto možnosť zapnutá, weby môžu prehrávať zvuk. Keď je táto možnosť vypnutá, weby nemôžu prehrávať zvuk.</translation>
+<translation id="3273479183583863618">Poklesy cien na kartách</translation>
 <translation id="3277252321222022663">Povoliť webom prístup k senzorom (odporúčané)</translation>
 <translation id="3285500645985761267">Povoliť súvisiacim webom zobrazovať si vašu aktivitu v skupine</translation>
 <translation id="3295019059349372795">11. kapitola: Nádherné smaragdové mesto</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">Späť</translation>
 <translation id="3859306556332390985">Pretočiť dopredu</translation>
 <translation id="3895926599014793903">Vynútiť povolenie priblíženia</translation>
+<translation id="3905475044299942653">Zastavenie veľkého množstva upozornení</translation>
 <translation id="3908288065506437185">Blokovať súbory cookie tretích strán v režime inkognito</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Niektoré funkcie nemusia fungovať. Súvisiace weby môžu naďalej používať súbory cookie tretej strany.</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">Chránený obsah</translation>
 <translation id="662080504995468778">Zostať</translation>
 <translation id="6653342741369270081">Režim celej obrazovky ukončíte klepnutím na tlačidlo Späť.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Skryť pokračovanie s touto kartou}few{Skryť pokračovanie s týmito kartami}many{Hide continue with these tabs}other{Skryť pokračovanie s týmito kartami}}</translation>
 <translation id="6689172468748959065">Profilové fotky</translation>
 <translation id="6697925417670533197">Práve sťahované položky</translation>
 <translation id="6722828510648505498">Blokujte výzvy na prihlásenie od služieb identity.</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251">Vybrať možnosť pre web <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Prehrať</translation>
 <translation id="6818926723028410516">Vyberte položky</translation>
+<translation id="6840760312327750441">Ak chcete zoskupiť karty, pridržte niektorú z nich. Potom ju presuňte na inú.</translation>
 <translation id="6864395892908308021">Toto zariadenie nedokáže čítať NFC</translation>
+<translation id="6870169401250095575">Skryť kartu Kontrola bezpečnosti</translation>
 <translation id="6912998170423641340">Brániť webom v prístupe k textom a obrázkom v schránke</translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="6950072572526089586">Web, ktorý navštívite, môže ukladať informácie o tom, čo robíte, aby fungoval podľa očakávaní. Vďaka tomu si napríklad môžete na ňom uchovať aktívne prihlásenie alebo ukladať položky do nákupného košíka. Weby často ukladajú tieto informácie vo vašom zariadení dočasne.</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">Výber kontaktu</translation>
 <translation id="7990211076305263060">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať váš mikrofón. Keď je táto možnosť vypnutá, weby nemôžu používať váš mikrofón.</translation>
 <translation id="8007176423574883786">Vypnuté v tomto zariadení</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Skryť kartu Pokračovať s touto kartou}few{Skryť kartu Pokračovať s týmito kartami}many{Hide continue with these tabs card}other{Skryť kartu Pokračovať s týmito kartami}}</translation>
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
 <translation id="8042586301629853791">Zoradiť podľa:</translation>
 <translation id="8067883171444229417">Prehrať video</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">Táto stránka je nebezpečná</translation>
 <translation id="930525582205581608">Chcete tento web odstrániť?</translation>
 <translation id="947156494302904893">Weby, ktoré navštevujete môžu skontrolovať, či ste skutočná osoba a nie robot</translation>
+<translation id="959682366969460160">Usporiadanie položiek</translation>
 <translation id="967624055006145463">Uložené dáta</translation>
 </translationbundle>

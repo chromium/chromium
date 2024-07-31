@@ -36,12 +36,14 @@
 <translation id="2569352796411618312">सुझाव: तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन</translation>
 <translation id="266935134738038806">साइटमा जानुहोस्</translation>
+<translation id="2677748264148917807">छोड्नुहोस्</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> घण्टाअघि बनाइएको}other{<ph name="NUM_HOURS_MANY" /> घण्टाअघि बनाइएको}}</translation>
 <translation id="2801787514987684416">स्टोरसम्बन्धी जानकारी हेर्ने हो?</translation>
 <translation id="2928243913527329289">Google | यो स्टोरबारे जानकारी</translation>
 <translation id="2977480621796371840">समूहबाट हटाउनुहोस्</translation>
 <translation id="3008554597174452548">उत्पादनको मूल्य ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="3026391124054406831">आफ्ना ट्याबहरू व्यवस्थापन गर्न समूहहरू बनाउनुहोस्।</translation>
+<translation id="3051031624272448591">तपाईं जुनसुकै बेला हिस्ट्रीमा गई ती ट्याबहरू फेरि खोल्न सक्नुहुन्छ</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> को मूल्य <ph name="PRICE_DROP" /> घटेको छ</translation>
 <translation id="3078350928901129212">ट्याब समूहको आइकनको रङ <ph name="COLOR_NAME" /> छ</translation>
 <translation id="3194464645767632461">मूल्याङ्कन</translation>
@@ -65,9 +67,10 @@
 <translation id="4159784952369912983">बैजनी</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="TITLE_OF_GROUP" /> को ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> को ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
 <translation id="427987768447457592">नयाँ ट्याब समूह</translation>
-<translation id="4338724047016295066">निष्क्रिय ट्याबहरू स्वतः बन्द हुने छन्। तपाईं "हिस्ट्री" मा गई जुनसुकै बेला ती ट्याब भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="4371591986692297148">निष्क्रिय</translation>
 <translation id="4460014764210899310">समूह विघटन गर्नुहोस्</translation>
+<translation id="4590027107044272416">तपाईं अब यहाँ नयाँ ट्याब खोल्न सक्नुहुन्छ</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{एउटा निष्क्रिय ट्याब बन्द गर्ने हो?}other{<ph name="TAB_COUNT_MANY" /> वटा निष्क्रिय ट्याब बन्द गर्ने हो?}}</translation>
 <translation id="4648718555153979859">तपाईंका ट्याबहरू यहाँ एकै ठाउँमा समूहबद्ध गरिएको छन्</translation>
 <translation id="4686942373615810936">भर्खरै बनाइएको</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{१ दिनपछि बन्द गर्नुहोस्}other{<ph name="DAY_COUNT_MANY" /> दिनपछि बन्द गर्नुहोस्}}</translation>
@@ -75,6 +78,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> समीक्षा)}other{(<ph name="REVIEWS_COUNT_MANY" /> वटा समीक्षा)}}</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="4870911314065352661">सबै ट्याबहरू बन्द गर्ने हो?</translation>
+<translation id="4871719318659334896">समूह बन्द गर्नुहोस्</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ट्याब बन्द गर्नुहोस्}other{ट्याबहरू बन्द गर्नुहोस्}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> वटा समूह सेभ गरिएका छन् (ट्याबहरू बन्द गरिने छ र समूहहरू मेटाइने छ)</translation>
@@ -100,7 +104,9 @@
 <translation id="5972844218283131174">सबैको चयन रद्द गर्नुहोस्</translation>
 <translation id="6017514345406065928">हरियो</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
+<translation id="6051432659151380973">तपाईंका ट्याब समूहहरू स्वतः सेभ हुन्छन्</translation>
 <translation id="6054741997831917303">यो वस्तुको मूल्य हालसालै घटेर <ph name="PREVIOUS_PRICE" /> बाट <ph name="NEW_PRICE" /> भएको छ</translation>
+<translation id="6082313992897617440">तपाईं तत्कालै <ph name="GROUP_NAME" /> नामक ट्याब समूहको एक्सेस गुमाउनु हुने छ</translation>
 <translation id="6193448654517602979">ट्याबहरू चयन गर्नुहोस्</translation>
 <translation id="6228793724645064692">(स्टोरको रेटिङ)</translation>
 <translation id="6271513594716432922">सबै निष्क्रिय ट्याबहरू बन्द गर्नुहोस्</translation>
@@ -115,7 +121,6 @@
 <translation id="6562820390860419811">ट्याब सारेर बायाँतिर लैजानुहोस्</translation>
 <translation id="6615455863669487791">मलाई देखाउनुहोस्</translation>
 <translation id="6744956528665271406">ग्रुप कलर सम्पादन गर्नुहोस्</translation>
-<translation id="6840760312327750441">ट्याबहरू समूहबद्ध गर्न कुनै ट्याबमा टच एण्ड होल्ड गर्नुहोस्। त्यसपछि, त्यसलाई ड्र्याग गरी अर्को ट्याबमा लैजानुहोस्।</translation>
 <translation id="6856809498882026482">एकभन्दा बढी ट्याब चयन गर्ने मोड लुकाउनुहोस्</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ट्याब सेयर गर्नुहोस्}other{ट्याबहरू सेयर गर्नुहोस्}}</translation>
 <translation id="7129458170538955174">यो स्टोरसम्बन्धी जानकारी स्क्रिनको आधा भाग ओगट्ने गरी खोलिएको छ</translation>
@@ -125,6 +130,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> चयन गरिएको छ</translation>
 <translation id="7326879924029668159">सामान फिर्ता गर्नेसम्बन्धी नीतिका साथै थप जानकारी हेर्नुहोस्</translation>
 <translation id="7352298686197644113">तपाईंले खोल्नुभएका ट्याबहरूमा भएको कुन चाहिँ वस्तुको मूल्य कम छ भन्ने कुरा हेर्नुहोस्</translation>
+<translation id="7421293530411019405">यो ट्याब समूह छाड्ने हो?</translation>
 <translation id="7452985128687107478">ट्याब समूहहरू स्वतः सेभ गरिन्छ र तपाईंका सबै डिभाइसहरूमा अपडेट गरिन्छ</translation>
 <translation id="747459581954555080">सबैलाई पुनर्स्थापना गर्नुहोस्</translation>
 <translation id="753732157349120914">ट्याब स्विचर</translation>
@@ -152,12 +158,15 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब बन्द गर्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> ट्याबहरू बन्द गर्नुहोस्}}</translation>
 <translation id="8398929769197326728">नयाँ फोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
+<translation id="8631711675211020168">सबै जना तत्कालै <ph name="GROUP_NAME" /> नामक ट्याब समूहको एक्सेस गुमाउने छन् र यसलाई सबै डिभाइसहरूबाट मेटाइने छ</translation>
+<translation id="870736955561925754">ट्याब बन्द गर्ने र समूह मेटाउने हो?</translation>
 <translation id="8714939927607906138">अझ कम मूल्य</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8730999928494395583">तपाईंले यी इन्कोग्निटो ट्याबबाट गर्नुभएको क्रियाकलापको विवरण यो डिभाइसबाट हटाइने छ</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> महिनाअघि बनाइएको}other{<ph name="NUM_MONTHS_MANY" /> महिनाअघि बनाइएको}}</translation>
 <translation id="8820741577754260431">आफ्ना ट्याबहरूमा मूल्य घटेको कुरासम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="8887921976452567404">तपाईंका बन्द गरिएका ट्याब र समूहहरू "हालसालैका ट्याबहरू" खण्ड र "ट्याब समूहहरू" खण्डमा गई फेरि खोल्न सकिन्छ।</translation>
+<translation id="8915916167043355778">सबै बन्द गर्नुहोस्</translation>
 <translation id="8926389886865778422">फेरि नसोध्नुहोस्</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
 <translation id="9090098097337832354">यो स्टोरसम्बन्धी जानकारी बन्द गरिएको छ</translation>
@@ -165,6 +174,5 @@
 <translation id="9169594135889675189">नयाँ ट्याबलाई समूहमा थप्नुहोस्</translation>
 <translation id="9216898458513705996">यी ट्याबहरू यो डिभाइसमा खुलै रहने छन् तर <ph name="USER_EMAIL" /> मा साइन इन गरिएका सबै डिभाइसहरूबाट यो समूह मेटाइने छ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
-<translation id="959682366969460160">व्यवस्थित गर्नुहोस्</translation>
 <translation id="992256792861109788">गुलाबी</translation>
 </translationbundle>

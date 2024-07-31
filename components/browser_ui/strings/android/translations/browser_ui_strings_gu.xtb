@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">બંધ કરો</translation>
 <translation id="1044891598689252897">સાઇટ સામાન્ય રીતે કાર્ય કરશે</translation>
 <translation id="1073417869336441572">તમે ત્રીજા પક્ષની કુકીને કેમ મંજૂરી આપી છે તે અમને જણાવીને Chromeને બહેતર બનાવવામાં અમારી સહાય કરો. <ph name="BEGIN_LINK" />પ્રતિસાદ મોકલો<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">કિંમતમાં ઘટાડાનું કાર્ડ છુપાવો</translation>
 <translation id="1178581264944972037">થોભો</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1192844206376121885">આમ કરવાથી <ph name="ORIGIN" /> દ્વારા સ્ટોર કરવામાં આવેલો બધો ડેટા અને કુકી ડિલીટ કરવામાં આવશે.</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">URL ટૂંકી કરી છે</translation>
 <translation id="1448064542941920355">નાનું-મોટું કરવાની ટકાવારી ઘટાડો</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> સાઇટ}one{<ph name="SITE_COUNT" /> સાઇટ}other{<ph name="SITE_COUNT" /> સાઇટ}}</translation>
+<translation id="1500473259453106018">ટૅબ કાર્ડ પર કિંમતમાં ઘટાડાની સૂચનાઓ છુપાવો</translation>
 <translation id="1510341833810331442">સાઇટને તમારા ડિવાઇસ પર ડેટા સાચવવાની મંજૂરી આપવામાં આવતી નથી</translation>
 <translation id="1547123415014299762">ત્રીજા પક્ષની કુકીને મંજૂરી આપવામાં આવી છે</translation>
 <translation id="1568470248891039841">તમે મુલાકાત લેતા હો એવી બધી સાઇટ અન્ય સાઇટમાંનું કન્ટેન્ટ શામેલ કરી શકે છે, ઉદાહરણ તરીકે છબીઓ, જાહેરાતો અને ટેક્સ્ટ. આ અન્ય સાઇટ, તમે જેમ જેમ સાઇટ બ્રાઉઝ કરો તેમ તેમ તમારા વિશે સાચવેલી માહિતીનો ઉપયોગ કરવાની પરવાનગી માગી શકે છે. <ph name="BEGIN_LINK" />શામેલ કરેલા કન્ટેન્ટ વિશે વધુ જાણો<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">સહાય અને પ્રતિસાદ</translation>
 <translation id="2501278716633472235">પાછા જાઓ</translation>
 <translation id="2546283357679194313">કૂકીઝ અને સાઇટ ડેટા</translation>
-<translation id="2550801787432930915">કિંમતમાં ઘટાડાનું કાર્ડ</translation>
 <translation id="2570922361219980984">આ ઉપકરણ માટે સ્થાન ઍક્સેસ પણ બંધ છે. તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
 <translation id="257931822824936280">વિસ્તૃત - સંકુચિત કરવા માટે ક્લિક કરો.</translation>
 <translation id="2586657967955657006">ક્લિપબોર્ડ</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
 <translation id="3232293466644486101">બ્રાઉઝિંગ ડેટા ડિલીટ કરો…</translation>
 <translation id="3242646949159196181">ચાલુ હોય ત્યારે, સાઇટ સાઉન્ડ વગાડી શકે છે. બંધ હોય ત્યારે, સાઇટ સાઉન્ડ વગાડી શકતી નથી.</translation>
+<translation id="3273479183583863618">ટૅબ પર કિંમતમાં ઘટાડાની સૂચનાઓ</translation>
 <translation id="3277252321222022663">સાઇટને સેન્સરના ઍક્સેસની મંજૂરી આપો (સુઝાવ આપેલો છે)</translation>
 <translation id="3285500645985761267">ગ્રૂપમાંની તમારી પ્રવૃત્તિ જોવા માટે સંબંધિત સાઇટને મંજૂરી આપો</translation>
 <translation id="3295019059349372795">ચૅપ્ટર 11: ધ વન્ડરફુલ એમરલ્ડ સિટી ઑફ ઓઝ</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">પાછળ</translation>
 <translation id="3859306556332390985">આગળ કરો</translation>
 <translation id="3895926599014793903">ફરજિયાતપૂર્વક ઝૂમ ચાલુ કરો</translation>
+<translation id="3905475044299942653">ઘણાં નોટિફિકેશન રોકો</translation>
 <translation id="3908288065506437185">છૂપા મોડમાં ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">અમુક સુવિધાઓ કામ કરી શકશે નહીં. સંબંધિત સાઇટ હજી પણ ત્રીજા પક્ષની કુકીનો ઉપયોગ કરી શકે છે.</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">સુરક્ષિત કન્ટેન્ટ</translation>
 <translation id="662080504995468778">પૃષ્ઠ પર રહો</translation>
 <translation id="6653342741369270081">પૂર્ણ સ્ક્રીનથી બહાર નીકળવા માટે 'પાછળ' બટનને દબાવો</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{આ ટૅબ વડે ચાલુ રાખો મૉડ્યૂલને છુપાવો}one{આ ટૅબ વડે ચાલુ રાખો મૉડ્યૂલને છુપાવો}other{આ ટૅબ વડે ચાલુ રાખો મૉડ્યૂલને છુપાવો}}</translation>
 <translation id="6689172468748959065">પ્રોફાઇલ ફોટો</translation>
 <translation id="6697925417670533197">ડાઉનલોડ કરવાનું સક્રિય કરો</translation>
 <translation id="6722828510648505498">ઓળખ સેવાઓના સાઇન ઇન કરવાના સંકેતો બ્લૉક કરો.</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> માટે કોઈ વિકલ્પ પસંદ કરો</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
 <translation id="6818926723028410516">આઇટમ પસંદ કરો</translation>
+<translation id="6840760312327750441">ટૅબનું ગ્રૂપ બનાવવા માટે, ટૅબને સ્પર્શ કરી રાખો. પછી, ટૅબને બીજા ટૅબ પર ખેંચો.</translation>
 <translation id="6864395892908308021">આ ડિવાઇસ NFC વાંચી શકતું નથી</translation>
+<translation id="6870169401250095575">"સલામતી માટે તપાસ" કાર્ડ છુપાવો</translation>
 <translation id="6912998170423641340">બધી સાઇટને ક્લિપબોર્ડ પરની ટેક્સ્ટ અને છબીઓ વાંચવાથી બ્લૉક કરો</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6950072572526089586">તમે મુલાકાત લેતા હો એવી કોઈ સાઇટ, તમે સાઇટ પર જે કરી રહ્યાં હો તે વિશેની માહિતી સાચવી શકે છે, જેથી તે અપેક્ષિત રીતે કામ કરી શકે — ઉદાહરણ તરીકે, તમને કોઈ સાઇટમાં સાઇન ઇન કરી રાખવા કે તમારા શૉપિંગ કાર્ટમાં આઇટમ સાચવવા માટે. સાઇટ ઘણીવાર આ માહિતીને તમારા ડિવાઇસ પર હંગામી રીતે સાચવે છે.</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">સંપર્ક પસંદ કરો</translation>
 <translation id="7990211076305263060">ચાલુ હોય ત્યારે, સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરવાનું પૂછી શકે છે. બંધ હોય ત્યારે, સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરી શકતી નથી.</translation>
 <translation id="8007176423574883786">આ ઉપકરણ માટે બંધ કર્યું</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{"આ ટૅબ સાથે ચાલુ રાખો" કાર્ડ છુપાવો}one{"આ ટૅબ સાથે ચાલુ રાખો" કાર્ડ છુપાવો}other{"આ ટૅબ સાથે ચાલુ રાખો" કાર્ડ છુપાવો}}</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
 <translation id="8042586301629853791">આ પ્રમાણે સૉર્ટ કરો:</translation>
 <translation id="8067883171444229417">વીડિયો ચલાવો</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">આ પેજ જોખમી છે</translation>
 <translation id="930525582205581608">આ સાઇટને ભૂલી જઈએ?</translation>
 <translation id="947156494302904893">તમે મુલાકાત લો છો એ વિવિધ સાઇટ એ વાતની ચકાસણી કરી શકે છે કે તમે જ અસલી વપરાશકર્તા છો અને બૉટ નથી</translation>
+<translation id="959682366969460160">સંગઠિત રહો</translation>
 <translation id="967624055006145463">સ્ટોર કરેલ ડેટા</translation>
 </translationbundle>

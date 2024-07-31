@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Zima</translation>
 <translation id="1044891598689252897">Tovuti zitafanya kazi kama kawaida</translation>
 <translation id="1073417869336441572">Tusaidie kuboresha Chrome kwa kutuambia kwa nini umeruhusu vidakuzi vya mshirika mwingine. <ph name="BEGIN_LINK" />Tuma maoni<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Ficha kadi ya kushuka kwa bei</translation>
 <translation id="1178581264944972037">Sitisha</translation>
 <translation id="1181037720776840403">Ondoa</translation>
 <translation id="1192844206376121885">Hatua hii itafuta data na vidakuzi vyote vilivyohifadhiwa na <ph name="ORIGIN" />.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Usaidizi na maoni</translation>
 <translation id="2501278716633472235">Rudi nyuma</translation>
 <translation id="2546283357679194313">Data ya vidakuzi na tovuti</translation>
-<translation id="2550801787432930915">Kadi ya kushuka kwa bei</translation>
 <translation id="2570922361219980984">Kipengele cha mahali pia kimezimwa kwenye kifaa hiki. Kiwashe katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Imepanuliwa - bofya ili ukunje.</translation>
 <translation id="2586657967955657006">Ubao wa kunakili</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3859306556332390985">Peleka mbele</translation>
 <translation id="3895926599014793903">Lazimisha kuwasha ukuzaji</translation>
+<translation id="3905475044299942653">Komesha arifa nyingi</translation>
 <translation id="3908288065506437185">Zuia vidakuzi vya washirika wengine katika Hali fiche</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Huenda baadhi ya vipengele visifanye kazi. Tovuti zinazohusiana bado zinaweza kutumia vidakuzi vya washirika wengine</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Maudhui yanayolindwa</translation>
 <translation id="662080504995468778">Usiondoke</translation>
 <translation id="6653342741369270081">Bofya kitufe cha 'nyuma' ili uondoke kwenye skrini nzima.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Ficha chaguo la "endelea ukitumia kichupo hiki"}other{Ficha chaguo la "endelea ukitumia vichupo hivi"}}</translation>
 <translation id="6689172468748959065">Picha za wasifu</translation>
 <translation id="6697925417670533197">Faili zinazopakuliwa</translation>
 <translation id="6722828510648505498">Zuia vidokezo vya kuingia katika akaunti kutoka kwa huduma za utambulisho.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251">Teua chaguo la <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6818926723028410516">Chagua vipengee</translation>
+<translation id="6840760312327750441">Ili upange vichupo katika makundi, gusa na ushikilie kichupo. Kisha, kiburute kwenye kichupo kingine.</translation>
 <translation id="6864395892908308021">Kifaa hiki kimeshindwa kusoma NFC</translation>
 <translation id="6912998170423641340">Zuia tovuti zisisome maandishi na picha kutoka ubao wa kunakili</translation>
 <translation id="6945221475159498467">Chagua</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Ukurasa huu ni hatari</translation>
 <translation id="930525582205581608">Ungependa kusahau tovuti hii?</translation>
 <translation id="947156494302904893">Tovuti unazotembelea zinaweza kuthibitisha kuwa wewe ni mtu halisi na si roboti</translation>
+<translation id="959682366969460160">Weka kwa utaratibu</translation>
 <translation id="967624055006145463">Data iliyohifadhiwa</translation>
 </translationbundle>

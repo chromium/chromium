@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">停用</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="1073417869336441572">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome。<ph name="BEGIN_LINK" />傳送意見<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">隱藏價格下跌資訊卡</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1192844206376121885">這會刪除 <ph name="ORIGIN" /> 儲存的所有資料和 Cookie。</translation>
@@ -24,6 +23,7 @@
 <translation id="1415402041810619267">縮短咗網址</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 個網站}other{<ph name="SITE_COUNT" /> 個網站}}</translation>
+<translation id="1500473259453106018">隱藏「在分頁上啟用減價通知」資訊卡</translation>
 <translation id="1510341833810331442">不允許網站在裝置上儲存資料</translation>
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
 <translation id="1568470248891039841">你瀏覽的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。這些其他網站可要求授權，在你瀏覽網站時使用與你相關的既有資料。<ph name="BEGIN_LINK" />進一步瞭解已嵌入的內容<ph name="END_LINK" /></translation>
@@ -91,7 +91,6 @@
 <translation id="2498359688066513246">說明和意見反映</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
-<translation id="2550801787432930915">價格下跌資訊卡</translation>
 <translation id="2570922361219980984">此裝置的位置資訊存取權亦已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
 <translation id="257931822824936280">已展開 - 點擊即可收合。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
@@ -134,6 +133,7 @@
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3232293466644486101">刪除瀏覽資料…</translation>
 <translation id="3242646949159196181">開咗之後，網站可以播放音效。閂咗之後，網站唔可以播放音效。</translation>
+<translation id="3273479183583863618">在分頁上啟用減價通知</translation>
 <translation id="3277252321222022663">允許網站存取感應器 (建議)</translation>
 <translation id="3285500645985761267">允許相關網站查看您在群組中的活動</translation>
 <translation id="3295019059349372795">第 11 章：奧茲國的奇妙翡翠城</translation>
@@ -172,6 +172,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">向前快轉</translation>
 <translation id="3895926599014793903">強制啟用縮放功能</translation>
+<translation id="3905475044299942653">禁止傳送大量通知</translation>
 <translation id="3908288065506437185">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">部分功能可能無法正常運作。相關網站仍可使用第三方 Cookie。</translation>
@@ -349,7 +350,6 @@
 <translation id="6612358246767739896">受保護內容</translation>
 <translation id="662080504995468778">不離開</translation>
 <translation id="6653342741369270081">按下返回按鈕即可退出全螢幕。</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{隱藏「繼續使用此分頁」}other{隱藏「繼續使用這些分頁」}}</translation>
 <translation id="6689172468748959065">個人檔案相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>
 <translation id="6722828510648505498">封鎖來自身分服務的登入提示。</translation>
@@ -359,7 +359,9 @@
 <translation id="6787751205395685251">取用於 <ph name="SITE_NAME" /> 的選項</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6818926723028410516">選取項目</translation>
+<translation id="6840760312327750441">如要將分頁加入群組，請輕觸並按住分頁，然後將它拖曳到其他分頁上。</translation>
 <translation id="6864395892908308021">此裝置無法讀取 NFC</translation>
+<translation id="6870169401250095575">隱藏「安全檢查」資訊卡</translation>
 <translation id="6912998170423641340">禁止網站讀取剪貼簿的文字和圖片</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6950072572526089586">你瀏覽的網站可儲存你在網站上的活動資料，以便正常運作，例如在網站上保持登入狀態或儲存購物車內的商品。網站通常會暫時在裝置上儲存這些資料。</translation>
@@ -427,6 +429,7 @@
 <translation id="7986741934819883144">選取聯絡人</translation>
 <translation id="7990211076305263060">開咗之後，網站可以要求使用麥克風。閂咗之後，網站唔可以使用麥克風。</translation>
 <translation id="8007176423574883786">已為這部裝置關閉</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{隱藏「繼續使用此分頁」資訊卡}other{隱藏「繼續使用這些分頁」資訊卡}}</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8042586301629853791">排序方式：</translation>
 <translation id="8067883171444229417">播放影片</translation>
@@ -515,5 +518,6 @@
 <translation id="9162462602695099906">此頁面不安全</translation>
 <translation id="930525582205581608">要清除此網站的資料嗎？</translation>
 <translation id="947156494302904893">您瀏覽的網站可驗證您是真人，而不是機器人</translation>
+<translation id="959682366969460160">讓所有內容變得井井有條</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 </translationbundle>

@@ -118,6 +118,7 @@
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Angi som bakgrunn</translation>
 <translation id="1578784163189013834">Velg skjermsparerbakgrunn</translation>
+<translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Denne måneden</translation>
 <translation id="1593528591614229756">Sørg for at du velger APN-ene du har fått av mobiloperatøren eller administratoren din. Hvis du velger et APN, deaktiveres eventuelle egendefinerte APN. Ugyldige APN kan forstyrre mobiltilkoblingen. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Forhåndsvisningsbilde</translation>
@@ -178,6 +179,7 @@
 <translation id="1827738518074806965">Kunstgalleri</translation>
 <translation id="1836553715834333258">Systemfarge</translation>
 <translation id="183675228220305365">realisme</translation>
+<translation id="1837537071599385610">Veiledning til forespørsler</translation>
 <translation id="1838374766361614909">Fjern søket</translation>
 <translation id="1840474674287087346">Skrivebordsfarge</translation>
 <translation id="184095011128924488">kreativ</translation>
@@ -192,6 +194,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">sommerfugler</translation>
 <translation id="188114911237521550">Slå av mørk modus</translation>
+<translation id="1884794756658039602">Finn ut mer om etiketter for personer som snakker.</translation>
 <translation id="1885577615937958993">spol medieinnhold fremover</translation>
 <translation id="1887850431809612466">Maskinvareversjon</translation>
 <translation id="189221451253258459">neongrønt</translation>
@@ -238,6 +241,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> bilder</translation>
+<translation id="2156072344042480449">De to nyeste forespørslene. Du kan bare bruke disse forespørslene mens du er på denne siden.</translation>
 <translation id="2157660087437850958">emojivelger</translation>
 <translation id="2157959690810728433">I KØ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv på nytt</translation>
@@ -318,6 +322,8 @@
 <translation id="2538719227433767804">+ <ph name="NUM_HIDDEN_OPTIONS" /> til</translation>
 <translation id="2561093647892030937">sitroner</translation>
 <translation id="2570743873672969996">Kjører test av <ph name="TEST_NAME" /> …</translation>
+<translation id="2575552334616524665">Du kan slå dette på i innstillingene eller via <ph name="THREE_DOTS_MENU_ICON" />-menyen</translation>
+<translation id="2576253868710695442">Dette bruker opptil 2 GB lagringsplass</translation>
 <translation id="2584547424703650812">Skinnende landskap</translation>
 <translation id="2584559707064218956">For å konfigurere nettverket, gå til Innstillinger</translation>
 <translation id="2586146417912237930">blå og indigo</translation>
@@ -334,6 +340,7 @@
 <translation id="2645380101799517405">Kontroller</translation>
 <translation id="2652403576514495859">slå diktering av eller på</translation>
 <translation id="2653659639078652383">Send inn</translation>
+<translation id="2653807227758181366">Beskriv bakgrunnen du vil opprette, eller bruk en eksempelforespørsel</translation>
 <translation id="2654647726140493436">Ikke slå av <ph name="DEVICE_TYPE" /> eller koble fra strømkabelen for <ph name="DEVICE_TYPE" /> mens oppdateringen pågår</translation>
 <translation id="2656001153562991489">Kun på Chromebook Plus</translation>
 <translation id="2665671725390405060">Hør uttalen</translation>
@@ -378,6 +385,7 @@
 <translation id="3017079585324758401">Bakgrunn</translation>
 <translation id="3027578600144895987">Lukk kameraet</translation>
 <translation id="3031560714565892478">Enheten er et videokamera.</translation>
+<translation id="3042927241478734594">Vil du avslutte opptaket?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Sluttpunkt</translation>
 <translation id="3060579846059757016">Omriss</translation>
@@ -410,6 +418,9 @@
 <translation id="3199982728237701504">Dokumentmater (tosidig)</translation>
 <translation id="3201315366910775591">Delte albumer kan oppdateres av andre personer</translation>
 <translation id="3211671540163313381">Tastaturoppsett av styrepiler</translation>
+<translation id="3224812403568276799">Når du tillater dette, bruker Lydopptaker avansert lydanalyse for å registrere forskjellige stemmer automatisk og gi hver av dem en generisk etikett, for eksempel Person 1 og Person 2.
+
+Du kan når som helst slå dette av i innstillingene.</translation>
 <translation id="3226405216343213872">Ser etter skannere</translation>
 <translation id="3226657629376379887">Handlingsmeny for layout</translation>
 <translation id="3227186760713762082">Divider <ph name="CATEGORY_TEXT" />-verdien med <ph name="CONVERSION_RATE" /></translation>
@@ -473,6 +484,7 @@
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="357889014807611375">Wifi med datamåling</translation>
 <translation id="3583278742022654445">Svakt signal. Prøv å flytte deg nærmere Wifi-signalkilden.</translation>
+<translation id="3588034708467091142">Sjekk at du er koblet til internett, og prøv på nytt.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> er det brukervennlige navnet på <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
 <translation id="3600339377155080675">Skjermspeiling</translation>
@@ -548,11 +560,13 @@
 <translation id="4021031199988160623">Bytt til laptopmodus for å teste</translation>
 <translation id="4034824040120875894">Skriver</translation>
 <translation id="4035877632587724847">Ikke tillat</translation>
+<translation id="4042658354407913408">Sammendraget er slått av</translation>
 <translation id="4044093238444069296">Kan ikke kontakte gatewayen</translation>
 <translation id="4046123991198612571">Neste spor</translation>
 <translation id="404928562651467259">ADVARSEL</translation>
 <translation id="4050208988451295487">Noen alternativer:</translation>
 <translation id="4054683689023980771">Laster ned bildet</translation>
+<translation id="4059839844193047929">Hvis du forlater denne siden, avsluttes det nåværende opptaket</translation>
 <translation id="4063039537646912479">lyseblå</translation>
 <translation id="4070799384363688067">anime</translation>
 <translation id="4086271957099059213">Opprett en kontroll til</translation>
@@ -606,6 +620,7 @@
 <translation id="4310735698903592804">Nylige bakgrunner basert på AI-løsninger fra Google</translation>
 <translation id="4320904097188876154">neonrosa</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" />-tasten trykkes på</translation>
+<translation id="4334293042716981313">Du kan også <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />skrive din egen forespørsel<ph name="END_LINK_FREEFORM_SUBPAGE" />.</translation>
 <translation id="4354430579665871434">tast</translation>
 <translation id="4361257691546579041">APN er type standard.</translation>
 <translation id="437294888293595148">Tilbakestill alle snarveier</translation>
@@ -626,6 +641,7 @@
 <translation id="4429881212383817840">Kerberos-saken utløper snart</translation>
 <translation id="4431821876790500265">Se rapporten</translation>
 <translation id="4443192710976771874">rød</translation>
+<translation id="4447592701292766824">Kan ikke lage sammendrag av dette innholdet</translation>
 <translation id="4448096106102522892">øy</translation>
 <translation id="445059817448385655">Gammelt passord</translation>
 <translation id="4453205916657964690">Nettverksmaske</translation>
@@ -652,9 +668,11 @@
 <translation id="456077979087158257">bylandskap</translation>
 <translation id="4561801978359312462">SIM-kortet er låst opp</translation>
 <translation id="4562494484721939086">Ingen tjeneste</translation>
+<translation id="4570558255126759859">Vil du laste ned Gemini-modellen for å oppsummere opptak?</translation>
 <translation id="4573777384450697571">Mislykket – sertifikatet er utløpt</translation>
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
+<translation id="4594021849294327751">Opprett en transkripsjon</translation>
 <translation id="4609350030397390689">Tastaturlysstyrke ned</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Trykk på Enter for å avbryte utskriftsjobben.</translation>
 <translation id="463791356324567266">Avbryter skanningen …</translation>
@@ -727,6 +745,7 @@
 <translation id="4981003703840817201">blå og rosa</translation>
 <translation id="498186245079027698">Sjekk skanneren, og prøv på nytt. Sørg for at det er nok lokal lagringsplass til å lagre skannede filer.</translation>
 <translation id="4982627662315910959">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast som inneholder Shift og én modifikatortast til (Ctrl, Alt eller <ph name="META_KEY" />).</translation>
+<translation id="4983216687482551672">Chromebook-lyd</translation>
 <translation id="4985509611418653372">Kjør</translation>
 <translation id="4987769320337599931">Brannmur</translation>
 <translation id="4988526792673242964">Sider</translation>
@@ -768,6 +787,7 @@
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" /> % er lastet ned</translation>
 <translation id="5222676887888702881">Logg av</translation>
 <translation id="522307662484862935">Ikke ta med e-postadressen</translation>
+<translation id="5223226274641517059">Det vises direktetranskripsjoner mens du tar opp. Du kan når som helst slå dette av i innstillingene.</translation>
 <translation id="5226879510707344687">Eksporter transkripsjonen</translation>
 <translation id="5227902338748591677">Tidsplan for mørkt tema</translation>
 <translation id="5229344016299762883">Avslutt fullskjerm</translation>
@@ -791,6 +811,7 @@
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5318334351163689047">Mislykkede TCP-forespørsler</translation>
+<translation id="53196409393069519">Vil du slå på transkripsjon?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Velg et nytt passord nå</translation>
 <translation id="5333530671332546086">Ukjent portaltilstand</translation>
@@ -849,6 +870,7 @@
 <translation id="5680504961595602662">Surrealistisk <ph name="SURREAL_LANDSCAPE" /> med <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">kirsebær</translation>
 <translation id="5691511426247308406">Familie</translation>
+<translation id="5692395212036914927">Opptakssammendrag og oppretting av navn</translation>
 <translation id="5695599963893094957">Trykk på en valgfri tast på tastaturet. Du kan trykke på opptil fire taster samtidig.</translation>
 <translation id="5701381305118179107">Midtstill</translation>
 <translation id="5703716265115423771">volum ned</translation>
@@ -891,6 +913,7 @@
 <translation id="5928411637936685857">Sletteknapp for <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">Drømmelandskap</translation>
 <translation id="5931523347251946569">Fant ikke filen</translation>
+<translation id="5938286923316838007">Kan ikke lage opptaksnavn for dette innholdet</translation>
 <translation id="5939518447894949180">Tilbakestill</translation>
 <translation id="594552776027197022">Generer tilfeldig nøkkelpar</translation>
 <translation id="5946538341867151940">Du er ikke koblet til ennå. Hvis mobiloperatøren din anbefaler et egendefinert APN, skriver du inn APN-informasjonen ved å velge «+ Nytt APN».</translation>
@@ -929,6 +952,7 @@
 <translation id="6113701710518389813">Oppoverpil</translation>
 <translation id="6116005346231504406">Opprett den første kontrollen</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> og <ph name="NUMBER" /> album til</translation>
+<translation id="6120815036186828722">Lytter etter tale …</translation>
 <translation id="6122191549521593678">Pålogget</translation>
 <translation id="6122277663991249694">Tjeneste for ChromeOS-inndatametode</translation>
 <translation id="6127426868813166163">hvit</translation>
@@ -973,9 +997,11 @@
 <translation id="6327262166342360252">Denne bakgrunnen er laget med AI ved hjelp av denne teksten: «<ph name="PROMPT" />».</translation>
 <translation id="6331191339300272798">Automatisk mørkt tema</translation>
 <translation id="6340526405444716530">Personlig tilpasning</translation>
+<translation id="6348252528297699679">Du kan slå av posisjonen i Innstillinger &gt; Personvern og sikkerhet &gt; Personverninnstillinger &gt; Posisjonstilgang. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Brukernavn og passord</translation>
 <translation id="6352210854422428614">en annen planet</translation>
 <translation id="6359706544163531585">Slå av lyst tema</translation>
+<translation id="6359919876285606596">Denne handlingen er permanent og kan ikke angres</translation>
 <translation id="636850387210749493">Bedriftsregistrering</translation>
 <translation id="6373461326814131011">dam</translation>
 <translation id="6379086450106841622">Berøringsskjerm</translation>
@@ -1084,6 +1110,7 @@
 <translation id="6910312834584889076">Skannerens deksel er åpent. Lukk dekselet, og prøv på nytt.</translation>
 <translation id="6911383237894364323">Kan ikke koble til medietjenere</translation>
 <translation id="6930597342185648547">Om bakgrunnen</translation>
+<translation id="6939667434404433010">Søk på opptaksnavn</translation>
 <translation id="6939766318048400022">Kafé</translation>
 <translation id="6943893908656559156">Ekstern identitet (valgfritt)</translation>
 <translation id="6953137545147683679">gull</translation>
@@ -1156,6 +1183,7 @@
 <translation id="7212547870105584639">Administrer APN-innstillingene for nettverket. APN oppretter en tilkobling mellom et mobilnettverk og internett. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Fastvareoppdateringer for eksterne enheter</translation>
 <translation id="7216409898977639127">Mobiloperatør</translation>
+<translation id="7223952304612664117">Dette gjør at systemtjenester kan bruke Posisjonsnøyaktighet til å fastslå posisjonen din. Posisjonsnøyaktighet bruker informasjon om trådløse signaler og sensorer til å anslå enhetsposisjonen.</translation>
 <translation id="7233782086689993269">Hurtigtasten er gjenopprettet</translation>
 <translation id="725133483556299729">Velg en e-postadresse</translation>
 <translation id="7255187042098209569">rosa og lilla</translation>
@@ -1189,6 +1217,8 @@
 <translation id="7359657277149375382">Filtype</translation>
 <translation id="73631062356239394">Del diagnostikkdata</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378170410161264436">Lydopptaker kan lage transkripsjoner av opptak med tale.
+Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonene.</translation>
 <translation id="7384004438856720753">palass</translation>
 <translation id="7388959671917308825">Innebygd styreflate</translation>
 <translation id="7397270852490618635">Slå av lyst tema</translation>
@@ -1204,6 +1234,7 @@
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">MAC-adresse</translation>
 <translation id="7497215489070763236">Tjenerens CA-sertifikat</translation>
+<translation id="7500205272584643581">Vil du la Lydopptaker registrere og sette etikett på personer som snakker?</translation>
 <translation id="7501957181231305652">eller</translation>
 <translation id="7502658306369382406">IPv6-adresse</translation>
 <translation id="7507061649493508884">En fargerik <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
@@ -1226,6 +1257,7 @@
 <translation id="7613724632293948900">Juster med muse- eller piltastene.</translation>
 <translation id="7618774594543487847">Nøytral</translation>
 <translation id="7620771111601174153">Finn ut mer i Brukerstøtte</translation>
+<translation id="7625095758347640998">AI-bakgrunner</translation>
 <translation id="763165478673169849">Forrige tidspunkt for tilbakestilling</translation>
 <translation id="7633068090678117093">Bakgrunnsbilde</translation>
 <translation id="763873111564339966">indigo</translation>
@@ -1391,6 +1423,7 @@
 <translation id="8498220429738806196">Trafikktellere</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="8503836310948963452">Bare noen få minutter igjen …</translation>
+<translation id="8505011850330200833">Gemini-modellen trenger 2 GB lagringsplass for å behandle transkripsjoner og skrive oppsummeringer</translation>
 <translation id="8508640263392900755">APN-detaljer</translation>
 <translation id="8522687886059337719">Du har nå tilgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bakgrunner<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og en ny <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />skjermsparer<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
@@ -1418,6 +1451,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bruk venstre- eller høyrepilen for å administrere denne funksjonen.</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="871560550817059752">Mislykket – tom for blekk</translation>
+<translation id="8721554916373590179">Eksempelforespørsler</translation>
 <translation id="8723108084122415655">Tidsforsinkelsen for ikke-standardnettverket er over grenseverdien</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8726019395068607495">Stoppet – luken er åpen</translation>
@@ -1427,6 +1461,7 @@
 <translation id="8749478549112817787">Kamerabakgrunn</translation>
 <translation id="8755946156089753497">tårn</translation>
 <translation id="8756235582947991808">Slik lager du innhold med AI – og noen ting du bør huske på</translation>
+<translation id="8760616037557661287">Tidligere forespørsler</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto-album</translation>
 <translation id="8775713578693478175">APN for modem</translation>
@@ -1490,6 +1525,8 @@
 <translation id="9025198690966128418">Bruk som personlig enhet</translation>
 <translation id="902638246363752736">Tastaturinnstillinger</translation>
 <translation id="9028832514430399253">Slå på av/på-knappen for å velge skjermspareralternativene</translation>
+<translation id="9030883440316693822">Vil du slette opptaket?</translation>
+<translation id="9036971622563146214">Resultater</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9045842401566197375">bøker</translation>
 <translation id="9049868303458988905">Lagre APN-knappen er nå aktivert</translation>
@@ -1540,7 +1577,7 @@
 <translation id="966787709310836684">meny</translation>
 <translation id="979450713603643090">Lys rosa</translation>
 <translation id="982713511914535780">Kjør utladingstest</translation>
-<translation id="98515147261107953">Liggende</translation>
+<translation id="98515147261107953">Landskap</translation>
 <translation id="987264212798334818">Generelt</translation>
 <translation id="995062385528875723">Du kan ikke bruke bokstaver med aksenttegn, ikke-latinske bokstaver eller symboler</translation>
 </translationbundle>

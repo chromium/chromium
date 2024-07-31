@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Исклучи</translation>
 <translation id="1044891598689252897">Сајтовите ќе работат нормално</translation>
 <translation id="1073417869336441572">Помогнете ни да го подобриме Chrome така што ќе ни кажете зошто дозволивте колачиња од трети страни. <ph name="BEGIN_LINK" />Испратете повратни информации<ph name="END_LINK" /></translation>
-<translation id="1113435009358629918">Скријте ја картичката за намалување на цената</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1192844206376121885">Ова ќе ги избрише сите податоци и колачиња складирани од сајтот <ph name="ORIGIN" />.</translation>
@@ -91,7 +90,6 @@
 <translation id="2498359688066513246">Помош и повратни информации</translation>
 <translation id="2501278716633472235">Врати се</translation>
 <translation id="2546283357679194313">Колачиња и податоци од сајтот</translation>
-<translation id="2550801787432930915">Картичка за намалување на цената</translation>
 <translation id="2570922361219980984">Пристапот до локацијата е исклучен и за уредов. Вклучете го во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Проширено - кликни да се сокрие.</translation>
 <translation id="2586657967955657006">Табла со исечоци</translation>
@@ -172,6 +170,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Барај понапред</translation>
 <translation id="3895926599014793903">Присилно овозможи зумирање</translation>
+<translation id="3905475044299942653">Сопрете го добивањето многу известувања</translation>
 <translation id="3908288065506437185">Блокирајте колачиња од трети страни во режимот „Инкогнито“</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Некои функции можеби нема да функционираат. Сличните сајтови сепак може да користат колачиња од трети страни.</translation>
@@ -349,7 +348,6 @@
 <translation id="6612358246767739896">Заштитена содржина</translation>
 <translation id="662080504995468778">Остани</translation>
 <translation id="6653342741369270081">Притиснете го копчето за назад за да излезете од цел екран.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Скриј „Продолжете со картичкава“}one{Скриј „Продолжете со картичкиве“}other{Скриј „Продолжете со картичкиве“}}</translation>
 <translation id="6689172468748959065">Фотографии на профилот</translation>
 <translation id="6697925417670533197">Активни преземања</translation>
 <translation id="6722828510648505498">Блокирајте prompt за најавување од услуги за идентификација.</translation>
@@ -359,6 +357,7 @@
 <translation id="6787751205395685251">Изберете опција за <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6818926723028410516">Изберете ставки</translation>
+<translation id="6840760312327750441">За групирање на картичките, допрете и задржете една картичка. Потоа, повлечете ја врз друга картичка.</translation>
 <translation id="6864395892908308021">Уредов не може да чита NFC</translation>
 <translation id="6912998170423641340">Блокирај го читањето текст и слики од привремената меморија за сајтовите</translation>
 <translation id="6945221475159498467">Избери</translation>
@@ -515,5 +514,6 @@
 <translation id="9162462602695099906">Страницава е опасна</translation>
 <translation id="930525582205581608">Да се заборави сајтов?</translation>
 <translation id="947156494302904893">Сајтовите што ги отворате може да потврдат дека сте вистинска личност, а не бот</translation>
+<translation id="959682366969460160">Организирајте се</translation>
 <translation id="967624055006145463">Складирани податоци</translation>
 </translationbundle>
