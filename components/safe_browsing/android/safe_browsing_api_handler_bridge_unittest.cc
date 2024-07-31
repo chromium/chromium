@@ -22,6 +22,7 @@
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,6 +79,9 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
         {safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
          safe_browsing::kSafeBrowsingNewGmsApiForSubresourceFilterCheck},
         {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kMarkAsPhishing,
+        "https://1.example.com,https://examples.com/page1");
   }
 
   void SetUp() override {
@@ -502,6 +506,21 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Timeout) {
       /*expected_threat_attribute=*/std::nullopt,
       /*expected_threat_attribute_count=*/std::nullopt,
       /*expected_response_status=*/std::nullopt);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_FromCommandline) {
+  SafeBrowsingApiHandlerBridge::GetInstance().PopulateArtificialDatabase();
+  GURL url1("https://1.example.com/");
+  GURL url2("https://examples.com/page1");
+
+  RunHashDatabaseUrlCheck(url1,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING,
+                          /*expected_subresource_filter_match=*/{});
+  RunHashDatabaseUrlCheck(url2,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING,
+                          /*expected_subresource_filter_match=*/{});
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, CsdAllowlistCheck) {

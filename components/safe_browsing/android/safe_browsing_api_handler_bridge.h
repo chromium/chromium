@@ -29,7 +29,7 @@ class SafeBrowsingApiHandlerBridge {
   using VerifyAppsResponseCallback =
       base::OnceCallback<void(VerifyAppsEnabledResult)>;
 
-  SafeBrowsingApiHandlerBridge() = default;
+  SafeBrowsingApiHandlerBridge();
 
   ~SafeBrowsingApiHandlerBridge();
 
@@ -39,6 +39,12 @@ class SafeBrowsingApiHandlerBridge {
 
   // Returns a reference to the singleton.
   static SafeBrowsingApiHandlerBridge& GetInstance();
+
+  // Clear any URLs retained from the command-line.
+  void ClearArtificialDatabase();
+
+  // Populates any URLs specified at the command-line.
+  void PopulateArtificialDatabase();
 
   // Makes Native-to-Java call to perform the hash-prefix database check.
   void StartHashDatabaseUrlCheck(ResponseCallback callback,
@@ -111,6 +117,9 @@ class SafeBrowsingApiHandlerBridge {
 
   std::optional<VerifyAppsEnabledResult> verify_apps_enabled_for_testing_ =
       std::nullopt;
+
+  // Set of URLs specified at the command-line to be enforced on as phishing.
+  std::set<GURL> artificially_marked_phishing_urls_;
 };
 
 // Interface allowing simplified interception of calls to

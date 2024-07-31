@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -131,7 +132,7 @@ base::span<const CommandLineSwitchAndThreatType> GetSwitchAndThreatTypes() {
       kCommandLineSwitchAndThreatType[] = {
           {"mark_as_allowlisted_for_phish_guard", CSD_ALLOWLIST},
           {"mark_as_allowlisted_for_real_time", HIGH_CONFIDENCE_ALLOWLIST},
-          {"mark_as_phishing", SOCIAL_ENGINEERING},
+          {switches::kMarkAsPhishing, SOCIAL_ENGINEERING},
           {"mark_as_malware", MALWARE_THREAT},
           {"mark_as_uws", UNWANTED_SOFTWARE}};
   return kCommandLineSwitchAndThreatType;
