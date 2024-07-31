@@ -7161,21 +7161,6 @@
             ]
         }
     ],
-    "DedicatedMediaServiceThread": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DedicatedMediaServiceThread"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultANGLEMetal": [
         {
             "platforms": [
