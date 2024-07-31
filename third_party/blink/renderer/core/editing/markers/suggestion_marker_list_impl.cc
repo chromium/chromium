@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker_list_impl.h"
 
 #include "third_party/blink/renderer/core/editing/markers/overlapping_document_marker_list_editor.h"
@@ -203,11 +198,13 @@ void SuggestionMarkerListImpl::Trace(Visitor* visitor) const {
 }
 
 bool SuggestionMarkerListImpl::RemoveMarkerByTag(int32_t tag) {
-  for (auto* it = markers_.begin(); it != markers_.end(); it++) {
-    if (To<SuggestionMarker>(it->Get())->Tag() == tag) {
-      markers_.erase(it);
+  wtf_size_t posn = 0;
+  for (DocumentMarker* marker : markers_) {
+    if (To<SuggestionMarker>(marker)->Tag() == tag) {
+      markers_.EraseAt(posn, 1);
       return true;
     }
+    posn++;
   }
 
   return false;
@@ -215,11 +212,13 @@ bool SuggestionMarkerListImpl::RemoveMarkerByTag(int32_t tag) {
 
 bool SuggestionMarkerListImpl::RemoveMarkerByType(
     const SuggestionMarker::SuggestionType& type) {
-  for (auto* it = markers_.begin(); it != markers_.end(); it++) {
-    if (To<SuggestionMarker>(it->Get())->GetSuggestionType() == type) {
-      markers_.erase(it);
+  wtf_size_t posn = 0;
+  for (DocumentMarker* marker : markers_) {
+    if (To<SuggestionMarker>(marker)->GetSuggestionType() == type) {
+      markers_.EraseAt(posn, 1);
       return true;
     }
+    posn++;
   }
 
   return false;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/markers/spell_check_marker_list_impl.h"
 
 #include "third_party/blink/renderer/core/editing/markers/sorted_document_marker_list_editor.h"
@@ -34,12 +29,13 @@ void SpellCheckMarkerListImpl::Add(DocumentMarker* marker) {
          const DocumentMarker* marker_to_insert) {
         return marker_in_list->EndOffset() < marker_to_insert->StartOffset();
       });
+  wtf_size_t first_overlapping_index =
+      base::checked_cast<wtf_size_t>(first_overlapping - markers_.begin());
 
   // If this marker does not overlap the one being inserted, insert before it
   // and we are done.
   if (marker->EndOffset() < (*first_overlapping)->StartOffset()) {
-    markers_.insert(
-        static_cast<wtf_size_t>(first_overlapping - markers_.begin()), marker);
+    markers_.insert(first_overlapping_index, marker);
     return;
   }
 
@@ -54,18 +50,20 @@ void SpellCheckMarkerListImpl::Add(DocumentMarker* marker) {
          const Member<DocumentMarker>& marker_in_list) {
         return marker_to_insert->EndOffset() < marker_in_list->StartOffset();
       });
+  wtf_size_t last_overlapping_index =
+      base::checked_cast<wtf_size_t>(last_overlapping - markers_.begin());
 
   marker->SetStartOffset(
       std::min(marker->StartOffset(), (*first_overlapping)->StartOffset()));
-  marker->SetEndOffset(
-      std::max(marker->EndOffset(), (*(last_overlapping - 1))->EndOffset()));
+  marker->SetEndOffset(std::max(
+      marker->EndOffset(), markers_[last_overlapping_index - 1]->EndOffset()));
 
   *first_overlapping = marker;
-  wtf_size_t num_to_erase =
-      static_cast<wtf_size_t>(last_overlapping - (first_overlapping + 1));
-  markers_.EraseAt(
-      static_cast<wtf_size_t>(first_overlapping + 1 - markers_.begin()),
-      num_to_erase);
+  if (last_overlapping_index > first_overlapping_index + 1) {
+    wtf_size_t num_to_erase =
+        last_overlapping_index - (first_overlapping_index + 1);
+    markers_.EraseAt(first_overlapping_index + 1, num_to_erase);
+  }
 }
 
 void SpellCheckMarkerListImpl::Clear() {

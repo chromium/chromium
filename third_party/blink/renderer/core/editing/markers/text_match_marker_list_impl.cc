@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker_list_impl.h"
 
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -138,13 +133,17 @@ bool TextMatchMarkerListImpl::SetTextMatchMarkersActive(unsigned start_offset,
       [](size_t start_offset, const Member<DocumentMarker>& marker) {
         return start_offset < marker->EndOffset();
       });
-  for (auto* it = start; it != markers_.end(); ++it) {
-    DocumentMarker& marker = **it;
+  auto start_position =
+      base::checked_cast<wtf_size_t>(start - markers_.begin());
+  auto num_to_adjust = markers_.size() - start_position;
+  auto sub_span = base::span(markers_).subspan(start_position, num_to_adjust);
+  for (DocumentMarker* marker : sub_span) {
     // Markers are returned in order, so stop if we are now past the specified
     // range.
-    if (marker.StartOffset() >= end_offset)
+    if (marker->StartOffset() >= end_offset) {
       break;
-    To<TextMatchMarker>(marker).SetIsActiveMatch(active);
+    }
+    To<TextMatchMarker>(marker)->SetIsActiveMatch(active);
     doc_dirty = true;
   }
   return doc_dirty;
