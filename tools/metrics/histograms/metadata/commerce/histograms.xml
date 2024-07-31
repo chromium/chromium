@@ -509,8 +509,8 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceInsights.BuyingOptionsClicked"
-    enum="PriceInsightsPriceBucket" expires_after="2024-08-06">
-  <owner>zhiyuancai@chromium.org</owner>
+    enum="PriceInsightsPriceBucket" expires_after="2025-02-06">
+  <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -522,7 +522,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram name="Commerce.PriceInsights.OmniboxIconClicked"
     enum="PriceInsightsIconLabelType" expires_after="2024-12-08">
-  <owner>zhiyuancai@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -534,7 +534,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram name="Commerce.PriceInsights.OmniboxIconShown"
     enum="PriceInsightsIconLabelType" expires_after="2024-12-08">
-  <owner>zhiyuancai@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -545,7 +545,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram name="Commerce.PriceInsights.SidePanelOpenWithMultipleCatalogs"
     enum="Boolean" expires_after="2025-01-26">
-  <owner>zhiyuancai@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -600,7 +600,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 <histogram name="Commerce.PriceTracking.PriceInsightsSidePanel.{Action}"
     enum="PriceInsightsPriceBucket" expires_after="2024-12-24">
   <owner>yuezhanggg@chromium.org</owner>
-  <owner>zhiyuancai@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
   <summary>
     Records when user flips the toggle in price insights side panel to {Action}
     price for this product, and records the current price bucket of the product
@@ -715,7 +715,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram name="Commerce.Subscriptions.TrackResult"
     enum="ShoppingSubscriptionsRequestStatus" expires_after="2024-12-08">
-  <owner>zhiyuancai@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -726,7 +726,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram name="Commerce.Subscriptions.UntrackResult"
     enum="ShoppingSubscriptionsRequestStatus" expires_after="2024-12-08">
-  <owner>zhiyuancai@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
