@@ -55,4 +55,4 @@ enum TriggerRegistrationError {
   kAttributionScopesInvalid = 32,
   kAttributionScopesValueInvalid = 33,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionTriggerRegistrationError)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionTriggerRegistrationError)

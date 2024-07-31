@@ -26,7 +26,7 @@ enum class RegistrationInfoError {
   kInvalidReportHeaderErrors = 2,
   kMaxValue = kInvalidReportHeaderErrors,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionRegistrationInfoError)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionRegistrationInfoError)
 
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationInfo {
   std::optional<Registrar> preferred_platform;

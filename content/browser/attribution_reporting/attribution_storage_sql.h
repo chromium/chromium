@@ -115,7 +115,7 @@ class CONTENT_EXPORT AttributionStorageSql {
     kFailedToInitializeSchema = 4,
     kMaxValue = kFailedToInitializeSchema,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionStorageSqlInitStatus)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionStorageSqlInitStatus)
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -157,7 +157,7 @@ class CONTENT_EXPORT AttributionStorageSql {
     kSourceInvalidRandomizedResponseRate = 31,
     kMaxValue = kSourceInvalidRandomizedResponseRate,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionCorruptReportStatus)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionCorruptReportStatus)
 
   struct DeletionCounts {
     int sources = 0;

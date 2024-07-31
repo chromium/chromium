@@ -80,7 +80,7 @@ enum class DestinationLimitResult {
   kNotAllowed = 2,
   kMaxValue = kNotAllowed,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:AttributionSourceDestinationLimitResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:AttributionSourceDestinationLimitResult)
 
 DestinationLimitResult GetDestinationLimitResult(
     const std::vector<StoredSource::Id>& sources_to_deactivate) {
@@ -124,7 +124,7 @@ enum class AttributionResult {
   kBoth = 2,
   kMaxValue = kBoth,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionAttributionResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionAttributionResult)
 
 void RecordAttributionResult(AttributionResult result) {
   base::UmaHistogramEnumeration("Conversions.AttributionResult", result);

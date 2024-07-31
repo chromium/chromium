@@ -49,7 +49,7 @@ enum class Status {
   kExternalError = 2,
   kMaxValue = kExternalError
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionReportStatus)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionReportStatus)
 
 #define NETWORK_HISTOGRAM(suffix, hist_func, is_debug_report, \
                           has_trigger_context_id, value)      \

@@ -48,4 +48,4 @@ enum DebugDataType {
   kSourceDestinationPerDayRateLimit = 36,
   kSourceDestinationLimitReplaced = 37,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionVerboseDebugReportType)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionVerboseDebugReportType)

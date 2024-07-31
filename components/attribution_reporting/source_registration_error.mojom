@@ -72,4 +72,4 @@ enum SourceRegistrationError {
   kAttributionScopesInvalid = 46,
   kAttributionScopesValueInvalid = 47,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionSourceRegistrationError)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionSourceRegistrationError)

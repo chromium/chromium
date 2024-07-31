@@ -122,7 +122,7 @@ enum class ConversionReportSendOutcome {
   kFailedToAssemble = 3,
   kMaxValue = kFailedToAssemble,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionReportSendOutcome)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionReportSendOutcome)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -135,7 +135,7 @@ enum class ConversionReportSendRetryCount {
   kFailed = 3,
   kMaxValue = kFailed,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionReportSendRetryCount)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionReportSendRetryCount)
 
 const base::TimeDelta kPrivacySandboxAttestationsTimeout = base::Minutes(5);
 

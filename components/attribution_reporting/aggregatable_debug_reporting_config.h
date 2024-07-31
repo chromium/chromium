@@ -35,7 +35,7 @@ enum AggregatableDebugReportingConfigError {
   kAggregationCoordinatorOriginInvalid = 7,
   kMaxValue = kAggregationCoordinatorOriginInvalid,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionAggregatableDebugReportingRegistrationError)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionAggregatableDebugReportingRegistrationError)
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
     AggregatableDebugReportingContribution {

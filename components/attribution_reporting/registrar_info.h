@@ -31,7 +31,7 @@ enum class IssueType {
   kMinValue = kWebAndOsHeaders,
   kMaxValue = kNoOsHeader,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionRegistrationRegistrarIssue)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionRegistrationRegistrarIssue)
 
 using IssueTypes =
     base::EnumSet<IssueType, IssueType::kMinValue, IssueType::kMaxValue>;

@@ -14,4 +14,4 @@ enum SourceRegistrationTimeConfig {
   kInclude = 0,
   kExclude = 1,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:SourceRegistrationTimeConfig)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:SourceRegistrationTimeConfig)

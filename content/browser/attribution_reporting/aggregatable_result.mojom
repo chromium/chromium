@@ -27,4 +27,4 @@ enum AggregatableResult {
   kReportWindowPassed = 12,
   kExcessiveReports = 13,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionCreateAggregatableReportStatus)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionCreateAggregatableReportStatus)
