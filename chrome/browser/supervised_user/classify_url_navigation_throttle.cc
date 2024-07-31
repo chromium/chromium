@@ -41,6 +41,18 @@ ClassifyUrlNavigationThrottle::WillProcessRequest() {
     return NavigationThrottle::CANCEL;
   }
   CheckURL();
+
+  // It is possible that check was synchronous. If that's the case,
+  // short-circuit and show the interstitial immediately, also breaking the
+  // redirect chain.
+  if (auto blocking_check = FirstBlockingCheck();
+      blocking_check != checks_.end()) {
+    // Defer navigation for the duration of interstitial.
+    ScheduleInterstitial(*blocking_check);
+    deferred_ = true;
+    return NavigationThrottle::DEFER;
+  }
+
   return NavigationThrottle::PROCEED;
 }
 
@@ -152,9 +164,14 @@ void ClassifyUrlNavigationThrottle::OnURLCheckDone(
     return;
   }
 
+  // Checks are completed before needed
   if (!deferred_) {
-    // Checks are completed before needed - WillProcessResponse will pick up.
     waiting_for_process_response_.emplace();
+
+    // If behavior == FilteringBehavior::kAllow then WillProcessResponse will
+    // eventually pick up. Otherwise, if the call is synchronous, the calling
+    // request or redirect event will test if the navigation should be blocked
+    // immediately.
     return;
   }
 

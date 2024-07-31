@@ -102,9 +102,7 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
 
   std::unique_ptr<content::NavigationThrottle> throttle =
       CreateNavigationThrottle(blocked_url);
-  ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
-  ASSERT_EQ(content::NavigationThrottle::DEFER,
-            throttle->WillProcessResponse());
+  ASSERT_EQ(content::NavigationThrottle::DEFER, throttle->WillStartRequest());
 
   histogram_tester()->ExpectBucketCount(
       kSupervisedUserTopLevelURLFilteringResultHistogramName,
@@ -118,9 +116,7 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
 
   std::unique_ptr<content::NavigationThrottle> throttle =
       CreateNavigationThrottle(GURL(kExampleURL));
-  ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
-  ASSERT_EQ(content::NavigationThrottle::DEFER,
-            throttle->WillProcessResponse());
+  ASSERT_EQ(content::NavigationThrottle::DEFER, throttle->WillStartRequest());
 
   histogram_tester()->ExpectBucketCount(
       kSupervisedUserTopLevelURLFilteringResultHistogramName,
@@ -141,9 +137,7 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
 
   std::unique_ptr<content::NavigationThrottle> throttle =
       CreateNavigationThrottle(GURL(kExampleURL));
-  ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
-  ASSERT_EQ(content::NavigationThrottle::DEFER,
-            throttle->WillProcessResponse());
+  ASSERT_EQ(content::NavigationThrottle::DEFER, throttle->WillStartRequest());
 
   histogram_tester()->ExpectBucketCount(
       kSupervisedUserTopLevelURLFilteringResultHistogramName,
