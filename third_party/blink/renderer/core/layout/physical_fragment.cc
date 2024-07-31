@@ -945,10 +945,11 @@ void PhysicalFragment::AddOutlineRectsForDescendant(
     // may have transforms and so we have to go through LocalToAncestorRects?
     if (descendant_box->HasLayer()) {
       DCHECK(descendant_layout_object);
-      auto* descendant_collector = collector.ForDescendantCollector();
+      std::unique_ptr<OutlineRectCollector> descendant_collector =
+          collector.ForDescendantCollector();
       descendant_box->AddOutlineRects(PhysicalOffset(), outline_type,
                                       *descendant_collector);
-      collector.Combine(descendant_collector, *descendant_layout_object,
+      collector.Combine(descendant_collector.get(), *descendant_layout_object,
                         containing_block, additional_offset);
       return;
     }

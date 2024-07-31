@@ -386,11 +386,11 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
   }
 
   if (descendant.HasLayer()) {
-    OutlineRectCollector* descendant_collector =
+    std::unique_ptr<OutlineRectCollector> descendant_collector =
         collector.ForDescendantCollector();
     descendant.AddOutlineRects(*descendant_collector, nullptr, PhysicalOffset(),
                                include_block_overflows);
-    collector.Combine(descendant_collector, descendant, this,
+    collector.Combine(descendant_collector.get(), descendant, this,
                       additional_offset);
     return;
   }
