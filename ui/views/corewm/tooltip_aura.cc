@@ -166,9 +166,9 @@ void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds,
                                       const ui::OwnedWindowAnchor& anchor) {
   DCHECK(!widget_);
   DCHECK(tooltip_window_);
-  widget_ = new TooltipWidget;
+  widget_ = std::make_unique<TooltipWidget>();
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_TOOLTIP);
   // For aura, since we set the type to TYPE_TOOLTIP, the widget will get
   // auto-parented to the right container.
@@ -193,9 +193,8 @@ void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds,
 
 void TooltipAura::DestroyWidget() {
   if (widget_) {
-    widget_->RemoveObserver(this);
     widget_->Close();
-    widget_ = nullptr;
+    widget_.reset();
   }
 }
 
@@ -231,7 +230,6 @@ void TooltipAura::Update(aura::Window* window,
                                  anchor_point, trigger, &anchor);
   CreateTooltipWidget(bounds, anchor);
   widget_->SetTooltipView(std::move(new_tooltip_view));
-  widget_->AddObserver(this);
 }
 
 void TooltipAura::Show() {
@@ -288,14 +286,6 @@ void TooltipAura::Hide() {
 
 bool TooltipAura::IsVisible() {
   return widget_ && widget_->IsVisible();
-}
-
-void TooltipAura::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK_EQ(widget_, widget);
-  if (widget_)
-    widget_->RemoveObserver(this);
-  widget_ = nullptr;
-  tooltip_window_ = nullptr;
 }
 
 }  // namespace views::corewm
