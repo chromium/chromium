@@ -61,6 +61,13 @@ class ASH_EXPORT PinContainerView : public views::View {
   std::string GetObjectName() const override;
   void RequestFocus() override;
 
+  // Enables or disables the following UI elements:
+  // - View
+  // - Auth input row
+  // No "Get" function is needed since the state is the same as
+  // the GetEnabled return value.
+  void SetInputEnabled(bool enabled);
+
   // Clear the textfield and set the display text button to hide state.
   void ResetState();
 
