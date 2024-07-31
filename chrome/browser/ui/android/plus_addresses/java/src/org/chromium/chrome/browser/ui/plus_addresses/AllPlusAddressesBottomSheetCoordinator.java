@@ -12,6 +12,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -49,13 +50,16 @@ class AllPlusAddressesBottomSheetCoordinator {
     }
 
     AllPlusAddressesBottomSheetCoordinator(
-            Context context, BottomSheetController sheetController, Delegate delegate) {
+            Context context,
+            BottomSheetController sheetController,
+            Delegate delegate,
+            FaviconHelper helper) {
         PropertyModel model = AllPlusAddressesBottomSheetProperties.createDefaultModel();
         mMeditor = new AllPlusAddressesBottomSheetMediator(model, delegate);
         AllPlusAddressesBottomSheetView view =
                 new AllPlusAddressesBottomSheetView(context, sheetController);
 
-        view.setSheetItemListAdapter(createSheetItemListAdapter(model.get(PLUS_PROFILES)));
+        view.setSheetItemListAdapter(createSheetItemListAdapter(model.get(PLUS_PROFILES), helper));
         PropertyModelChangeProcessor.create(
                 model,
                 view,
@@ -63,12 +67,15 @@ class AllPlusAddressesBottomSheetCoordinator {
     }
 
     @VisibleForTesting
-    static RecyclerView.Adapter createSheetItemListAdapter(ModelList profiles) {
+    static RecyclerView.Adapter createSheetItemListAdapter(
+            ModelList profiles, FaviconHelper helper) {
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(profiles);
         adapter.registerType(
                 PLUS_PROFILE,
                 AllPlusAddressesBottomSheetViewBinder::createPlusAddressView,
-                AllPlusAddressesBottomSheetViewBinder::bindPlusAddressView);
+                (model, view, key) ->
+                        AllPlusAddressesBottomSheetViewBinder.bindPlusAddressView(
+                                model, view, key, helper));
         return adapter;
     }
 

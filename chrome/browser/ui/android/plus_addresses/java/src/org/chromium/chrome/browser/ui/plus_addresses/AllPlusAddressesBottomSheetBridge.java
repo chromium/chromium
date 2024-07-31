@@ -4,11 +4,18 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import android.content.Context;
+
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -16,21 +23,40 @@ import org.chromium.ui.base.WindowAndroid;
 public class AllPlusAddressesBottomSheetBridge
         implements AllPlusAddressesBottomSheetCoordinator.Delegate {
     private long mNativeView;
+
     private final AllPlusAddressesBottomSheetCoordinator mAllPlusAddressesBottomSheetCoordinator;
 
-    AllPlusAddressesBottomSheetBridge(long nativeView, WindowAndroid windowAndroid) {
+    AllPlusAddressesBottomSheetBridge(
+            long nativeView,
+            Context context,
+            BottomSheetController bottomSheetController,
+            Profile profile) {
         mNativeView = nativeView;
         mAllPlusAddressesBottomSheetCoordinator =
                 new AllPlusAddressesBottomSheetCoordinator(
-                        windowAndroid.getActivity().get(),
-                        BottomSheetControllerProvider.from(windowAndroid),
-                        /* delegate= */ this);
+                        context,
+                        bottomSheetController,
+                        /* delegate= */ this,
+                        FaviconHelper.create(context, profile));
     }
 
     @CalledByNative
-    private static AllPlusAddressesBottomSheetBridge create(
-            long nativeView, WindowAndroid windowAndroid) {
-        return new AllPlusAddressesBottomSheetBridge(nativeView, windowAndroid);
+    private static @Nullable AllPlusAddressesBottomSheetBridge create(
+            long nativeView, @Nullable WindowAndroid windowAndroid, Profile profile) {
+        if (windowAndroid == null) {
+            return null;
+        }
+        Context context = windowAndroid.getActivity().get();
+        if (context == null) {
+            return null;
+        }
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        if (bottomSheetController == null) {
+            return null;
+        }
+        return new AllPlusAddressesBottomSheetBridge(
+                nativeView, context, bottomSheetController, profile);
     }
 
     @CalledByNative
@@ -45,8 +71,10 @@ public class AllPlusAddressesBottomSheetBridge
 
     @Override
     public void onPlusAddressSelected(String plusAddress) {
-        assert mNativeView != 0 : "The native side is already dismissed";
-        AllPlusAddressesBottomSheetBridgeJni.get().onPlusAddressSelected(mNativeView, plusAddress);
+        if (mNativeView != 0) { // The native side is already dismissed.
+            AllPlusAddressesBottomSheetBridgeJni.get()
+                    .onPlusAddressSelected(mNativeView, plusAddress);
+        }
     }
 
     @Override

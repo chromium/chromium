@@ -38,6 +38,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -59,6 +60,7 @@ public class AllPlusAddressesBottomSheetModuleTest {
 
     @Captor private ArgumentCaptor<AllPlusAddressesBottomSheetView> mViewCaptor;
 
+    @Mock private FaviconHelper mFaviconHelper;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private AllPlusAddressesBottomSheetCoordinator.Delegate mDelegate;
 
@@ -72,7 +74,7 @@ public class AllPlusAddressesBottomSheetModuleTest {
         mActivity = Robolectric.setupActivity(TestActivity.class);
         mCoordinator =
                 new AllPlusAddressesBottomSheetCoordinator(
-                        mActivity, mBottomSheetController, mDelegate);
+                        mActivity, mBottomSheetController, mDelegate, mFaviconHelper);
         mUIInfo = new AllPlusAddressesBottomSheetUIInfo();
         mUIInfo.setPlusProfiles(List.of(PROFILE_1));
 
