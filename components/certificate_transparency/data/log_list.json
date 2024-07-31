@@ -1,6 +1,6 @@
 {
-  "version": "39.10",
-  "log_list_timestamp": "2024-07-30T12:54:47Z",
+  "version": "40.1",
+  "log_list_timestamp": "2024-07-31T12:55:51Z",
   "operators": [
     {
       "name": "Google",
@@ -577,6 +577,70 @@
           "temporal_interval": {
             "start_inclusive": "2025-07-01T00:00:00Z",
             "end_exclusive": "2026-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo 'Mammoth2026h1'",
+          "log_id": "JS+Uwisp6W6fQRpyBytpXFtS/5epDSVAu/zcUexN7gs=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnssMilHMiuILzoXmr00x2xtqTP2weWuZl8Bd+25FUB1iqsafm2sFPaKrK12Im1Ao4p5YpaX6+eP6FSXjFBMyxA==",
+          "url": "https://mammoth2026h1.ct.sectigo.com/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-07-30T04:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-01-01T00:00:00Z",
+            "end_exclusive": "2026-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo 'Mammoth2026h2'",
+          "log_id": "lLHBirDQV8R74KwEDh8svI3DdXJ7yVHyClJhJoY7pzw=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7INh8te0u+TkO+vIY3WYz2GQYxQ9XyLfdLpQp1ibaX3mY4lt2ddRhD/4AtjI/8KXceV+J/VysY8kJ1cKDXTAtg==",
+          "url": "https://mammoth2026h2.ct.sectigo.com/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-07-30T04:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-07-01T00:00:00Z",
+            "end_exclusive": "2027-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo 'Sabre2026h1'",
+          "log_id": "VmzVo3a+g9/jQrZ1xJwjJJinabrDgsurSaOHfZqzLQE=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEhCa8Nr3YjTyHnuAQr82U2de5UYA0fvdYXHPq6wmTuBB7kJx9x82WQ+1TbpUhRmdR8N62yZ6q4oBtziWBNNdqYA==",
+          "url": "https://sabre2026h1.ct.sectigo.com/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-07-30T04:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-01-01T00:00:00Z",
+            "end_exclusive": "2026-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo 'Sabre2026h2'",
+          "log_id": "H1bRq5RwSkHdP+r99GmTVTAsFDG/5hNGCJ//rnldzC8=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzjXK7DkHgtp3J4bk8n7F3Djym6mrjKfA7YMePmobwPCVVroyM0x1fAkH6eE+ZTVj8Em+ctGqna99CMS0jVk9cw==",
+          "url": "https://sabre2026h2.ct.sectigo.com/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2024-07-30T04:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-07-01T00:00:00Z",
+            "end_exclusive": "2027-01-01T00:00:00Z"
           }
         }
       ]
