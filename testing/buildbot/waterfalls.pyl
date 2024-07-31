@@ -1611,6 +1611,9 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
+        'mixins': [
+          'skylab-cft',
+        ],
         'test_suites': {
           'skylab_tests': 'chromeos_jacuzzi_rel_skylab_tests',
         },
@@ -1620,6 +1623,9 @@
       'chromeos-octopus-rel': {
         'additional_compile_targets': [
           'chromiumos_preflight',
+        ],
+        'mixins': [
+          'skylab-cft',
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_octopus_rel_skylab_tests',
@@ -1636,6 +1642,9 @@
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel_gtest',
         },
+        'mixins': [
+          'skylab-cft',
+        ],
         'os_type': 'chromeos'
       },
       'lacros-amd64-generic-rel-non-skylab': {
@@ -1652,6 +1661,9 @@
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel_tast',
         },
+        'mixins': [
+          'skylab-cft',
+        ],
         'os_type': 'chromeos'
       },
       'lacros-arm-generic-rel': {
@@ -1675,6 +1687,9 @@
       'lacros-arm64-generic-rel-skylab': {
         'additional_compile_targets': [
           'chrome',
+        ],
+        'mixins': [
+          'skylab-cft',
         ],
         'test_suites': {
           'skylab_tests': 'lacros_arm64_generic_rel_skylab',
@@ -7075,6 +7090,9 @@
       'lacros-amd64-generic-rel-non-skylab': {
         'additional_compile_targets': [
           'chrome',
+        ],
+        'mixins': [
+          'skylab-cft',
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
