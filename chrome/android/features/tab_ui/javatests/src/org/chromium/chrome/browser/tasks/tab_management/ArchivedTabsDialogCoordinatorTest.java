@@ -7,11 +7,15 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -576,6 +580,37 @@ public class ArchivedTabsDialogCoordinatorTest {
     public void testContentDescription() {
         onView(withContentDescription(R.string.accessibility_tab_selection_editor_back_button));
         onView(withContentDescription(R.string.accessibility_tab_selection_editor));
+    }
+
+    @Test
+    @MediumTest
+    public void testBottomShadowView() throws Exception {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        addArchivedTab(new GURL("https://google.com"), "test 3");
+        addArchivedTab(new GURL("https://google.com"), "test 4");
+        addArchivedTab(new GURL("https://google.com"), "test 5");
+        addArchivedTab(new GURL("https://google.com"), "test 6");
+        addArchivedTab(new GURL("https://google.com"), "test 7");
+        addArchivedTab(new GURL("https://google.com"), "test 8");
+        addArchivedTab(new GURL("https://google.com"), "test 9");
+        addArchivedTab(new GURL("https://google.com"), "test 10");
+        addArchivedTab(new GURL("https://google.com"), "test 11");
+        showDialog(11);
+        onView(withText("11 inactive tabs")).check(matches(isDisplayed()));
+        mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(11);
+
+        // When there is more than a page of tabs, then the bottom container should have a shadow.
+        onView(withId(R.id.close_all_tabs_button_container_shadow)).check(matches(isDisplayed()));
+
+        // When the recycler view is scrolled all the way down, the shadow should be hidden.
+        onView(
+                        allOf(
+                                isDescendantOfA(withId(R.id.tab_list_editor_container)),
+                                withId(R.id.tab_list_recycler_view)))
+                .perform(scrollToPosition(10));
+        onView(withId(R.id.close_all_tabs_button_container_shadow))
+                .check(matches(not(isDisplayed())));
     }
 
     private void showDialog(int numTabs) {

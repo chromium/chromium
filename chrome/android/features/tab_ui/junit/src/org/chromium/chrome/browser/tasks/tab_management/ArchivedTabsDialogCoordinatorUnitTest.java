@@ -17,6 +17,7 @@ import android.view.ContextThemeWrapper;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -83,6 +84,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private OnTabSelectingListener mOnTabSelectingListener;
     @Mock private TabArchiveSettings mTabArchiveSettings;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private RecyclerView mRecyclerView;
 
     private Context mContext;
     private ArchivedTabsDialogCoordinator mCoordinator;
@@ -110,6 +112,10 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         mTabArchiveSettings,
                         mModalDialogManager);
         mCoordinator.setTabListEditorCoordinatorForTesting(mTabListEditorCoordinator);
+        RecyclerView recyclerView = new RecyclerView(mContext);
+        recyclerView.setId(R.id.tab_list_recycler_view);
+        ((ViewGroup) mCoordinator.getViewForTesting().findViewById(R.id.tab_list_editor_container))
+                .addView(recyclerView);
     }
 
     private void setUpMocks() {

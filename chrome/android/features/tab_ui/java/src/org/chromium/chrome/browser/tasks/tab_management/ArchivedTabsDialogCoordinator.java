@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Function;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -47,6 +48,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.FadingShadow;
+import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -187,6 +190,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             new TabListEditorCoordinator.LifecycleObserver() {
                 @Override
                 public void willHide() {
+                    mRecyclerView.removeOnScrollListener(mRecyclerScrollListener);
                     mRootView.removeView(mView);
                     mSnackbarManager.popParentViewFromOverrideStack(mSnackbarOverrideToken);
                 }
@@ -194,6 +198,18 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 @Override
                 public void didHide() {
                     ArchivedTabsDialogCoordinator.this.hideInternal();
+                }
+            };
+
+    private final RecyclerView.OnScrollListener mRecyclerScrollListener =
+            new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {}
+
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    mShadowView.setVisibility(
+                            recyclerView.canScrollVertically(1) ? View.VISIBLE : View.GONE);
                 }
             };
 
@@ -211,8 +227,10 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull UndoBarController mUndoBarController;
     private final @NonNull ActionConfirmationDialog mActionConfirmationDialog;
+    private final @NonNull ViewGroup mView;
+    private final @NonNull FadingShadowView mShadowView;
 
-    private ViewGroup mView;
+    private RecyclerView mRecyclerView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private OnTabSelectingListener mOnTabSelectingListener;
@@ -272,6 +290,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                 .inflate(R.layout.archived_tabs_dialog, mRootView, false);
         mView.findViewById(R.id.close_all_tabs_button)
                 .setOnClickListener(this::onCloseAllInactiveTabsButtonClicked);
+        mShadowView = mView.findViewById(R.id.close_all_tabs_button_container_shadow);
+        mShadowView.init(
+                mContext.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_BOTTOM);
         mActionConfirmationDialog = new ActionConfirmationDialog(mContext, mModalDialogManager);
     }
 
@@ -306,6 +327,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mTabListEditorCoordinator.overrideContentDescriptions(
                 R.string.accessibility_archived_tabs_dialog,
                 R.string.accessibility_archived_tabs_dialog_back_button);
+
+        mRecyclerView = mView.findViewById(R.id.tab_list_recycler_view);
+        mRecyclerView.addOnScrollListener(mRecyclerScrollListener);
 
         // Register the dialog to handle back press events.
         mBackPressManager.addHandler(controller, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);
@@ -546,5 +570,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
     TabListEditorCoordinator.LifecycleObserver getTabListEditorLifecycleObserver() {
         return mTabListEditorLifecycleObserver;
+    }
+
+    View getViewForTesting() {
+        return mView;
     }
 }
