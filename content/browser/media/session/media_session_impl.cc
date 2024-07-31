@@ -1675,13 +1675,21 @@ MediaSessionServiceImpl* MediaSessionImpl::ComputeServiceForRouting() {
     min_depth = depth;
   }
 
-  // If we don't have a suitable frame and the topmost frame has a
-  // MediaSessionService, then use that.
+  // If we don't have a suitable frame yet, then take the topmost frame that has
+  // a MediaSessionService.
   if (!best_frame && base::FeatureList::IsEnabled(
                          blink::features::kMediaSessionEnterPictureInPicture)) {
-    RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
-    if (IsServiceActiveForRenderFrameHost(main_rfh)) {
-      best_frame = main_rfh;
+    // `FrameTree::Nodes()` iterates in breadth-first order, so this is
+    // guaranteed to find the topmost (or tied topmost) frame with an active
+    // MediaSessionService.
+    for (FrameTreeNode* node : static_cast<WebContentsImpl*>(web_contents())
+                                   ->GetPrimaryFrameTree()
+                                   .Nodes()) {
+      RenderFrameHost* rfh = node->current_frame_host();
+      if (IsServiceActiveForRenderFrameHost(rfh)) {
+        best_frame = rfh;
+        break;
+      }
     }
   }
 
