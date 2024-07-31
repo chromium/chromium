@@ -476,6 +476,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDeleteAddressProfile:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kFillEverythingFromAddressProfile:

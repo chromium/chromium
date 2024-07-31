@@ -110,6 +110,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kMixedFormMessage";
     case SuggestionType::kDevtoolsTestAddresses:
       return "kDevtoolsTestAddresses";
+    case SuggestionType::kDevtoolsTestAddressByCountry:
+      return "kDevtoolsTestAddressByCountry";
     case SuggestionType::kDevtoolsTestAddressEntry:
       return "kDevtoolsTestAddressEntry";
   }

@@ -768,11 +768,17 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
   if (test_addresses.empty()) {
     return std::nullopt;
   }
-  Suggestion suggestion(u"Devtools", SuggestionType::kDevtoolsTestAddresses);
-  suggestion.labels = {{Suggestion::Text(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_TEST_DATA))}};
+  Suggestion suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_DEVELOPER_TOOLS),
+                        SuggestionType::kDevtoolsTestAddresses);
   suggestion.icon = Suggestion::Icon::kCode;
   suggestion.is_acceptable = false;
+  suggestion.apply_deactivated_style = true;
+  suggestion.children.emplace_back(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_TEST_ADDRESS_BY_COUNTRY),
+      SuggestionType::kDevtoolsTestAddressByCountry);
+  suggestion.children.back().is_acceptable = false;
+  suggestion.children.back().apply_deactivated_style = true;
+  suggestion.children.emplace_back(SuggestionType::kSeparator);
   for (const AutofillProfile& test_address : test_addresses) {
     const std::u16string test_address_country =
         test_address.GetInfo(ADDRESS_HOME_COUNTRY, locale);
@@ -1253,8 +1259,7 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
                                           client.GetPersonalDataManager()
                                               ->address_data_manager()
                                               .app_locale())) {
-      suggestions.insert(suggestions.begin(),
-                         std::move(*test_addresses_suggestion));
+      suggestions.push_back(std::move(*test_addresses_suggestion));
     }
   }
   if (suggestions.empty()) {

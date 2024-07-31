@@ -197,6 +197,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDeleteAddressProfile:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kFillEverythingFromAddressProfile:
@@ -549,6 +550,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddresses:
       break;
     case SuggestionType::kTitle:
@@ -587,7 +589,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kDeleteAddressProfile:
-    case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressEntry:
       DidAcceptAddressSuggestion(suggestion, position);
       break;
@@ -712,6 +713,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kPasswordAccountStorageOptIn:
     case SuggestionType::kPasswordAccountStorageReSignin:
     case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPasswordFieldByFieldFilling:
@@ -795,6 +798,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressEntry:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:

@@ -1885,16 +1885,23 @@ TEST_F(AddressSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[1].type, SuggestionType::kSeparator);
   EXPECT_EQ(suggestions[2].type, SuggestionType::kManageAddress);
 
-  EXPECT_EQ(suggestions[0].main_text.value, u"Devtools");
-  EXPECT_THAT(suggestions[0], EqualLabels({{u"Address test data"}}));
+  EXPECT_EQ(suggestions[0].main_text.value, u"Developer tools");
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kCode);
-  EXPECT_EQ(suggestions[0].children.size(), 1u);
+  EXPECT_EQ(suggestions[0].children.size(), 3u);
   EXPECT_FALSE(suggestions[0].is_acceptable);
 
-  const Suggestion& child = suggestions[0].children.back();
-  EXPECT_EQ(child.main_text.value, u"United States");
-  EXPECT_EQ(child.GetBackendId<Suggestion::Guid>().value(), profile.guid());
-  EXPECT_EQ(child.type, SuggestionType::kDevtoolsTestAddressEntry);
+  // The suggestion should have 3 children:
+  // 1. Gives users feedback about what the children suggestions mean.
+  // 2. Line separator.
+  // 3. The actual test address for the US.
+  EXPECT_EQ(suggestions[0].children[0].type,
+            SuggestionType::kDevtoolsTestAddressByCountry);
+  EXPECT_EQ(suggestions[0].children[1].type, SuggestionType::kSeparator);
+  const Suggestion& test_address_child = suggestions[0].children.back();
+  EXPECT_EQ(test_address_child.main_text.value, u"United States");
+  EXPECT_EQ(test_address_child.GetBackendId<Suggestion::Guid>().value(),
+            profile.guid());
+  EXPECT_EQ(test_address_child.type, SuggestionType::kDevtoolsTestAddressEntry);
 }
 
 TEST_F(AddressSuggestionGeneratorTest,
