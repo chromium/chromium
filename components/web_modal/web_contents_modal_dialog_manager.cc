@@ -59,6 +59,16 @@ void WebContentsModalDialogManager::FocusTopmostDialog() const {
   child_dialogs_.front().manager->Focus();
 }
 
+void WebContentsModalDialogManager::AddCloseOnNavigationObserver(
+    CloseOnNavigationObserver* observer) {
+  close_on_navigation_observer_list_.AddObserver(observer);
+}
+
+void WebContentsModalDialogManager::RemoveCloseOnNavigationObserver(
+    CloseOnNavigationObserver* observer) {
+  close_on_navigation_observer_list_.RemoveObserver(observer);
+}
+
 content::WebContents* WebContentsModalDialogManager::GetWebContents() const {
   return web_contents();
 }
@@ -152,8 +162,13 @@ void WebContentsModalDialogManager::DidFinishNavigation(
   if (!net::registry_controlled_domains::SameDomainOrHost(
           navigation_handle->GetPreviousPrimaryMainFrameURL(),
           navigation_handle->GetURL(),
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES))
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
+    for (auto& observer : close_on_navigation_observer_list_) {
+      observer.OnWillClose();
+    }
+
     CloseAllDialogs();
+  }
 }
 
 void WebContentsModalDialogManager::DidGetIgnoredUIEvent() {
