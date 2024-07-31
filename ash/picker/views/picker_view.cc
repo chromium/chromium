@@ -161,7 +161,8 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
   }
 }
 
-std::u16string GetSearchFieldPlaceholderText(PickerModeType mode) {
+std::u16string GetSearchFieldPlaceholderText(PickerModeType mode,
+                                             bool is_editor_available) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   switch (mode) {
     case PickerModeType::kUnfocused:
@@ -169,10 +170,14 @@ std::u16string GetSearchFieldPlaceholderText(PickerModeType mode) {
           IDS_PICKER_SEARCH_FIELD_UNFOCUSED_PLACEHOLDER_TEXT);
     case PickerModeType::kNoSelection:
       return l10n_util::GetStringUTF16(
-          IDS_PICKER_SEARCH_FIELD_NO_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT);
+          is_editor_available
+              ? IDS_PICKER_SEARCH_FIELD_NO_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT
+              : IDS_PICKER_SEARCH_FIELD_NO_SELECTION_WITHOUT_EDITOR_PLACEHOLDER_TEXT);
     case PickerModeType::kHasSelection:
       return l10n_util::GetStringUTF16(
-          IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT);
+          is_editor_available
+              ? IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT
+              : IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT);
     default:
       NOTREACHED_NORETURN();
   }
@@ -213,6 +218,11 @@ ui::ImageModel GetNoResultsFoundIllustration() {
 #else
   return {};
 #endif
+}
+
+bool IsEditorAvailable(base::span<PickerCategory> available_categories) {
+  return base::Contains(available_categories, PickerCategory::kEditorWrite) ||
+         base::Contains(available_categories, PickerCategory::kEditorRewrite);
 }
 
 }  // namespace
@@ -675,8 +685,9 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
               base::BindRepeating(&PickerView::OnSearchBackButtonPressed,
                                   base::Unretained(this)),
               &key_event_handler_, &performance_metrics_))
-          .SetPlaceholderText(
-              GetSearchFieldPlaceholderText(delegate_->GetMode()))
+          .SetPlaceholderText(GetSearchFieldPlaceholderText(
+              delegate_->GetMode(),
+              IsEditorAvailable(delegate_->GetAvailableCategories())))
           .Build());
   main_container_view_->AddContentsView(layout_type);
 
@@ -768,8 +779,9 @@ views::View* PickerView::GetPseudoFocusedView() {
 }
 
 void PickerView::OnSearchBackButtonPressed() {
-  search_field_view_->SetPlaceholderText(
-      GetSearchFieldPlaceholderText(delegate_->GetMode()));
+  search_field_view_->SetPlaceholderText(GetSearchFieldPlaceholderText(
+      delegate_->GetMode(),
+      IsEditorAvailable(delegate_->GetAvailableCategories())));
   search_field_view_->SetBackButtonVisible(false);
   selected_category_ = std::nullopt;
   StartSearchWithNewQuery(u"");

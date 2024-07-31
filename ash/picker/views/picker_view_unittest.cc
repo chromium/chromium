@@ -372,8 +372,9 @@ TEST_F(PickerViewTest, SearchPlaceholderMatchesUnfocusedMode) {
                 IDS_PICKER_SEARCH_FIELD_UNFOCUSED_PLACEHOLDER_TEXT));
 }
 
-TEST_F(PickerViewTest, SearchPlaceholderMatchesNoSelectionMode) {
+TEST_F(PickerViewTest, SearchPlaceholderMatchesNoSelectionModeWithEditor) {
   FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kEditorWrite},
       .mode = PickerModeType::kNoSelection,
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
@@ -388,7 +389,40 @@ TEST_F(PickerViewTest, SearchPlaceholderMatchesNoSelectionMode) {
           IDS_PICKER_SEARCH_FIELD_NO_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT));
 }
 
-TEST_F(PickerViewTest, SearchPlaceholderMatchesHasSelectionMode) {
+TEST_F(PickerViewTest, SearchPlaceholderMatchesNoSelectionModeWithoutEditor) {
+  FakePickerViewDelegate delegate({
+      .mode = PickerModeType::kNoSelection,
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  EXPECT_EQ(
+      picker_view->search_field_view_for_testing()
+          .textfield_for_testing()
+          .GetPlaceholderText(),
+      l10n_util::GetStringUTF16(
+          IDS_PICKER_SEARCH_FIELD_NO_SELECTION_WITHOUT_EDITOR_PLACEHOLDER_TEXT));
+}
+
+TEST_F(PickerViewTest, SearchPlaceholderMatchesHasSelectionModeWithEditor) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kEditorRewrite},
+      .mode = PickerModeType::kHasSelection,
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  EXPECT_EQ(
+      picker_view->search_field_view_for_testing()
+          .textfield_for_testing()
+          .GetPlaceholderText(),
+      l10n_util::GetStringUTF16(
+          IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT));
+}
+
+TEST_F(PickerViewTest, SearchPlaceholderMatchesHasSelectionModeWithoutEditor) {
   FakePickerViewDelegate delegate({
       .mode = PickerModeType::kHasSelection,
   });
