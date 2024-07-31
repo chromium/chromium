@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SHARING_WEB_PUSH_JSON_WEB_TOKEN_UTIL_H_
-#define CHROME_BROWSER_SHARING_WEB_PUSH_JSON_WEB_TOKEN_UTIL_H_
+#ifndef COMPONENTS_SHARING_MESSAGE_WEB_PUSH_JSON_WEB_TOKEN_UTIL_H_
+#define COMPONENTS_SHARING_MESSAGE_WEB_PUSH_JSON_WEB_TOKEN_UTIL_H_
 
 #include <optional>
 #include <string>
@@ -26,4 +26,4 @@ std::optional<std::string> CreateJSONWebToken(
     const base::Value::Dict& claims,
     crypto::ECPrivateKey* private_key);
 
-#endif  // CHROME_BROWSER_SHARING_WEB_PUSH_JSON_WEB_TOKEN_UTIL_H_
+#endif  // COMPONENTS_SHARING_MESSAGE_WEB_PUSH_JSON_WEB_TOKEN_UTIL_H_

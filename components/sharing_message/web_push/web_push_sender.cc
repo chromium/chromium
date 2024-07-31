@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sharing/web_push/web_push_sender.h"
+#include "components/sharing_message/web_push/web_push_sender.h"
 
 #include <limits.h>
 
@@ -10,8 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/sharing/web_push/json_web_token_util.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
+#include "components/sharing_message/web_push/json_web_token_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/header_util.h"
@@ -54,18 +54,21 @@ std::optional<std::string> GetAuthHeader(crypto::ECPrivateKey* vapid_key) {
       (base::Time::Now() + kClaimsValidPeriod - base::Time::UnixEpoch())
           .InSeconds();
   // TODO: Year 2038 problem, base::Value does not support int64_t.
-  if (exp > INT_MAX)
+  if (exp > INT_MAX) {
     return std::nullopt;
+  }
 
   claims.Set(kClaimsKeyExpirationTime, base::Value(static_cast<int32_t>(exp)));
 
   std::optional<std::string> jwt = CreateJSONWebToken(claims, vapid_key);
-  if (!jwt)
+  if (!jwt) {
     return std::nullopt;
+  }
 
   std::string public_key;
-  if (!gcm::GetRawPublicKey(*vapid_key, &public_key))
+  if (!gcm::GetRawPublicKey(*vapid_key, &public_key)) {
     return std::nullopt;
+  }
 
   std::string base64_public_key;
   base::Base64UrlEncode(public_key, base::Base64UrlEncodePolicy::OMIT_PADDING,
@@ -117,6 +120,16 @@ std::unique_ptr<network::SimpleURLLoader> BuildURLLoader(
           trigger: "Users send data to another owned device."
           data: "Web push message."
           destination: GOOGLE_OWNED_SERVICE
+          user_data {
+            type: SENSITIVE_URL
+            type: OTHER
+          }
+          internal {
+            contacts {
+              owners: "//components/sharing_message/OWNERS"
+            }
+          }
+          last_reviewed: "2024-07-16"
         }
         policy {
           cookies_allowed: NO

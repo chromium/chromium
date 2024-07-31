@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sharing/web_push/web_push_common.h"
+#include "components/sharing_message/web_push/web_push_common.h"
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"

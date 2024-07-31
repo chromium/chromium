@@ -14,6 +14,7 @@ source_set("sharing_message") {
     "//base",
     "//components/keyed_service/core",
     "//components/sharing_message/proto",
+    "//components/sharing_message/web_push",
     "//components/sync/model",
     "//components/sync/protocol",
     "//net",

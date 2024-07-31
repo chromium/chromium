@@ -16,8 +16,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/sharing/sharing_message_sender.h"
 #include "chrome/browser/sharing/sharing_send_message_result.h"
-#include "chrome/browser/sharing/web_push/web_push_sender.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
+#include "components/sharing_message/web_push/web_push_sender.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace gcm {

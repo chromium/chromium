@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sharing/web_push/json_web_token_util.h"
+#include "components/sharing_message/web_push/json_web_token_util.h"
 
 #include <stdint.h>
 

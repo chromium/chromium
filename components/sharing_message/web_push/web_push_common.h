@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_COMMON_H_
-#define CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_COMMON_H_
+#ifndef COMPONENTS_SHARING_MESSAGE_WEB_PUSH_WEB_PUSH_COMMON_H_
+#define COMPONENTS_SHARING_MESSAGE_WEB_PUSH_WEB_PUSH_COMMON_H_
 
 #include <optional>
 #include <string>
@@ -64,4 +64,4 @@ void InvokeWebPushCallback(
     SendWebPushMessageResult result,
     std::optional<std::string> message_id = std::nullopt);
 
-#endif  // CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_COMMON_H_
+#endif  // COMPONENTS_SHARING_MESSAGE_WEB_PUSH_WEB_PUSH_COMMON_H_

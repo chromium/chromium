@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_SENDER_H_
-#define CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_SENDER_H_
+#ifndef COMPONENTS_SHARING_MESSAGE_WEB_PUSH_WEB_PUSH_SENDER_H_
+#define COMPONENTS_SHARING_MESSAGE_WEB_PUSH_WEB_PUSH_SENDER_H_
 
-#include "chrome/browser/sharing/web_push/web_push_common.h"
+#include "components/sharing_message/web_push/web_push_common.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace network {
@@ -52,4 +52,4 @@ class WebPushSender {
   base::WeakPtrFactory<WebPushSender> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_SENDER_H_
+#endif  // COMPONENTS_SHARING_MESSAGE_WEB_PUSH_WEB_PUSH_SENDER_H_
