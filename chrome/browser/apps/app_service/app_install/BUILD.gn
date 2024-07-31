@@ -140,6 +140,7 @@ source_set("unit_tests") {
 
     deps += [
       ":proto",
+      ":test_support",
       "//ash/components/arc:arc_test_support",
       "//chrome/browser/apps/almanac_api_client/proto",
       "//chrome/browser/apps/app_service",
@@ -171,6 +172,7 @@ source_set("browser_tests") {
     ":implementation",
     ":navigation_throttle",
     ":proto",
+    ":test_support",
     "//base",
     "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/browser/apps/app_service",
@@ -215,5 +217,25 @@ test("app_install_fuzztests") {
     ":navigation_throttle",
     "//chrome/test:test_support",
     "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_app_install_server.cc",
+    "test_app_install_server.h",
+  ]
+
+  deps = [
+    ":proto",
+    "//base",
+    "//chrome/browser/chromeos/crosapi:test_support",
+    "//chrome/browser/web_applications",
+    "//chromeos/crosapi/mojom",
+    "//components/services/app_service",
+    "//components/webapps/common",
+    "//net:test_support",
   ]
 }

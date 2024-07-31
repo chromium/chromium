@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
+#include "chrome/browser/apps/app_service/app_install/test_app_install_server.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -39,9 +40,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
@@ -86,83 +84,24 @@ class AppInstallNavigationThrottleBrowserTest : public InProcessBrowserTest {
       GTEST_SKIP() << "Unsupported Ash version.";
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &AppInstallNavigationThrottleBrowserTest::HandleRequest,
-        base::Unretained(this)));
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    crosapi::mojom::TestControllerAsyncWaiter(crosapi::GetTestController())
-        .SetAlmanacEndpointUrlForTesting(
-            embedded_test_server()->GetURL("/").spec());
+    ASSERT_TRUE(app_install_server_.SetUp());
 
     apps::AppTypeInitializationWaiter(browser()->profile(), apps::AppType::kWeb)
         .Await();
   }
 
-  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
-      const net::test_server::HttpRequest& request) {
-    if (request.GetURL() != embedded_test_server()->GetURL("/v1/app-install")) {
-      return nullptr;
-    }
+  TestAppInstallServer* app_install_server() { return &app_install_server_; }
 
-    auto http_response =
-        std::make_unique<net::test_server::BasicHttpResponse>();
-    proto::AppInstallRequest app_request;
-    if (!app_request.ParseFromString(request.content)) {
-      http_response->set_code(net::HTTP_BAD_REQUEST);
-      return std::move(http_response);
-    }
-
-    auto it = app_install_map_.find(app_request.package_id());
-    if (it == app_install_map_.end()) {
-      http_response->set_code(net::HTTP_NOT_FOUND);
-      return std::move(http_response);
-    }
-
-    http_response->set_code(net::HTTP_OK);
-    http_response->set_content(it->second);
-    return std::move(http_response);
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-  std::map<std::string, std::string> app_install_map_;
-
-  struct SetupIds {
-    webapps::AppId app_id;
-    PackageId package_id;
-  };
-  SetupIds SetupDefaultServerResponse() {
-    GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-    GURL manifest_url = embedded_test_server()->GetURL("/web_apps/basic.json");
-    webapps::ManifestId manifest_id = start_url;
-    webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(manifest_id);
-    PackageId package_id(apps::PackageType::kWeb, manifest_id.spec());
-
-    // Set Almanac server payload.
-    app_install_map_[package_id.ToString()] = [&] {
-      proto::AppInstallResponse response;
-      proto::AppInstallResponse_AppInstance& instance =
-          *response.mutable_app_instance();
-      instance.set_package_id(package_id.ToString());
-      instance.set_name("Test");
-      proto::AppInstallResponse_WebExtras& web_extras =
-          *instance.mutable_web_extras();
-      web_extras.set_document_url(start_url.spec());
-      web_extras.set_original_manifest_url(manifest_url.spec());
-      web_extras.set_scs_url(manifest_url.spec());
-      return response.SerializeAsString();
-    }();
-
-    return {app_id, package_id};
-  }
+ private:
+  TestAppInstallServer app_install_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
                        JavaScriptTriggeredInstallation) {
   base::HistogramTester histograms;
 
-  auto [app_id, package_id] = SetupDefaultServerResponse();
+  auto [app_id, package_id] =
+      app_install_server()->SetupDefaultServerResponse();
 
   auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
@@ -201,7 +140,8 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
                        OmniboxTriggeredInstallation) {
   base::HistogramTester histograms;
 
-  auto [app_id, package_id] = SetupDefaultServerResponse();
+  auto [app_id, package_id] =
+      app_install_server()->SetupDefaultServerResponse();
 
   auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
@@ -233,6 +173,9 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
         info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
         return info;
       }());
+  app_install_server()->SetUpInstallUrlResponse(
+      PackageId(PackageType::kGeForceNow, "1234"),
+      GURL("https://play.geforcenow.com/games?game-id=1234"));
 
   ui_test_utils::BrowserChangeObserver browser_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
@@ -250,9 +193,12 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
                        OpenGeforceNowInstallUriInNewWindow) {
+  GURL geforce_now_url = GURL("https://play.geforcenow.com/games?game-id=1234");
+  app_install_server()->SetUpInstallUrlResponse(
+      PackageId(PackageType::kGeForceNow, "1234"), geforce_now_url);
+
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
 
-  GURL geforce_now_url = GURL("https://play.geforcenow.com/games?game-id=1234");
   content::TestNavigationObserver observer(geforce_now_url);
   observer.StartWatchingNewWebContents();
 
@@ -272,14 +218,13 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
   base::HistogramTester histograms;
 
   // Set up payload
-  GURL install_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  app_install_map_["unknown package id format"] = [&] {
-    proto::AppInstallResponse response;
-    proto::AppInstallResponse_AppInstance& instance =
-        *response.mutable_app_instance();
-    instance.set_install_url(install_url.spec());
-    return response.SerializeAsString();
-  }();
+  GURL install_url = app_install_server()->GetUrl("/web_apps/basic.html");
+  proto::AppInstallResponse response;
+  proto::AppInstallResponse_AppInstance& instance =
+      *response.mutable_app_instance();
+  instance.set_install_url(install_url.spec());
+  app_install_server()->SetUpResponse("unknown package id format",
+                                      response.SerializeAsString());
 
   {
     content::TestNavigationObserver observer(install_url);
@@ -308,7 +253,8 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
 IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest, NonSpecialUrl) {
   base::HistogramTester histograms;
 
-  auto [app_id, package_id] = SetupDefaultServerResponse();
+  auto [app_id, package_id] =
+      app_install_server()->SetupDefaultServerResponse();
 
   auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
@@ -336,7 +282,8 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest, NonSpecialUrl) {
 IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest, LegacyScheme) {
   base::HistogramTester histograms;
 
-  auto [app_id, package_id] = SetupDefaultServerResponse();
+  auto [app_id, package_id] =
+      app_install_server()->SetupDefaultServerResponse();
 
   auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
@@ -369,7 +316,8 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
                        InstallationWithoutParentWindow) {
   base::HistogramTester histograms;
 
-  auto [app_id, package_id] = SetupDefaultServerResponse();
+  auto [app_id, package_id] =
+      app_install_server()->SetupDefaultServerResponse();
 
   // Force BrowserAppInstanceTracker to forget about the current window. This
   // will cause the dialog to have no parent, and is more reliable than trying

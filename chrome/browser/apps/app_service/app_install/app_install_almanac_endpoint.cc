@@ -118,12 +118,10 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
     result.install_url = GURL(instance.install_url());
   }
 
-  if (instance.has_android_extras()) {
-    if (result.package_id.package_type() != PackageType::kArc) {
-      return std::nullopt;
-    }
-  } else if (instance.has_web_extras()) {
-    if (result.package_id.package_type() != PackageType::kWeb) {
+  if (result.package_id.package_type() == PackageType::kArc) {
+    result.app_type_data.emplace<AndroidAppInstallData>();
+  } else if (result.package_id.package_type() == PackageType::kWeb) {
+    if (!instance.has_web_extras()) {
       return std::nullopt;
     }
     WebAppInstallData& web_app_data =
@@ -141,16 +139,10 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
     if (!web_app_data.proxied_manifest_url.is_valid()) {
       return std::nullopt;
     }
-  } else if (instance.has_gfn_extras()) {
-    if (result.package_id.package_type() != PackageType::kGeForceNow) {
-      return std::nullopt;
-    }
-  } else if (instance.has_steam_extras()) {
-    if (result.package_id.package_type() != PackageType::kBorealis) {
-      return std::nullopt;
-    }
-  } else {
-    return std::nullopt;
+  } else if (result.package_id.package_type() == PackageType::kGeForceNow) {
+    result.app_type_data.emplace<GeForceNowAppInstallData>();
+  } else if (result.package_id.package_type() == PackageType::kBorealis) {
+    result.app_type_data.emplace<SteamAppInstallData>();
   }
 
   return result;
@@ -193,11 +185,10 @@ GURL GetEndpointUrlForTesting() {
   return GetAlmanacEndpointUrl(kAlmanacAppInstallEndpoint);
 }
 
-void GetAppInstallInfo(
-    PackageId package_id,
-    DeviceInfo device_info,
-    network::mojom::URLLoaderFactory& url_loader_factory,
-    GetAppInstallInfoCallback callback) {
+void GetAppInstallInfo(PackageId package_id,
+                       DeviceInfo device_info,
+                       network::mojom::URLLoaderFactory& url_loader_factory,
+                       GetAppInstallInfoCallback callback) {
   QueryAlmanacApi<proto::AppInstallResponse>(
       url_loader_factory, kTrafficAnnotation,
       BuildRequestBody(device_info, package_id.ToString()),

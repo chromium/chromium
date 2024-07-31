@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user_manager.h"
@@ -45,6 +46,12 @@ std::optional<QueryError::Type> VerifyAppInstallData(
     }
     if (expected_package_id.package_type() == PackageType::kWeb &&
         !absl::holds_alternative<WebAppInstallData>(data->app_type_data)) {
+      return QueryError::kBadResponse;
+    }
+    // For all package types other than Web, there must be an Install URL for us
+    // to launch.
+    if (expected_package_id.package_type() != PackageType::kWeb &&
+        !data->install_url.is_valid()) {
       return QueryError::kBadResponse;
     }
     return std::nullopt;
@@ -136,15 +143,22 @@ void AppInstallServiceAsh::InstallApp(
   }
 
   switch (package_id.package_type()) {
-    case PackageType::kArc: {
-      // TODO(b/334733649): Avoid hard coding install URLs.
-      constexpr char kPlayStoreAppDetailsPage[] =
-          "https://play.google.com/store/apps/details";
-      GURL url = net::AppendOrReplaceQueryParameter(
-          GURL(kPlayStoreAppDetailsPage), "id", package_id.identifier());
-      LaunchUrlInInstalledAppOrBrowser(&*profile_, url,
-                                       LaunchSource::kFromInstaller);
-      std::move(result_callback).Run(AppInstallResult::kUnknown);
+    case PackageType::kArc:
+    case PackageType::kGeForceNow:
+    case PackageType::kWeb: {
+      // Observe for `anchor_window` being destroyed during async work.
+      std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker;
+      if (anchor_window) {
+        anchor_window_tracker =
+            views::NativeWindowTracker::Create(*anchor_window);
+      }
+
+      FetchAppInstallData(
+          package_id,
+          base::BindOnce(&AppInstallServiceAsh::ShowDialogAndInstall,
+                         weak_ptr_factory_.GetWeakPtr(), surface, package_id,
+                         anchor_window, std::move(anchor_window_tracker),
+                         std::move(result_callback)));
       return;
     }
     case PackageType::kBorealis: {
@@ -168,33 +182,6 @@ void AppInstallServiceAsh::InstallApp(
       // website. We don't yet know whether that flow will result in a
       // successfully installed game.
       std::move(result_callback).Run(AppInstallResult::kUnknown);
-      return;
-    }
-    case PackageType::kGeForceNow: {
-      // TODO(b/334733649): Avoid hard coding install URLs.
-      constexpr char kGeForceNowAppDetailsPage[] =
-          "https://play.geforcenow.com/games";
-      GURL url = net::AppendOrReplaceQueryParameter(
-          GURL(kGeForceNowAppDetailsPage), "game-id", package_id.identifier());
-      LaunchUrlInInstalledAppOrBrowser(&*profile_, url,
-                                       LaunchSource::kFromInstaller);
-      std::move(result_callback).Run(AppInstallResult::kUnknown);
-      return;
-    }
-    case PackageType::kWeb: {
-      // Observe for `anchor_window` being destroyed during async work.
-      std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker;
-      if (anchor_window) {
-        anchor_window_tracker =
-            views::NativeWindowTracker::Create(*anchor_window);
-      }
-
-      FetchAppInstallData(
-          package_id,
-          base::BindOnce(&AppInstallServiceAsh::ShowDialogAndInstall,
-                         weak_ptr_factory_.GetWeakPtr(), surface, package_id,
-                         anchor_window, std::move(anchor_window_tracker),
-                         std::move(result_callback)));
       return;
     }
     case PackageType::kChromeApp:
@@ -314,6 +301,15 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
 
     std::move(callback).Run(
         AppInstallResultFromQueryError(query_error.value()));
+    return;
+  }
+
+  if (expected_package_id.package_type() != PackageType::kWeb) {
+    // This is checked by VerifyAppInstallData:
+    CHECK(data->install_url.is_valid());
+    LaunchUrlInInstalledAppOrBrowser(&*profile_, data->install_url,
+                                     LaunchSource::kFromInstaller);
+    std::move(callback).Run(AppInstallResult::kUnknown);
     return;
   }
 

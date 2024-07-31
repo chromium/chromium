@@ -9,6 +9,9 @@
 #include "ash/constants/ash_switches.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
+#include "chrome/browser/apps/app_service/app_install/test_app_install_server.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,14 +24,30 @@
 
 namespace apps {
 
-using AppInstallServiceAshBrowserTest = InProcessBrowserTest;
+class AppInstallServiceAshBrowserTest : public InProcessBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    ASSERT_TRUE(app_install_server_.SetUp());
+  }
+
+  TestAppInstallServer* app_install_server() { return &app_install_server_; }
+
+ private:
+  TestAppInstallServer app_install_server_;
+};
 
 IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
                        InstallArcAppOpensPlayStore) {
+  GURL play_install_url(
+      "https://play.google.com/store/apps/details?id=com.android.chrome");
+  app_install_server()->SetUpInstallUrlResponse(
+      PackageId(PackageType::kArc, "com.android.chrome"), play_install_url);
+
   base::HistogramTester histogram_tester;
 
-  content::TestNavigationObserver navigation_observer(
-      GURL("https://play.google.com/store/apps/details?id=com.android.chrome"));
+  content::TestNavigationObserver navigation_observer(play_install_url);
   navigation_observer.StartWatchingNewWebContents();
 
   AppServiceProxyFactory::GetForProfile(browser()->profile())
@@ -48,10 +67,13 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest, InstallGfnAppOpensGfn) {
+  GURL gfn_install_url("https://play.geforcenow.com/games?game-id=test");
+  app_install_server()->SetUpInstallUrlResponse(
+      PackageId(PackageType::kGeForceNow, "test"), gfn_install_url);
+
   base::HistogramTester histogram_tester;
 
-  content::TestNavigationObserver navigation_observer(
-      GURL("https://play.geforcenow.com/games?game-id=test"));
+  content::TestNavigationObserver navigation_observer(gfn_install_url);
   navigation_observer.StartWatchingNewWebContents();
 
   AppServiceProxyFactory::GetForProfile(browser()->profile())
@@ -68,6 +90,39 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest, InstallGfnAppOpensGfn) {
   histogram_tester.ExpectUniqueSample(
       "Apps.AppInstallService.AppInstallResult.AppInstallUriUnknown",
       expected_result, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
+                       InstallAndroidWithNoInstallUrlShowsError) {
+  std::string test_package_id = "android:com.android.chrome";
+  base::HistogramTester histograms;
+
+  // Set up an invalid payload -- an Android app response with no Install URL.
+  proto::AppInstallResponse response;
+  proto::AppInstallResponse_AppInstance& instance =
+      *response.mutable_app_instance();
+  instance.set_package_id(test_package_id);
+  instance.set_name("Test app");
+
+  app_install_server()->SetUpResponse(test_package_id,
+                                      response.SerializeAsString());
+
+  base::test::TestFuture<void> completion_future;
+
+  AppServiceProxyFactory::GetForProfile(browser()->profile())
+      ->AppInstallService()
+      .InstallApp(AppInstallSurface::kAppInstallUriUnknown,
+                  PackageId::FromString(test_package_id).value(),
+                  /*anchor_window=*/std::nullopt,
+                  completion_future.GetCallback());
+
+  ASSERT_TRUE(completion_future.Wait());
+
+  // TODO(b/334733649): Verify that the error dialog shows up in the correct
+  // state.
+  histograms.ExpectUniqueSample(
+      "Apps.AppInstallService.AppInstallResult.AppInstallUriUnknown",
+      AppInstallResult::kAppDataCorrupted, 1);
 }
 
 class AppInstallServiceAshGuestBrowserTest
