@@ -138,8 +138,14 @@ void LiveCaptionController::OnLiveCaptionEnabledChanged() {
 
 void LiveCaptionController::OnLiveCaptionLanguageChanged() {
   if (enabled_) {
-    speech::SodaInstaller::GetInstance()->InstallLanguage(
-        prefs::GetLiveCaptionLanguageCode(profile_prefs_), global_prefs_);
+    const auto language_code =
+        prefs::GetLiveCaptionLanguageCode(profile_prefs_);
+    auto* soda_installer = speech::SodaInstaller::GetInstance();
+    // Only trigger an install when the language is not already installed.
+    if (!soda_installer->IsSodaInstalled(
+            speech::GetLanguageCode(language_code))) {
+      soda_installer->InstallLanguage(language_code, global_prefs_);
+    }
   }
 }
 
