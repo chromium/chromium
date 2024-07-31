@@ -28,7 +28,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
     /**
      * @param onItemClickedCallback A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
-     * @param shouldShowDeleteGroup Whether to show the delete group option.
+     * @param isTabGroupSyncEnabled Whether to show the delete group option.
      * @param identityManager Used for checking the current account.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param dataSharingService Used for checking the user is the owner of a group.
@@ -36,7 +36,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
     public TabListGroupMenuCoordinator(
             OnItemClickedCallback onItemClicked,
             Supplier<TabModel> tabModelSupplier,
-            boolean shouldShowDeleteGroup,
+            boolean isTabGroupSyncEnabled,
             @Nullable IdentityManager identityManager,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @Nullable DataSharingService dataSharingService) {
@@ -44,7 +44,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
                 tabModelSupplier,
-                shouldShowDeleteGroup,
+                isTabGroupSyncEnabled,
                 identityManager,
                 tabGroupSyncService,
                 dataSharingService);
@@ -64,7 +64,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
     protected void buildMenuActionItems(
             ModelList itemList,
             boolean isIncognito,
-            boolean shouldShowDeleteGroup,
+            boolean isTabGroupSyncEnabled,
             boolean hasCollaborationData) {
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
@@ -94,7 +94,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                         isIncognito,
                         true));
         // Delete does not make sense for incognito since the tab group is not saved to sync.
-        if (shouldShowDeleteGroup && !isIncognito && !hasCollaborationData) {
+        if (isTabGroupSyncEnabled && !isIncognito && !hasCollaborationData) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.delete_tab_group_menu_item,

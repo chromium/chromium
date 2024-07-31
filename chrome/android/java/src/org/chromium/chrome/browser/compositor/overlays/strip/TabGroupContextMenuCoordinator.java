@@ -34,17 +34,17 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     /**
      * @param onItemClickedCallback A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
-     * @param shouldShowDeleteGroup Whether to show the delete group option.
+     * @param isTabGroupSyncEnabled Whether tab group sync is enabled.
      */
     public TabGroupContextMenuCoordinator(
             OnItemClickedCallback onItemClicked,
             Supplier<TabModel> tabModelSupplier,
-            boolean shouldShowDeleteGroup) {
+            boolean isTabGroupSyncEnabled) {
         super(
                 R.layout.tab_strip_group_menu_layout,
                 onItemClicked,
                 tabModelSupplier,
-                shouldShowDeleteGroup,
+                isTabGroupSyncEnabled,
                 /* identityManager= */ null,
                 /* tabGroupSyncService= */ null,
                 /* dataSharingService= */ null);
@@ -90,7 +90,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     protected void buildMenuActionItems(
             ModelList modelList,
             boolean isIncognito,
-            boolean shouldShowDeleteGroup,
+            boolean isTabGroupSyncEnabled,
             boolean hasCollaborationData) {
         // TODO(crbug.com/354248683): Implement icon and texts for items like ungroup, close group
         // and open new tab in group.

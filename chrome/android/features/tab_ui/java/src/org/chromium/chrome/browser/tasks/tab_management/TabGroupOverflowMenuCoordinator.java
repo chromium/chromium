@@ -171,7 +171,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
     private final @LayoutRes int mMenuLayout;
     private final OnItemClickedCallback mOnItemClickedCallback;
     private final Supplier<TabModel> mTabModelSupplier;
-    private final boolean mShouldShowDeleteGroup;
+    private final boolean mIsTabGroupSyncEnabled;
     private final @Nullable IdentityManager mIdentityManager;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final @Nullable DataSharingService mDataSharingService;
@@ -181,7 +181,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
      * @param menuLayout The menu layout to use.
      * @param onItemClickedCallback A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
-     * @param shouldShowDeleteGroup Whether to show the delete group option.
+     * @param isTabGroupSyncEnabled Whether to tab group sync is enabled.
      * @param identityManager Used for checking the current account.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param dataSharingService Used for checking the user is the owner of a group.
@@ -190,14 +190,14 @@ public abstract class TabGroupOverflowMenuCoordinator {
             @LayoutRes int menuLayout,
             OnItemClickedCallback onItemClickedCallback,
             Supplier<TabModel> tabModelSupplier,
-            boolean shouldShowDeleteGroup,
+            boolean isTabGroupSyncEnabled,
             @Nullable IdentityManager identityManager,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @Nullable DataSharingService dataSharingService) {
         mMenuLayout = menuLayout;
         mOnItemClickedCallback = onItemClickedCallback;
         mTabModelSupplier = tabModelSupplier;
-        mShouldShowDeleteGroup = shouldShowDeleteGroup;
+        mIsTabGroupSyncEnabled = isTabGroupSyncEnabled;
         mIdentityManager = identityManager;
         mTabGroupSyncService = tabGroupSyncService;
         mDataSharingService = dataSharingService;
@@ -218,13 +218,13 @@ public abstract class TabGroupOverflowMenuCoordinator {
      *
      * @param itemList The {@link ModelList} to populate.
      * @param isIncognito Whether the current tab model is incognito or not.
-     * @param shouldShowDeleteGroup Whether to show the delete group option.
+     * @param isTabGroupSyncEnabled Whether to tab group sync is enabled.
      * @param hasCollaborationData Whether the menu will call buildCollaborationMenuItems after.
      */
     protected abstract void buildMenuActionItems(
             ModelList itemList,
             boolean isIncognito,
-            boolean shouldShowDeleteGroup,
+            boolean isTabGroupSyncEnabled,
             boolean hasCollaborationData);
 
     /**
@@ -268,7 +268,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
                 !TextUtils.isEmpty(collaborationId)
                         && mIdentityManager != null
                         && mDataSharingService != null;
-        buildMenuActionItems(modelList, isIncognito, mShouldShowDeleteGroup, hasCollaborationData);
+        buildMenuActionItems(modelList, isIncognito, mIsTabGroupSyncEnabled, hasCollaborationData);
         if (hasCollaborationData) {
             mDataSharingService.readGroup(
                     collaborationId,

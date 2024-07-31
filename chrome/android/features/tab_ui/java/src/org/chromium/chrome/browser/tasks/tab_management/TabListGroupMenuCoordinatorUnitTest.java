@@ -117,7 +117,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
                         new TabListGroupMenuCoordinator(
                                 mOnItemClickedCallback,
                                 () -> mTabModel,
-                                /* shouldShowDeleteGroup= */ true,
+                                /* isTabGroupSyncEnabled= */ true,
                                 mIdentityManager,
                                 mTabGroupSyncService,
                                 mDataSharingService));
@@ -134,7 +134,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
         mMenuCoordinator.buildMenuActionItems(
                 modelList,
                 /* isIncognito= */ false,
-                /* shouldShowDeleteGroup= */ true,
+                /* isTabGroupSyncEnabled= */ true,
                 /* hasCollaborationData= */ false);
 
         List<Integer> menuIds =
@@ -148,7 +148,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
         mMenuCoordinator.buildMenuActionItems(
                 modelList,
                 /* isIncognito= */ false,
-                /* shouldShowDeleteGroup= */ true,
+                /* isTabGroupSyncEnabled= */ true,
                 /* hasCollaborationData= */ true);
 
         List<Integer> menuIds = List.of(R.id.close_tab, R.id.edit_group_name, R.id.ungroup_tab);
@@ -158,7 +158,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
         mMenuCoordinator.buildMenuActionItems(
                 modelList,
                 /* isIncognito= */ false,
-                /* shouldShowDeleteGroup= */ false,
+                /* isTabGroupSyncEnabled= */ false,
                 /* hasCollaborationData= */ false);
 
         assertListMenuItemsAre(modelList, menuIds);
@@ -167,7 +167,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
         mMenuCoordinator.buildMenuActionItems(
                 modelList,
                 /* isIncognito= */ true,
-                /* shouldShowDeleteGroup= */ true,
+                /* isTabGroupSyncEnabled= */ true,
                 /* hasCollaborationData= */ false);
 
         assertListMenuItemsAre(modelList, menuIds);

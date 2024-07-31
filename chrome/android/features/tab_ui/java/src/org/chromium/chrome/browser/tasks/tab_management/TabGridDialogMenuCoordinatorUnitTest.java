@@ -118,7 +118,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                                 mOnItemClickedCallback,
                                 () -> mTabModel,
                                 () -> TAB_ID,
-                                /* shouldShowDeleteGroup= */ true,
+                                /* isTabGroupSyncEnabled= */ true,
                                 mIdentityManager,
                                 mTabGroupSyncService,
                                 mDataSharingService));
@@ -135,7 +135,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
         mMenuCoordinator.buildMenuActionItems(
                 modelList,
                 /* isIncognito= */ false,
-                /* shouldShowDeleteGroup= */ true,
+                /* isTabGroupSyncEnabled= */ true,
                 /* hasCollaborationData= */ false);
 
         List<Integer> menuIds =
@@ -154,7 +154,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
         mMenuCoordinator.buildMenuActionItems(
                 modelList,
                 /* isIncognito= */ false,
-                /* shouldShowDeleteGroup= */ true,
+                /* isTabGroupSyncEnabled= */ true,
                 /* hasCollaborationData= */ true);
 
         List<Integer> menuIds =
@@ -172,7 +172,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
         mMenuCoordinator.buildMenuActionItems(
                 modelList,
                 /* isIncognito= */ true,
-                /* shouldShowDeleteGroup= */ true,
+                /* isTabGroupSyncEnabled= */ true,
                 /* hasCollaborationData= */ false);
 
         List<Integer> menuIds =
@@ -190,7 +190,7 @@ public class TabGridDialogMenuCoordinatorUnitTest {
         mMenuCoordinator.buildMenuActionItems(
                 modelList,
                 /* isIncognito= */ false,
-                /* shouldShowDeleteGroup= */ false,
+                /* isTabGroupSyncEnabled= */ false,
                 /* hasCollaborationData= */ false);
 
         List<Integer> menuIds =

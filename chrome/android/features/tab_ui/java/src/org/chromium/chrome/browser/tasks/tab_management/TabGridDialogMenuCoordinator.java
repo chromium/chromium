@@ -35,7 +35,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
      * @param tabModelSupplier The supplier of the tab model.
      * @param tabIdSupplier The tab ID supplier for the tab or a tab ID from the group being acted
      *     on.
-     * @param shouldShowDeleteGroup Whether to show the delete group option.
+     * @param isTabGroupSyncEnabled Whether tab group sync is enabled.
      * @param identityManager Used for checking the current account.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param dataSharingService Used for checking the user is the owner of a group.
@@ -44,7 +44,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
             OnItemClickedCallback onItemClicked,
             Supplier<TabModel> tabModelSupplier,
             Supplier<Integer> tabIdSupplier,
-            boolean shouldShowDeleteGroup,
+            boolean isTabGroupSyncEnabled,
             @Nullable IdentityManager identityManager,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @Nullable DataSharingService dataSharingService) {
@@ -52,7 +52,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                 R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
                 tabModelSupplier,
-                shouldShowDeleteGroup,
+                isTabGroupSyncEnabled,
                 identityManager,
                 tabGroupSyncService,
                 dataSharingService);
@@ -74,7 +74,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
     public void buildMenuActionItems(
             ModelList itemList,
             boolean isIncognito,
-            boolean shouldShowDeleteGroup,
+            boolean isTabGroupSyncEnabled,
             boolean hasCollaborationData) {
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
@@ -114,7 +114,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         /* enabled= */ true));
-        if (shouldShowDeleteGroup && !isIncognito && !hasCollaborationData) {
+        if (isTabGroupSyncEnabled && !isIncognito && !hasCollaborationData) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                             R.string.tab_grid_dialog_toolbar_delete_group,

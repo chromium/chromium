@@ -325,16 +325,16 @@ class TabListMediator {
 
     /** A class that stores shared info regarding a tab group's state. */
     static class TabGroupInfo {
-        private boolean mShouldShowDeleteTabGroup;
+        private boolean mIsTabGroupSyncEnabled;
         private boolean mIsTabGroup;
 
-        TabGroupInfo(boolean shouldShowDeleteGroup, boolean isTabGroup) {
-            mShouldShowDeleteTabGroup = shouldShowDeleteGroup;
+        TabGroupInfo(boolean isTabGroupSyncEnabled, boolean isTabGroup) {
+            mIsTabGroupSyncEnabled = isTabGroupSyncEnabled;
             mIsTabGroup = isTabGroup;
         }
 
-        boolean getShouldShowDeleteTabGroup() {
-            return mShouldShowDeleteTabGroup;
+        boolean getIsTabGroupSyncEnabled() {
+            return mIsTabGroupSyncEnabled;
         }
 
         boolean getIsTabGroup() {
@@ -1977,13 +1977,13 @@ class TabListMediator {
 
     private TabListMediator.TabActionListener getTabGroupOverflowMenuClickListener() {
         if (mTabListGroupMenuCoordinator == null) {
-            boolean shouldShowDeleteGroup = TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile);
+            boolean isTabGroupSyncEnabled = TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile);
             TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
             Profile profile = tabModel.getProfile().getOriginalProfile();
             IdentityManager identityManager = null;
             TabGroupSyncService tabGroupSyncService = null;
             DataSharingService dataSharingService = null;
-            if (shouldShowDeleteGroup
+            if (isTabGroupSyncEnabled
                     && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
                 identityManager = IdentityServicesProvider.get().getIdentityManager(profile);
                 tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
@@ -1993,7 +1993,7 @@ class TabListMediator {
                     new TabListGroupMenuCoordinator(
                             mOnMenuItemClickedCallback,
                             () -> mCurrentTabModelFilterSupplier.get().getTabModel(),
-                            shouldShowDeleteGroup,
+                            isTabGroupSyncEnabled,
                             identityManager,
                             tabGroupSyncService,
                             dataSharingService);

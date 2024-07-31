@@ -873,12 +873,12 @@ public class TabGridDialogMediator
         assert mTabListEditorControllerSupplier != null;
         TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
         Profile profile = tabModel.getProfile().getOriginalProfile();
-        boolean shouldShowDeleteGroup = TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
+        boolean isTabGroupSyncEnabled = TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
 
         IdentityManager identityManager = null;
         TabGroupSyncService tabGroupSyncService = null;
         DataSharingService dataSharingService = null;
-        if (shouldShowDeleteGroup
+        if (isTabGroupSyncEnabled
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
             identityManager = IdentityServicesProvider.get().getIdentityManager(profile);
             tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
@@ -890,7 +890,7 @@ public class TabGridDialogMediator
                             this::onToolbarMenuItemClick,
                             () -> mCurrentTabModelFilterSupplier.get().getTabModel(),
                             () -> mCurrentTabId,
-                            shouldShowDeleteGroup,
+                            isTabGroupSyncEnabled,
                             identityManager,
                             tabGroupSyncService,
                             dataSharingService);
