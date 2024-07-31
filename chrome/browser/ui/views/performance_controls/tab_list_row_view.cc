@@ -18,6 +18,7 @@
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -53,6 +54,8 @@ constexpr int kFaviconVerticalMargin = 4;
 constexpr int kFaviconCornerRadius = 4;
 // Border thickness surrounding the favicon.
 constexpr int kFaviconBorderThickness = 4;
+// Spacing between the favicon and tab title.
+constexpr int kFaviconTabTitleSpacing = 8;
 
 std::unique_ptr<views::Label> CreateLabel(std::u16string text, int text_style) {
   auto label = std::make_unique<views::Label>(text);
@@ -182,8 +185,8 @@ TabListRowView::TabListRowView(
   favicon->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kFaviconVerticalMargin, 0, kFaviconVerticalMargin,
-                        ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+                        kFaviconTabTitleSpacing));
+
   // Unretained(this) is safe to use in this instance because the callback is
   // owned by the text container which is a descendant of this. Therefore the
   // callback will not be invoked after this is destroyed.
@@ -196,7 +199,7 @@ TabListRowView::TabListRowView(
   std::unique_ptr<views::ImageButton> close_button =
       views::CreateVectorImageButtonWithNativeTheme(
           base::BindOnce(std::move(close_button_callback), this),
-          views::kIcCloseIcon);
+          vector_icons::kCloseChromeRefreshIcon);
 
   // The close button should not be visible by default and should show up when
   // the user's mouse is over TabListRowView.
