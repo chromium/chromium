@@ -207,11 +207,11 @@ class FileSystemEntryURLLoader : public network::mojom::URLLoader {
       return;
     }
 
-    std::string range_header;
-    if (request.headers.GetHeader(net::HttpRequestHeaders::kRange,
-                                  &range_header)) {
+    if (std::optional<std::string> range_header =
+            request.headers.GetHeader(net::HttpRequestHeaders::kRange);
+        range_header) {
       std::vector<net::HttpByteRange> ranges;
-      if (net::HttpUtil::ParseRangeHeader(range_header, &ranges)) {
+      if (net::HttpUtil::ParseRangeHeader(*range_header, &ranges)) {
         if (ranges.size() == 1) {
           byte_range_ = ranges[0];
         } else {
