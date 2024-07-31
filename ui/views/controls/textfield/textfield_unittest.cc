@@ -965,6 +965,39 @@ TEST_F(TextfieldTest, Scroll) {
   EXPECT_EQ(GetTextfieldTestApi().GetDisplayOffsetX(), -100);
 }
 
+TEST_F(TextfieldTest, ScrollUpdatesScrollXAccessibilityAttribute) {
+  InitTextfield();
+  // Size the textfield wide enough to hold 10 characters.
+  gfx::test::RenderTextTestApi render_text_test_api(
+      GetTextfieldTestApi().GetRenderText());
+  constexpr int kGlyphWidth = 10;
+  render_text_test_api.SetGlyphWidth(kGlyphWidth);
+  constexpr int kCursorWidth = 1;
+  GetTextfieldTestApi().GetRenderText()->SetDisplayRect(
+      gfx::Rect(kGlyphWidth * 10 + kCursorWidth, 20));
+  textfield_->SetTextWithoutCaretBoundsChangeNotification(
+      u"0123456789_123456789_123456789", 0);
+  GetTextfieldTestApi().SetDisplayOffsetX(0);
+
+  ui::AXNodeData textfield_node_data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(
+      &textfield_node_data);
+  int scroll_x =
+      textfield_node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollX);
+  EXPECT_EQ(GetTextfieldTestApi().GetDisplayOffsetX(), scroll_x);
+
+  textfield_->SetSelectedRange({0, 20});
+  textfield_->Scroll({20});
+  textfield_node_data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(
+      &textfield_node_data);
+  EXPECT_EQ(
+      GetTextfieldTestApi().GetDisplayOffsetX(),
+      textfield_node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollX));
+  EXPECT_NE(scroll_x, textfield_node_data.GetIntAttribute(
+                          ax::mojom::IntAttribute::kScrollX));
+}
+
 TEST_F(TextfieldTest,
        SetTextWithoutCaretBoundsChangeNotification_ModelEditHistory) {
   InitTextfield();
