@@ -40,6 +40,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/button_test_api.h"
@@ -155,10 +156,11 @@ class PinRequestViewTest : public LoginTestBase,
 
   void ExpectTextValue(const std::string& value) {
     PinRequestView::TestApi test_api(view_);
-    ui::AXNodeData ax_node_data;
-    test_api.access_code_view()->GetAccessibleNodeData(&ax_node_data);
-    EXPECT_EQ(value, ax_node_data.GetStringAttribute(
-                         ax::mojom::StringAttribute::kValue));
+    ui::AXNodeData node_data;
+    test_api.access_code_view()->GetViewAccessibility().GetAccessibleNodeData(
+        &node_data);
+    EXPECT_EQ(value,
+              node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
   }
 
   std::unique_ptr<MockLoginScreenClient> login_client_;
