@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/priority_queue.h"
@@ -64,6 +65,13 @@ class HttpStreamPool::Job
       bool enable_ip_based_pooling,
       const NetLogWithSource& net_log);
 
+  // Creates idle streams or sessions for `num_streams` be opened.
+  // Note that this method finishes synchronously, or `callback` is called, once
+  // `this` has enough streams/sessions for `num_streams` be opened. This means
+  // that when there are two preconnect requests with `num_streams = 1`, all
+  // callbacks are invoked when one stream/session is established (not two).
+  int Preconnect(size_t num_streams, CompletionOnceCallback callback);
+
   // HostResolver::ServiceEndpointRequest::Delegate implementation:
   void OnServiceEndpointsUpdated() override;
   void OnServiceEndpointRequestFinished(int rv) override;
@@ -87,10 +95,11 @@ class HttpStreamPool::Job
   // Cancels all requests.
   void CancelRequests(int error);
 
-  // Returns the number of pending requests. The number is calculated by
-  // subtracting the number of in-flight attempts (excluding slow attempts) from
-  // the number of total requests.
+  // Returns the number of pending requests/preconnects. The number is
+  // calculated by subtracting the number of in-flight attempts (excluding slow
+  // attempts) from the number of total requests.
   size_t PendingRequestCount() const;
+  size_t PendingPreconnectCount() const;
 
   // Returns the highest priority in `requests_`.
   RequestPriority GetPriority() const;
@@ -138,6 +147,7 @@ class HttpStreamPool::Job
   using RequestQueue = PriorityQueue<std::unique_ptr<RequestEntry>>;
 
   struct InFlightAttempt;
+  struct PreconnectEntry;
 
   const HttpStreamKey& stream_key() const;
 
@@ -153,8 +163,12 @@ class HttpStreamPool::Job
 
   bool UsingTls() const;
 
+  bool RequiresHTTP11();
+
   // Returns the current load state.
   LoadState GetLoadState() const;
+
+  void StartInternal(RequestPriority priority);
 
   void ResolveServiceEndpoint(RequestPriority initial_priority);
 
@@ -178,9 +192,16 @@ class HttpStreamPool::Job
   void MaybeAttemptConnection(
       std::optional<size_t> max_attempts = std::nullopt);
 
+  // Returns true if there are pending requests and the pool and the group
+  // haven't reached stream limits. May close idle sockets in other groups.
+  bool ShouldAttemptConnection();
+
   // Returns true when connection attempts should be throttled because there is
   // an in-flight attempt and the destination is known to support HTTP/2.
   bool ShouldThrottleAttemptForSpdy();
+
+  // Helper method to calculate pending requests/preconnects.
+  size_t PendingCountInternal(size_t pending_count) const;
 
   std::optional<IPEndPoint> GetIPEndPointToAttempt();
   std::optional<IPEndPoint> FindPreferredIPEndpoint(
@@ -192,6 +213,17 @@ class HttpStreamPool::Job
 
   // Notifies a failure to all requests.
   void NotifyFailure();
+
+  // Notifies a failure to a single request. Used by NotifyFailure().
+  void NotifyStreamRequestOfFailure();
+
+  // Notifies all preconnects of completion.
+  void NotifyPreconnectsComplete(int rv);
+
+  // Called after completion of a connection attempt to decriment stream
+  // counts in preconnect entries. Invokes the callback of an entry when the
+  // entry's stream counts becomes zero (i.e., `this` has enough streams).
+  void ProcessPreconnectsAfterAttemptComplete(int rv);
 
   // Creates a text based stream and notifies the highest priority request.
   void CreateTextBasedStreamAndNotify(
@@ -236,6 +268,10 @@ class HttpStreamPool::Job
   // to avoid dangling pointers.
   std::set<std::unique_ptr<RequestEntry>, base::UniquePtrComparator>
       notified_requests_;
+
+  // Holds preconnect requests.
+  std::set<std::unique_ptr<PreconnectEntry>, base::UniquePtrComparator>
+      preconnects_;
 
   std::unique_ptr<HostResolver::ServiceEndpointRequest>
       service_endpoint_request_;

@@ -8,6 +8,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
+#include "net/spdy/spdy_session_key.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -56,6 +57,14 @@ base::Value::Dict HttpStreamKey::ToValue() const {
            SecureDnsPolicyToDebugString(secure_dns_policy_));
   dict.Set("disable_cert_network_fetches", disable_cert_network_fetches_);
   return dict;
+}
+
+SpdySessionKey HttpStreamKey::ToSpdySessionKey() const {
+  return SpdySessionKey(HostPortPair::FromSchemeHostPort(destination()),
+                        privacy_mode(), ProxyChain::Direct(),
+                        SessionUsage::kDestination, socket_tag(),
+                        network_anonymization_key(), secure_dns_policy(),
+                        disable_cert_network_fetches());
 }
 
 }  // namespace net

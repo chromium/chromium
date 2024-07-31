@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/request_priority.h"
@@ -86,6 +87,12 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
       const NetLogWithSource& net_log);
+
+  // Requests that enough connections/sessions for `num_streams` be opened.
+  // `callback` is only invoked when the return value is `ERR_IO_PENDING`.
+  int Preconnect(const HttpStreamKey& stream_key,
+                 size_t num_streams,
+                 CompletionOnceCallback callback);
 
   // Increments/Decrements the total number of idle streams in this pool.
   void IncrementTotalIdleStreamCount();

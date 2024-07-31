@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
@@ -35,6 +36,7 @@
 #include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_test_util.h"
 #include "net/log/test_net_log.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/spdy/spdy_test_util_common.h"
@@ -276,17 +278,98 @@ class EndpointHelper {
   ServiceEndpoint endpoint_;
 };
 
+// A helper to create an HttpStreamKey.
+class StreamKeyBuilder {
+ public:
+  explicit StreamKeyBuilder(std::string_view destination = "http://a.test")
+      : destination_(url::SchemeHostPort(GURL(destination))) {}
+
+  StreamKeyBuilder(const StreamKeyBuilder&) = delete;
+  StreamKeyBuilder& operator=(const StreamKeyBuilder&) = delete;
+
+  ~StreamKeyBuilder() = default;
+
+  StreamKeyBuilder& from_key(const HttpStreamKey& key) {
+    destination_ = key.destination();
+    privacy_mode_ = key.privacy_mode();
+    secure_dns_policy_ = key.secure_dns_policy();
+    disable_cert_network_fetches_ = key.disable_cert_network_fetches();
+    return *this;
+  }
+
+  StreamKeyBuilder& set_destination(std::string_view destination) {
+    set_destination(url::SchemeHostPort(GURL(destination)));
+    return *this;
+  }
+
+  StreamKeyBuilder& set_destination(url::SchemeHostPort destination) {
+    destination_ = std::move(destination);
+    return *this;
+  }
+
+  StreamKeyBuilder& set_privacy_mode(PrivacyMode privacy_mode) {
+    privacy_mode_ = privacy_mode;
+    return *this;
+  }
+
+  HttpStreamKey Build() const {
+    return HttpStreamKey(destination_, privacy_mode_, SocketTag(),
+                         NetworkAnonymizationKey(), secure_dns_policy_,
+                         disable_cert_network_fetches_);
+  }
+
+ private:
+  url::SchemeHostPort destination_;
+  PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
+  SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
+  bool disable_cert_network_fetches_ = true;
+};
+
+class Preconnector {
+ public:
+  explicit Preconnector(std::string_view destination) {
+    key_builder_.set_destination(destination);
+  }
+
+  Preconnector(const Preconnector&) = delete;
+  Preconnector& operator=(const Preconnector&) = delete;
+
+  ~Preconnector() = default;
+
+  Preconnector& set_num_streams(size_t num_streams) {
+    num_streams_ = num_streams;
+    return *this;
+  }
+
+  HttpStreamKey GetStreamKey() const { return key_builder_.Build(); }
+
+  int Preconnect(HttpStreamPool& pool) {
+    return pool.Preconnect(
+        GetStreamKey(), num_streams_,
+        base::BindOnce(&Preconnector::OnComplete, base::Unretained(this)));
+  }
+
+  std::optional<int> result() const { return result_; }
+
+ private:
+  void OnComplete(int rv) { result_ = rv; }
+
+  StreamKeyBuilder key_builder_;
+
+  size_t num_streams_ = 1;
+
+  std::optional<int> result_;
+};
+
 // A helper to request an HttpStream. On success, it keeps the provided
 // HttpStream. On failure, it keeps error information.
 class StreamRequester : public HttpStreamRequest::Delegate {
  public:
-  StreamRequester() : destination_(url::SchemeHostPort("http", "a.test", 80)) {}
+  StreamRequester() = default;
 
-  explicit StreamRequester(const HttpStreamKey& key)
-      : destination_(key.destination()),
-        privacy_mode_(key.privacy_mode()),
-        secure_dns_policy_(key.secure_dns_policy()),
-        disable_cert_network_fetches_(key.disable_cert_network_fetches()) {}
+  explicit StreamRequester(const HttpStreamKey& key) {
+    key_builder_.from_key(key);
+  }
 
   StreamRequester(const StreamRequester&) = delete;
   StreamRequester& operator=(const StreamRequester&) = delete;
@@ -294,11 +377,12 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   ~StreamRequester() override = default;
 
   StreamRequester& set_destination(std::string_view destination) {
-    return set_destination(url::SchemeHostPort(GURL(destination)));
+    key_builder_.set_destination(destination);
+    return *this;
   }
 
   StreamRequester& set_destination(url::SchemeHostPort destination) {
-    destination_ = std::move(destination);
+    key_builder_.set_destination(destination);
     return *this;
   }
 
@@ -313,15 +397,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   }
 
   StreamRequester& set_privacy_mode(PrivacyMode privacy_mode) {
-    privacy_mode_ = privacy_mode;
+    key_builder_.set_privacy_mode(privacy_mode);
     return *this;
   }
 
-  HttpStreamKey GetStreamKey() const {
-    return HttpStreamKey(destination_, privacy_mode_, SocketTag(),
-                         NetworkAnonymizationKey(), secure_dns_policy_,
-                         disable_cert_network_fetches_);
-  }
+  HttpStreamKey GetStreamKey() const { return key_builder_.Build(); }
 
   HttpStreamRequest* RequestStream(HttpStreamPool& pool) {
     HttpStreamKey stream_key = GetStreamKey();
@@ -407,10 +487,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   scoped_refptr<SSLCertRequestInfo> cert_info() const { return cert_info_; }
 
  private:
-  url::SchemeHostPort destination_;
-  PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
-  SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
-  bool disable_cert_network_fetches_ = true;
+  StreamKeyBuilder key_builder_;
 
   RequestPriority priority_ = RequestPriority::IDLE;
 
@@ -1802,6 +1879,320 @@ TEST_F(HttpStreamPoolJobTest, ThrottleAttemptForSpdyDelayPassedHttp1) {
 
   EXPECT_THAT(requester1.result(), Optional(IsOk()));
   EXPECT_THAT(requester2.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolJobTest, PreconnectSpdySessionAvailable) {
+  Preconnector preconnector("https://a.test");
+  CreateFakeSpdySession(preconnector.GetStreamKey());
+
+  int rv = preconnector.Preconnect(pool());
+  EXPECT_THAT(rv, IsOk());
+}
+
+TEST_F(HttpStreamPoolJobTest, PreconnectActiveStreamsAvailable) {
+  Preconnector preconnector("http://a.test");
+  Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
+  group.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+
+  int rv = preconnector.Preconnect(pool());
+  EXPECT_THAT(rv, IsOk());
+}
+
+TEST_F(HttpStreamPoolJobTest, PreconnectFail) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  Preconnector preconnector("http://a.test");
+
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, ERR_FAILED));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  int rv = preconnector.Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 1u);
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  RunUntilIdle();
+  EXPECT_THAT(*preconnector.result(), IsError(ERR_FAILED));
+}
+
+TEST_F(HttpStreamPoolJobTest, PreconnectMultipleStreamsHttp1) {
+  constexpr size_t kNumStreams = 2;
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  Preconnector preconnector("http://a.test");
+
+  std::vector<std::unique_ptr<SequencedSocketData>> datas;
+  for (size_t i = 0; i < kNumStreams; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    datas.emplace_back(std::move(data));
+  }
+
+  int rv = preconnector.set_num_streams(kNumStreams).Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), kNumStreams);
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  RunUntilIdle();
+  EXPECT_THAT(preconnector.result(), Optional(IsOk()));
+  ASSERT_EQ(group.IdleStreamSocketCount(), kNumStreams);
+}
+
+TEST_F(HttpStreamPoolJobTest, PreconnectMultipleStreamsHttp2) {
+  constexpr size_t kNumStreams = 2;
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  Preconnector preconnector("https://a.test");
+
+  HttpStreamKey stream_key = preconnector.GetStreamKey();
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(),
+      /*supports_spdy=*/true);
+
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  auto data = std::make_unique<SequencedSocketData>(reads, writes);
+  socket_factory()->AddSocketDataProvider(data.get());
+  auto ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(ssl.get());
+
+  int rv = preconnector.set_num_streams(kNumStreams).Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 1u);
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  RunUntilIdle();
+  EXPECT_THAT(preconnector.result(), Optional(IsOk()));
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
+      stream_key.ToSpdySessionKey(), false));
+}
+
+TEST_F(HttpStreamPoolJobTest, PreconnectRequireHttp1) {
+  constexpr size_t kNumStreams = 2;
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  Preconnector preconnector("https://a.test");
+
+  HttpStreamKey stream_key = preconnector.GetStreamKey();
+  http_server_properties()->SetHTTP11Required(
+      stream_key.destination(), stream_key.network_anonymization_key());
+
+  std::vector<std::unique_ptr<SequencedSocketData>> datas;
+  std::vector<std::unique_ptr<SSLSocketDataProvider>> ssls;
+  for (size_t i = 0; i < kNumStreams; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    datas.emplace_back(std::move(data));
+    auto ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+    ssl->next_protos_expected_in_ssl_config = {kProtoHTTP11};
+    socket_factory()->AddSSLSocketDataProvider(ssl.get());
+    ssls.emplace_back(std::move(ssl));
+  }
+
+  int rv = preconnector.set_num_streams(kNumStreams).Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 2u);
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  RunUntilIdle();
+  EXPECT_THAT(preconnector.result(), Optional(IsOk()));
+  ASSERT_EQ(group.IdleStreamSocketCount(), 2u);
+  ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
+      stream_key.ToSpdySessionKey(), false));
+}
+
+TEST_F(HttpStreamPoolJobTest, PreconnectMultipleStreamsOkAndFail) {
+  constexpr size_t kNumStreams = 2;
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  Preconnector preconnector("http://a.test");
+
+  std::vector<MockConnect> connects = {
+      {MockConnect(ASYNC, OK), MockConnect(ASYNC, ERR_FAILED)}};
+  std::vector<std::unique_ptr<SequencedSocketData>> datas;
+  for (const auto& connect : connects) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(connect);
+    socket_factory()->AddSocketDataProvider(data.get());
+    datas.emplace_back(std::move(data));
+  }
+
+  int rv = preconnector.set_num_streams(kNumStreams).Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), kNumStreams);
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  RunUntilIdle();
+  EXPECT_THAT(preconnector.result(), Optional(IsError(ERR_FAILED)));
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+}
+
+TEST_F(HttpStreamPoolJobTest, PreconnectMultipleStreamsFailAndOk) {
+  constexpr size_t kNumStreams = 2;
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  Preconnector preconnector("http://a.test");
+
+  std::vector<MockConnect> connects = {
+      {MockConnect(ASYNC, ERR_FAILED), MockConnect(ASYNC, OK)}};
+  std::vector<std::unique_ptr<SequencedSocketData>> datas;
+  for (const auto& connect : connects) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(connect);
+    socket_factory()->AddSocketDataProvider(data.get());
+    datas.emplace_back(std::move(data));
+  }
+
+  int rv = preconnector.set_num_streams(kNumStreams).Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
+  ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), kNumStreams);
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  RunUntilIdle();
+  EXPECT_THAT(preconnector.result(), Optional(IsError(ERR_FAILED)));
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+}
+
+TEST_F(HttpStreamPoolJobTest, PreconnectMultipleRequests) {
+  constexpr std::string_view kDestination("http://a.test");
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  Preconnector preconnector1(kDestination);
+  Preconnector preconnector2(kDestination);
+
+  MockConnectCompleter completers[2];
+  std::vector<MockConnect> connects = {
+      {MockConnect(&completers[0]), MockConnect(&completers[1])}};
+  std::vector<std::unique_ptr<SequencedSocketData>> datas;
+  for (const auto& connect : connects) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(connect);
+    socket_factory()->AddSocketDataProvider(data.get());
+    datas.emplace_back(std::move(data));
+  }
+
+  int rv = preconnector1.set_num_streams(1).Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = preconnector2.set_num_streams(2).Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  ASSERT_FALSE(preconnector1.result().has_value());
+  ASSERT_FALSE(preconnector2.result().has_value());
+
+  completers[0].Complete(OK);
+  RunUntilIdle();
+  ASSERT_TRUE(preconnector1.result().has_value());
+  EXPECT_THAT(*preconnector1.result(), IsOk());
+  ASSERT_FALSE(preconnector2.result().has_value());
+
+  completers[1].Complete(OK);
+  RunUntilIdle();
+  EXPECT_THAT(preconnector2.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolJobTest, PreconnectReachedGroupLimit) {
+  constexpr size_t kMaxPerGroup = 1;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+
+  constexpr size_t kNumStreams = 2;
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  Preconnector preconnector("http://a.test");
+
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  int rv = preconnector.set_num_streams(kNumStreams).Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+  Group& group = pool().GetOrCreateGroupForTesting(preconnector.GetStreamKey());
+  EXPECT_THAT(preconnector.result(),
+              Optional(IsError(ERR_PRECONNECT_MAX_SOCKET_LIMIT)));
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+}
+
+TEST_F(HttpStreamPoolJobTest, PreconnectReachedPoolLimit) {
+  constexpr size_t kMaxPerGroup = 1;
+  constexpr size_t kMaxPerPool = 2;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+
+  constexpr size_t kNumStreams = 2;
+
+  auto key_a = StreamKeyBuilder("http://a.test").Build();
+  pool().GetOrCreateGroupForTesting(key_a).CreateTextBasedStream(
+      std::make_unique<FakeStreamSocket>());
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  Preconnector preconnector_b("http://b.test");
+
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  int rv = preconnector_b.set_num_streams(kNumStreams).Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+  Group& group_b =
+      pool().GetOrCreateGroupForTesting(preconnector_b.GetStreamKey());
+  EXPECT_THAT(preconnector_b.result(),
+              Optional(IsError(ERR_PRECONNECT_MAX_SOCKET_LIMIT)));
+  ASSERT_EQ(group_b.IdleStreamSocketCount(), 1u);
 }
 
 }  // namespace net

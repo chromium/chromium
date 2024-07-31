@@ -11,6 +11,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
+#include "net/spdy/spdy_session_key.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -53,6 +54,8 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
   }
 
   base::Value::Dict ToValue() const;
+
+  SpdySessionKey ToSpdySessionKey() const;
 
  private:
   url::SchemeHostPort destination_;

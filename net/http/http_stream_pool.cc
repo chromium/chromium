@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
@@ -65,12 +66,7 @@ HttpStreamPool::StreamResult HttpStreamPool::RequestStream(
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
     const NetLogWithSource& net_log) {
-  SpdySessionKey spdy_session_key(
-      HostPortPair::FromSchemeHostPort(stream_key.destination()),
-      stream_key.privacy_mode(), ProxyChain::Direct(),
-      SessionUsage::kDestination, stream_key.socket_tag(),
-      stream_key.network_anonymization_key(), stream_key.secure_dns_policy(),
-      stream_key.disable_cert_network_fetches());
+  SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
 
   base::WeakPtr<SpdySession> spdy_session =
       http_network_session_->spdy_session_pool()->FindAvailableSession(
@@ -88,6 +84,15 @@ HttpStreamPool::StreamResult HttpStreamPool::RequestStream(
   Group& group = GetOrCreateGroup(stream_key, std::move(spdy_session_key));
   return group.RequestStream(delegate, priority, allowed_bad_certs,
                              enable_ip_based_pooling, net_log);
+}
+
+int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
+                               size_t num_streams,
+                               CompletionOnceCallback callback) {
+  CHECK_GE(kMaxStreamSocketsPerGroup, num_streams);
+  SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
+  return GetOrCreateGroup(stream_key, std::move(spdy_session_key))
+      .Preconnect(num_streams, std::move(callback));
 }
 
 void HttpStreamPool::IncrementTotalIdleStreamCount() {

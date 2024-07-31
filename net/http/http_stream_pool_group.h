@@ -19,6 +19,7 @@
 
 namespace net {
 
+class HttpNetworkSession;
 class HttpStream;
 class HttpStreamPoolHandle;
 class StreamSocket;
@@ -66,6 +67,13 @@ class HttpStreamPool::Group {
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
       const NetLogWithSource& net_log);
+
+  // Creates idle streams or sessions for `num_streams` be opened.
+  // Note that this method finishes synchronously, or `callback` is called, once
+  // `this` has enough streams/sessions for `num_streams` be opened. This means
+  // that when there are two preconnect requests with `num_streams = 1`, all
+  // callbacks are invoked when one stream/session is established (not two).
+  int Preconnect(size_t num_streams, CompletionOnceCallback callback);
 
   // Creates an HttpStreamPoolHandle from `socket`. Call sites must ensure that
   // the number of active streams do not exceed the global/per-group limits.
@@ -141,7 +149,10 @@ class HttpStreamPool::Group {
     // Clean up all idle streams.
     kForce,
   };
+
   void CleanupIdleStreamSockets(CleanupMode mode);
+
+  void EnsureInFlightJob();
 
   const raw_ptr<HttpStreamPool> pool_;
   const HttpStreamKey stream_key_;

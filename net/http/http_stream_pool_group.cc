@@ -4,6 +4,8 @@
 
 #include "net/http/http_stream_pool_group.h"
 
+#include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream.h"
@@ -98,12 +100,15 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
   net_log.AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_REQUEST_BOUND, net_log_.source());
 
-  if (!in_flight_job_) {
-    in_flight_job_ = std::make_unique<Job>(this, net_log.net_log());
-  }
-
+  EnsureInFlightJob();
   return in_flight_job_->RequestStream(delegate, priority, allowed_bad_certs,
                                        enable_ip_based_pooling, net_log);
+}
+
+int HttpStreamPool::Group::Preconnect(size_t num_streams,
+                                      CompletionOnceCallback callback) {
+  EnsureInFlightJob();
+  return in_flight_job_->Preconnect(num_streams, std::move(callback));
 }
 
 std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
@@ -271,6 +276,14 @@ void HttpStreamPool::Group::CleanupIdleStreamSockets(CleanupMode mode) {
       ++it;
     }
   }
+}
+
+void HttpStreamPool::Group::EnsureInFlightJob() {
+  if (in_flight_job_) {
+    return;
+  }
+  in_flight_job_ =
+      std::make_unique<Job>(this, http_network_session()->net_log());
 }
 
 }  // namespace net
