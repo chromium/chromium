@@ -1001,6 +1001,7 @@ void NotifySixPackRewriteBlockedByFnKey(
           map.result.key_code, (map.condition.flags & ui::EF_COMMAND_DOWN)
                                    ? mojom::SixPackShortcutModifier::kSearch
                                    : mojom::SixPackShortcutModifier::kAlt);
+      return;
     }
   }
 }
