@@ -221,9 +221,17 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Replay();
 }
 
+// TODO(crbug.com/356567533): flaky on MSAN. Deflake and re-enable the test.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SetDescendantThenFocusingSearchFieldAnnouncesDescendant \
+  DISABLED_SetDescendantThenFocusingSearchFieldAnnouncesDescendant
+#else
+#define MAYBE_SetDescendantThenFocusingSearchFieldAnnouncesDescendant \
+  SetDescendantThenFocusingSearchFieldAnnouncesDescendant
+#endif
 IN_PROC_BROWSER_TEST_F(
     PickerAccessibilityBrowserTest,
-    SetDescendantThenFocusingSearchFieldAnnouncesDescendant) {
+    MAYBE_SetDescendantThenFocusingSearchFieldAnnouncesDescendant) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
