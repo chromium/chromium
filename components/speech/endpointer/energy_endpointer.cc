@@ -6,6 +6,11 @@
 // based of, see
 // https://wiki.corp.google.com/twiki/bin/view/Main/ChromeGoogleCodeXRef
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/speech/endpointer/energy_endpointer.h"
 
 #include <math.h>
