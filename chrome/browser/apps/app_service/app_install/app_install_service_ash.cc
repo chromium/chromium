@@ -145,7 +145,8 @@ void AppInstallServiceAsh::InstallApp(
   switch (package_id.package_type()) {
     case PackageType::kArc:
     case PackageType::kGeForceNow:
-    case PackageType::kWeb: {
+    case PackageType::kWeb:
+    case PackageType::kWebsite: {
       // Observe for `anchor_window` being destroyed during async work.
       std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker;
       if (anchor_window) {
@@ -184,7 +185,6 @@ void AppInstallServiceAsh::InstallApp(
       std::move(result_callback).Run(AppInstallResult::kUnknown);
       return;
     }
-    case PackageType::kWebsite:
     case PackageType::kChromeApp:
     case PackageType::kSystem:
     case PackageType::kUnknown:

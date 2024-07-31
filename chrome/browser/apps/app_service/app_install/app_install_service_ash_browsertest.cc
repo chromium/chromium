@@ -131,6 +131,28 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
       AppInstallResult::kAppDataCorrupted, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
+                       InstallWebsiteOpensInstallUrl) {
+  base::HistogramTester histograms;
+  std::string test_url = "https://www.not-an-app.com/";
+  PackageId package_id(PackageType::kWebsite, test_url);
+  app_install_server()->SetUpInstallUrlResponse(package_id, GURL(test_url));
+
+  content::TestNavigationObserver navigation_observer((GURL(test_url)));
+  navigation_observer.StartWatchingNewWebContents();
+
+  AppServiceProxyFactory::GetForProfile(browser()->profile())
+      ->AppInstallService()
+      .InstallApp(AppInstallSurface::kAppInstallUriMall, package_id,
+                  /*anchor_window=*/std::nullopt, base::DoNothing());
+
+  navigation_observer.Wait();
+
+  histograms.ExpectUniqueSample(
+      "Apps.AppInstallService.AppInstallResult.AppInstallUriMall",
+      AppInstallResult::kUnknown, 1);
+}
+
 class AppInstallServiceAshGuestBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<bool> {
