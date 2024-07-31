@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 namespace payments {
@@ -60,7 +61,7 @@ BASE_DECLARE_FEATURE(kPaymentHandlerAlwaysRefreshIcon);
 // a Link header with rel="payment-method-manifest".
 BASE_DECLARE_FEATURE(kPaymentHandlerRequireLinkHeader);
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 // Controls how network and issuer icons (when enabled) are presented in SPC UX.
 extern const base::FeatureParam<std::string>
     kSecurePaymentConfirmationNetworkAndIssuerIconsOptions;

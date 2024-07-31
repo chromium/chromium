@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 #include "third_party/blink/public/common/features_generated.h"
 #endif
 
@@ -76,7 +76,7 @@ BASE_FEATURE(kPaymentHandlerRequireLinkHeader,
              "PaymentHandlerRequireLinkHeader",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 const base::FeatureParam<std::string>
     kSecurePaymentConfirmationNetworkAndIssuerIconsOptions(
         &blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
