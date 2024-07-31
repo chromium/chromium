@@ -459,4 +459,12 @@ void ScreenAIService::ReceiverDisconnected() {
   }
 }
 
+void ScreenAIService::ShutDownIfNoClients() {
+  bool no_clients = screen_ai_annotators_.empty() &&
+                    screen_2x_main_content_extractors_.empty();
+  if (no_clients) {
+    base::Process::TerminateCurrentProcessImmediately(0);
+  }
+}
+
 }  // namespace screen_ai

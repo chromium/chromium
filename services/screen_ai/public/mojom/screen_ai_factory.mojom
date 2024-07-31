@@ -50,5 +50,6 @@ interface ScreenAIServiceFactory {
       main_content_extractor_service) =>
       (bool initialized);
 
-  // TODO(crbug.com/40911117): Add Initialization for Layout Extractor.
+  // Shuts down the service if there are no connected remotes.
+  ShutDownIfNoClients();
 };
