@@ -11,11 +11,8 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/vector_icons.h"
 
 namespace {
-
-constexpr int kCheckIconSize = 16;
 
 std::u16string GetCommandIdLabel(int command_id) {
   switch (command_id) {
@@ -39,6 +36,7 @@ PinOptionsButton::PinOptionsButton(const std::u16string& label,
           base::BindRepeating(&PinOptionsButton::ButtonPressed,
                               base::Unretained(this)),
           label),
+      checked_command_id_(checked_command_id),
       callback_(std::move(callback)),
       menu_model_(std::make_unique<ui::SimpleMenuModel>(this)) {
   GetViewAccessibility().SetName(label);
@@ -46,15 +44,7 @@ PinOptionsButton::PinOptionsButton(const std::u16string& label,
 
   for (int command_id = 0; command_id < CommandId::COMMAND_ID_COUNT;
        command_id++) {
-    const std::u16string command_label = GetCommandIdLabel(command_id);
-    if (command_id == checked_command_id) {
-      menu_model_->AddItemWithIcon(
-          command_id, command_label,
-          ui::ImageModel::FromVectorIcon(views::kMenuCheckIcon,
-                                         ui::kColorMenuIcon, kCheckIconSize));
-    } else {
-      menu_model_->AddItem(command_id, command_label);
-    }
+    menu_model_->AddCheckItem(command_id, GetCommandIdLabel(command_id));
   }
 }
 
@@ -81,6 +71,10 @@ void PinOptionsButton::ExecuteCommand(int command_id, int event_flags) {
       NOTREACHED_IN_MIGRATION();
       return;
   }
+}
+
+bool PinOptionsButton::IsCommandIdChecked(int command_id) const {
+  return checked_command_id_ == command_id;
 }
 
 BEGIN_METADATA(PinOptionsButton)
