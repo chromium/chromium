@@ -93,9 +93,12 @@ class ModelExecutionFetcherTest : public testing::Test {
     EXPECT_TRUE(net::GetValueForKeyInQuery(pending_request->request.url, "key",
                                            &key_value));
     last_authorization_request_header_.clear();
-    pending_request->request.headers.GetHeader(
-        net::HttpRequestHeaders::kAuthorization,
-        &last_authorization_request_header_);
+    if (std::optional<std::string> header =
+            pending_request->request.headers.GetHeader(
+                net::HttpRequestHeaders::kAuthorization);
+        header) {
+      last_authorization_request_header_ = *header;
+    }
 
     EXPECT_EQ(pending_request->request.request_body->elements()->size(), 1u);
     auto& element =
