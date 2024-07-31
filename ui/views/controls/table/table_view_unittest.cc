@@ -102,6 +102,12 @@ class TableViewTestHelper {
     return table_->GetActiveCellBounds();
   }
 
+  void SelectRowsInRangeFrom(size_t view_index,
+                             bool select,
+                             ui::ListSelectionModel* model) {
+    table_->SelectRowsInRangeFrom(view_index, select, model);
+  }
+
   std::vector<std::vector<gfx::Rect>> GenerateExpectedBounds() {
     // Generates the expected bounds for |table_|'s rows and cells. Each vector
     // represents a row. The first entry in each child vector is the bounds for
@@ -1302,6 +1308,115 @@ TEST_P(TableViewTest, Grouping) {
   EXPECT_TRUE(table_->sort_descriptors()[0].ascending);
   EXPECT_EQ("2 3 0 1", GetViewToModelAsString(table_));
   EXPECT_EQ("2 3 0 1", GetModelToViewAsString(table_));
+}
+
+TEST_P(TableViewTest, VirtualAccessibilitySetSelectionAll) {
+  table_->SetSelectionAll(true);
+  // Set only the first column as the active column.
+  table_->SetActiveVisibleColumnIndex(0);
+
+  for (size_t i = 0; i < table_->GetRowCount(); ++i) {
+    const AXVirtualView* row = helper_->GetVirtualAccessibilityBodyRow(i);
+    ASSERT_TRUE(row);
+    const ui::AXNodeData& row_data = row->GetData();
+    // Make sure all rows are selected.
+    EXPECT_TRUE(row_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+    for (size_t j = 0; j < helper_->visible_col_count(); ++j) {
+      const AXVirtualView* cell = helper_->GetVirtualAccessibilityCell(i, j);
+      ASSERT_TRUE(cell);
+      const ui::AXNodeData& cell_data = cell->GetData();
+      // Only the cells in the first column should be selected.
+      if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell && j == 0) {
+        EXPECT_TRUE(
+            cell_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+      } else {
+        EXPECT_FALSE(
+            cell_data.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+      }
+    }
+  }
+}
+
+TEST_P(TableViewTest, VirtualAccessibilitySetSelectionRowsInRange) {
+  // Configure the grouper so that there are two groups:
+  // A 0
+  //   1
+  // B 2
+  //   3
+  TableGrouperImpl grouper;
+  grouper.SetRanges({2, 2});
+  table_->SetGrouper(&grouper);
+  ui::ListSelectionModel new_selection;
+  // Should only select the second group.
+  helper_->SelectRowsInRangeFrom(2, true, &new_selection);
+  helper_->SetSelectionModel(new_selection);
+  // Set only the second column as the active column.
+  table_->SetActiveVisibleColumnIndex(1);
+
+  for (size_t i = 0; i < table_->GetRowCount(); ++i) {
+    const AXVirtualView* row = helper_->GetVirtualAccessibilityBodyRow(i);
+    ASSERT_TRUE(row);
+    const ui::AXNodeData& row_data = row->GetData();
+    if (i == 2 || i == 3) {
+      EXPECT_TRUE(
+          row_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+    } else {
+      EXPECT_FALSE(
+          row_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+    }
+    for (size_t j = 0; j < helper_->visible_col_count(); ++j) {
+      const AXVirtualView* cell = helper_->GetVirtualAccessibilityCell(i, j);
+      ASSERT_TRUE(cell);
+      const ui::AXNodeData& cell_data = cell->GetData();
+      if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell && j == 1 &&
+          (i == 2 || i == 3)) {
+        EXPECT_TRUE(
+            cell_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+      } else {
+        EXPECT_FALSE(
+            cell_data.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+      }
+    }
+  }
+
+  ui::ListSelectionModel new_selection2;
+  // Unselect the selected cells.
+  helper_->SelectRowsInRangeFrom(2, false, &new_selection2);
+  helper_->SetSelectionModel(new_selection2);
+
+  for (size_t i = 0; i < table_->GetRowCount(); ++i) {
+    const AXVirtualView* row = helper_->GetVirtualAccessibilityBodyRow(i);
+    ASSERT_TRUE(row);
+    const ui::AXNodeData& row_data = row->GetData();
+    EXPECT_FALSE(
+        row_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+    for (size_t j = 0; j < helper_->visible_col_count(); ++j) {
+      const AXVirtualView* cell = helper_->GetVirtualAccessibilityCell(i, j);
+      ASSERT_TRUE(cell);
+      const ui::AXNodeData& cell_data = cell->GetData();
+      EXPECT_FALSE(
+          cell_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+    }
+  }
+}
+
+TEST_P(TableViewTest, VirtualAccessibilitySelectOnRemove) {
+  table_->Select(2);
+  model_->RemoveRow(2);
+
+  for (size_t i = 0; i < table_->GetRowCount(); ++i) {
+    const AXVirtualView* row = helper_->GetVirtualAccessibilityBodyRow(i);
+    ASSERT_TRUE(row);
+    const ui::AXNodeData& row_data = row->GetData();
+    // Only the new row at index 2 should be selected.
+    if (i == 2) {
+      EXPECT_TRUE(
+          row_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+    } else {
+      EXPECT_FALSE(
+          row_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+    }
+  }
 }
 
 namespace {
