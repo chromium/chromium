@@ -182,6 +182,7 @@ OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
       views::BoxLayout::Orientation::kVertical));
 
   UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessibleActiveDescendantForInvokingView();
 }
 
 OmniboxPopupViewViews::~OmniboxPopupViewViews() {
@@ -245,6 +246,7 @@ void OmniboxPopupViewViews::OnSelectionChanged(
   if (new_selection.line != OmniboxPopupSelection::kNoMatch) {
     InvalidateLine(new_selection.line);
   }
+  UpdateAccessibleActiveDescendantForInvokingView();
 }
 
 void OmniboxPopupViewViews::UpdatePopupAppearance() {
@@ -263,6 +265,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
       popup_.reset();
       UpdateExpandedCollapsedAccessibleState();
       // The active descendant should be cleared when the popup closes.
+      UpdateAccessibleActiveDescendantForInvokingView();
       FireAXEventsForNewActiveDescendant(nullptr);
     }
     return;
@@ -353,6 +356,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
 
     // Popup is now expanded and first item will be selected.
     UpdateExpandedCollapsedAccessibleState();
+    UpdateAccessibleActiveDescendantForInvokingView();
     OmniboxResultView* result_view = result_view_at(0);
     if (result_view) {
       FireAXEventsForNewActiveDescendant(result_view);
@@ -400,14 +404,6 @@ void OmniboxPopupViewViews::AddPopupAccessibleNodeData(
   int32_t popup_view_id = GetViewAccessibility().GetUniqueId();
   node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds,
                                  {popup_view_id});
-  size_t selected_line = GetSelection().line;
-  if (selected_line != OmniboxPopupSelection::kNoMatch) {
-    if (OmniboxResultView* result_view = result_view_at(selected_line)) {
-      node_data->AddIntAttribute(
-          ax::mojom::IntAttribute::kActivedescendantId,
-          result_view->GetViewAccessibility().GetUniqueId());
-    }
-  }
 }
 
 std::u16string OmniboxPopupViewViews::GetAccessibleButtonTextForResult(
@@ -470,9 +466,6 @@ void OmniboxPopupViewViews::FireAXEventsForNewActiveDescendant(
   }
   // Selected children changed is fired on the popup.
   NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
-  // Active descendant changed is fired on the focused text field.
-  omnibox_view_->NotifyAccessibilityEvent(
-      ax::mojom::Event::kActiveDescendantChanged, true);
 }
 
 void OmniboxPopupViewViews::OnWidgetBoundsChanged(views::Widget* widget,
@@ -629,6 +622,22 @@ void OmniboxPopupViewViews::UpdateExpandedCollapsedAccessibleState() const {
     GetViewAccessibility().SetIsExpanded();
   } else {
     GetViewAccessibility().SetIsCollapsed();
+  }
+}
+
+void OmniboxPopupViewViews::UpdateAccessibleActiveDescendantForInvokingView() {
+  if (!omnibox_view_) {
+    return;
+  }
+  size_t selected_line = GetSelection().line;
+  if (IsOpen() && selected_line != OmniboxPopupSelection::kNoMatch) {
+    if (OmniboxResultView* result_view = result_view_at(selected_line)) {
+      omnibox_view_->GetViewAccessibility().SetActiveDescendant(*result_view);
+    } else {
+      omnibox_view_->GetViewAccessibility().ClearActiveDescendant();
+    }
+  } else {
+    omnibox_view_->GetViewAccessibility().ClearActiveDescendant();
   }
 }
 

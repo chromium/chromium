@@ -116,6 +116,8 @@ class OmniboxPopupViewViews : public views::View,
  private:
   void UpdateExpandedCollapsedAccessibleState() const;
 
+  void UpdateAccessibleActiveDescendantForInvokingView();
+
   // The popup that contains this view.  We create this, but it deletes itself
   // when its window is destroyed.  This is a WeakPtr because it's possible for
   // the OS to destroy the window and thus delete this object before we're
