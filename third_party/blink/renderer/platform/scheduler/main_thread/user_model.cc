@@ -10,10 +10,7 @@
 namespace blink {
 namespace scheduler {
 
-UserModel::UserModel()
-    : pending_input_event_count_(0),
-      is_gesture_active_(false),
-      is_gesture_expected_(false) {}
+UserModel::UserModel() = default;
 
 void UserModel::DidStartProcessingInputEvent(blink::WebInputEvent::Type type,
                                              const base::TimeTicks now) {
@@ -62,19 +59,54 @@ void UserModel::DidFinishProcessingInputEvent(const base::TimeTicks now) {
     pending_input_event_count_--;
 }
 
-base::TimeDelta UserModel::TimeLeftInUserGesture(base::TimeTicks now) const {
-  base::TimeDelta escalated_priority_duration =
-      base::Milliseconds(kGestureEstimationLimitMillis);
+void UserModel::DidProcessDiscreteInputEvent(const base::TimeTicks now) {
+  last_discrete_input_time_ = now;
+}
 
+void UserModel::DidProcessDiscreteInputResponse() {
+  last_discrete_input_time_ = base::TimeTicks();
+}
+
+base::TimeDelta UserModel::TimeLeftInUserGesture(base::TimeTicks now) const {
+  const base::TimeDelta time_left_in_continuous_gesture =
+      TimeLeftInContinuousUserGesture(now);
+  CHECK(!time_left_in_continuous_gesture.is_negative());
+
+  const base::TimeDelta time_left_until_discrete_input_deadline =
+      TimeLeftUntilDiscreteInputResponseDeadline(now);
+  CHECK(!time_left_until_discrete_input_deadline.is_negative());
+
+  if (time_left_in_continuous_gesture.is_zero()) {
+    return time_left_until_discrete_input_deadline;
+  }
+  if (time_left_until_discrete_input_deadline.is_zero()) {
+    return time_left_in_continuous_gesture;
+  }
+  return std::min(time_left_in_continuous_gesture,
+                  time_left_until_discrete_input_deadline);
+}
+
+base::TimeDelta UserModel::TimeLeftInContinuousUserGesture(
+    base::TimeTicks now) const {
   // If the input event is still pending, go into input prioritized policy and
   // check again later.
-  if (pending_input_event_count_ > 0)
-    return escalated_priority_duration;
+  if (pending_input_event_count_ > 0) {
+    return kGestureEstimationLimit;
+  }
   if (last_input_signal_time_.is_null() ||
-      last_input_signal_time_ + escalated_priority_duration < now) {
+      last_input_signal_time_ + kGestureEstimationLimit < now) {
     return base::TimeDelta();
   }
-  return last_input_signal_time_ + escalated_priority_duration - now;
+  return last_input_signal_time_ + kGestureEstimationLimit - now;
+}
+
+base::TimeDelta UserModel::TimeLeftUntilDiscreteInputResponseDeadline(
+    base::TimeTicks now) const {
+  if (last_discrete_input_time_.is_null() ||
+      last_discrete_input_time_ + kDiscreteInputResponseDeadline < now) {
+    return base::TimeDelta();
+  }
+  return last_discrete_input_time_ + kDiscreteInputResponseDeadline - now;
 }
 
 bool UserModel::IsGestureExpectedSoon(
@@ -97,19 +129,17 @@ bool UserModel::IsGestureExpectedSoonImpl(
   if (is_gesture_active_) {
     if (IsGestureExpectedToContinue(now, prediction_valid_duration))
       return false;
-    *prediction_valid_duration =
-        base::Milliseconds(kExpectSubsequentGestureMillis);
+    *prediction_valid_duration = kExpectSubsequentGestureDeadline;
     return true;
   } else {
     // If we have finished a gesture then a subsequent gesture is deemed likely.
-    base::TimeDelta expect_subsequent_gesture_for =
-        base::Milliseconds(kExpectSubsequentGestureMillis);
     if (last_continuous_gesture_time_.is_null() ||
-        last_continuous_gesture_time_ + expect_subsequent_gesture_for <= now) {
+        last_continuous_gesture_time_ + kExpectSubsequentGestureDeadline <=
+            now) {
       return false;
     }
     *prediction_valid_duration =
-        last_continuous_gesture_time_ + expect_subsequent_gesture_for - now;
+        last_continuous_gesture_time_ + kExpectSubsequentGestureDeadline - now;
     return true;
   }
 }
@@ -120,10 +150,8 @@ bool UserModel::IsGestureExpectedToContinue(
   if (!is_gesture_active_)
     return false;
 
-  base::TimeDelta median_gesture_duration =
-      base::Milliseconds(kMedianGestureDurationMillis);
   base::TimeTicks expected_gesture_end_time =
-      last_gesture_start_time_ + median_gesture_duration;
+      last_gesture_start_time_ + kMedianGestureDuration;
 
   if (expected_gesture_end_time > now) {
     *prediction_valid_duration = expected_gesture_end_time - now;
@@ -137,6 +165,7 @@ void UserModel::Reset(base::TimeTicks now) {
   last_gesture_start_time_ = base::TimeTicks();
   last_continuous_gesture_time_ = base::TimeTicks();
   last_gesture_expected_start_time_ = base::TimeTicks();
+  last_discrete_input_time_ = base::TimeTicks();
   last_reset_time_ = now;
   is_gesture_active_ = false;
   is_gesture_expected_ = false;

@@ -537,8 +537,8 @@ class MainThreadSchedulerImplTest : public testing::Test {
     scheduler_->DidHandleInputEventOnCompositorThread(
         FakeInputEvent(blink::WebInputEvent::Type::kGestureScrollEnd),
         InputEventState::EVENT_CONSUMED_BY_COMPOSITOR);
-    test_task_runner_->AdvanceMockTickClock(
-        priority_escalation_after_input_duration() * 2);
+    test_task_runner_->AdvanceMockTickClock(UserModel::kGestureEstimationLimit *
+                                            2);
     scheduler_->ForceUpdatePolicy();
   }
 
@@ -915,14 +915,6 @@ class MainThreadSchedulerImplTest : public testing::Test {
   }
 
  protected:
-  static base::TimeDelta priority_escalation_after_input_duration() {
-    return base::Milliseconds(UserModel::kGestureEstimationLimitMillis);
-  }
-
-  static base::TimeDelta subsequent_input_expected_after_input_duration() {
-    return base::Milliseconds(UserModel::kExpectSubsequentGestureMillis);
-  }
-
   static base::TimeDelta maximum_idle_period_duration() {
     return IdleHelper::kMaximumIdlePeriod;
   }
@@ -1212,8 +1204,7 @@ TEST_F(MainThreadSchedulerImplTest,
   EnableIdleTasks();
   SimulateCompositorGestureStart(TouchEventPolicy::kSendTouchStart);
 
-  base::TimeTicks loop_end_time =
-      Now() + base::Milliseconds(UserModel::kMedianGestureDurationMillis * 2);
+  base::TimeTicks loop_end_time = Now() + UserModel::kMedianGestureDuration * 2;
 
   // The UseCase::kCompositorGesture usecase initially deprioritizes
   // compositor tasks (see
@@ -1875,8 +1866,8 @@ TEST_F(MainThreadSchedulerImplTest, SlowMainThreadInputEvent) {
 
   // Simulate the input event being queued for a very long time. The compositor
   // task we post here represents the enqueued input task.
-  test_task_runner_->AdvanceMockTickClock(
-      priority_escalation_after_input_duration() * 2);
+  test_task_runner_->AdvanceMockTickClock(UserModel::kGestureEstimationLimit *
+                                          2);
   scheduler_->DidHandleInputEventOnMainThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureFlingStart),
       WebInputEventResult::kHandledSystem);
@@ -1887,8 +1878,7 @@ TEST_F(MainThreadSchedulerImplTest, SlowMainThreadInputEvent) {
   EXPECT_EQ(UseCase::kMainThreadCustomInputHandling, CurrentUseCase());
 
   // After the escalation period ends we should go back into normal mode.
-  test_task_runner_->FastForwardBy(priority_escalation_after_input_duration() *
-                                   2);
+  test_task_runner_->FastForwardBy(UserModel::kGestureEstimationLimit * 2);
   EXPECT_EQ(UseCase::kNone, CurrentUseCase());
 }
 
@@ -2230,7 +2220,7 @@ TEST_F(MainThreadSchedulerImplTest, TestLongIdlePeriodInTouchStartPolicy) {
   EXPECT_EQ(0, run_count);
 
   // The long idle period should start after the touchstart policy has finished.
-  test_task_runner_->FastForwardBy(priority_escalation_after_input_duration());
+  test_task_runner_->FastForwardBy(UserModel::kGestureEstimationLimit);
   EXPECT_EQ(1, run_count);
 }
 
