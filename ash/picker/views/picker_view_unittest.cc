@@ -1677,6 +1677,29 @@ TEST_F(PickerViewTest, ArrowKeysNavigateEmojiBar) {
               Optional(PickerSearchResult::Symbol(u"♬")));
 }
 
+TEST_F(PickerViewTest, CanTypeQueryWhileEmojiBarIsPseudoFocused) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kExpressions},
+      .emoji_results = {PickerSearchResult::Emoji(u"😊"),
+                        PickerSearchResult::Symbol(u"♬")},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ViewDrawnWaiter().Wait(GetPickerViewFromWidget(*widget)
+                             ->emoji_bar_view_for_testing()
+                             ->GetTopItem());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_UP, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_B, ui::EF_NONE);
+
+  EXPECT_EQ(GetPickerViewFromWidget(*widget)
+                ->search_field_view_for_testing()
+                .textfield_for_testing()
+                .GetText(),
+            u"ab");
+}
+
 TEST_F(PickerViewTest, DownArrowKeyNavigatesSearchResults) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({

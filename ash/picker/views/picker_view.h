@@ -29,7 +29,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
-#include "ui/views/view_observer.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
@@ -57,8 +57,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
                               public PickerZeroStateViewDelegate,
                               public PickerSearchResultsViewDelegate,
                               public PickerEmojiBarViewDelegate,
-                              public PickerPseudoFocusHandler,
-                              public views::ViewObserver {
+                              public PickerPseudoFocusHandler {
   METADATA_HEADER(PickerView, views::WidgetDelegateView)
 
  public:
@@ -110,9 +109,6 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   bool MovePseudoFocusLeft() override;
   bool MovePseudoFocusRight() override;
   bool AdvancePseudoFocus(PickerPseudoFocusDirection direction) override;
-
-  // ViewObserver:
-  void OnViewIsDeleting(View* observed_view) override;
 
   // Returns the target bounds for this Picker view. The target bounds try to
   // vertically align `search_field_view_` with `anchor_bounds`. `anchor_bounds`
@@ -197,6 +193,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // pseudo focus instead moves back to the search field.
   void SetPseudoFocusedView(views::View* view);
 
+  views::View* GetPseudoFocusedView();
+
   // Called when the search field back button is pressed.
   void OnSearchBackButtonPressed();
 
@@ -230,9 +228,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // to keyboard navigation events.
   raw_ptr<PickerTraversableItemContainer> active_item_container_ = nullptr;
 
-  // The currently pseudo focused view, which responds to user actions that
-  // trigger `DoPseudoFocusedAction`.
-  raw_ptr<views::View> pseudo_focused_view_ = nullptr;
+  // Tracks the currently pseudo focused view, which responds to user actions
+  // that trigger `DoPseudoFocusedAction`.
+  views::ViewTracker pseudo_focused_view_tracker_;
 
   // If true, the Widget bounds should be adjusted on the next layout.
   bool widget_bounds_needs_update_ = true;
@@ -243,9 +241,6 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // This timer is running iff the first set of results for the current search
   // have not been published yet.
   base::OneShotTimer clear_results_timer_;
-
-  base::ScopedObservation<views::View, views::ViewObserver>
-      pseudo_focused_view_observation_{this};
 
   base::WeakPtrFactory<PickerView> weak_ptr_factory_{this};
 };

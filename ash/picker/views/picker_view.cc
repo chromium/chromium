@@ -68,6 +68,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -248,6 +249,8 @@ PickerView::PickerView(PickerViewDelegate* delegate,
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   AddAccelerator(ui::Accelerator(ui::VKEY_BROWSER_BACK, ui::EF_NONE));
   key_event_handler_.SetActivePseudoFocusHandler(this);
+
+  pseudo_focused_view_tracker_.SetTrackEntireViewHierarchy(true);
 }
 
 PickerView::~PickerView() = default;
@@ -389,21 +392,21 @@ bool PickerView::DoPseudoFocusedAction() {
     return false;
   }
 
-  if (auto* submenu_view =
-          views::AsViewClass<PickerItemWithSubmenuView>(pseudo_focused_view_)) {
+  if (auto* submenu_view = views::AsViewClass<PickerItemWithSubmenuView>(
+          GetPseudoFocusedView())) {
     submenu_view->ShowSubmenu();
     SetPseudoFocusedView(submenu_controller_.GetSubmenuView()->GetTopItem());
     return true;
   }
 
-  return pseudo_focused_view_ == nullptr
+  return GetPseudoFocusedView() == nullptr
              ? false
-             : DoPickerPseudoFocusedActionOnView(pseudo_focused_view_);
+             : DoPickerPseudoFocusedActionOnView(GetPseudoFocusedView());
 }
 
 bool PickerView::MovePseudoFocusUp() {
   if (views::View* item_above =
-          active_item_container_->GetItemAbove(pseudo_focused_view_)) {
+          active_item_container_->GetItemAbove(GetPseudoFocusedView())) {
     SetPseudoFocusedView(item_above);
   } else {
     AdvanceActiveItemContainer(PickerPseudoFocusDirection::kBackward);
@@ -413,7 +416,7 @@ bool PickerView::MovePseudoFocusUp() {
 
 bool PickerView::MovePseudoFocusDown() {
   if (views::View* item_below =
-          active_item_container_->GetItemBelow(pseudo_focused_view_)) {
+          active_item_container_->GetItemBelow(GetPseudoFocusedView())) {
     SetPseudoFocusedView(item_below);
   } else {
     AdvanceActiveItemContainer(PickerPseudoFocusDirection::kForward);
@@ -422,14 +425,14 @@ bool PickerView::MovePseudoFocusDown() {
 }
 
 bool PickerView::MovePseudoFocusLeft() {
-  if (IsContainedInSubmenu(pseudo_focused_view_)) {
+  if (IsContainedInSubmenu(GetPseudoFocusedView())) {
     SetPseudoFocusedView(submenu_controller_.GetAnchorView());
     submenu_controller_.Close();
     return true;
   }
 
   if (views::View* left_item =
-          active_item_container_->GetItemLeftOf(pseudo_focused_view_)) {
+          active_item_container_->GetItemLeftOf(GetPseudoFocusedView())) {
     SetPseudoFocusedView(left_item);
     return true;
   }
@@ -437,15 +440,15 @@ bool PickerView::MovePseudoFocusLeft() {
 }
 
 bool PickerView::MovePseudoFocusRight() {
-  if (views::IsViewClass<PickerItemWithSubmenuView>(pseudo_focused_view_)) {
-    views::AsViewClass<PickerItemWithSubmenuView>(pseudo_focused_view_)
+  if (views::IsViewClass<PickerItemWithSubmenuView>(GetPseudoFocusedView())) {
+    views::AsViewClass<PickerItemWithSubmenuView>(GetPseudoFocusedView())
         ->ShowSubmenu();
     SetPseudoFocusedView(submenu_controller_.GetSubmenuView()->GetTopItem());
     return true;
   }
 
   if (views::View* right_item =
-          active_item_container_->GetItemRightOf(pseudo_focused_view_)) {
+          active_item_container_->GetItemRightOf(GetPseudoFocusedView())) {
     SetPseudoFocusedView(right_item);
     return true;
   }
@@ -453,17 +456,12 @@ bool PickerView::MovePseudoFocusRight() {
 }
 
 bool PickerView::AdvancePseudoFocus(PickerPseudoFocusDirection direction) {
-  if (pseudo_focused_view_ == nullptr) {
+  if (GetPseudoFocusedView() == nullptr) {
     return false;
   }
   SetPseudoFocusedView(GetNextPickerPseudoFocusableView(
-      pseudo_focused_view_, direction, /*should_loop=*/true));
+      GetPseudoFocusedView(), direction, /*should_loop=*/true));
   return true;
-}
-
-void PickerView::OnViewIsDeleting(View* observed_view) {
-  CHECK_EQ(observed_view, pseudo_focused_view_);
-  SetPseudoFocusedView(nullptr);
 }
 
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
@@ -717,12 +715,12 @@ void PickerView::AdvanceActiveItemContainer(
 }
 
 void PickerView::SetPseudoFocusedView(views::View* view) {
-  if (pseudo_focused_view_ == view) {
+  if (view == nullptr) {
+    SetPseudoFocusedView(search_field_view_->textfield());
     return;
   }
 
-  if (view == nullptr) {
-    SetPseudoFocusedView(search_field_view_->textfield());
+  if (pseudo_focused_view_tracker_.view() == view) {
     return;
   }
 
@@ -737,14 +735,21 @@ void PickerView::SetPseudoFocusedView(views::View* view) {
     }
   }
 
-  RemovePickerPseudoFocusFromView(pseudo_focused_view_);
-  pseudo_focused_view_observation_.Reset();
-  pseudo_focused_view_ = view;
-  search_field_view_->SetTextfieldActiveDescendant(view);
+  RemovePickerPseudoFocusFromView(pseudo_focused_view_tracker_.view());
 
-  pseudo_focused_view_observation_.Observe(view);
+  pseudo_focused_view_tracker_.SetView(view);
+  // base::Unretained() is safe here because this class owns
+  // `pseudo_focused_view_tracker_`.
+  pseudo_focused_view_tracker_.SetIsDeletingCallback(base::BindOnce(
+      &PickerView::SetPseudoFocusedView, base::Unretained(this), nullptr));
+
+  search_field_view_->SetTextfieldActiveDescendant(view);
   view->ScrollViewToVisible();
   ApplyPickerPseudoFocusToView(view);
+}
+
+views::View* PickerView::GetPseudoFocusedView() {
+  return pseudo_focused_view_tracker_.view();
 }
 
 void PickerView::OnSearchBackButtonPressed() {
