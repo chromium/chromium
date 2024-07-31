@@ -1186,22 +1186,6 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataWrongSize) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(IOSurfaceImageBackingFactoryScanoutTest,
-       InvalidFormatForCreationWithSurfaceHandle) {
-  auto mailbox = Mailbox::Generate();
-  auto format = viz::LegacyMultiPlaneFormat::kNV12;
-  gfx::Size size(256, 256);
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
-  gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT};
-  auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
-  EXPECT_FALSE(backing);
-}
-
 // Tests creation with a multiplanar format that would succeed if used with
 // empty pixel data but should fail with non-empty pixel data.
 TEST_P(IOSurfaceImageBackingFactoryScanoutTest,

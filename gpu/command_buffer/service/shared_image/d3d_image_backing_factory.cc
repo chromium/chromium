@@ -131,8 +131,7 @@ DXGI_FORMAT GetDXGIFormatForGMB(viz::SharedImageFormat format) {
     return DXGI_FORMAT_B8G8R8A8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
     return DXGI_FORMAT_R16G16B16A16_FLOAT;
-  } else if (format == viz::MultiPlaneFormat::kNV12 ||
-             format == viz::LegacyMultiPlaneFormat::kNV12) {
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
     return DXGI_FORMAT_NV12;
   }
 
