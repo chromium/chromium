@@ -9841,27 +9841,6 @@
           }
         ]
       },
-      "linux-arm64-cast-rel": {
-        "contact_team_email": "cast-eng@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "linux-ash-chromium-generator-rel": {
         "problem_specs": [
           {
@@ -11142,27 +11121,6 @@
       },
       "linux-wpt-chromium-rel": {
         "contact_team_email": "chrome-blink-engprod@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "linux-x64-cast-dbg": {
-        "contact_team_email": "cast-eng@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

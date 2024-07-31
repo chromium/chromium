@@ -41,99 +41,11 @@ consoles.console_view(
     ordering = {
         None: ["release", "debug"],
         "release": consoles.ordering(short_names = ["bld", "tst", "nsl", "gcc"]),
-        "cast": ["x64", "arm64"],
     },
 )
 
 targets.builder_defaults.set(
     mixins = ["chromium-tester-service-account"],
-)
-
-ci.builder(
-    name = "linux-x64-cast-dbg",
-    branch_selector = branches.selector.MAIN,
-    description_html = "Run Linux and Cast Receiver tests on Linux x64",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_clang",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        build_gs_bucket = "chromium-linux-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "cast_os",
-            "cast_receiver",
-            "remoteexec",
-            "minimal_symbols",
-            "linux",
-            "x64",
-        ],
-    ),
-    # TODO(crbug.com/332735845): Garden this once stabilized.
-    gardener_rotations = args.ignore_default(None),
-    tree_closing = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "cast",
-        short_name = "x64",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    contact_team_email = "cast-eng@google.com",
-)
-
-ci.builder(
-    name = "linux-arm64-cast-rel",
-    branch_selector = branches.selector.MAIN,
-    description_html = "Run Linux and Cast Receiver tests on Linux arm64",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "arm64",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_clang",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        build_gs_bucket = "chromium-linux-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "cast_receiver",
-            "cast_os",
-            "release_builder",
-            "remoteexec",
-            "arm64",
-            "minimal_symbols",
-            "linux",
-        ],
-    ),
-    # TODO(crbug.com/332735845): Garden this once stabilized.
-    gardener_rotations = args.ignore_default(None),
-    tree_closing = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "cast",
-        short_name = "rel",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    contact_team_email = "cast-eng@google.com",
 )
 
 ci.builder(

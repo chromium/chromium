@@ -194,11 +194,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "core_runtime_simple",
-    label = "//chromecast/cast_core:core_runtime_simple",
-)
-
-targets.compile_target(
     name = "cronet_package",
     label = "//components/cronet:cronet_package",
 )

@@ -94,21 +94,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-arm64-cast-rel",
-    branch_selector = branches.selector.MAIN,
-    mirrors = [
-        "ci/linux-arm64-cast-rel",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/linux-arm64-cast-rel",
-        ],
-    ),
-    contact_team_email = "cast-eng@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "linux-bfcache-rel",
     mirrors = [
         "ci/linux-bfcache-rel",
@@ -478,21 +463,6 @@ try_.builder(
         "ci/WebKit Linux MSAN",
     ],
     gn_args = "ci/WebKit Linux MSAN",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "linux-x64-cast-dbg",
-    branch_selector = branches.selector.MAIN,
-    mirrors = [
-        "ci/linux-x64-cast-dbg",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/linux-x64-cast-dbg",
-        ],
-    ),
-    contact_team_email = "cast-eng@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 

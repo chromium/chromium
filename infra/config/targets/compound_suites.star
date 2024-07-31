@@ -280,15 +280,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-targets.legacy_compound_suite(
-    name = "chromium_linux_cast_receiver_gtests",
-    basic_suites = [
-        "cast_receiver_gtests",
-        "chromium_gtests",
-        "linux_flavor_specific_chromium_gtests",
-    ],
-)
-
 # When changing something here, change chromium_linux_and_gl_gtests,
 # chromium_linux_and_gl_and_vulkan_gtests in the same way.
 targets.legacy_compound_suite(

@@ -4937,19 +4937,6 @@
           'gtest_tests': 'network_service_extra_gtests',
         },
       },
-      'linux-arm64-cast-rel': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'cast_shell',
-          'cast_test_lists',
-          'core_runtime_simple',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_cast_receiver_gtests',
-        },
-      },
       'linux-bfcache-rel': {
         'mixins': [
           'linux-jammy',
@@ -4979,19 +4966,6 @@
           'v4l2_stateless_decoder',
           'v4l2_unittest',
         ],
-      },
-      'linux-x64-cast-dbg': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'cast_shell',
-          'cast_test_lists',
-          'core_runtime_simple',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_cast_receiver_gtests',
-        },
       },
     },
   },
