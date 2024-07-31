@@ -96,7 +96,7 @@ const int kNumberOfWebStates = 3;
 
 class PopupMenuMediatorTest : public PlatformTest {
  public:
-  PopupMenuMediatorTest() {}
+  PopupMenuMediatorTest() : model_(nullptr) {}
 
   void SetUp() override {
     PlatformTest::SetUp();

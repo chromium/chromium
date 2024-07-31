@@ -7,13 +7,15 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "components/translate/core/language_detection/embedding_lookup.h"
+#include "components/language_detection/core/embedding_lookup.h"
 
 #include "base/check_op.h"
-#include "components/translate/core/language_detection/quantization_utils.h"
+#include "components/language_detection/core/quantization_utils.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flexbuffers.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/kernel_util.h"
+
+namespace language_detection {
 
 namespace {
 
@@ -132,9 +134,8 @@ void GetEmbedding(const TfLiteTensor* input,
       // embedding table.
       const int compression_factor = 32 / num_precision_bits;
       const uint32 mask = (1L << num_precision_bits) - 1;
-      const translate::QuantizationParams quant_params =
-          translate::GetQuantizationParams(min_val, max_val,
-                                           num_precision_bits);
+      const QuantizationParams quant_params =
+          GetQuantizationParams(min_val, max_val, num_precision_bits);
       for (int embed_idx = 0; embed_idx < input_embedding_size; embed_idx++) {
         // Extract the packed embedding at the given index.
         uint32 packed_embedding = tflite::GetTensorData<uint32>(
@@ -144,8 +145,8 @@ void GetEmbedding(const TfLiteTensor* input,
           uint32 quantized_val = (packed_embedding & mask);
           // Dequantize the quantized value, so that we can get an approximation
           // for the original value.
-          float dequantized_value = translate::QuantizedToFloatWithQuantParams(
-              quantized_val, quant_params);
+          float dequantized_value =
+              QuantizedToFloatWithQuantParams(quantized_val, quant_params);
           final_embedding[embed_idx * compression_factor +
                           num_dims_extracted] += dequantized_value;
           packed_embedding >>= num_precision_bits;
@@ -203,11 +204,9 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 
 }  // namespace
 
-namespace translate {
-
 TfLiteRegistration* Register_EMBEDDING_LOOKUP() {
   static TfLiteRegistration r = {Init, Free, Resize, Eval};
   return &r;
 }
 
-}  // namespace translate
+}  // namespace language_detection

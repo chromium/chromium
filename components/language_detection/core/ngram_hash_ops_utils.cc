@@ -7,13 +7,13 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "components/translate/core/language_detection/ngram_hash_ops_utils.h"
+#include "components/language_detection/core/ngram_hash_ops_utils.h"
 
 #include <cstring>
 
 #include "third_party/utf/src/include/utf.h"
 
-namespace translate {
+namespace language_detection {
 
 constexpr char kPrefix[] = "^";
 constexpr char kSuffix[] = "$";
@@ -89,4 +89,4 @@ void LowercaseUnicodeStr(const char* input_str,
   }
 }
 
-}  // namespace translate
+}  // namespace language_detection

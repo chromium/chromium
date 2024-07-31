@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/language_detection/core/language_detection_model.h"
 #include "components/translate/content/renderer/isolated_world_util.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_metrics.h"
@@ -75,7 +76,8 @@ constexpr char kCLDModelVersion[] = "CLD3";
 // Returns the language detection model that is shared across the RenderFrames
 // in the renderer.
 translate::LanguageDetectionModel& GetLanguageDetectionModel() {
-  static base::NoDestructor<translate::LanguageDetectionModel> instance;
+  static base::NoDestructor<translate::LanguageDetectionModel> instance(
+      &language_detection::GetLanguageDetectionModel());
   return *instance;
 }
 

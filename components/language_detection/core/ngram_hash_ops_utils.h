@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_NGRAM_HASH_OPS_UTILS_H_
-#define COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_NGRAM_HASH_OPS_UTILS_H_
+#ifndef COMPONENTS_LANGUAGE_DETECTION_CORE_NGRAM_HASH_OPS_UTILS_H_
+#define COMPONENTS_LANGUAGE_DETECTION_CORE_NGRAM_HASH_OPS_UTILS_H_
 
 #include <string>
 #include <utility>
 #include <vector>
 
-namespace translate {
+namespace language_detection {
 
 class TokenizedOutput {
  public:
@@ -47,6 +47,6 @@ void LowercaseUnicodeStr(const char* input_str,
                          int len,
                          std::string* output_str);
 
-}  // namespace translate
+}  // namespace language_detection
 
-#endif  // COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_NGRAM_HASH_OPS_UTILS_H_
+#endif  // COMPONENTS_LANGUAGE_DETECTION_CORE_NGRAM_HASH_OPS_UTILS_H_

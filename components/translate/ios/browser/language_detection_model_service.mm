@@ -7,7 +7,7 @@
 #include <memory>
 
 #import "base/task/sequenced_task_runner.h"
-#include "base/task/sequenced_task_runner.h"
+#include "components/language_detection/core/language_detection_model.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 
 namespace translate {
@@ -19,7 +19,9 @@ class LanguageDetectionModelContainer
     : public base::RefCountedThreadSafe<LanguageDetectionModelContainer>,
       public LanguageDetectionModel {
  public:
-  LanguageDetectionModelContainer() {}
+  LanguageDetectionModelContainer()
+      : LanguageDetectionModel(
+            &language_detection::GetLanguageDetectionModel()) {}
 
  private:
   // Allow destruction by RefCounted<>.

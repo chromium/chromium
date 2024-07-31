@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/translate/core/language_detection/quantization_utils.h"
+#include "components/language_detection/core/quantization_utils.h"
 
 #include <algorithm>
 #include <cmath>
 
 #include "base/check_op.h"
 
-namespace translate {
+namespace language_detection {
 
 namespace {
 
@@ -68,4 +68,4 @@ float QuantizedToFloat(uint32_t x, float min_val, float max_val, int num_bits) {
   return QuantizedToFloatWithQuantParams(x, params);
 }
 
-}  // namespace translate
+}  // namespace language_detection

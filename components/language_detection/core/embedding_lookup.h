@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_EMBEDDING_LOOKUP_H_
-#define COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_EMBEDDING_LOOKUP_H_
+#ifndef COMPONENTS_LANGUAGE_DETECTION_CORE_EMBEDDING_LOOKUP_H_
+#define COMPONENTS_LANGUAGE_DETECTION_CORE_EMBEDDING_LOOKUP_H_
 
 #include "third_party/tflite/src/tensorflow/lite/kernels/register.h"
 
-namespace translate {
+namespace language_detection {
 
 // This op takes in a list of indices, and for each index, it looks up the
 // corresponding embedding in the given embedding table, and computes the mean
@@ -17,6 +17,6 @@ namespace translate {
 // limited to n-bit quantization).
 TfLiteRegistration* Register_EMBEDDING_LOOKUP();
 
-}  // namespace translate
+}  // namespace language_detection
 
-#endif  // COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_EMBEDDING_LOOKUP_H_
+#endif  // COMPONENTS_LANGUAGE_DETECTION_CORE_EMBEDDING_LOOKUP_H_

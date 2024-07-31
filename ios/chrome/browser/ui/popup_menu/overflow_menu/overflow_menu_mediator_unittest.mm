@@ -156,7 +156,7 @@ std::unique_ptr<PrefServiceSyncable> CreatePrefServiceForBrowserState() {
 
 class OverflowMenuMediatorTest : public PlatformTest {
  public:
-  OverflowMenuMediatorTest() {
+  OverflowMenuMediatorTest() : language_detection_model_(nullptr) {
     pref_service_.registry()->RegisterBooleanPref(
         translate::prefs::kOfferTranslateEnabled, true);
     pref_service_.registry()->RegisterStringPref(prefs::kSupervisedUserId,

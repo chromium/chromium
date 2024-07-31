@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/translate/core/language_detection/quantization_utils.h"
+#include "components/language_detection/core/quantization_utils.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace translate {
+namespace language_detection {
 
 TEST(QuantizationUtilsTest, FloatToQuantized) {
   const float min_val = 0.f;
@@ -87,4 +87,4 @@ INSTANTIATE_TEST_SUITE_P(QuantizedToFloatParamTests,
                          QuantizedToFloatParamTest,
                          testing::Bool());
 
-}  // namespace translate
+}  // namespace language_detection

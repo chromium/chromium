@@ -73,7 +73,7 @@ class TestLanguageModel : public language::LanguageModel {
 
 class CWVTranslationControllerTest : public TestWithLocaleAndResources {
  protected:
-  CWVTranslationControllerTest() {
+  CWVTranslationControllerTest() : language_detection_model_(nullptr) {
     web::WebState::CreateParams params(&browser_state_);
     web_state_ = web::WebState::Create(params);
     web_state_->SetKeepRenderProcessAlive(true);

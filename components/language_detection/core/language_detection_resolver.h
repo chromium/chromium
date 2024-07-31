@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_LANGUAGE_DETECTION_RESOLVER_H_
-#define COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_LANGUAGE_DETECTION_RESOLVER_H_
+#ifndef COMPONENTS_LANGUAGE_DETECTION_CORE_LANGUAGE_DETECTION_RESOLVER_H_
+#define COMPONENTS_LANGUAGE_DETECTION_CORE_LANGUAGE_DETECTION_RESOLVER_H_
 
 #include <memory>
 
-#include "components/translate/core/language_detection/embedding_lookup.h"
-#include "components/translate/core/language_detection/ngram_hash.h"
+#include "components/language_detection/core/embedding_lookup.h"
+#include "components/language_detection/core/ngram_hash.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
 #include "third_party/tflite/src/tensorflow/lite/op_resolver.h"
 
-namespace translate {
+namespace language_detection {
 
 std::unique_ptr<tflite::MutableOpResolver> CreateLangIdResolver() {
   tflite::MutableOpResolver resolver;
@@ -33,6 +33,6 @@ std::unique_ptr<tflite::MutableOpResolver> CreateLangIdResolver() {
   return std::make_unique<tflite::MutableOpResolver>(resolver);
 }
 
-}  // namespace translate
+}  // namespace language_detection
 
-#endif  // COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_LANGUAGE_DETECTION_RESOLVER_H_
+#endif  // COMPONENTS_LANGUAGE_DETECTION_CORE_LANGUAGE_DETECTION_RESOLVER_H_

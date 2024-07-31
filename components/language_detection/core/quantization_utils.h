@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_QUANTIZATION_UTILS_H_
-#define COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_QUANTIZATION_UTILS_H_
+#ifndef COMPONENTS_LANGUAGE_DETECTION_CORE_QUANTIZATION_UTILS_H_
+#define COMPONENTS_LANGUAGE_DETECTION_CORE_QUANTIZATION_UTILS_H_
 
 #include <cmath>
 #include <cstdint>
 
-namespace translate {
+namespace language_detection {
 
 // Converts the given floating point value (`x`) to a quantized value, with
 // `num_bits` of precision.
@@ -66,6 +66,6 @@ inline float QuantizedToFloatWithQuantParams(uint32_t x,
   return (x * params.nudged_scale + params.nudged_min);
 }
 
-}  // namespace translate
+}  // namespace language_detection
 
-#endif  // COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_QUANTIZATION_UTILS_H_
+#endif  // COMPONENTS_LANGUAGE_DETECTION_CORE_QUANTIZATION_UTILS_H_

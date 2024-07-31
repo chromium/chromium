@@ -1,0 +1,47 @@
+# Copyright 2014 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("core") {
+  sources = [
+    "embedding_lookup.cc",
+    "embedding_lookup.h",
+    "language_detection_model.cc",
+    "language_detection_model.h",
+    "language_detection_resolver.h",
+    "ngram_hash.cc",
+    "ngram_hash.h",
+    "ngram_hash_ops_utils.cc",
+    "ngram_hash_ops_utils.h",
+    "quantization_utils.cc",
+    "quantization_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/optimization_guide/core:features",
+    "//components/translate/core/common",
+    "//third_party/smhasher:murmurhash2",
+    "//third_party/tflite",
+    "//third_party/tflite_support",
+    "//third_party/tflite_support:tflite_support_proto",
+    "//third_party/utf",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "language_detection_model_unittest.cc",
+    "ngram_hash_ops_utils_unittest.cc",
+    "quantization_utils_unittest.cc",
+  ]
+
+  deps = [
+    ":core",
+    "//base",
+    "//base/test:test_support",
+    "//components/language_detection/testing",
+    "//components/translate/core/common:common",
+  ]
+}

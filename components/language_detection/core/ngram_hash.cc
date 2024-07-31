@@ -7,15 +7,17 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "components/translate/core/language_detection/ngram_hash.h"
+#include "components/language_detection/core/ngram_hash.h"
 
 #include <string>
-#include "components/translate/core/language_detection/ngram_hash_ops_utils.h"
+#include "components/language_detection/core/ngram_hash_ops_utils.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flexbuffers.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/util.h"
 #include "third_party/smhasher/src/MurmurHash2.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/kernel_util.h"
 #include "third_party/tflite/src/tensorflow/lite/string_util.h"
+
+namespace language_detection {
 
 namespace {
 
@@ -24,9 +26,6 @@ using ::flexbuffers::Map;
 using ::flexbuffers::TypedVector;
 using ::tflite::GetString;
 using ::tflite::StringRef;
-using ::translate::LowercaseUnicodeStr;
-using ::translate::Tokenize;
-using ::translate::TokenizedOutput;
 constexpr int kInputMessage = 0;
 constexpr int kOutputLabel = 0;
 constexpr int kDefaultMaxSplits = 128;
@@ -222,11 +221,9 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 
 }  // namespace
 
-namespace translate {
-
 TfLiteRegistration* Register_NGRAM_HASH() {
   static TfLiteRegistration r = {Init, Free, Resize, Eval};
   return &r;
 }
 
-}  // namespace translate
+}  // namespace language_detection

@@ -32,12 +32,6 @@ BASE_FEATURE(kTFLiteLanguageDetectionIgnoreEnabled,
              "TFLiteLanguageDetectionIgnoreEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_WIN)
-BASE_FEATURE(kMmapLanguageDetectionModel,
-             "MmapLanguageDetectionModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 GURL GetTranslateSecurityOrigin() {
   std::string security_origin(kSecurityOrigin);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
