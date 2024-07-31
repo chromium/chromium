@@ -109,12 +109,13 @@ void SetBoundsProperties(const gfx::Rect& bounds,
 }
 
 // Combines the constraints of the content and window, and returns constraints
-// for the window.
-gfx::Size GetCombinedWindowConstraints(
-    const gfx::Size& window_constraints,
-    const gfx::Size& content_constraints,
-    const gfx::Insets& frame_insets,
-    const gfx::RoundedCornersF& window_radii) {
+// for the window. `is_minimum_size_constraint` is true when combining the
+// minimum_size constraints for the window.
+gfx::Size GetCombinedWindowConstraints(const gfx::Size& window_constraints,
+                                       const gfx::Size& content_constraints,
+                                       const gfx::Insets& frame_insets,
+                                       const gfx::RoundedCornersF& window_radii,
+                                       bool is_minimum_size_constraint) {
   gfx::Size combined_constraints(window_constraints);
   if (content_constraints.width() > 0) {
     combined_constraints.set_width(content_constraints.width() +
@@ -125,11 +126,29 @@ gfx::Size GetCombinedWindowConstraints(
                                     frame_insets.height());
   }
 
-  const gfx::Size minimum_size =
+  // To prevent the rounded corners of the window from overlapping, the rounded
+  // window should have a minimum size equal to `rounded_window_minimum_size`.
+  // Adjust the combined constraint (minimum size or maximum size of the window)
+  // to enforce the minimum size of the window to at least be equal to
+  // `rounded_window_minimum_size`, and if a maximum size is set, it should be
+  // greater than or equal to `rounded_window_minimum_size`.
+  const gfx::Size rounded_window_minimum_size =
       SizeConstraints::GetMinimumSizeSupportingRoundedCorners(window_radii);
-  combined_constraints.SetSize(
-      std::max(minimum_size.width(), combined_constraints.width()),
-      std::max(minimum_size.height(), combined_constraints.height()));
+  const bool override_width_constraint =
+      is_minimum_size_constraint || combined_constraints.width() > 0;
+  const bool override_height_constraint =
+      is_minimum_size_constraint || combined_constraints.height() > 0;
+
+  if (override_width_constraint) {
+    combined_constraints.set_width(std::max(rounded_window_minimum_size.width(),
+                                            combined_constraints.width()));
+  }
+
+  if (override_height_constraint) {
+    combined_constraints.set_height(std::max(
+        rounded_window_minimum_size.height(), combined_constraints.height()));
+  }
+
   return combined_constraints;
 }
 
@@ -209,12 +228,12 @@ gfx::Rect AppWindow::CreateParams::GetInitialWindowBounds(
 
   // Constrain the bounds.
   SizeConstraints constraints(
-      GetCombinedWindowConstraints(window_spec.minimum_size,
-                                   content_spec.minimum_size, frame_insets,
-                                   window_radii),
-      GetCombinedWindowConstraints(window_spec.maximum_size,
-                                   content_spec.maximum_size, frame_insets,
-                                   window_radii));
+      GetCombinedWindowConstraints(
+          window_spec.minimum_size, content_spec.minimum_size, frame_insets,
+          window_radii, /*is_minimum_size_constraint=*/true),
+      GetCombinedWindowConstraints(
+          window_spec.maximum_size, content_spec.maximum_size, frame_insets,
+          window_radii, /*is_minimum_size_constraint=*/false));
   combined_bounds.set_size(constraints.ClampSize(combined_bounds.size()));
 
   return combined_bounds;
@@ -235,17 +254,17 @@ gfx::Size AppWindow::CreateParams::GetContentMaximumSize(
 gfx::Size AppWindow::CreateParams::GetWindowMinimumSize(
     const gfx::Insets& frame_insets,
     const gfx::RoundedCornersF& window_radii) const {
-  return GetCombinedWindowConstraints(window_spec.minimum_size,
-                                      content_spec.minimum_size, frame_insets,
-                                      window_radii);
+  return GetCombinedWindowConstraints(
+      window_spec.minimum_size, content_spec.minimum_size, frame_insets,
+      window_radii, /*is_minimum_size_constraint=*/true);
 }
 
 gfx::Size AppWindow::CreateParams::GetWindowMaximumSize(
     const gfx::Insets& frame_insets,
     const gfx::RoundedCornersF& window_radii) const {
-  return GetCombinedWindowConstraints(window_spec.maximum_size,
-                                      content_spec.maximum_size, frame_insets,
-                                      window_radii);
+  return GetCombinedWindowConstraints(
+      window_spec.maximum_size, content_spec.maximum_size, frame_insets,
+      window_radii, /*is_minimum_size_constraint=*/false);
 }
 
 // AppWindow
