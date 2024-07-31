@@ -1909,6 +1909,18 @@ message AnimationFrameScriptTimingInfo {
     WORD_PRESS = 2;
     GOOGLE_ANALYTICS = 3;
     GOOGLE_FONT_API = 4;
+    GOOGLE_TAG_MANAGER = 5;
+    GOOGLE_MAPS = 6;
+    META_PIXEL = 7;
+    YOUTUBE = 8;
+    ADOBE_ANALYTICS = 9;
+    TIKTOK_PIXEL = 10;
+    HOTJAR = 11;
+    GOOGLE_ADSENSE = 12;
+    GOOGLE_PUBLISHER_TAG = 13;
+    GOOGLE_ADS_LIBRARIES = 14;
+    FUNDING_CHOICES = 15;
+    ELEMENTOR = 16;
   }
   optional ThirdPartyTechnology third_party_technology = 10;
 }

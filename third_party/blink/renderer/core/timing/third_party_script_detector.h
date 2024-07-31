@@ -35,11 +35,22 @@ class ThirdPartyScriptDetector final
     kWordPress = 1 << 0,
     kGoogleAnalytics = 1 << 1,
     kGoogleFontApi = 1 << 2,
-    kLast = kGoogleFontApi
+    kGoogleTagManager = 1 << 3,
+    kGoogleMaps = 1 << 4,
+    kMetaPixel = 1 << 5,
+    kYouTube = 1 << 6,
+    kAdobeAnalytics = 1 << 7,
+    kTiktokPixel = 1 << 8,
+    kHotjar = 1 << 9,
+    kGoogleAdSense = 1 << 10,
+    kGooglePublisherTag = 1 << 11,
+    kGoogleAdsLibraries = 1 << 12,
+    kFundingChoices = 1 << 13,
+    kElementor = 1 << 14,
+    kLast = kElementor
     // If adding new technologies, add above kLast and shift kLast accordingly.
     // Keep in sync with `ThirdPartyTechnology` in
-    // base/tracing/protos/chrome_track_event.proto and `ToProtoEnum` in
-    // third_party/blink/renderer/core/frame/animation_frame_timing_monitor.cc
+    // base/tracing/protos/chrome_track_event.proto.
     // Max value allowed: 1 << 63. Limited by UKM bitfield.
   };
 

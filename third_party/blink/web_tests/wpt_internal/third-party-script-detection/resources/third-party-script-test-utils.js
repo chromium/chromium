@@ -2,6 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const targetScriptUrls = [
+  // Word Press
+  'https://c0.wp.com/c/6.4.2/wp-includes/js/dist/vendor/wp-polyfill.min.js',
+  // Google Analytics
+  'https://www.google-analytics.com/analytics.js',
+  // Google Font Api
+  'https://www.googleapis.com/example/webfont',
+  // Meta Pixel
+  'https://connect.facebook.net/en_US/fbevents.js',
+  // Hotjar
+  'https://static.hotjar.com/c/hotjar-1903348.js',
+  // Elementor
+  'https://elementor.com/wp-content/plugins/elementor/assets/lib/swiper/v8/swiper.min.js'
+];
+
 function third_party_script_test(test_type, url, expected_metric_value) {
   return promise_test(async t => {
     assert_implements(

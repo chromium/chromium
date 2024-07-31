@@ -298,26 +298,9 @@ ToProtoEnum(ScriptTimingInfo::InvokerType type) {
 
 perfetto::protos::pbzero::AnimationFrameScriptTimingInfo::ThirdPartyTechnology
 ToProtoEnum(ThirdPartyScriptDetector::Technology technology) {
-  // The technology detector is a bitset so that multiple technologies can be
-  // reported to UKM for all the scripts that ran in a long animation frame.
-  // But for tracing, we report the detected technology of each script. So we
-  // return the first technology found in the bitset, or none if none are found.
-  using ProtoType = perfetto::protos::pbzero::AnimationFrameScriptTimingInfo::
-      ThirdPartyTechnology;
-  uint64_t technology_bits = static_cast<uint64_t>(technology);
-  if (technology_bits &
-      static_cast<uint64_t>(ThirdPartyScriptDetector::Technology::kWordPress)) {
-    return ProtoType::WORD_PRESS;
-  } else if (technology_bits &
-             static_cast<uint64_t>(
-                 ThirdPartyScriptDetector::Technology::kGoogleAnalytics)) {
-    return ProtoType::GOOGLE_ANALYTICS;
-  } else if (technology_bits &
-             static_cast<uint64_t>(
-                 ThirdPartyScriptDetector::Technology::kGoogleFontApi)) {
-    return ProtoType::GOOGLE_FONT_API;
-  }
-  return ProtoType::NONE;
+  return static_cast<perfetto::protos::pbzero::AnimationFrameScriptTimingInfo::
+                         ThirdPartyTechnology>(
+      std::bit_width(static_cast<uint64_t>(technology)) + 1);
 }
 
 }  // namespace
@@ -446,8 +429,8 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
   base::TimeDelta script_type_duration_event_listener;
   base::TimeDelta script_type_duration_promise_handler;
   base::TimeDelta script_type_duration_script_block;
-  int64_t third_party_script_callback_contributors = 0;
-  int64_t third_party_script_execution_contributors = 0;
+  uint64_t third_party_script_callback_contributors = 0;
+  uint64_t third_party_script_execution_contributors = 0;
   for (const Member<ScriptTimingInfo>& script : info.Scripts()) {
     total_compilation_duration +=
         (script->ExecutionStartTime() - script->StartTime());
@@ -459,28 +442,25 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
     ThirdPartyScriptDetector::Technology third_party_technology =
         ThirdPartyScriptDetector::From(window).Detect(
             script->GetSourceLocation().url);
+    uint64_t technology_bits = static_cast<uint64_t>(third_party_technology);
     switch (script->GetInvokerType()) {
       case ScriptTimingInfo::InvokerType::kClassicScript:
       case ScriptTimingInfo::InvokerType::kModuleScript:
         script_type_duration_script_block += execution_duration;
-        third_party_script_execution_contributors |=
-            static_cast<int64_t>(third_party_technology);
+        third_party_script_execution_contributors |= technology_bits;
         break;
       case ScriptTimingInfo::InvokerType::kEventHandler:
         script_type_duration_event_listener += execution_duration;
-        third_party_script_callback_contributors |=
-            static_cast<int64_t>(third_party_technology);
+        third_party_script_callback_contributors |= technology_bits;
         break;
       case ScriptTimingInfo::InvokerType::kPromiseResolve:
       case ScriptTimingInfo::InvokerType::kPromiseReject:
         script_type_duration_promise_handler += execution_duration;
-        third_party_script_callback_contributors |=
-            static_cast<int64_t>(third_party_technology);
+        third_party_script_callback_contributors |= technology_bits;
         break;
       case ScriptTimingInfo::InvokerType::kUserCallback:
         script_type_duration_user_callback += execution_duration;
-        third_party_script_callback_contributors |=
-            static_cast<int64_t>(third_party_technology);
+        third_party_script_callback_contributors |= technology_bits;
         break;
     }
   }
