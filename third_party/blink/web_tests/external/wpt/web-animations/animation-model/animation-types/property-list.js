@@ -1,6 +1,12 @@
 'use strict';
 
 const gCSSProperties1 = {
+  'alignment-baseline': {
+    // https://drafts.csswg.org/css-inline/#propdef-alignment-baseline
+    types: [
+      { type: 'discrete', options: [ [ 'baseline', 'middle' ] ] }
+    ]
+  },
   'align-content': {
     // https://drafts.csswg.org/css-align/#propdef-align-content
     types: [
@@ -97,6 +103,16 @@ const gCSSProperties1 = {
     // https://drafts.csswg.org/css-logical-props/#propdef-block-size
     types: [
     ]
+  },
+  'block-step-insert': {
+    // https://drafts.csswg.org/css-rhythm/#block-step-insert
+    types: [
+      { type: 'discrete', options: [ [ 'margin', 'padding' ] ] }
+    ]
+  },
+  'block-step-size': {
+    // https://drafts.csswg.org/css-rhythm/#block-step-size
+    types: [ 'length' ]
   },
   'border-block-end-color': {
     // https://drafts.csswg.org/css-logical-props/#propdef-border-block-end-color
@@ -312,6 +328,12 @@ const gCSSProperties1 = {
     // https://drafts.csswg.org/css-ui-4/#box-sizing
     types: [
       { type: 'discrete', options: [ [ 'content-box', 'border-box' ] ] }
+    ]
+  },
+  'buffered-rendering': {
+    // https://www.w3.org/TR/SVGTiny12/painting.html#BufferedRenderingProperty
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'dynamic' ] ] }
     ]
   },
   'caption-side': {
