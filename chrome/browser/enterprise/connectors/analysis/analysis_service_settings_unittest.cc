@@ -16,7 +16,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/connectors/analysis/analysis_settings.h"
+#include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/service_provider_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"

@@ -391,6 +391,7 @@ static_library("safe_browsing") {
         "//components/content_settings/core/browser",
         "//components/enterprise/common/proto:connectors_proto",
         "//components/enterprise/connectors",
+        "//components/enterprise/connectors/core",
         "//components/file_access",
         "//components/gcm_driver",
         "//components/gcm_driver/instance_id",

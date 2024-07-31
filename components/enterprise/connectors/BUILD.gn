@@ -6,8 +6,6 @@ import("//components/enterprise/buildflags/buildflags.gni")
 
 source_set("connectors") {
   sources = [
-    "analysis/analysis_settings.cc",
-    "analysis/analysis_settings.h",
     "common.cc",
     "common.h",
     "connectors_prefs.cc",

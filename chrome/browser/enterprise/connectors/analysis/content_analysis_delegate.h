@@ -20,7 +20,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/connectors/analysis/analysis_settings.h"
+#include "components/enterprise/connectors/core/analysis_settings.h"
 #include "content/public/browser/clipboard_types.h"
 #include "url/gurl.h"
 
