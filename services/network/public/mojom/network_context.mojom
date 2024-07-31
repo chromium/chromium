@@ -1230,26 +1230,26 @@ interface NetworkContext {
   SendReportsAndRemoveSource(
       mojo_base.mojom.UnguessableToken reporting_source);
 
-  // Queues a report via the Reporting API. |type| describes the type of report
-  // (as well as what data will contained in |body|). |group| specifies the
-  // endpoint group that the report will be delivered to. |url| indicates the
-  // URL of the resource that the report describes. |body| holds the contents
+  // Queues a report via the Reporting API. `type` describes the type of report
+  // (as well as what data will contained in `body`). |group| specifies the
+  // endpoint group that the report will be delivered to. `url` indicates the
+  // URL of the resource that the report describes. `body` holds the contents
   // of the report.
   //
-  // |reporting_source| and |network_isolation_key| are used both for looking
-  // up the appropriately scoped reporting information and for sending the
-  // report. |network_anonymization_key| indicates the NetworkAnonymizationKey
-  // associated with the request, while |reporting_source|, if not empty,
-  // identifies the specific document or worker instance causing the report to
-  // be queued. If |reporting_source| is not empty, then it will be used to
-  // look up reporting endpoints set with the SetDocumentReportingEndpoints
-  // method first, and if no matching endpoint is found, it will fall back to
-  // looking up a matching endpoint group configured for the origin and
-  // |network_isolation_key|.
+  // `reporting_source` and `network_anonymization_key` are used both for
+  // looking up the appropriately scoped reporting information and for sending
+  // the report. `network_anonymization_key` indicates the
+  // NetworkAnonymizationKey associated with the request, while
+  // `reporting_source`, if not empty, identifies the specific document or
+  // worker instance causing the report to be queued. If `reporting_source` is
+  // not empty, then it will be used to look up reporting endpoints set with
+  // the SetDocumentReportingEndpoints method first, and if no matching
+  // endpoint is found, it will fall back to looking up a matching endpoint
+  // group configured for the origin and `network_anonymization_key`.
   //
   // Note that this queued report will never be delivered if no reporting
-  // endpoint is registered for this |url| or |reporting_source| with the
-  // provided |network_isolation_key|.
+  // endpoint is registered for this `url` or `reporting_source` with the
+  // provided `network_anonymization_key`.
   //
   // Spec: https://w3c.github.io/reporting/#concept-reports
   QueueReport(string type,
@@ -1268,7 +1268,7 @@ interface NetworkContext {
   //
   // Note that this queued report will never be delivered if no reporting
   // endpoint matching is registered for with the provided
-  // |network_isolation_key|.
+  // `network_anonymization_key`.
   QueueSignedExchangeReport(SignedExchangeReport report,
                             NetworkAnonymizationKey network_anonymization_key);
 
@@ -1400,9 +1400,10 @@ interface NetworkContext {
   CreateProxyResolvingSocketFactory(
       pending_receiver<ProxyResolvingSocketFactory> factory);
 
-  // Looks up what proxy to use for a particular URL. |network_isolation_key|
-  // is used to partition the DNS cache in the case a PAC script is used, and
-  // should match the NIK of the frame the lookup is for use with.
+  // Looks up what proxy to use for a particular URL.
+  // `network_anonymization_key` is used to partition the DNS cache in the case
+  // a PAC script is used, and should match the NAK of the frame the lookup is
+  // for use with.
   LookUpProxyForURL(url.mojom.Url url,
                     NetworkAnonymizationKey network_anonymization_key,
                     pending_remote<ProxyLookupClient> proxy_lookup_client);
@@ -1500,8 +1501,8 @@ interface NetworkContext {
                     NetworkAnonymizationKey network_anonymization_key);
 
   // Creates a P2PSocketManager instance, used for WebRTC.
-  // |network_isolation_key| is the network cache shard to associate with the
-  // P2PSocketManager instance, and affects DNS cache shard used and proxy
+  // `network_anonymization_key` is the network cache shard to associate with
+  // the P2PSocketManager instance, and affects DNS cache shard used and proxy
   // connection sharing.
   [EnableIf=is_p2p_enabled]
   CreateP2PSocketManager(
