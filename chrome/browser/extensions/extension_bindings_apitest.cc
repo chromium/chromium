@@ -796,6 +796,108 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                             content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
+// Tests that, if a document has an active user gesture, a new message coming in
+// that *also* has a user gesture won't override the active one. Regression test
+// for https://crbug.com/355266358.
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
+                       UserGestureFromMessageWontOverrideActiveGesture) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "side_panel": {"default_path": "panel.html"},
+           "content_scripts": [{
+             "matches": ["*://example.com/*"],
+             "js": ["content_script.js"]
+           }],
+           "permissions": ["sidePanel"]
+         })";
+  // The following content script:
+  // 1) Installs a listener for mousedown that sends a message to the
+  //    service worker.
+  // 2) Has a listener for a response from the service worker.
+  // 3) Has a listener for a click event (mousedown -> mouseup) that
+  //    waits for the response from the service worker, and then sends a new
+  //    message instructing the service worker to open the side panel.
+  // In step 1), there will be an active user gesture. Step 2) will receive
+  // a message and that message will *also* have an active user gesture, but
+  // it is "restricted" since it came from an extension message, rather than a
+  // user interaction. As such, the user gesture from step 2) cannot be used to
+  // curry a user gesture further along in messaging. But the user gesture from
+  // step 1) should still be active at this point, and is valid, so that should
+  // result in a user gesture being sent with the message in step 3), which
+  // allows the side panel to be opened.
+  static constexpr char kContentScriptJs[] =
+      R"(let resolveResponsePromise;
+         let receivedResponse = new Promise((resolve) => {
+           resolveResponsePromise = resolve;
+         });
+         document.addEventListener('mousedown', () => {
+           chrome.runtime.sendMessage('first');
+         });
+         chrome.runtime.onMessage.addListener(msg => {
+           chrome.test.assertEq('firstResponse', msg);
+           resolveResponsePromise();
+         });
+         document.addEventListener('click', async() => {
+           await receivedResponse;
+           chrome.runtime.sendMessage('openPanel');
+         });
+         chrome.test.sendMessage('content script ready');)";
+  // The service worker listens for incoming messages. It will reply to the
+  // first and open the side panel on the second.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.runtime.onMessage.addListener((msg, sender) => {
+           if (msg == 'first') {
+             chrome.tabs.sendMessage(sender.tab.id, 'firstResponse');
+           } else if (msg == 'openPanel') {
+             chrome.sidePanel.open({tabId: sender.tab.id}, () => {
+               chrome.test.assertNoLastError();
+             });
+           } else {
+             chrome.test.fail('Unexpected message: ' + msg);
+           }
+         });)";
+  // A side panel and accompanying script that simply call notifyPass() on
+  // opening.
+  static constexpr char kPanelHtml[] =
+      R"(<html>
+           Hello, world!
+           <script src="panel.js"></script>
+         </html>)";
+  static constexpr char kPanelJs[] = "chrome.test.notifyPass()";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScriptJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("panel.html"), kPanelHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("panel.js"), kPanelJs);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+
+  // Navigate to a web page and wait for the content script to run and set up.
+  ExtensionTestMessageListener content_script_listener("content script ready");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content_script_listener.WaitUntilSatisfied());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ResultCatcher result_catcher;
+  // Click in the web contents.
+  MouseDownInWebContents(web_contents);
+  MouseUpInWebContents(web_contents);
+
+  // The test succeeds if the side panel opens.
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
 // Tests that bindings are properly instantiated for a window navigated to an
 // extension URL after being opened with an undefined URL.
 // Regression test for https://crbug.com/925118.
