@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -4285,7 +4286,8 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolExpanded) {
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
           /*private_aggregation_allowed=*/false,
           /*shared_storage_allowed=*/false),
-      /*experiment_group_id=*/{});
+      /*experiment_group_id=*/{},
+      /*public_key=*/nullptr);
 
   // There are 10 bidder threads and 1 seller thread.
   EXPECT_EQ(auction_worklet_service->AuctionV8HelpersForTesting().size(), 11u);
@@ -4313,7 +4315,8 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolExpanded) {
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
           /*private_aggregation_allowed=*/false,
           /*shared_storage_allowed=*/false),
-      /*experiment_group_id=*/{});
+      /*experiment_group_id=*/{},
+      /*public_key=*/nullptr);
 
   // There are 20 bidder threads and 1 seller thread.
   EXPECT_EQ(auction_worklet_service->AuctionV8HelpersForTesting().size(), 21u);
@@ -4367,7 +4370,8 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
           /*private_aggregation_allowed=*/false,
           /*shared_storage_allowed=*/false),
-      /*experiment_group_id=*/{});
+      /*experiment_group_id=*/{},
+      /*public_key=*/nullptr);
 
   // There are 2 bidder threads and 1 seller thread.
   EXPECT_EQ(auction_worklet_service1->AuctionV8HelpersForTesting().size(), 3u);
@@ -4405,7 +4409,8 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
           /*private_aggregation_allowed=*/false,
           /*shared_storage_allowed=*/false),
-      /*experiment_group_id=*/{});
+      /*experiment_group_id=*/{},
+      /*public_key=*/nullptr);
 
   // There are 1 bidder thread and 1 seller thread.
   EXPECT_EQ(auction_worklet_service2->AuctionV8HelpersForTesting().size(), 2u);
@@ -4447,7 +4452,8 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
           /*private_aggregation_allowed=*/false,
           /*shared_storage_allowed=*/false),
-      /*experiment_group_id=*/{});
+      /*experiment_group_id=*/{},
+      /*public_key=*/nullptr);
 
   // There are 2 bidder threads and 1 seller thread.
   EXPECT_EQ(auction_worklet_service3->AuctionV8HelpersForTesting().size(), 3u);

@@ -29,6 +29,13 @@ struct AuctionWorkletPermissionsPolicyState {
   bool shared_storage_allowed;
 };
 
+// The public key is used for encryption and decryption of trusted signals in
+// both bidder and seller worklets.
+struct TrustedSignalsPublicKey {
+  string key;
+  uint8 id;
+};
+
 // Used by the browser to load and run FLEDGE worklets. This can run in a
 // sandboxed utility process (non-Android) or inside a regular renderer
 // (Android).
@@ -91,6 +98,10 @@ interface AuctionWorkletService {
   //
   // `experiment_group_id`: An optional parameter to pass to trusted bidding
   // server.
+  //
+  // `public_key`: An optional parameter for trusted bidding signals encryption
+  // and decryption. Bidder worklet will execute trusted signals KVv2 call flow
+  // when this field is valid.
   LoadBidderWorklet(
       pending_receiver<BidderWorklet> bidder_worklet,
       array<pending_remote<AuctionSharedStorageHost>?> shared_storage_hosts,
@@ -103,7 +114,8 @@ interface AuctionWorkletService {
       string trusted_bidding_signals_slot_size_param,
       url.mojom.Origin top_window_origin,
       AuctionWorkletPermissionsPolicyState permissions_policy_state,
-      uint16? experiment_group_id);
+      uint16? experiment_group_id,
+      TrustedSignalsPublicKey? public_key);
 
   // Attempts to load Javascript at the specified URL and loads a SellerWorklet.
   // While a single SellerWorklet object can be used in auctions with different
