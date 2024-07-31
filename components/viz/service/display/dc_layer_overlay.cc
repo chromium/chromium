@@ -30,7 +30,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/video_types.h"
-#include "ui/gl/gl_switches.h"
 
 namespace viz {
 
