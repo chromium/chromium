@@ -8,8 +8,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "content/browser/interest_group/auction_runner.h"
-
 #include <stdint.h>
 
 #include <functional>
@@ -32,6 +30,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -50,9 +49,11 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/additional_bids_test_util.h"
+#include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_result.h"
+#include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
@@ -111,6 +112,20 @@ using auction_worklet::TestDevToolsAgentClient;
 using testing::HasSubstr;
 
 namespace content {
+class ProcessHandleTestPeer {
+ public:
+  explicit ProcessHandleTestPeer(
+      const AuctionProcessManager::ProcessHandle* handle)
+      : handle_(handle) {}
+
+  void CallOnLaunchedWithPidForCurrentProcess() {
+    handle_->OnBaseProcessLaunched(base::Process::Current());
+  }
+
+ private:
+  raw_ptr<const AuctionProcessManager::ProcessHandle> handle_;
+};
+
 namespace {
 
 using InterestGroupKey = blink::InterestGroupKey;
@@ -1467,6 +1482,10 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
     return nullptr;
   }
 
+  void OnNewProcessAssigned(const ProcessHandle* handle) override {
+    ProcessHandleTestPeer(handle).CallOnLaunchedWithPidForCurrentProcess();
+  }
+
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
       SiteInstance* frame_site_instance,
       const url::Origin& worklet_origin) override {
@@ -1679,6 +1698,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     same_process_auction_process_manager_ = nullptr;
     // And this points into the process manager as well.
     auction_worklet_manager_.reset();
+
+    auction_metrics_recorder_.reset();
 
     interest_group_manager_.reset();
     auction_nonce_manager_.reset();
@@ -1923,9 +1944,12 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     // So destroy it now, since we are going to make a new one shortly anyway.
     auction_worklet_manager_.reset();
 
+    auction_metrics_recorder_.reset();
+
     interest_group_manager_ = std::make_unique<TestInterestGroupManagerImpl>(
         frame_origin_, GetClientSecurityState(),
         dummy_report_shared_url_loader_factory_);
+
     if (!auction_process_manager_) {
       auto same_process_auction_process_manager =
           std::make_unique<SameProcessAuctionProcessManager>();
@@ -1934,6 +1958,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       auction_process_manager_ =
           std::move(same_process_auction_process_manager);
     }
+
+    ukm_source_id_ = ukm::AssignNewSourceId();
+    auction_metrics_recorder_ =
+        std::make_unique<AuctionMetricsRecorder>(ukm_source_id_);
     auction_worklet_manager_ = std::make_unique<AuctionWorkletManager>(
         auction_process_manager_.get(), top_frame_origin_, frame_origin_, this);
     interest_group_manager_->set_auction_process_manager_for_testing(
@@ -2005,7 +2033,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     }
 
     interest_group_manager_->ClearLoggedData();
-    source_id_ = ukm::AssignNewSourceId();
 
     task_environment()->FastForwardBy(between_join_run_auction_delay_);
 
@@ -2021,13 +2048,13 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
             base::Unretained(browser_context()));
 
     auction_runner_ = AuctionRunner::CreateAndStart(
-        auction_worklet_manager_.get(), auction_nonce_manager_.get(),
-        interest_group_manager_.get(), /*browser_context=*/browser_context(),
-        &private_aggregation_manager_,
+        auction_metrics_recorder_.get(), auction_worklet_manager_.get(),
+        auction_nonce_manager_.get(), interest_group_manager_.get(),
+        /*browser_context=*/browser_context(), &private_aggregation_manager_,
         base::BindRepeating(&AuctionRunnerTest::GetAdAuctionPageData,
                             base::Unretained(this)),
         private_aggregation_manager_.GetLogPrivateAggregationRequestsCallback(),
-        std::move(auction_config), top_frame_origin_, frame_origin_, source_id_,
+        std::move(auction_config), top_frame_origin_, frame_origin_,
         GetClientSecurityState(), dummy_report_shared_url_loader_factory_,
         IsInterestGroupApiAllowedCallback(), std::move(attestation_callback),
         abortable_ad_auction_.BindNewPipeAndPassReceiver(),
@@ -2519,6 +2546,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 Entry::kNumDistinctOwnersWithInterestGroupsName,
                 Entry::kNumSellersWithBiddersName,
                 Entry::kNumBidderWorkletsName,
+                /* WorkletCreation phase metrics */
+                Entry::kWorkletCreationPhaseStartTimeInMillisName,
+                Entry::kWorkletCreationPhaseEndTimeInMillisName,
                 /* Bid filtering metrics */
                 Entry::kNumBidsAbortedByBuyerCumulativeTimeoutName,
                 Entry::kNumBidsAbortedByBidderWorkletFatalErrorName,
@@ -2613,7 +2643,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     EXPECT_THAT(ukm_entries, testing::SizeIs(1));
     if (ukm_entries.size() == 1) {
-      EXPECT_EQ(ukm_entries.at(0).source_id, source_id_);
+      EXPECT_EQ(ukm_entries.at(0).source_id, ukm_source_id_);
       return ukm_entries.at(0).metrics;
     }
 
@@ -3369,6 +3399,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               nullptr);
 
+  ukm::SourceId ukm_source_id_;
+  std::unique_ptr<AuctionMetricsRecorder> auction_metrics_recorder_;
   std::unique_ptr<AuctionWorkletManager> auction_worklet_manager_;
   std::unique_ptr<AuctionNonceManager> auction_nonce_manager_;
 
@@ -3396,8 +3428,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   // The TestInterestGroupManager is recreated and repopulated for each auction.
   std::unique_ptr<TestInterestGroupManagerImpl> interest_group_manager_;
-
-  ukm::SourceId source_id_;
 
   std::unique_ptr<AuctionRunner> auction_runner_;
   std::unique_ptr<InterestGroupAuctionReporter> reporter_;
@@ -14946,8 +14976,28 @@ TEST_F(AuctionRunnerTest,
   }
 }
 
-// Test the critical path latency computation for ScoreAd dependencies.
-TEST_F(AuctionRunnerTest, VerifyPhaseMetrics) {
+// Test the phase metrics for the WorkletCreation phase.
+TEST_F(AuctionRunnerTest, VerifyWorkletCreationPhaseMetrics) {
+  auto same_process_auction_process_manager =
+      std::make_unique<SameProcessAuctionProcessManager>();
+  same_process_auction_process_manager_ =
+      same_process_auction_process_manager.get();
+  auction_process_manager_ = std::move(same_process_auction_process_manager);
+
+  RunStandardAuction();
+
+  ukm::TestUkmRecorder::HumanReadableUkmMetrics ukm_metrics = GetUkmMetrics();
+
+  using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
+
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kWorkletCreationPhaseStartTimeInMillisName));
+  EXPECT_THAT(ukm_metrics,
+              HasMetric(UkmEntry::kWorkletCreationPhaseEndTimeInMillisName));
+}
+
+// Test the phase metrics for GenerateBid and ScoreAd phases.
+TEST_F(AuctionRunnerTest, VerifyGenerateBidAndScoreAdPhaseMetrics) {
   StartStandardAuctionWithMockService();
 
   auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();

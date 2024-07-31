@@ -101,6 +101,7 @@ class CONTENT_EXPORT AuctionProcessManager {
         base::OnceCallback<void(base::ProcessId)> callback);
 
    private:
+    friend class ProcessHandleTestPeer;
     friend class AuctionProcessManager;
     friend class InRendererAuctionProcessManager;
     friend class DedicatedAuctionProcessManager;
@@ -109,7 +110,7 @@ class CONTENT_EXPORT AuctionProcessManager {
     // the process lifetime, it needs to call |OnBaseProcessLaunched| once the
     // process has been launched successfully in order to properly figure out
     // the PID.
-    void OnBaseProcessLaunched(const base::Process& process);
+    void OnBaseProcessLaunched(const base::Process& process) const;
 
     // Assigns `worklet_process` to `this`. If `callback_` is non-null, queues a
     // task to invoke it asynchronously, and GetService() will return nullptr
@@ -199,6 +200,10 @@ class CONTENT_EXPORT AuctionProcessManager {
           auction_worklet_service_receiver,
       const ProcessHandle* process_handle,
       const std::string& display_name) = 0;
+
+  // Hook called when a new process is assigned at the end of
+  // TryCreateOrGetProcessForHandle. This function is used for testing.
+  virtual void OnNewProcessAssigned(const ProcessHandle* process_handle) {}
 
   // Used to compute the value of `site_instance_` field of ProcessHandle.
   // A subclass can return nullptr if it is not using SiteInstance to place

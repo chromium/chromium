@@ -147,6 +147,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //   destroy this AuctionRunner object. `callback` won't be invoked until
   //   after CreateAndStart() returns.
   static std::unique_ptr<AuctionRunner> CreateAndStart(
+      AuctionMetricsRecorder* auction_metrics_recorder,
       AuctionWorkletManager* auction_worklet_manager,
       AuctionNonceManager* auction_nonce_manager,
       InterestGroupManagerImpl* interest_group_manager,
@@ -158,7 +159,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       const blink::AuctionConfig& auction_config,
       const url::Origin& main_frame_origin,
       const url::Origin& frame_origin,
-      ukm::SourceId ukm_source_id,
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -234,6 +234,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   };
 
   AuctionRunner(
+      AuctionMetricsRecorder* auction_metrics_recorder,
       AuctionWorkletManager* auction_worklet_manager,
       AuctionNonceManager* auction_nonce_manager,
       InterestGroupManagerImpl* interest_group_manager,
@@ -246,7 +247,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       const blink::AuctionConfig& auction_config,
       const url::Origin& main_frame_origin,
       const url::Origin& frame_origin,
-      ukm::SourceId ukm_source_id,
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -338,9 +338,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // Number of fields in `owned_auction_config_` that are promises; decremented
   // as they get resolved.
   int promise_fields_in_auction_config_;
-
-  // Used to store data needed to record UKM.
-  AuctionMetricsRecorder auction_metrics_recorder_;
 
   InterestGroupAuction auction_;
   State state_ = State::kNotYetStarted;

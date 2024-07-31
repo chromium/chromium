@@ -27,6 +27,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
+#include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_shared_storage_host.h"
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
@@ -133,6 +134,13 @@ class AuctionWorkletManager::WorkletOwner
 
   std::vector<std::string> ComputeDevtoolsAuctionIds();
 
+  // Adds `auction_metrics_recorder` to the list of AuctionMetricsRecorders
+  // on which this will call OnWorkletReady when this worklet is ready.
+  // If this worklet is already ready when this is called, it'll call it
+  // immediately instead.
+  void NotifyAuctionMetricsRecorderWhenReady(
+      AuctionMetricsRecorder* auction_metrics_recorder);
+
  private:
   friend class base::RefCounted<WorkletOwner>;
 
@@ -153,9 +161,16 @@ class AuctionWorkletManager::WorkletOwner
 
   // Called once the AuctionProcessManager provides a process to load a worklet
   // in. Immediately loads the worklet and informs WorkletHandles. If this is
-  // for a bidder workelt, `number_of_bidder_threads` specifies
+  // for a bidder worklet, `number_of_bidder_threads` specifies
   // the number of threads to allocate to the bidder.
   void OnProcessAssigned(size_t number_of_bidder_threads);
+
+  // Called when a PID for a worklet process thread has a PID assigned, a proxy
+  // for its readiness to begin processing requests. This is used to record
+  // the OnWorkletReady event to the AuctionMetricsRecorder for phase start/end
+  // metrics. For worklets that have multiple threads, this will be called once
+  // for each of those threads.
+  void OnThreadReady(base::ProcessId pid);
 
   // Mojo disconnect with reason handler. If there's a description, it's a load
   // error. Otherwise, it's a crash. Passes error information on to all
@@ -204,6 +219,19 @@ class AuctionWorkletManager::WorkletOwner
 
   // Map from devtools auction ID to number of handles from that auction.
   std::map<std::string, int> registered_devtools_auction_ids_;
+
+  // When a worklet is requested before it's ready, we store the
+  // AuctionMetricsRecorder here so that it can be notified when the worklet
+  // is ready. There's an AuctionMetricsRecorder for each auction, and since
+  // multiple auctions can reuse the same worklet, there may in fact be multiple
+  // auctions waiting for the same worklet, which is why this is a list.
+  std::vector<raw_ptr<AuctionMetricsRecorder>>
+      auction_metrics_recorders_to_notify_;
+
+  // When the requested worklet is ready, we can immediately record this to the
+  // AuctionMetricsRecorder instead of adding the AuctionMetricsRecorder to
+  // `auction_metrics_recorders_to_notify_`, defined above.
+  bool is_worklet_ready_ = false;
 
   base::WeakPtrFactory<WorkletOwner> weak_ptr_factory_{this};
 };
@@ -260,6 +288,15 @@ AuctionWorkletManager::WorkletOwner::ComputeDevtoolsAuctionIds() {
     result.push_back(id);
   }
   return result;
+}
+
+void AuctionWorkletManager::WorkletOwner::NotifyAuctionMetricsRecorderWhenReady(
+    AuctionMetricsRecorder* auction_metrics_recorder) {
+  if (is_worklet_ready_) {
+    auction_metrics_recorder->OnWorkletReady();
+  } else {
+    auction_metrics_recorders_to_notify_.push_back(auction_metrics_recorder);
+  }
 }
 
 AuctionWorkletManager::WorkletOwner::~WorkletOwner() {
@@ -411,6 +448,12 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned(
             bidder_worklet_.get(),
             /*thread_index=*/i));
 
+        if (std::optional<base::ProcessId> maybe_pid =
+                worklet_debugs_.back()->GetPid(base::BindOnce(
+                    &WorkletOwner::OnThreadReady, base::Unretained(this)))) {
+          OnThreadReady(*maybe_pid);
+        }
+
         // For `DebuggableAuctionWorklet` created synchronously for the same
         // frame, they should have the same `should_pause_on_start()` state.
         CHECK_EQ(worklet_debugs_[i]->should_pause_on_start(),
@@ -455,6 +498,12 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned(
             seller_worklet_.get(),
             /*thread_index=*/i));
 
+        if (std::optional<base::ProcessId> maybe_pid =
+                worklet_debugs_.back()->GetPid(base::BindOnce(
+                    &WorkletOwner::OnThreadReady, base::Unretained(this)))) {
+          OnThreadReady(*maybe_pid);
+        }
+
         // For `DebuggableAuctionWorklet` created synchronously for the same
         // frame, they should have the same `should_pause_on_start()` state.
         CHECK_EQ(worklet_debugs_[i]->should_pause_on_start(),
@@ -482,6 +531,23 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned(
   }
 
   MaybeQueueNotifications();
+}
+
+void AuctionWorkletManager::WorkletOwner::OnThreadReady(
+    base::ProcessId unused_pid) {
+  // OnThreadReady may be called multiple times, since there may be multiple
+  // threads for this worklet. We consider the *first* thread ready to be the
+  // point at which the worklet is ready, since that's the point at which the
+  // worklet can begin processing requests.
+  if (is_worklet_ready_) {
+    return;
+  }
+  for (AuctionMetricsRecorder* auction_metrics_recorder :
+       auction_metrics_recorders_to_notify_) {
+    auction_metrics_recorder->OnWorkletReady();
+  }
+  auction_metrics_recorders_to_notify_.clear();
+  is_worklet_ready_ = true;
 }
 
 void AuctionWorkletManager::WorkletOwner::OnWorkletDisconnected(
@@ -747,7 +813,8 @@ void AuctionWorkletManager::RequestBidderWorklet(
     const std::optional<url::Origin>& trusted_bidding_signals_coordinator,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
-    std::unique_ptr<WorkletHandle>& out_worklet_handle) {
+    std::unique_ptr<WorkletHandle>& out_worklet_handle,
+    AuctionMetricsRecorder* auction_metrics_recorder) {
   RequestWorkletByKey(
       BidderWorkletKey(bidding_logic_url, wasm_url, trusted_bidding_signals_url,
                        needs_cors_for_additional_bid, experiment_group_id,
@@ -755,7 +822,7 @@ void AuctionWorkletManager::RequestBidderWorklet(
                        trusted_bidding_signals_coordinator),
       std::move(devtools_auction_id), std::move(worklet_available_callback),
       std::move(fatal_error_callback), out_worklet_handle,
-      /*number_of_bidder_threads=*/1);
+      /*number_of_bidder_threads=*/1, auction_metrics_recorder);
 }
 
 void AuctionWorkletManager::RequestSellerWorklet(
@@ -765,7 +832,8 @@ void AuctionWorkletManager::RequestSellerWorklet(
     std::optional<uint16_t> experiment_group_id,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
-    std::unique_ptr<WorkletHandle>& out_worklet_handle) {
+    std::unique_ptr<WorkletHandle>& out_worklet_handle,
+    AuctionMetricsRecorder* auction_metrics_recorder) {
   WorkletKey worklet_info(WorkletType::kSeller,
                           /*script_url=*/decision_logic_url,
                           /*wasm_url=*/std::nullopt,
@@ -777,7 +845,7 @@ void AuctionWorkletManager::RequestSellerWorklet(
   RequestWorkletByKey(std::move(worklet_info), std::move(devtools_auction_id),
                       std::move(worklet_available_callback),
                       std::move(fatal_error_callback), out_worklet_handle,
-                      /*number_of_bidder_threads=*/0);
+                      /*number_of_bidder_threads=*/0, auction_metrics_recorder);
 }
 
 void AuctionWorkletManager::RequestWorkletByKey(
@@ -786,7 +854,8 @@ void AuctionWorkletManager::RequestWorkletByKey(
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
     std::unique_ptr<WorkletHandle>& out_worklet_handle,
-    size_t number_of_bidder_threads) {
+    size_t number_of_bidder_threads,
+    AuctionMetricsRecorder* auction_metrics_recorder) {
   DCHECK(!out_worklet_handle);
   auto worklet_it = worklets_.find(worklet_info);
   scoped_refptr<WorkletOwner> worklet;
@@ -798,6 +867,10 @@ void AuctionWorkletManager::RequestWorkletByKey(
     worklet = base::MakeRefCounted<WorkletOwner>(this, worklet_info,
                                                  number_of_bidder_threads);
     worklets_.emplace(std::pair(std::move(worklet_info), worklet.get()));
+  }
+  if (auction_metrics_recorder) {
+    auction_metrics_recorder->OnWorkletRequested();
+    worklet->NotifyAuctionMetricsRecorderWhenReady(auction_metrics_recorder);
   }
   out_worklet_handle.reset(new WorkletHandle(
       std::move(devtools_auction_id), std::move(worklet),

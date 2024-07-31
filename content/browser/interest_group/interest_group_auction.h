@@ -489,10 +489,10 @@ class CONTENT_EXPORT InterestGroupAuction
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       const blink::AuctionConfig* config,
       const InterestGroupAuction* parent,
+      AuctionMetricsRecorder* auction_metrics_recorder,
       AuctionWorkletManager* auction_worklet_manager,
       AuctionNonceManager* auction_nonce_manager,
       InterestGroupManagerImpl* interest_group_manager,
-      AuctionMetricsRecorder* auction_metrics_recorder,
       GetDataDecoderCallback get_data_decoder_callback,
       base::Time auction_start_time,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -1256,10 +1256,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // Whether k-anonymity enforcement or simulation (or none) are performed.
   const auction_worklet::mojom::KAnonymityBidMode kanon_mode_;
 
+  const raw_ptr<AuctionMetricsRecorder> auction_metrics_recorder_;
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
   const raw_ptr<AuctionNonceManager> auction_nonce_manager_;
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
-  const raw_ptr<AuctionMetricsRecorder> auction_metrics_recorder_;
 
   // Configuration of this auction.
   raw_ptr<const blink::AuctionConfig> config_;

@@ -32,6 +32,23 @@ int64_t GetBucketMinForPhaseTimeMetric(base::TimeDelta time_delta) {
 }
 }  // namespace
 
+AuctionMetricsRecorderManager::AuctionMetricsRecorderManager(
+    ukm::SourceId ukm_source_id)
+    : ukm_source_id_(ukm_source_id) {}
+
+AuctionMetricsRecorderManager::~AuctionMetricsRecorderManager() = default;
+
+AuctionMetricsRecorder*
+AuctionMetricsRecorderManager::CreateAuctionMetricsRecorder() {
+  auto auction_metrics_recorder =
+      std::make_unique<AuctionMetricsRecorder>(ukm_source_id_);
+  AuctionMetricsRecorder* auction_metrics_recorder_ptr =
+      auction_metrics_recorder.get();
+  owned_auction_metrics_recorders_.push_back(
+      std::move(auction_metrics_recorder));
+  return auction_metrics_recorder_ptr;
+}
+
 AuctionMetricsRecorder::AuctionMetricsRecorder(ukm::SourceId ukm_source_id)
     : builder_(ukm_source_id), auction_start_time_(base::TimeTicks::Now()) {}
 
@@ -42,6 +59,11 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
   base::TimeDelta e2e_latency = base::TimeTicks::Now() - auction_start_time_;
   builder_.SetEndToEndLatencyInMillis(
       GetSemanticBucketMinForDurationTiming(e2e_latency.InMilliseconds()));
+
+  MaybeSetPhaseStartTime(worklet_creation_phase_start_time_,
+                         &UkmEntry::SetWorkletCreationPhaseStartTimeInMillis);
+  MaybeSetPhaseEndTime(worklet_creation_phase_end_time_,
+                       &UkmEntry::SetWorkletCreationPhaseEndTimeInMillis);
 
   if (num_negative_interest_groups_) {
     builder_.SetNumNegativeInterestGroups(
@@ -335,6 +357,14 @@ void AuctionMetricsRecorder::OnLoadInterestGroupPhaseComplete() {
           load_interest_group_phase_latency.InMilliseconds()));
   builder_.SetLoadInterestGroupPhaseEndTimeInMillis(
       GetBucketMinForPhaseTimeMetric(load_interest_group_phase_latency));
+}
+
+void AuctionMetricsRecorder::OnWorkletRequested() {
+  worklet_creation_phase_start_time_.MaybeRecordTime(base::TimeTicks::Now());
+}
+
+void AuctionMetricsRecorder::OnWorkletReady() {
+  worklet_creation_phase_end_time_.MaybeRecordTime(base::TimeTicks::Now());
 }
 
 void AuctionMetricsRecorder::OnConfigPromisesResolved() {

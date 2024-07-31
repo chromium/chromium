@@ -1223,7 +1223,8 @@ class InterestGroupAuction::BuyerHelper
                          base::Unretained(this), bid_state.get()),
           base::BindOnce(&BuyerHelper::OnBidderWorkletGenerateBidFatalError,
                          base::Unretained(this), bid_state.get()),
-          bid_state->worklet_handle, number_of_bidder_threads);
+          bid_state->worklet_handle, number_of_bidder_threads,
+          auction_->auction_metrics_recorder_);
     }
   }
 
@@ -2367,10 +2368,10 @@ InterestGroupAuction::InterestGroupAuction(
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
     const blink::AuctionConfig* config,
     const InterestGroupAuction* parent,
+    AuctionMetricsRecorder* auction_metrics_recorder,
     AuctionWorkletManager* auction_worklet_manager,
     AuctionNonceManager* auction_nonce_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    AuctionMetricsRecorder* auction_metrics_recorder,
     GetDataDecoderCallback get_data_decoder_callback,
     base::Time auction_start_time,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -2380,10 +2381,10 @@ InterestGroupAuction::InterestGroupAuction(
     : devtools_auction_id_(base::Token::CreateRandom().ToString()),
       trace_id_(base::trace_event::GetNextGlobalTraceId()),
       kanon_mode_(kanon_mode),
+      auction_metrics_recorder_(auction_metrics_recorder),
       auction_worklet_manager_(auction_worklet_manager),
       auction_nonce_manager_(auction_nonce_manager),
       interest_group_manager_(interest_group_manager),
-      auction_metrics_recorder_(auction_metrics_recorder),
       config_(config),
       config_promises_resolved_(config_->NumPromises() == 0),
       parent_(parent),
@@ -2426,8 +2427,8 @@ InterestGroupAuction::InterestGroupAuction(
     component_auctions_.emplace(
         child_pos, std::make_unique<InterestGroupAuction>(
                        kanon_mode_, &component_auction_config, /*parent=*/this,
-                       auction_worklet_manager, auction_nonce_manager,
-                       interest_group_manager, auction_metrics_recorder_,
+                       auction_metrics_recorder_, auction_worklet_manager,
+                       auction_nonce_manager, interest_group_manager,
                        get_data_decoder_callback_, auction_start_time_,
                        is_interest_group_api_allowed_callback_,
                        maybe_log_private_aggregation_web_features_callback_));
@@ -4265,7 +4266,7 @@ void InterestGroupAuction::RequestSellerWorklet() {
                      base::Unretained(this)),
       base::BindOnce(&InterestGroupAuction::OnSellerWorkletFatalError,
                      base::Unretained(this)),
-      seller_worklet_handle_);
+      seller_worklet_handle_, auction_metrics_recorder_);
 }
 
 void InterestGroupAuction::OnSellerWorkletReceived() {

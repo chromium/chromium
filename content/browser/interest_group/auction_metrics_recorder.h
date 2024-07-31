@@ -25,6 +25,32 @@
 
 namespace content {
 
+// AuctionMetricsRecorder instances need to outlive other objects that keep a
+// reference to them, e.g. AuctionWorkletManager, so that these objects can
+// effectively record metrics. AuctionMetricsRecorderManager is responsible for
+// owning instances of AuctionMetricsRecorder beyond the lifetime of any of
+// these referencing objects.
+class CONTENT_EXPORT AuctionMetricsRecorderManager {
+ public:
+  explicit AuctionMetricsRecorderManager(ukm::SourceId ukm_source_id);
+  ~AuctionMetricsRecorderManager();
+
+  AuctionMetricsRecorderManager(const AuctionMetricsRecorderManager&) = delete;
+  AuctionMetricsRecorderManager& operator=(
+      const AuctionMetricsRecorderManager&) = delete;
+
+  // Creates a new AuctionMetricsRecorder with the ukm_source_id provided in
+  // the AuctionMetricsRecorderManager constructor. The
+  // AuctionMetricsRecorderManager keeps ownership of this object and returns
+  // a usable pointer so that other objects can use this to record metrics.
+  AuctionMetricsRecorder* CreateAuctionMetricsRecorder();
+
+ private:
+  ukm::SourceId ukm_source_id_;
+  std::vector<std::unique_ptr<AuctionMetricsRecorder>>
+      owned_auction_metrics_recorders_;
+};
+
 // The AuctionMetricsRecorder is an auction-scoped collection of data used to
 // record UKMs used to investigate auction latency used to detect regressive
 // trends over time and to drive future optimizations.
@@ -56,6 +82,12 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
 
   // Records LoadInterestGroupPhaseLatency
   void OnLoadInterestGroupPhaseComplete();
+
+  // Records the times at which a buyer or seller worklet was requested.
+  void OnWorkletRequested();
+
+  // Records the times at which a buyer or seller worklet was ready.
+  void OnWorkletReady();
 
   // Records how long it took for the config promises to be resolved since the
   // start of the auction. This is only called for auctions that have config
@@ -309,6 +341,10 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   // Time at which the LoadInterestGroup phase completed and the
   // BiddingAndScoring phase began.
   std::optional<base::TimeTicks> bidding_and_scoring_phase_start_time_;
+
+  // WorkletCreation phase metrics.
+  EarliestTimeRecorder worklet_creation_phase_start_time_;
+  LatestTimeRecorder worklet_creation_phase_end_time_;
 
   // Aggregate number of negative interest groups across all component auctions.
   // This only has a value if the auction (or any of the component auctions in

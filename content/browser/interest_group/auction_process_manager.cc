@@ -196,9 +196,10 @@ void AuctionProcessManager::ProcessHandle::AssignProcess(
 }
 
 void AuctionProcessManager::ProcessHandle::OnBaseProcessLaunched(
-    const base::Process& process) {
-  if (worklet_process_)
+    const base::Process& process) const {
+  if (worklet_process_) {
     worklet_process_->OnLaunchedWithPid(process.Pid());
+  }
 }
 
 void AuctionProcessManager::ProcessHandle::InvokeCallback() {
@@ -287,6 +288,7 @@ bool AuctionProcessManager::TryCreateOrGetProcessForHandle(
 
   (*processes)[process_handle->origin_] = worklet_process.get();
   process_handle->AssignProcess(std::move(worklet_process));
+  OnNewProcessAssigned(process_handle);
   return true;
 }
 

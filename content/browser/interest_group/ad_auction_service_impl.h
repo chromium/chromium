@@ -218,6 +218,12 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   scoped_refptr<ReconnectableURLLoaderFactory>
       ref_counted_trusted_url_loader_factory_;
 
+  // Used to create AuctionMetricsRecorders, which store data needed to record
+  // UKM. This must be before `auction_worklet_manager_`, since worklet owners
+  // may keep references to the AuctionMetricsRecorders owned by the
+  // `auction_metrics_recorder_manager_`.
+  AuctionMetricsRecorderManager auction_metrics_recorder_manager_;
+
   // This must be before `auctions_`, since auctions may own references to
   // worklets it manages.
   AuctionWorkletManager auction_worklet_manager_;

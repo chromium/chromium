@@ -141,6 +141,52 @@ TEST_F(AuctionMetricsRecorderTest, LoadInterestGroupPhaseLatencyAndEndTime) {
       720);
 }
 
+TEST_F(AuctionMetricsRecorderTest,
+       WorkletCreationPhaseMetricsHaveNoValuesForNoWorkletsCreated) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_FALSE(HasMetric(UkmEntry::kWorkletCreationPhaseStartTimeInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kWorkletCreationPhaseEndTimeInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest, WorkletCreationPhaseMetricsWithOneRecord) {
+  FastForwardTime(base::Milliseconds(722));
+  recorder().OnWorkletRequested();  // start of phase at 722
+  FastForwardTime(base::Milliseconds(100));
+  recorder().OnWorkletReady();  // end of phase at 822
+  FastForwardTime(base::Milliseconds(100));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 722 becomes 720 with 10 ms linear bucketing.
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kWorkletCreationPhaseStartTimeInMillisName),
+      720);
+  // 822 becomes 820 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kWorkletCreationPhaseEndTimeInMillisName),
+            820);
+}
+
+TEST_F(AuctionMetricsRecorderTest, WorkletCreationPhaseMetricsWithTwoRecords) {
+  FastForwardTime(base::Milliseconds(722));
+  recorder().OnWorkletRequested();  // start of phase at 722
+  FastForwardTime(base::Milliseconds(100));
+  recorder().OnWorkletReady();
+  FastForwardTime(base::Milliseconds(100));
+  recorder().OnWorkletRequested();
+  FastForwardTime(base::Milliseconds(100));
+  recorder().OnWorkletReady();  // end of phase at 1022
+  FastForwardTime(base::Milliseconds(100));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 722 becomes 720 with 10 ms linear bucketing.
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kWorkletCreationPhaseStartTimeInMillisName),
+      720);
+  // 1022 becomes 1020 with 10 ms linear bucketing.
+  EXPECT_EQ(GetMetricValue(UkmEntry::kWorkletCreationPhaseEndTimeInMillisName),
+            1020);
+}
+
 TEST_F(AuctionMetricsRecorderTest, NumInterestGroups) {
   recorder().SetNumInterestGroups(42);
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
