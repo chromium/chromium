@@ -1259,7 +1259,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 #pragma mark - SignIn Utilities (EG2)
 
-- (void)signOutAndClearIdentitiesAndWaitForCompletion {
+- (void)signOutAndClearIdentities {
   __block BOOL isSignoutFinished = NO;
   [ChromeEarlGreyAppInterface signOutAndClearIdentitiesWithCompletion:^{
     isSignoutFinished = YES;
@@ -1274,23 +1274,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                         base::Milliseconds(100));
                     return isSignoutFinished;
                   }];
-  bool success =
-      [signOutFinished waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
+  bool success = [signOutFinished
+      waitWithTimeout:base::test::ios::kWaitForClearBrowsingDataTimeout
+                          .InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(
       success, @"Failed waiting for sign-out & cleaning completion");
-}
-
-- (void)signOutAndClearIdentities {
-  [ChromeEarlGreyAppInterface signOutAndClearIdentitiesWithCompletion:nil];
-  GREYCondition* allIdentitiesCleared = [GREYCondition
-      conditionWithName:@"All Chrome identities were cleared"
-                  block:^{
-                    return ![ChromeEarlGreyAppInterface hasIdentities];
-                  }];
-  bool success =
-      [allIdentitiesCleared waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
-  EG_TEST_HELPER_ASSERT_TRUE(success,
-                             @"Failed waiting for identities to be cleared");
 }
 
 #pragma mark - Bookmarks Utilities (EG2)

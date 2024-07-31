@@ -362,7 +362,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   // Should be removed after TODO(crbug.com/40065405).
   if ([self isRunningTest:@selector
             (DISABLED_testSyncSpinnerDismissedInRecentlyClosedTabs)]) {
-    [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
+    [ChromeEarlGrey signOutAndClearIdentities];
   }
 
   [super tearDown];

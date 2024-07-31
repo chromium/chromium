@@ -303,7 +303,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 
 // Tests that the bottom sheet does not show if the user isn't signed in.
 - (void)testUserSignedOut {
-  [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
+  [ChromeEarlGrey signOutAndClearIdentities];
 
   [self loadSignupPage];
 
