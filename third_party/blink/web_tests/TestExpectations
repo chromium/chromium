@@ -7545,3 +7545,6 @@ crbug.com/352831220 virtual/threaded/external/wpt/css/css-scroll-snap/snap-after
 
 # Gardener 2024-07-30
 crbug.com/356177815 [ Win11-arm64 ] http/tests/cookies/partitioned-cookies/partitioned-cookies-in-parallel-frames.https.html [ Failure Pass Timeout ]
+
+# Gardener 2024-07-31
+crbug.com/356566702 [ Win11-arm64 ] external/wpt/css/css-color/parsing/color-valid-relative-color.html [ Failure Pass ]
