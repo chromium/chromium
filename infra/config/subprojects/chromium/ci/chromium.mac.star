@@ -400,6 +400,7 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|arm64",

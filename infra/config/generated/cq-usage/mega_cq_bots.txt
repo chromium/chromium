@@ -144,7 +144,6 @@ chromium/try/mac11-arm64-rel
 chromium/try/mac12-arm64-rel
 chromium/try/mac12-tests
 chromium/try/mac13-arm64-rel
-chromium/try/mac13-skia-alt-arm64-blink-rel
 chromium/try/mac13-tests
 chromium/try/mac14-arm64-rel
 chromium/try/mac_chromium_11.0_rel_ng
