@@ -17,7 +17,7 @@ class CollectingFileSystemObserver {
 
   constructor(test, root_dir) {
     test.add_cleanup(() => {
-      this.#observer.disconnect();
+      this.disconnect();
     });
 
     this.#setupCollectNotification(root_dir);
@@ -80,8 +80,13 @@ class CollectingFileSystemObserver {
     return this.#records_promise_and_resolvers.promise;
   }
 
-  observe(handles) {
-    return Promise.all(handles.map(handle => this.#observer.observe(handle)));
+  observe(handles, options) {
+    return Promise.all(
+        handles.map(handle => this.#observer.observe(handle, options)));
+  }
+
+  disconnect() {
+    this.#observer.disconnect();
   }
 }
 
@@ -126,4 +131,12 @@ async function assert_records_equal(root, actual, expected) {
 
 function modifiedEvent(changedHandle, relativePathComponents) {
   return {type: 'modified', changedHandle, relativePathComponents};
+}
+
+function appearedEvent(changedHandle, relativePathComponents) {
+  return {type: 'appeared', changedHandle, relativePathComponents};
+}
+
+function disappearedEvent(changedHandle, relativePathComponents) {
+  return {type: 'disappeared', changedHandle, relativePathComponents};
 }
