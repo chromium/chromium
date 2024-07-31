@@ -26,7 +26,6 @@ import("//components/allocation_recorder/testing/testing.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
-import("//components/feed/features.gni")
 import("//components/lens/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
@@ -1344,6 +1343,11 @@ if (is_android) {
       "//components/commerce/core:persisted_state_db_content_proto",
       "//components/content_settings/browser:browser",
       "//components/crash/android:crashpad_main",
+      "//components/feed:feature_list",
+      "//components/feed/core/v2:feed_core_v2",
+      "//components/feed/core/v2:ios_shared",
+      "//components/feed/core/v2:test_helpers",
+      "//components/feed/mojom:mojo_bindings",
       "//components/infobars/content",
       "//components/metrics:content",
       "//components/metrics/demographics",
@@ -1417,6 +1421,7 @@ if (is_android) {
       "../browser/engagement/important_sites_util_browsertest.cc",
       "../browser/enterprise/remote_commands/user_remote_commands_service_browsertest.cc",
       "../browser/fast_checkout/fast_checkout_tab_helper_browsertest.cc",
+      "../browser/feed/rss_links_fetcher_browsertest.cc",
       "../browser/metrics/metrics_log_browsertest.cc",
       "../browser/metrics/metrics_service_user_demographics_browsertest.cc",
       "../browser/metrics/sampled_out_client_id_saved_browsertest.cc",
@@ -1544,17 +1549,6 @@ if (is_android) {
       # are failing due to absence of AR, or due to an issue with propagating
       # the enterprise policy setting.
       sources += [ "../browser/android/vr/webxr_policy_browsertest.cc" ]
-    }
-
-    if (enable_feed_v2) {
-      sources += [ "../browser/feed/rss_links_fetcher_browsertest.cc" ]
-      deps += [
-        "//components/feed:feature_list",
-        "//components/feed/core/v2:feed_core_v2",
-        "//components/feed/core/v2:ios_shared",
-        "//components/feed/core/v2:test_helpers",
-        "//components/feed/mojom:mojo_bindings",
-      ]
     }
 
     data = [
@@ -6464,13 +6458,6 @@ test("unit_tests") {
     sources += [ "../browser/metrics/pressure/pressure_metrics_unittest.cc" ]
   }
 
-  if (enable_feed_v2) {
-    sources += [
-      "../browser/feed/feed_service_factory_unittest.cc",
-      "../browser/feed/rss_links_fetcher_unittest.cc",
-    ]
-  }
-
   if (is_linux || is_chromeos) {
     sources +=
         [ "../browser/policy/browser_dm_token_storage_linux_unittest.cc" ]
@@ -7438,6 +7425,8 @@ test("unit_tests") {
       "../browser/fast_checkout/fast_checkout_delegate_impl_unittest.cc",
       "../browser/fast_checkout/fast_checkout_personal_data_helper_impl_unittest.cc",
       "../browser/fast_checkout/fast_checkout_trigger_validator_impl_unittest.cc",
+      "../browser/feed/feed_service_factory_unittest.cc",
+      "../browser/feed/rss_links_fetcher_unittest.cc",
       "../browser/feedback/android/family_info_feedback_source_unittest.cc",
       "../browser/long_screenshots/long_screenshots_tab_service_unittest.cc",
       "../browser/lookalikes/safety_tip_message_delegate_android_unittest.cc",

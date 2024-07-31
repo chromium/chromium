@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//components/feed/features.gni")
 
 static_library("feature_list") {
   sources = [

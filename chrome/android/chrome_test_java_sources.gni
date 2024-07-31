@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
-import("//components/feed/features.gni")
 
 # Java test file for clank components. all test sources that are not
 # conditionally added. See java_source.gni for conditionally added files.
@@ -279,6 +278,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/ntp/HomeSurfaceTestUtils.java",
   "javatests/src/org/chromium/chrome/browser/ntp/IncognitoNewTabPageTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/MostVisitedTilesPTTest.java",
+  "javatests/src/org/chromium/chrome/browser/ntp/NewTabPageColorWithFeedV2Test.java",
   "javatests/src/org/chromium/chrome/browser/ntp/NewTabPageLoadTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/NewTabPageNavigationTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/NewTabPageTest.java",
@@ -585,10 +585,6 @@ chrome_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModel.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/SharedBookmarkModelMocks.java",
 ]
-
-if (enable_feed_v2) {
-  chrome_test_java_sources += [ "javatests/src/org/chromium/chrome/browser/ntp/NewTabPageColorWithFeedV2Test.java" ]
-}
 
 # Test can be broken by R8 and isn't testing functionality.
 if (is_java_debug) {

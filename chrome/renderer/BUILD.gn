@@ -316,10 +316,6 @@ static_library("renderer") {
         [ "//components/safe_browsing/content/renderer/phishing_classifier" ]
   }
 
-  if (enable_feed_v2) {
-    deps += [ "//components/feed/content/renderer:feed_renderer" ]
-  }
-
   if (enable_extensions) {
     sources += [
       "extensions/api/accessibility_private_hooks_delegate.cc",
@@ -401,7 +397,10 @@ static_library("renderer") {
       "wallet/boarding_pass_extractor.cc",
       "wallet/boarding_pass_extractor.h",
     ]
-    deps += [ "//chrome/common/wallet:mojo_bindings" ]
+    deps += [
+      "//chrome/common/wallet:mojo_bindings",
+      "//components/feed/content/renderer:feed_renderer",
+    ]
   } else {
     sources += [
       "accessibility/ax_tree_distiller.cc",

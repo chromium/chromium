@@ -17,7 +17,6 @@ import("//chrome/browser/share/android/test_java_sources.gni")
 import("//chrome/browser/tab_group/javatests/tab_groups_test_java_sources.gni")
 import("//chrome/browser/tab_group_sync/android/test_java_sources.gni")
 import("//chrome/common/features.gni")
-import("//components/feed/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 

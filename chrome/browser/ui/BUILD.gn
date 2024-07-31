@@ -13,7 +13,6 @@ import("//chrome/common/features.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
-import("//components/feed/features.gni")
 import("//components/lens/features.gni")
 import("//components/metrics/generate_allowlist_from_histograms_file.gni")
 import("//components/metrics/structured/buildflags/buildflags.gni")
@@ -952,6 +951,10 @@ static_library("ui") {
       "safety_hub/password_status_check_result_android.cc",
       "safety_hub/password_status_check_result_android.h",
       "screen_capture_notification_ui_stub.cc",
+      "webui/feed_internals/feed_internals_ui.cc",
+      "webui/feed_internals/feed_internals_ui.h",
+      "webui/feed_internals/feedv2_internals_page_handler.cc",
+      "webui/feed_internals/feedv2_internals_page_handler.h",
       "webui/internals/lens/lens_internals_ui_message_handler.cc",
       "webui/internals/lens/lens_internals_ui_message_handler.h",
       "webui/internals/notifications/notifications_internals_ui_message_handler.cc",
@@ -967,15 +970,6 @@ static_library("ui") {
       "webui/webapks/webapks_ui.cc",
       "webui/webapks/webapks_ui.h",
     ]
-    if (enable_feed_v2) {
-      sources += [
-        "webui/feed_internals/feed_internals_ui.cc",
-        "webui/feed_internals/feed_internals_ui.h",
-        "webui/feed_internals/feedv2_internals_page_handler.cc",
-        "webui/feed_internals/feedv2_internals_page_handler.h",
-      ]
-      deps += [ "//chrome/browser/resources/feed_internals:resources" ]
-    }
 
     deps += [
       "//cc/slim",
@@ -990,6 +984,7 @@ static_library("ui") {
       "//chrome/browser/keyboard_accessory/android:public",
       "//chrome/browser/notifications/scheduler/public",
       "//chrome/browser/password_manager/android:utils",
+      "//chrome/browser/resources/feed_internals:resources",
       "//chrome/browser/touch_to_fill/autofill/android",
       "//chrome/browser/ui/android/autofill/internal:jni_headers",
       "//chrome/browser/ui/android/toolbar:jni_headers",
