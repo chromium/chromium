@@ -83,7 +83,7 @@ int GetMessageStringId() {
 
 std::unique_ptr<Notification> CreateNotification() {
   const gfx::VectorIcon& capslock_icon =
-      !Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()
+      Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()
           ? kModifierSplitNotificationCapslockIcon
           : kNotificationCapslockIcon;
   std::unique_ptr<Notification> notification = ash::CreateSystemNotificationPtr(
