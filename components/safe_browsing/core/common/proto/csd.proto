@@ -1742,9 +1742,9 @@ message ClientSafeBrowsingReportRequest {
       // Applicable actions: DISCARD, OPEN_SUBPAGE
       BUBBLE_MAINPAGE = 1;
       // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
-      // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK
+      // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK, ACCEPT_DEEP_SCAN
       BUBBLE_SUBPAGE = 2;
-      // Applicable actions: DISCARD, KEEP, PROCEED
+      // Applicable actions: DISCARD, KEEP, PROCEED, ACCEPT_DEEP_SCAN
       DOWNLOADS_PAGE = 3;
       // Applicable actions: PROCEED, CANCEL
       DOWNLOAD_PROMPT = 4;
@@ -1783,6 +1783,8 @@ message ClientSafeBrowsingReportRequest {
       PROCEED_DEEP_SCAN = 9;
       // The user clicks the learn more link on the bubble subpage.
       OPEN_LEARN_MORE_LINK = 10;
+      // The user accepts starting a deep scan.
+      ACCEPT_DEEP_SCAN = 11;
     }
     optional Action action = 2;
 

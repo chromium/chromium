@@ -1592,6 +1592,10 @@ base::Value::Dict SerializeDownloadWarningAction(
         OPEN_LEARN_MORE_LINK:
       action = "OPEN_LEARN_MORE_LINK";
       break;
+    case ClientSafeBrowsingReportRequest::DownloadWarningAction::
+        ACCEPT_DEEP_SCAN:
+      action = "ACCEPT_DEEP_SCAN";
+      break;
   }
   action_dict.Set("action", action);
   action_dict.Set("is_terminal_action",

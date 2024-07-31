@@ -29,9 +29,9 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     // Applicable actions: DISCARD, OPEN_SUBPAGE
     BUBBLE_MAINPAGE = 1,
     // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
-    // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK
+    // PROCEED_DEEP_SCAN, ACCEPT_DEEP_SCAN, OPEN_LEARN_MORE_LINK
     BUBBLE_SUBPAGE = 2,
-    // Applicable actions: DISCARD, KEEP, PROCEED
+    // Applicable actions: DISCARD, KEEP, PROCEED, ACCEPT_DEEP_SCAN
     // PROCEED on the downloads page indicates saving a "suspicious" download
     // directly, without going through the prompt. In contrast, KEEP indicates
     // opening the prompt, for a "dangerous" download.
@@ -86,7 +86,9 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     PROCEED_DEEP_SCAN = 9,
     // The user clicks the learn more link on the bubble subpage.
     OPEN_LEARN_MORE_LINK = 10,
-    kMaxValue = OPEN_LEARN_MORE_LINK
+    // The user accepts starting a deep scan.
+    ACCEPT_DEEP_SCAN = 11,
+    kMaxValue = ACCEPT_DEEP_SCAN
   };
 
   struct WarningActionEvent {
