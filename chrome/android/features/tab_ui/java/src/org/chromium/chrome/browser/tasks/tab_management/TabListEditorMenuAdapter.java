@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -151,8 +152,9 @@ public class TabListEditorMenuAdapter
         if (propertyKey == TabListEditorActionProperties.TITLE) {
             textView.setText(model.get(TabListEditorActionProperties.TITLE));
         } else if (propertyKey == TabListEditorActionProperties.ICON) {
-            startIcon.setImageDrawable(model.get(TabListEditorActionProperties.ICON));
-            startIcon.setVisibility(View.VISIBLE);
+            Drawable icon = model.get(TabListEditorActionProperties.ICON);
+            startIcon.setImageDrawable(icon);
+            startIcon.setVisibility(icon == null ? View.GONE : View.VISIBLE);
             endIcon.setVisibility(View.GONE);
         } else if (propertyKey == TabListEditorActionProperties.ENABLED
                 || propertyKey == TabListEditorActionProperties.CONTENT_DESCRIPTION) {

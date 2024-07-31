@@ -150,10 +150,6 @@ public abstract class TabListEditorAction {
                         .with(TabListEditorActionProperties.ICON_POSITION, iconPosition)
                         .with(TabListEditorActionProperties.TITLE_RESOURCE_ID, titleResourceId)
                         .with(TabListEditorActionProperties.TITLE_IS_PLURAL, titleIsPlural)
-                        .with(
-                                TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID,
-                                contentDescriptionResourceId)
-                        .with(TabListEditorActionProperties.ICON, icon)
                         .with(TabListEditorActionProperties.ENABLED, false)
                         .with(TabListEditorActionProperties.ITEM_COUNT, 0)
                         .with(
@@ -169,13 +165,21 @@ public abstract class TabListEditorAction {
                                 this::onSelectionStateChange)
                         .build();
 
-        if (contentDescriptionResourceId == null) return;
+        if (contentDescriptionResourceId != null) {
+            mModel.set(
+                    TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID,
+                    contentDescriptionResourceId);
 
-        assert expectedResourceourceTypeName.equals(
-                        ContextUtils.getApplicationContext()
-                                .getResources()
-                                .getResourceTypeName(contentDescriptionResourceId))
-                : "Quantity strings (plurals) with one integer format argument is needed";
+            assert expectedResourceourceTypeName.equals(
+                            ContextUtils.getApplicationContext()
+                                    .getResources()
+                                    .getResourceTypeName(contentDescriptionResourceId))
+                    : "Quantity strings (plurals) with one integer format argument is needed";
+        }
+
+        if (icon != null) {
+            mModel.set(TabListEditorActionProperties.ICON, icon);
+        }
     }
 
     /**
