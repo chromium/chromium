@@ -1297,23 +1297,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.DeclarativeSetIconWasVisibleRendered"
-    enum="BooleanVisible" expires_after="2019-09-07">
-  <owner>dbertoni@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Reports whether an icon specified in the declarativeContent.SetIcon API is
-    considered visible by our icon analysis code. This stat is emitted when we
-    create the underlying object that sets the icon when the declarative rule is
-    applied.
-
-    This replaces the previous stat, DeclarativeSetIconWasVisibleRendered, due
-    to a change to our analysis algorithm. The new algorithm renders the icon
-    against the toolbar background color and determines how visible the
-    resulting pixels are.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.DeprecatedDisableReasonsObserved"
     enum="ExtensionDisableReason" expires_after="2024-06-01">
   <owner>anunoy@chromium.org</owner>
@@ -1535,31 +1518,6 @@ This is emitted for two scenarios when a worker may be unregistered:
     disabled, it can be for one or more reasons (although typically just one),
     so the sum of these may be greater than 'Extensions.Disabled' which is a
     count of the number of unique extensions that are disabled.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.DynamicExtensionActionIconWasVisible"
-    enum="BooleanVisible" expires_after="2019-09-07">
-  <owner>dbertoni@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Reports whether a call to set a dynamic icon in the toolbar passed an icon
-    considered visible by our icon analysis code.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.DynamicExtensionActionIconWasVisibleRendered"
-    enum="BooleanVisible" expires_after="2019-09-07">
-  <owner>dbertoni@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Reports whether a call to set a dynamic icon in the toolbar passed an icon
-    considered visible by our icon analysis code.
-
-    This replaces the previous stat, DynamicExtensionActionIconWasVisible, due
-    to a change to our analysis algorithm. The new algorithm renders the icon
-    against the toolbar background color and determines how visible the
-    resulting pixels are.
   </summary>
 </histogram>
 
@@ -3835,37 +3793,6 @@ This is emitted for two scenarios when a worker may be unregistered:
     Measures how long ExtensionManagement::Refresh takes. This reloads all
     enterprise-related policies for all extensions, and is called both at
     startup and any time the enterprise policy changes.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ManifestIconSetIconWasVisibleForPacked"
-    enum="BooleanVisible" expires_after="2019-09-07">
-  <owner>dbertoni@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Reports whether an icon that's specified in the manifest is considered
-    visible by our icon analysis code. This stat is only for packed extensions,
-    which we check dynamically when the icon is requested. The stat is emitted
-    the first time the default icon is requested, since we cache the icon that's
-    selected.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ManifestIconSetIconWasVisibleForPackedRendered"
-    enum="BooleanVisible" expires_after="2019-09-07">
-  <owner>dbertoni@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Reports whether an icon that's specified in the manifest is considered
-    visible by our icon analysis code. This stat is only for packed extensions,
-    which we check dynamically when the icon is requested. The stat is emitted
-    the first time the default icon is requested, since we cache the icon that's
-    selected.
-
-    This replaces the previous stat, ManifestIconSetIconWasVisibleForPacked, due
-    to a change to our analysis algorithm. The new algorithm renders the icon
-    against the toolbar background color and determines how visible the
-    resulting pixels are.
   </summary>
 </histogram>
 

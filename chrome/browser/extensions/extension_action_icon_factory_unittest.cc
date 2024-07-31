@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -227,16 +226,12 @@ TEST_F(ExtensionActionIconFactoryTest, InvisibleIcon) {
 
   ExtensionActionIconFactory icon_factory(extension.get(), action, this);
 
-  base::HistogramTester histogram_tester;
   gfx::Image icon = icon_factory.GetIcon(0);
   // The default icon should not be returned, since it's invisible.
   // The placeholder icon should be returned instead.
   EXPECT_TRUE(ImageRepsAreEqual(
       action->GetPlaceholderIconImage().ToImageSkia()->GetRepresentation(1.0f),
       icon.ToImageSkia()->GetRepresentation(1.0f)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.ManifestIconSetIconWasVisibleForPacked"),
-              testing::ElementsAre(base::Bucket(0, 1)));
 
   // Reset the flag for testing.
   ExtensionActionIconFactory::SetAllowInvisibleIconsForTest(true);

@@ -67,8 +67,6 @@ gfx::Image ExtensionActionIconFactory::GetIcon(int tab_id) {
       const SkBitmap* const bitmap = icon.ToSkBitmap();
       const bool is_sufficiently_visible =
           image_util::IsIconSufficientlyVisible(*bitmap);
-      UMA_HISTOGRAM_BOOLEAN("Extensions.ManifestIconSetIconWasVisibleForPacked",
-                            is_sufficiently_visible);
       if (!is_sufficiently_visible && !g_allow_invisible_icons) {
         icon = action_->GetPlaceholderIconImage();
       }
