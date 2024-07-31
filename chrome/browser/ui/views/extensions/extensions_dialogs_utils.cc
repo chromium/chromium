@@ -95,9 +95,6 @@ void ShowDialog(ExtensionsToolbarContainer* container,
                 const std::vector<extensions::ExtensionId>& extension_ids,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
   DCHECK(container);
-  // TODO(crbug.com/355630549): Container may not be visible, which causes
-  // dialog to be anchored incorrectly. Fix this by showing a browser modal,
-  // which needs a browser or parent window. This should be an uncommon case.
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), GetDialogAnchorView(container, extension_ids),

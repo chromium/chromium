@@ -10,9 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
-#include "ui/gfx/image/image.h"
 
 class Browser;
 
@@ -25,56 +23,30 @@ class Mv2DisabledDialogController {
   explicit Mv2DisabledDialogController(Browser* browser);
   ~Mv2DisabledDialogController();
 
-  // Information for the extensions that should be included in the dialog.
-  struct ExtensionInfo {
-    ExtensionId id;
-    std::string name;
-    gfx::Image icon;
-  };
-
   // Cleans up this class. Should be called before destruction.
   void TearDown();
 
   // Testing:
   void MaybeShowDisabledDialogForTesting();
-  std::vector<ExtensionInfo> GetAffectedExtensionsForTesting() {
-    return affected_extensions_info_;
-  }
 
  private:
-  // Populates `affected_extensions_info_` with the extensions that should be
-  // included in the disabled dialog.
-  void ComputeAffectedExtensions();
-
-  // Called when extension with `extension_id` and `extension_name` has finished
-  // loading its `icon`. Calls `done_callback` to keep track of number of icons
-  // loaded.
-  void OnExtensionIconLoaded(const ExtensionId& extension_id,
-                             const std::string& extension_name,
-                             base::OnceClosure done_callback,
-                             const gfx::Image& icon);
-
-  // Shows a disabled dialog with `affected_extensions_info_`, removing the ones
-  // that are no longer affected (since this method is called asynchronously).
+  // Shows a dialog with disabled extensions due to the MV2 deprecation, if
+  // there are any extensions affected.
   void MaybeShowDisabledDialog();
 
-  // Uninstalls extensions corresponding to `affected_extensions_info_` when the
-  // remove option is selected.
-  void OnRemoveSelected();
+  // Removes `extension_ids` when the remove option is selected.
+  void OnRemoveSelected(const std::vector<ExtensionId>& extension_ids);
 
   // Opens the management page when the manage option is selected.
-  void OnManageSelected();
+  void OnManageSelected(const std::vector<ExtensionId>& extension_ids);
 
-  // Updates the pref that stores whether the user acknowledged the dialog for
-  // each of the extensions corresponding to `affected_extensions_info_`. This
-  // should be called when the user takes any action on the dialog.
-  void UserAcknowledgedDialog();
+  // Updates the pref for each `extension_ids` that stores whether the user
+  // acknowledged the dialog. This should be called when the user takes any
+  // action on the dialog.
+  void UserAcknowledgedDialog(const std::vector<ExtensionId>& extension_ids);
 
   raw_ptr<Browser> browser_;
   base::CallbackListSubscription show_dialog_subscription_;
-
-  // Extensions information to display in the disabled dialog.
-  std::vector<ExtensionInfo> affected_extensions_info_;
 
   base::WeakPtrFactory<Mv2DisabledDialogController> weak_ptr_factory_{this};
 };
