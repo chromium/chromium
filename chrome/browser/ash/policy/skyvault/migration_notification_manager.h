@@ -52,10 +52,14 @@ class MigrationNotificationManager : public KeyedService {
       CloudProvider provider,
       const base::FilePath& destination_path);
 
-  // Shows the migration error notification.
+  // Shows a notification that migration completed with errors.
   void ShowMigrationErrorNotification(
       CloudProvider provider,
+      const base::FilePath& destination_path,
       std::map<base::FilePath, MigrationUploadError> errors);
+
+  // Shows the policy configuration error notification.
+  void ShowConfigurationErrorNotification(CloudProvider provider);
 
   // Closes any open notification or dialog.
   void CloseAll();

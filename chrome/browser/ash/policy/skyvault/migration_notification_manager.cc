@@ -10,14 +10,19 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace policy::local_user_files {
@@ -49,6 +54,30 @@ void CloseNotification(Profile* profile) {
       NotificationHandler::Type::TRANSIENT, kSkyVaultMigrationNotificationId);
 }
 
+// Closes the notification and, if the button is clicked, opens `path`.
+void HandleNotificationClick(Profile* profile,
+                             const base::FilePath& path,
+                             std::optional<int> button) {
+  if (button.has_value() && button == 0) {
+    file_manager::util::ShowItemInFolder(profile, path, base::DoNothing());
+  }
+  CloseNotification(profile);
+}
+
+// Returns the translation string corresponding to `provider`.
+std::u16string CloudProviderToString(CloudProvider provider) {
+  switch (provider) {
+    case CloudProvider::kGoogleDrive:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_SKYVAULT_CLOUD_PROVIDER_GOOGLE_DRIVE);
+    case CloudProvider::kOneDrive:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_SKYVAULT_CLOUD_PROVIDER_ONEDRIVE);
+    case CloudProvider::kNotSpecified:
+      NOTREACHED_NORETURN();
+  }
+}
+
 }  // namespace
 
 MigrationNotificationManager::MigrationNotificationManager(
@@ -67,33 +96,17 @@ void MigrationNotificationManager::ShowMigrationInfoDialog(
 
 void MigrationNotificationManager::ShowMigrationProgressNotification(
     CloudProvider provider) {
-  std::u16string title;
-  std::u16string message;
-  switch (provider) {
-    case CloudProvider::kGoogleDrive:
-      title = u"Your files are being uploaded to Google Drive";
-      message =
-          u"If your file is not on your device, look for it on Google Drive. "
-          u"Once files have been uploaded to Google Drive, they will no longer "
-          u"exist on your device. From then on, save your files to Google "
-          u"Drive.";
-      break;
-    case CloudProvider::kOneDrive:
-      title = u"Your files are being uploaded to Microsoft OneDrive";
-      message =
-          u"If your file is not on your device, look for it on Microsoft "
-          u"OneDrive. "
-          u"Once files have been uploaded to Microsoft OneDrive, they will no "
-          u"longer "
-          u"exist on your device. From then on, save your files to Google "
-          u"Drive.";
-      break;
-    case CloudProvider::kNotSpecified:
-      LOG(ERROR) << "CloudProvider must be set.";
-      return;
-  }
+  std::u16string provider_str = CloudProviderToString(provider);
 
-  // TODO(334511998): Use i18n strings.
+  std::u16string title = base::ReplaceStringPlaceholders(
+      l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_PROGRESS_TITLE),
+      provider_str,
+      /*offset=*/nullptr);
+  std::u16string message = base::ReplaceStringPlaceholders(
+      l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_PROGRESS_MESSAGE),
+      provider_str,
+      /*offset=*/nullptr);
+
   auto notification = CreateNotificationPtr(title, message,
                                             /*callback=*/base::DoNothing());
 
@@ -105,29 +118,28 @@ void MigrationNotificationManager::ShowMigrationProgressNotification(
 void MigrationNotificationManager::ShowMigrationCompletedNotification(
     CloudProvider provider,
     const base::FilePath& destination_path) {
-  // TODO(334511998): Use i18n strings.
-  std::u16string title;
-  std::u16string message;
-  switch (provider) {
-    case CloudProvider::kGoogleDrive:
-      title = u"Upload to Google Drive complete";
-      message =
-          u"All files from your device have been uploaded to "
-          u"Google Drive. From now on, save your files to Google Drive.";
-      break;
-    case CloudProvider::kOneDrive:
-      title = u"Upload to Microsoft OneDrive complete";
-      message =
-          u"All files from your device have been uploaded to Microsoft "
-          u"OneDrive. From now on, save your files to Microsoft "
-          u"OneDrive.";
-      break;
-    case CloudProvider::kNotSpecified:
-      LOG(ERROR) << "CloudProvider must be set.";
-      return;
-  }
+  std::u16string provider_str = CloudProviderToString(provider);
+  std::u16string folder_name = destination_path.BaseName().AsUTF16Unsafe();
 
-  auto notification = CreateNotificationPtr(title, message, base::DoNothing());
+  std::u16string title = base::ReplaceStringPlaceholders(
+      l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_COMPLETED_TITLE),
+      {folder_name, provider_str},
+      /*offsets=*/nullptr);
+  std::u16string message = base::ReplaceStringPlaceholders(
+      l10n_util::GetStringUTF16(
+          IDS_POLICY_SKYVAULT_MIGRATION_COMPLETED_MESSAGE),
+      provider_str,
+      /*offset=*/nullptr);
+  std::u16string button = base::ReplaceStringPlaceholders(
+      l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_COMPLETED_BUTTON),
+      provider_str,
+      /*offset=*/nullptr);
+
+  auto notification =
+      CreateNotificationPtr(title, message,
+                            base::BindRepeating(&HandleNotificationClick,
+                                                profile(), destination_path));
+  notification->set_buttons({message_center::ButtonInfo(button)});
 
   NotificationDisplayService::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
@@ -136,8 +148,56 @@ void MigrationNotificationManager::ShowMigrationCompletedNotification(
 
 void MigrationNotificationManager::ShowMigrationErrorNotification(
     CloudProvider provider,
+    const base::FilePath& destination_path,
     std::map<base::FilePath, MigrationUploadError> errors) {
-  // TODO(aidazolic): Handle different error states.
+  // TODO(aidazolic): Pass error log path.
+  const base::FilePath error_log_path = base::FilePath();
+
+  std::u16string provider_str = CloudProviderToString(provider);
+
+  std::u16string folder_name = destination_path.BaseName().AsUTF16Unsafe();
+  std::u16string title = base::ReplaceStringPlaceholders(
+      l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_ERROR_TITLE),
+      provider_str,
+      /*offset=*/nullptr);
+  std::u16string message = base::ReplaceStringPlaceholders(
+      l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_ERROR_MESSAGE),
+      {folder_name, provider_str},
+      /*offsets=*/nullptr);
+  std::u16string button =
+      l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_ERROR_BUTTON);
+
+  auto notification = CreateNotificationPtr(
+      title, message,
+      base::BindRepeating(&HandleNotificationClick, profile(), error_log_path));
+  notification->set_buttons({message_center::ButtonInfo(button)});
+
+  NotificationDisplayService::GetForProfile(profile())->Display(
+      NotificationHandler::Type::TRANSIENT, *notification,
+      /*metadata=*/nullptr);
+}
+
+void MigrationNotificationManager::ShowConfigurationErrorNotification(
+    CloudProvider provider) {
+  std::u16string provider_str = CloudProviderToString(provider);
+
+  std::u16string title = base::ReplaceStringPlaceholders(
+      l10n_util::GetStringUTF16(
+          IDS_POLICY_SKYVAULT_MIGRATION_CONFIG_ERROR_TITLE),
+      provider_str,
+      /*offset=*/nullptr);
+  std::u16string message = base::ReplaceStringPlaceholders(
+      l10n_util::GetStringUTF16(
+          IDS_POLICY_SKYVAULT_MIGRATION_CONFIG_ERROR_MESSAGE),
+      provider_str,
+      /*offset=*/nullptr);
+
+  auto notification = CreateNotificationPtr(title, message,
+                                            /*callback=*/base::DoNothing());
+
+  NotificationDisplayService::GetForProfile(profile())->Display(
+      NotificationHandler::Type::TRANSIENT, *notification,
+      /*metadata=*/nullptr);
 }
 
 void MigrationNotificationManager::CloseAll() {

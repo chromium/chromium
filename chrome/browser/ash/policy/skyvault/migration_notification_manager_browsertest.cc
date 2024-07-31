@@ -103,10 +103,28 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerTest,
       display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
 
   MigrationNotificationManager manager(profile());
-  manager.ShowMigrationErrorNotification(CloudProvider(), /*errors=*/{});
-  // TODO(aidazolic): Uncomment when finished.
-  // EXPECT_TRUE(
-  //   display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
+  manager.ShowMigrationErrorNotification(CloudProvider(), base::FilePath(),
+                                         /*errors=*/{});
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
+
+  manager.CloseAll();
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
+}
+
+// Tests that a policy configuration error notification is shown, and closed
+// when CloseAll() is called.
+IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerTest,
+                       ShowConfigurationErrorNotification) {
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
+
+  MigrationNotificationManager manager(profile());
+  manager.ShowConfigurationErrorNotification(CloudProvider());
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
 
   manager.CloseAll();
   EXPECT_FALSE(

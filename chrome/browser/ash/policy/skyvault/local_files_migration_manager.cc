@@ -182,6 +182,18 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
     MaybeStopMigration();
   }
 
+  // TODO(b/354716629): Confirm under which conditions we fail here.
+  Profile* profile = Profile::FromBrowserContext(context_);
+  const bool google_drive_disabled =
+      !drive::DriveIntegrationServiceFactory::FindForProfile(profile)
+           ->is_enabled();
+  // TODO(b/354716629): Confirm conditions. Add OneDrive.
+  if ((cloud_provider_ == CloudProvider::kGoogleDrive &&
+       google_drive_disabled)) {
+    notification_manager_->ShowConfigurationErrorNotification(cloud_provider_);
+    return;
+  }
+
   // Local files are disabled and migration destination is set - initiate
   // migration.
   InformUser();
@@ -268,10 +280,12 @@ void LocalFilesMigrationManager::StartMigration(
 void LocalFilesMigrationManager::OnMigrationDone(
     std::map<base::FilePath, MigrationUploadError> errors) {
   in_progress_ = false;
+  // TODO(aidazolic): Get destination folder path in drive.
+  const base::FilePath destination_path = base::FilePath();
   if (!errors.empty()) {
     // TODO(aidazolic): Use error message; add on-click action.
-    notification_manager_->ShowMigrationErrorNotification(cloud_provider_,
-                                                          std::move(errors));
+    notification_manager_->ShowMigrationErrorNotification(
+        cloud_provider_, destination_path, std::move(errors));
 
     LOG(ERROR) << "Local files migration failed.";
   } else {
@@ -279,7 +293,7 @@ void LocalFilesMigrationManager::OnMigrationDone(
       observer.OnMigrationSucceeded();
     }
     notification_manager_->ShowMigrationCompletedNotification(cloud_provider_,
-                                                              base::FilePath());
+                                                              destination_path);
     VLOG(1) << "Local files migration done";
   }
   if (cleanup_in_progress_) {
