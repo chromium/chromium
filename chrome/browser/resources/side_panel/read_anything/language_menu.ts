@@ -30,7 +30,7 @@ export interface LanguageMenuElement {
 
 interface Notification {
   isError: boolean;
-  text: string;
+  text?: string;
 }
 
 interface LanguageDropdownItem {
@@ -260,19 +260,19 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     // Don't show notification text for a non-Google TTS language, as we're
     // not attempting a download.
     if (!this.hasAvailableNaturalVoices(lang)) {
-      return {isError: false, text: ''};
+      return {isError: false};
     }
 
     // Convert the lang code string to the language-pack format
     const voicePackLanguage = convertLangOrLocaleForVoicePackManager(lang);
     // No need to check the install status if the language is missing.
     if (!voicePackLanguage) {
-      return {isError: false, text: ''};
+      return {isError: false};
     }
 
     const notification = this.currentNotifications_[voicePackLanguage];
     if (notification === undefined) {
-      return {isError: false, text: ''};
+      return {isError: false};
     }
 
     // TODO(b/300259625): Show more error messages.
@@ -305,7 +305,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         return {isError: true, text: 'allocationError'};
       case VoiceClientSideStatusCode.AVAILABLE:
       case VoiceClientSideStatusCode.NOT_INSTALLED:
-        return {isError: false, text: ''};
+        return {isError: false};
       default:
         // This ensures the switch statement is exhaustive
         return notification satisfies never;
@@ -315,11 +315,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   // Runtime errors were thrown when this.i18n() was called in a Polymer
   // computed bindining callback function, so instead we call this.i18n from the
   // html via a wrapper.
-  protected i18nWraper(s: string): string {
-    if (s.length === 0) {
-      return '';
-    }
-    return `${this.i18n(s)}`;
+  protected i18nWraper(s: string|undefined): string {
+    return s ? this.i18n(s) : '';
   }
 
 
