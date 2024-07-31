@@ -6,8 +6,10 @@
 
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/uuid.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -17,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_strip_last_tab_dragged_alert_command.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
@@ -83,8 +86,11 @@
 
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(browserState);
   self.mediator =
       [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController
+                             tabGroupSyncService:tabGroupSyncService
                                      browserList:browserList];
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.browserState = browserState;
@@ -168,22 +174,25 @@
   [_sharingCoordinator start];
 }
 
-- (void)showTabGroupDeletionAlertForTab:(web::WebStateID)tabID
-                          originBrowser:(Browser*)browser
-                            originIndex:(int)index
-                            originGroup:(const TabGroup*)group {
+- (void)showAlertForLastTabDragged:
+    (TabStripLastTabDraggedAlertCommand*)command {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   if (browserState->IsOffTheRecord()) {
     return;
   }
+
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
-  base::WeakPtr<Browser> weakBrowser = browser->AsWeakPtr();
+  base::WeakPtr<Browser> weakBrowser = command.originBrowser->AsWeakPtr();
   __weak __typeof(self) weakSelf = self;
-  tab_groups::TabGroupVisualData visualDataCopy = group->visual_data();
+  tab_groups::TabGroupVisualData visualDataCopy = command.visualData;
+  const base::Uuid savedIDCopy = command.savedGroupID;
+  const tab_groups::TabGroupId localIDCopy = command.localGroupID;
+  web::WebStateID tabIDCopy = command.tabID;
+  int originIndexCopy = command.originIndex;
 
   NSString* title = l10n_util::GetNSString(
       IDS_IOS_TAB_GROUP_CONFIRMATION_LAST_TAB_MOVE_TITLE);
@@ -204,6 +213,7 @@
   [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(
                                           IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)
                                action:^(void) {
+                                 [weakSelf deleteSavedGroupWithID:savedIDCopy];
                                  [weakSelf dimissAlertCoordinator];
                                }
                                 style:UIAlertActionStyleDestructive];
@@ -212,10 +222,12 @@
                                  if (!weakBrowser) {
                                    return;
                                  }
-                                 [weakSelf cancelMoveForTab:tabID
+                                 [weakSelf cancelMoveForTab:tabIDCopy
                                               originBrowser:weakBrowser.get()
-                                                originIndex:index
-                                                 visualData:visualDataCopy];
+                                                originIndex:originIndexCopy
+                                                 visualData:visualDataCopy
+                                               localGroupID:localIDCopy
+                                                    savedID:savedIDCopy];
                                  [weakSelf dimissAlertCoordinator];
                                }
                                 style:UIAlertActionStyleCancel];
@@ -271,14 +283,26 @@
 
 #pragma mark - Private
 
+// Cancels the move of `tabID` by moving it back to its `originBrowser` and
+// `originIndex` and recreates a new group based on its original group's
+// `visualData`.
 - (void)cancelMoveForTab:(web::WebStateID)tabID
            originBrowser:(Browser*)originBrowser
              originIndex:(int)originIndex
-              visualData:(const tab_groups::TabGroupVisualData&)visualData {
+              visualData:(const tab_groups::TabGroupVisualData&)visualData
+            localGroupID:(const tab_groups::TabGroupId&)localGroupID
+                 savedID:(const base::Uuid&)savedID {
   [_mediator cancelMoveForTab:tabID
                 originBrowser:originBrowser
                   originIndex:originIndex
-                   visualData:visualData];
+                   visualData:visualData
+                 localGroupID:localGroupID
+                      savedID:savedID];
+}
+
+// Deletes the saved group with `savedID`.
+- (void)deleteSavedGroupWithID:(const base::Uuid&)savedID {
+  [_mediator deleteSavedGroupWithID:savedID];
 }
 
 // Dismisses the alert coordinator.

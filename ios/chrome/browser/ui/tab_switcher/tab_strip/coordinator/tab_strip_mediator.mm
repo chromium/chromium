@@ -7,16 +7,18 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "components/saved_tab_groups/saved_tab_group.h"
+#import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
-#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -30,6 +32,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_strip_last_tab_dragged_alert_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
@@ -175,7 +178,13 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
 @interface TabStripMediator () <CRWWebStateObserver,
                                 WebStateFaviconDriverObserver,
-                                WebStateListObserving> {
+                                WebStateListObserving>
+// The consumer for this object.
+@property(nonatomic, weak) id<TabStripConsumer> consumer;
+
+@end
+
+@implementation TabStripMediator {
   // Bridge C++ WebStateListObserver methods to this TabStripController.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   // Bridge C++ WebStateObserver methods to this TabStripController.
@@ -197,20 +206,19 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // List of items in the tab strip when a drag operation starts.
   // Should be set back to `nil` when the drag operation ends.
   NSMutableArray<TabStripItemIdentifier*>* _dragItems;
+
+  // Used to get info about saved groups and to mutate them.
+  raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
 }
 
-// The consumer for this object.
-@property(nonatomic, weak) id<TabStripConsumer> consumer;
-
-@end
-
-@implementation TabStripMediator
-
 - (instancetype)initWithConsumer:(id<TabStripConsumer>)consumer
+             tabGroupSyncService:
+                 (tab_groups::TabGroupSyncService*)tabGroupSyncService
                      browserList:(BrowserList*)browserList {
   if (self = [super init]) {
     CHECK(browserList);
     _browserList = browserList;
+    _tabGroupSyncService = tabGroupSyncService;
     _consumer = consumer;
   }
   return self;
@@ -233,17 +241,33 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 - (void)cancelMoveForTab:(web::WebStateID)tabID
            originBrowser:(Browser*)originBrowser
              originIndex:(int)originIndex
-              visualData:(const tab_groups::TabGroupVisualData&)visualData {
+              visualData:(const tab_groups::TabGroupVisualData&)visualData
+            localGroupID:(const tab_groups::TabGroupId&)localGroupID
+                 savedID:(const base::Uuid&)savedID {
   BrowserAndIndex browserAndIndex = FindBrowserAndIndex(
       tabID, _browserList->BrowsersOfType(BrowserList::BrowserType::kRegular));
   if (!browserAndIndex.browser || !originBrowser) {
     return;
   }
 
-  if (originBrowser == browserAndIndex.browser &&
-      originIndex > browserAndIndex.tab_index) {
-    originIndex++;
+  originIndex =
+      std::min(originIndex, originBrowser->GetWebStateList()->count() - 1);
+  if (!originBrowser->GetWebStateList()->ContainsIndex(originIndex)) {
+    return;
   }
+
+  if (!_tabGroupSyncService) {
+    return;
+  }
+  std::optional<tab_groups::SavedTabGroup> savedGroup =
+      _tabGroupSyncService->GetGroup(savedID);
+  if (!savedGroup || savedGroup->local_group_id() ||
+      savedGroup->saved_tabs().size() != 1) {
+    // Don't cancel if the saved group has been modified (deleted, associated
+    // with another local group or changed its tabs).
+    return;
+  }
+
   const WebStateList::InsertionParams insertionParams =
       WebStateList::InsertionParams::AtIndex(originIndex);
   MoveTabToBrowser(tabID, originBrowser, insertionParams);
@@ -254,10 +278,37 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if (!browserAndIndexAfterMove.browser) {
     return;
   }
+  WebStateList* afterMoveWebStateList =
+      browserAndIndexAfterMove.browser->GetWebStateList();
+  const int afterMoveIndex = browserAndIndexAfterMove.tab_index;
 
-  browserAndIndexAfterMove.browser->GetWebStateList()->CreateGroup(
-      {browserAndIndexAfterMove.tab_index}, visualData,
-      tab_groups::TabGroupId::GenerateNew());
+  const web::WebState* const webState =
+      afterMoveWebStateList->GetWebStateAt(afterMoveIndex);
+  const std::u16string title = webState->GetTitle();
+  const GURL URL = webState->GetVisibleURL();
+
+  {
+    // As this is a "undo" the usual mechanisms should be paused as the tab
+    // moved back to its original position shouldn't be treated as a "new" tab
+    // added to the group.
+    auto localObservationPauser =
+        _tabGroupSyncService->CreateScopedLocalObserverPauser();
+
+    afterMoveWebStateList->CreateGroup({afterMoveIndex}, visualData,
+                                       localGroupID);
+    _tabGroupSyncService->UpdateLocalTabGroupMapping(savedID, localGroupID);
+
+    // In case the tab has changed (URl or title), update it.
+    _tabGroupSyncService->UpdateLocalTabId(
+        localGroupID, savedGroup->saved_tabs()[0].saved_tab_guid(),
+        tabID.identifier());
+    _tabGroupSyncService->UpdateTab(localGroupID, tabID.identifier(), title,
+                                    URL, std::nullopt);
+  }
+}
+
+- (void)deleteSavedGroupWithID:(const base::Uuid&)savedID {
+  _tabGroupSyncService->RemoveGroup(savedID);
 }
 
 - (void)ungroupGroup:(TabGroupItem*)tabGroupItem {
@@ -765,11 +816,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
 
   if (IsTabGroupSyncEnabled()) {
-    tab_groups::TabGroupSyncService* syncService =
-        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    tab_groups::utils::CloseTabGroupLocally(tabGroupItem.tabGroup,
-                                            self.webStateList, syncService);
+    tab_groups::utils::CloseTabGroupLocally(
+        tabGroupItem.tabGroup, self.webStateList, _tabGroupSyncService);
   } else {
     CloseAllWebStatesInGroup(*self.webStateList, tabGroupItem.tabGroup,
                              WebStateList::CLOSE_USER_ACTION);
@@ -931,12 +979,25 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
             browserAndIndex.browser->GetWebStateList()->GetGroupOfWebStateAt(
                 browserAndIndex.tab_index);
         if (group && group->range().count() == 1) {
-          // Trying to move the last tab of group.
-          [_tabStripHandler
-              showTabGroupDeletionAlertForTab:tabInfo.tabID
-                                originBrowser:browserAndIndex.browser
-                                  originIndex:browserAndIndex.tab_index
-                                  originGroup:group];
+          // `_tabGroupSyncService` is nullptr in incognito.
+          const tab_groups::TabGroupId& localID = group->tab_group_id();
+          if (_tabGroupSyncService && _tabGroupSyncService->GetGroup(localID)) {
+            const base::Uuid savedID =
+                _tabGroupSyncService->GetGroup(localID)->saved_guid();
+
+            _tabGroupSyncService->RemoveLocalTabGroupMapping(localID);
+
+            // Trying to move the last tab of group.
+            TabStripLastTabDraggedAlertCommand* command =
+                [[TabStripLastTabDraggedAlertCommand alloc] init];
+            command.tabID = tabInfo.tabID;
+            command.originBrowser = browserAndIndex.browser;
+            command.originIndex = browserAndIndex.tab_index;
+            command.visualData = group->visual_data();
+            command.localGroupID = localID;
+            command.savedGroupID = savedID;
+            [_tabStripHandler showAlertForLastTabDragged:command];
+          }
         }
       }
     }

@@ -71,6 +71,8 @@ source_set("commands") {
     "tab_grid_toolbar_commands.h",
     "tab_groups_commands.h",
     "tab_strip_commands.h",
+    "tab_strip_last_tab_dragged_alert_command.h",
+    "tab_strip_last_tab_dragged_alert_command.mm",
     "text_zoom_commands.h",
     "toolbar_commands.h",
     "tos_commands.h",
@@ -80,6 +82,7 @@ source_set("commands") {
   ]
 
   deps = [
+    "//components/tab_groups",
     "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/tabs/model",

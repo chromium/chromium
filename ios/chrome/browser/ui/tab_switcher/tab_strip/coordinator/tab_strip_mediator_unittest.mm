@@ -13,6 +13,9 @@
 #import "components/favicon/core/favicon_url.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/saved_tab_groups/mock_tab_group_sync_service.h"
+#import "components/saved_tab_groups/saved_tab_group.h"
+#import "components/saved_tab_groups/saved_tab_group_tab.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
@@ -28,8 +31,13 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_strip_last_tab_dragged_alert_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/fake_tab_strip_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/fake_tab_strip_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
@@ -41,242 +49,48 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
+using tab_groups::SavedTabGroup;
+using tab_groups::SavedTabGroupTab;
 using tab_groups::TabGroupId;
+using testing::_;
+using testing::Return;
 
 namespace {
 
+// Fake WebStateList delegate that attaches the required tab helper.
+class TabStripFakeWebStateListDelegate : public FakeWebStateListDelegate {
+ public:
+  TabStripFakeWebStateListDelegate() {}
+  ~TabStripFakeWebStateListDelegate() override {}
+
+  // WebStateListDelegate implementation.
+  void WillAddWebState(web::WebState* web_state) override {
+    SnapshotTabHelper::CreateForWebState(web_state);
+  }
+};
+
 // URL to be used for drag and drop tests.
 const char kDraggedUrl[] = "https://dragged_url.com";
+// URL for saved tabs.
+const char kSavedTabUrl[] = "https://google.com";
+// Title for saved tabs.
+const char16_t kSavedTabTitle[] = u"Google";
+
+// Returns a saved tab group for test.
+SavedTabGroup TestSavedGroup(const base::Uuid& saved_id) {
+  SavedTabGroup saved_group(u"Test title", tab_groups::TabGroupColorId::kBlue,
+                            {}, std::nullopt, saved_id, std::nullopt);
+  return saved_group;
+}
 
 }  // namespace
-
-// Fake handler to get commands in tests.
-@interface FakeTabStripHandler : NSObject <TabStripCommands>
-
-@property(nonatomic, assign) std::set<web::WebStateID>
-    identifiersForTabGroupCreation;
-
-@property(nonatomic, assign) const TabGroup* groupForTabGroupEdition;
-
-@end
-
-@implementation FakeTabStripHandler
-
-- (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted {
-}
-
-- (void)showTabStripGroupCreationForTabs:
-    (const std::set<web::WebStateID>&)identifiers {
-  _identifiersForTabGroupCreation = identifiers;
-}
-
-- (void)showTabStripGroupEditionForGroup:(const TabGroup*)tabGroup {
-  _groupForTabGroupEdition = tabGroup;
-}
-
-- (void)hideTabStripGroupCreation {
-}
-
-- (void)shareItem:(TabSwitcherItem*)tabSwitcherItem
-       originView:(UIView*)originView {
-}
-
-- (void)showTabGroupDeletionAlertForTab:(web::WebStateID)tabID
-                          originBrowser:(Browser*)browser
-                            originIndex:(int)index
-                            originGroup:(const TabGroup*)group {
-}
-
-- (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
-                                groupItem:(TabGroupItem*)tabGroupItem
-                               sourceView:(UIView*)sourceView {
-}
-
-@end
-
-// Fake consumer to get the passed value in tests.
-@interface FakeTabStripConsumer : NSObject <TabStripConsumer>
-
-@property(nonatomic, strong) NSMutableArray<TabStripItemIdentifier*>* items;
-@property(nonatomic, strong) TabSwitcherItem* selectedItem;
-@property(nonatomic, strong)
-    NSArray<TabStripItemIdentifier*>* reconfiguredItems;
-@property(nonatomic, strong)
-    NSMutableDictionary<TabStripItemIdentifier*, TabStripItemData*>* itemData;
-@property(nonatomic, strong)
-    NSMutableDictionary<TabStripItemIdentifier*, TabGroupItem*>* itemParents;
-@property(nonatomic, strong)
-    NSMutableSet<TabStripItemIdentifier*>* expandedItems;
-
-@end
-
-@implementation FakeTabStripConsumer
-
-- (void)populateWithItems:(NSArray<TabStripItemIdentifier*>*)items
-             selectedItem:(TabSwitcherItem*)selectedItem
-                 itemData:
-                     (NSDictionary<TabStripItemIdentifier*, TabStripItemData*>*)
-                         itemData
-              itemParents:
-                  (NSDictionary<TabStripItemIdentifier*, TabGroupItem*>*)
-                      itemParents {
-  self.items = [items mutableCopy];
-  self.selectedItem = selectedItem;
-  self.itemData = [NSMutableDictionary dictionaryWithDictionary:itemData];
-  self.itemParents = [NSMutableDictionary dictionaryWithDictionary:itemParents];
-  self.expandedItems = [NSMutableSet set];
-  for (TabStripItemIdentifier* item in self.items) {
-    if (item.tabGroupItem && !item.tabGroupItem.collapsed) {
-      [self.expandedItems addObject:item];
-    }
-  }
-}
-
-- (void)selectItem:(TabSwitcherItem*)item {
-  self.selectedItem = item;
-}
-
-- (void)reconfigureItems:(NSArray<TabStripItemIdentifier*>*)items {
-  self.reconfiguredItems = items;
-}
-
-- (void)moveItem:(TabStripItemIdentifier*)itemIdentifier
-      beforeItem:(TabStripItemIdentifier*)destinationItemIdentifier {
-  [self.items removeObject:itemIdentifier];
-  [self insertItems:@[ itemIdentifier ] beforeItem:destinationItemIdentifier];
-}
-
-- (void)moveItem:(TabStripItemIdentifier*)itemIdentifier
-       afterItem:(TabStripItemIdentifier*)destinationItemIdentifier {
-  [self.items removeObject:itemIdentifier];
-  [self insertItems:@[ itemIdentifier ] afterItem:destinationItemIdentifier];
-}
-
-- (void)moveItem:(TabStripItemIdentifier*)itemIdentifier
-     insideGroup:(TabGroupItem*)destinationGroup {
-  [self.items removeObject:itemIdentifier];
-  [self insertItems:@[ itemIdentifier ] insideGroup:destinationGroup];
-}
-
-- (void)insertItems:(NSArray<TabStripItemIdentifier*>*)items
-         beforeItem:(TabStripItemIdentifier*)destinationItem {
-  int destinationIndex = self.items.count;
-  if (destinationItem) {
-    destinationIndex = [self.items indexOfObject:destinationItem];
-  }
-  for (TabStripItemIdentifier* item in items) {
-    [self.items insertObject:item atIndex:destinationIndex++];
-    self.itemParents[item] = self.itemParents[destinationItem];
-  }
-}
-
-- (void)insertItems:(NSArray<TabStripItemIdentifier*>*)items
-          afterItem:(TabStripItemIdentifier*)destinationItem {
-  if (!destinationItem) {
-    NSMutableArray* newItems = [items mutableCopy];
-    [newItems addObjectsFromArray:self.items];
-    self.items = newItems;
-    return;
-  }
-  NSInteger destinationIndex = [self.items indexOfObject:destinationItem] + 1;
-  for (TabStripItemIdentifier* item in items) {
-    [self.items insertObject:item atIndex:destinationIndex];
-    self.itemParents[item] = self.itemParents[destinationItem];
-  }
-}
-
-- (void)insertItems:(NSArray<TabStripItemIdentifier*>*)items
-        insideGroup:(TabGroupItem*)destinationGroup {
-  if (self.items.count == 0) {
-    return;
-  }
-  TabStripItemIdentifier* destinationGroupIdentifier =
-      [TabStripItemIdentifier groupIdentifier:destinationGroup];
-  // Finding the destination item: either a tab item in `destinationGroup` or
-  // the group item itself.
-  TabStripItemIdentifier* destinationItemIdentifier = nil;
-  NSUInteger candidateDestinationItemIndex = self.items.count;
-  while (candidateDestinationItemIndex > 0) {
-    candidateDestinationItemIndex--;
-    TabStripItemIdentifier* candidateDestinationItemIdentifier =
-        self.items[candidateDestinationItemIndex];
-    if ([destinationGroupIdentifier
-            isEqual:candidateDestinationItemIdentifier] ||
-        CompareTabGroupItems(
-            destinationGroup,
-            self.itemParents[candidateDestinationItemIdentifier])) {
-      destinationItemIdentifier = candidateDestinationItemIdentifier;
-      break;
-    }
-  }
-  if (!destinationItemIdentifier) {
-    return;
-  }
-  // If a destination is found, inserts the items after the destination and
-  // update parent.
-  candidateDestinationItemIndex += 1;
-  for (TabStripItemIdentifier* item in items) {
-    [self.items insertObject:item atIndex:candidateDestinationItemIndex++];
-    self.itemParents[item] = destinationGroup;
-  }
-}
-
-- (void)removeItems:(NSArray<TabStripItemIdentifier*>*)items {
-  [self.items removeObjectsInArray:items];
-  [self.itemData removeObjectsForKeys:items];
-  [self.expandedItems minusSet:[NSSet setWithArray:items]];
-}
-
-- (void)replaceItem:(TabSwitcherItem*)oldTab withItem:(TabSwitcherItem*)newTab {
-  TabStripItemIdentifier* oldItem =
-      [TabStripItemIdentifier tabIdentifier:oldTab];
-  TabStripItemIdentifier* newItem =
-      [TabStripItemIdentifier tabIdentifier:newTab];
-  NSMutableArray<TabStripItemIdentifier*>* replacedItems =
-      [NSMutableArray array];
-  for (NSUInteger index = 0; index < self.items.count; index++) {
-    if ([self.items[index] isEqual:oldItem]) {
-      [replacedItems addObject:newItem];
-    } else {
-      [replacedItems addObject:self.items[index]];
-    }
-  }
-  self.items = replacedItems;
-  [self.itemData removeObjectForKey:oldItem];
-}
-
-- (void)updateItemData:
-            (NSDictionary<TabStripItemIdentifier*, TabStripItemData*>*)
-                updatedItemData
-      reconfigureItems:(BOOL)reconfigureItems {
-  [self.itemData addEntriesFromDictionary:updatedItemData];
-  if (reconfigureItems) {
-    [self reconfigureItems:updatedItemData.allKeys];
-  }
-}
-
-- (void)collapseGroup:(TabGroupItem*)group {
-  TabStripItemIdentifier* groupItemIdentifier =
-      [TabStripItemIdentifier groupIdentifier:group];
-  CHECK([self.expandedItems containsObject:groupItemIdentifier]);
-  [self.expandedItems removeObject:groupItemIdentifier];
-}
-
-- (void)expandGroup:(TabGroupItem*)group {
-  TabStripItemIdentifier* groupItemIdentifier =
-      [TabStripItemIdentifier groupIdentifier:group];
-  CHECK(![self.expandedItems containsObject:groupItemIdentifier]);
-  [self.expandedItems addObject:groupItemIdentifier];
-}
-
-@end
 
 // Test fixture for the TabStripMediator.
 class TabStripMediatorTest : public PlatformTest {
  public:
   TabStripMediatorTest() {
     feature_list_.InitWithFeatures(
-        {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip}, {});
+        {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
     TestChromeBrowserState::Builder browser_state_builder;
     browser_state_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
@@ -285,10 +99,20 @@ class TabStripMediatorTest : public PlatformTest {
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
 
+    tab_group_sync_service_ = std::make_unique<
+        ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
+
     browser_state_ = std::move(browser_state_builder).Build();
     browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(), std::make_unique<FakeWebStateListDelegate>());
+        browser_state_.get(),
+        std::make_unique<TabStripFakeWebStateListDelegate>());
+    other_browser_ = std::make_unique<TestBrowser>(
+        browser_state_.get(),
+        std::make_unique<TabStripFakeWebStateListDelegate>());
     web_state_list_ = browser_->GetWebStateList();
+
+    SnapshotBrowserAgent::CreateForBrowser(other_browser_.get());
+    SnapshotBrowserAgent::CreateForBrowser(browser_.get());
 
     tab_strip_handler_ = [[FakeTabStripHandler alloc] init];
 
@@ -298,11 +122,15 @@ class TabStripMediatorTest : public PlatformTest {
   ~TabStripMediatorTest() override { [mediator_ disconnect]; }
 
   void InitializeMediator() {
-    BrowserList* browserList =
+    BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state_.get());
-    browserList->AddBrowser(browser_.get());
-    mediator_ = [[TabStripMediator alloc] initWithConsumer:consumer_
-                                               browserList:browserList];
+    browser_list->AddBrowser(browser_.get());
+    browser_list->AddBrowser(other_browser_.get());
+
+    mediator_ =
+        [[TabStripMediator alloc] initWithConsumer:consumer_
+                               tabGroupSyncService:tab_group_sync_service_.get()
+                                       browserList:browser_list];
     mediator_.browserState = browser_state_.get();
     mediator_.webStateList = web_state_list_;
     mediator_.browser = browser_.get();
@@ -322,16 +150,31 @@ class TabStripMediatorTest : public PlatformTest {
         WebStateList::InsertionParams::Automatic().Activate().Pinned(pinned));
   }
 
+  // Returns a new SavedTabGroupTab.
+  SavedTabGroupTab CreateSavedTab(const base::Uuid& group_guid) {
+    return SavedTabGroupTab(GURL(kSavedTabUrl), kSavedTabTitle, group_guid,
+                            std::nullopt);
+  }
+
+  // Checks that the drag item origin metric is logged in UMA.
+  void ExpectThatDragItemOriginMetricLogged(DragItemOrigin origin,
+                                            int count = 1) {
+    histogram_tester_.ExpectUniqueSample(kUmaTabStripViewDragOrigin, origin,
+                                         count);
+  }
+
  protected:
-  FakeTabStripHandler* tab_strip_handler_;
   web::WebTaskEnvironment task_environment_;
+  FakeTabStripHandler* tab_strip_handler_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
+  std::unique_ptr<TestBrowser> other_browser_;
   raw_ptr<WebStateList> web_state_list_;
   TabStripMediator* mediator_;
   FakeTabStripConsumer* consumer_;
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<tab_groups::MockTabGroupSyncService> tab_group_sync_service_;
 };
 
 // Tests that the mediator correctly populates the consumer at startup and after
@@ -1258,8 +1101,7 @@ TEST_F(TabStripMediatorTest, DropInternalURL) {
   EXPECT_EQ(1, web_state_list->active_index());
   EXPECT_EQ(url_to_load,
             web_state->GetNavigationManager()->GetPendingItem()->GetURL());
-  histogram_tester_.ExpectUniqueSample(kUmaTabStripViewDragOrigin,
-                                       DragItemOrigin::kOther, 1);
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOther);
 }
 
 // Tests dropping an external URL.
@@ -1289,6 +1131,415 @@ TEST_F(TabStripMediatorTest, DropExternalURL) {
   EXPECT_EQ(1, web_state_list->active_index());
   EXPECT_EQ(GURL(kDraggedUrl),
             web_state->GetNavigationManager()->GetPendingItem()->GetURL());
-  histogram_tester_.ExpectUniqueSample(kUmaTabStripViewDragOrigin,
-                                       DragItemOrigin::kOther, 1);
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOther);
+}
+
+// Tests dropping a tab.
+TEST_F(TabStripMediatorTest, DropTab) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b c ", browser_->GetBrowserState()));
+
+  InitializeMediator();
+
+  web::WebStateID web_state_id =
+      web_state_list->GetWebStateAt(2)->GetUniqueIdentifier();
+
+  id local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                      browserState:browser_->GetBrowserState()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+
+  // Drop item.
+  [mediator_ dropItem:drag_item toIndex:0 fromSameCollection:YES];
+
+  EXPECT_EQ("| c a* b", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameCollection);
+}
+
+// Tests dragging the last tab out of a group.
+TEST_F(TabStripMediatorTest, DropLastTabOfGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b [ 0 c ]", browser_->GetBrowserState()));
+
+  InitializeMediator();
+
+  web::WebStateID web_state_id =
+      web_state_list->GetWebStateAt(2)->GetUniqueIdentifier();
+  const TabGroup* group = web_state_list->GetGroupOfWebStateAt(2);
+  tab_groups::TabGroupId group_id = group->tab_group_id();
+  tab_groups::TabGroupVisualData visual_data = group->visual_data();
+
+  const base::Uuid saved_id = base::Uuid::GenerateRandomV4();
+  SavedTabGroup saved_group = TestSavedGroup(saved_id);
+  EXPECT_CALL(*tab_group_sync_service_, RemoveLocalTabGroupMapping(group_id))
+      .Times(1);
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(group_id))
+      .WillRepeatedly(Return(saved_group));
+
+  id local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                      browserState:browser_->GetBrowserState()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+
+  // Drop item.
+  [mediator_ dropItem:drag_item toIndex:1 fromSameCollection:YES];
+
+  TabStripLastTabDraggedAlertCommand* command =
+      tab_strip_handler_.lastTabDraggedCommand;
+  EXPECT_EQ(web_state_id, command.tabID);
+  EXPECT_EQ(browser_.get(), command.originBrowser);
+  EXPECT_EQ(2, command.originIndex);
+  EXPECT_EQ(visual_data, command.visualData);
+  EXPECT_EQ(group_id, command.localGroupID);
+  EXPECT_EQ(saved_id, command.savedGroupID);
+
+  // The tab should still have moved.
+  EXPECT_EQ("| a* c b", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameCollection);
+}
+
+// Tests dragging the last tab out of a group from another browser.
+TEST_F(TabStripMediatorTest, DropLastTabOfGroupDifferentBrowser) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b", browser_->GetBrowserState()));
+
+  WebStateList* other_web_state_list = other_browser_->GetWebStateList();
+  WebStateListBuilderFromDescription other_builder(other_web_state_list);
+  ASSERT_TRUE(other_builder.BuildWebStateListFromDescription(
+      "| d* [ 0 e ] f", other_browser_->GetBrowserState()));
+
+  InitializeMediator();
+
+  web::WebStateID web_state_id =
+      other_web_state_list->GetWebStateAt(1)->GetUniqueIdentifier();
+  const TabGroup* group = other_web_state_list->GetGroupOfWebStateAt(1);
+  tab_groups::TabGroupId group_id = group->tab_group_id();
+  tab_groups::TabGroupVisualData visual_data = group->visual_data();
+
+  const base::Uuid saved_id = base::Uuid::GenerateRandomV4();
+  SavedTabGroup saved_group = TestSavedGroup(saved_id);
+  EXPECT_CALL(*tab_group_sync_service_, RemoveLocalTabGroupMapping(group_id))
+      .Times(1);
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(group_id))
+      .WillRepeatedly(Return(saved_group));
+
+  id local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                      browserState:browser_->GetBrowserState()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+
+  // Drop item.
+  [mediator_ dropItem:drag_item toIndex:0 fromSameCollection:NO];
+
+  TabStripLastTabDraggedAlertCommand* command =
+      tab_strip_handler_.lastTabDraggedCommand;
+  EXPECT_EQ(web_state_id, command.tabID);
+  EXPECT_EQ(other_browser_.get(), command.originBrowser);
+  EXPECT_EQ(1, command.originIndex);
+  EXPECT_EQ(visual_data, command.visualData);
+  EXPECT_EQ(group_id, command.localGroupID);
+  EXPECT_EQ(saved_id, command.savedGroupID);
+
+  // The tab should still have moved.
+  builder.GenerateIdentifiersForWebStateList();
+  EXPECT_EQ("| c a* b", builder.GetWebStateListDescription());
+  EXPECT_EQ("| d* f", other_builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOtherBrowser);
+}
+
+// Tests dragging the a tab out of a group containing several tabs.
+TEST_F(TabStripMediatorTest, DropTabOutOfGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* [ 0 b c ]", browser_->GetBrowserState()));
+
+  InitializeMediator();
+
+  web::WebStateID web_state_id =
+      web_state_list->GetWebStateAt(2)->GetUniqueIdentifier();
+  const TabGroup* group = web_state_list->GetGroupOfWebStateAt(2);
+  tab_groups::TabGroupId group_id = group->tab_group_id();
+
+  const base::Uuid saved_id = base::Uuid::GenerateRandomV4();
+  SavedTabGroup saved_group = TestSavedGroup(saved_id);
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(group_id))
+      .WillRepeatedly(Return(saved_group));
+
+  id local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                      browserState:browser_->GetBrowserState()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+
+  // Drop item.
+  [mediator_ dropItem:drag_item toIndex:1 fromSameCollection:YES];
+
+  EXPECT_EQ(nil, tab_strip_handler_.lastTabDraggedCommand);
+
+  EXPECT_EQ("| a* c [ 0 b ]", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameCollection);
+}
+
+// Tests deleting a tab group after a move.
+TEST_F(TabStripMediatorTest, DeleteTabGroup) {
+  InitializeMediator();
+
+  const base::Uuid saved_id = base::Uuid::GenerateRandomV4();
+
+  EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(saved_id)).Times(1);
+
+  [mediator_ deleteSavedGroupWithID:saved_id];
+}
+
+// Tests cancelling a tab move on the same browser.
+TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowser) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b c ", browser_->GetBrowserState()));
+
+  const GURL new_url = GURL("https://cancelled_url.com");
+  const std::u16string new_title = u"cancelled title";
+  web::FakeWebState* web_state =
+      static_cast<web::FakeWebState*>(web_state_list->GetWebStateAt(1));
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  web_state->SetVisibleURL(new_url);
+  web_state->SetTitle(new_title);
+
+  InitializeMediator();
+
+  tab_groups::TabGroupVisualData visual_data{
+      u"My title", tab_groups::TabGroupColorId::kCyan};
+  const base::Uuid saved_id = base::Uuid::GenerateRandomV4();
+  const tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+
+  SavedTabGroup saved_group = TestSavedGroup(saved_id);
+  SavedTabGroupTab saved_tab = CreateSavedTab(saved_id);
+  saved_group.saved_tabs().push_back(saved_tab);
+
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(saved_id))
+      .WillOnce(Return(saved_group));
+
+  // Make sure the service is updated with the new data.
+  EXPECT_CALL(*tab_group_sync_service_,
+              UpdateLocalTabGroupMapping(saved_id, local_id))
+      .Times(1);
+  EXPECT_CALL(*tab_group_sync_service_,
+              UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),
+                               web_state_id.identifier()))
+      .Times(1);
+  std::optional<size_t> position = std::nullopt;
+  EXPECT_CALL(*tab_group_sync_service_,
+              UpdateTab(local_id, web_state_id.identifier(), new_title, new_url,
+                        position))
+      .Times(1);
+
+  [mediator_ cancelMoveForTab:web_state_id
+                originBrowser:browser_.get()
+                  originIndex:2
+                   visualData:visual_data
+                 localGroupID:local_id
+                      savedID:saved_id];
+
+  // The tab has moved back to its original position.
+  builder.GenerateIdentifiersForWebStateList();
+  EXPECT_EQ("| a* c [ 0 b ]", builder.GetWebStateListDescription());
+  EXPECT_EQ(visual_data,
+            web_state_list->GetGroupOfWebStateAt(2)->visual_data());
+}
+
+// Tests cancelling a tab move on the same browser after the saved group has
+// been associated with another local group.
+TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserModifiedGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b c ", browser_->GetBrowserState()));
+
+  web::WebStateID web_state_id =
+      web_state_list->GetWebStateAt(1)->GetUniqueIdentifier();
+
+  InitializeMediator();
+
+  tab_groups::TabGroupVisualData visual_data{
+      u"My title", tab_groups::TabGroupColorId::kCyan};
+  const base::Uuid saved_id = base::Uuid::GenerateRandomV4();
+  const tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+
+  SavedTabGroup saved_group = TestSavedGroup(saved_id);
+  SavedTabGroupTab saved_tab = CreateSavedTab(saved_id);
+  saved_group.saved_tabs().push_back(saved_tab);
+
+  // Associate the saved group with another local group.
+  saved_group.SetLocalGroupId(tab_groups::TabGroupId::GenerateNew());
+
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(saved_id))
+      .WillOnce(Return(saved_group));
+
+  // Make sure that no updates are done to the service.
+  EXPECT_CALL(*tab_group_sync_service_, UpdateLocalTabGroupMapping(_, _))
+      .Times(0);
+  EXPECT_CALL(*tab_group_sync_service_, UpdateLocalTabId(_, _, _)).Times(0);
+  EXPECT_CALL(*tab_group_sync_service_, UpdateTab(_, _, _, _, _)).Times(0);
+
+  [mediator_ cancelMoveForTab:web_state_id
+                originBrowser:browser_.get()
+                  originIndex:2
+                   visualData:visual_data
+                 localGroupID:local_id
+                      savedID:saved_id];
+
+  // The tab hasn't moved.
+  builder.GenerateIdentifiersForWebStateList();
+  EXPECT_EQ("| a* b c", builder.GetWebStateListDescription());
+}
+
+// Tests cancelling a tab move on the same browser for a position that doesn't
+// exist anymore.
+TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserLargeIndex) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b c ", browser_->GetBrowserState()));
+
+  const GURL new_url = GURL("https://cancelled_url.com");
+  const std::u16string new_title = u"cancelled title";
+  web::FakeWebState* web_state =
+      static_cast<web::FakeWebState*>(web_state_list->GetWebStateAt(1));
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  web_state->SetVisibleURL(new_url);
+  web_state->SetTitle(new_title);
+
+  InitializeMediator();
+
+  tab_groups::TabGroupVisualData visual_data{
+      u"My title", tab_groups::TabGroupColorId::kCyan};
+  const base::Uuid saved_id = base::Uuid::GenerateRandomV4();
+  const tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+
+  SavedTabGroup saved_group = TestSavedGroup(saved_id);
+  SavedTabGroupTab saved_tab = CreateSavedTab(saved_id);
+  saved_group.saved_tabs().push_back(saved_tab);
+
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(saved_id))
+      .WillOnce(Return(saved_group));
+
+  // Make sure the service is udpated with the new data.
+  EXPECT_CALL(*tab_group_sync_service_,
+              UpdateLocalTabGroupMapping(saved_id, local_id))
+      .Times(1);
+  EXPECT_CALL(*tab_group_sync_service_,
+              UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),
+                               web_state_id.identifier()))
+      .Times(1);
+  std::optional<size_t> position = std::nullopt;
+  EXPECT_CALL(*tab_group_sync_service_,
+              UpdateTab(local_id, web_state_id.identifier(), new_title, new_url,
+                        position))
+      .Times(1);
+
+  // Cancel the move to a position that is larger than the number of web states.
+  [mediator_ cancelMoveForTab:web_state_id
+                originBrowser:browser_.get()
+                  originIndex:5
+                   visualData:visual_data
+                 localGroupID:local_id
+                      savedID:saved_id];
+
+  // The tab has moved back to its original position.
+  builder.GenerateIdentifiersForWebStateList();
+  EXPECT_EQ("| a* c [ 0 b ]", builder.GetWebStateListDescription());
+  EXPECT_EQ(visual_data,
+            web_state_list->GetGroupOfWebStateAt(2)->visual_data());
+}
+
+// Tests cancelling a tab move on another browser.
+TEST_F(TabStripMediatorTest, CancelTabMoveDifferentBrowser) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b c ", browser_->GetBrowserState()));
+
+  WebStateList* other_web_state_list = other_browser_->GetWebStateList();
+  WebStateListBuilderFromDescription other_builder(other_web_state_list);
+  ASSERT_TRUE(other_builder.BuildWebStateListFromDescription(
+      "| [ 0 a* b ] c d e", other_browser_->GetBrowserState()));
+
+  const GURL new_url = GURL("https://cancelled_url.com");
+  const std::u16string new_title = u"cancelled title";
+  web::FakeWebState* web_state =
+      static_cast<web::FakeWebState*>(web_state_list->GetWebStateAt(1));
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  web_state->SetVisibleURL(new_url);
+  web_state->SetTitle(new_title);
+
+  InitializeMediator();
+
+  tab_groups::TabGroupVisualData visual_data{
+      u"My title", tab_groups::TabGroupColorId::kCyan};
+  const base::Uuid saved_id = base::Uuid::GenerateRandomV4();
+  const tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
+
+  SavedTabGroup saved_group = TestSavedGroup(saved_id);
+  SavedTabGroupTab saved_tab = CreateSavedTab(saved_id);
+  saved_group.saved_tabs().push_back(saved_tab);
+
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(saved_id))
+      .WillOnce(Return(saved_group));
+
+  // Make sure the service is udpated with the new data.
+  EXPECT_CALL(*tab_group_sync_service_,
+              UpdateLocalTabGroupMapping(saved_id, local_id))
+      .Times(1);
+  EXPECT_CALL(*tab_group_sync_service_,
+              UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),
+                               web_state_id.identifier()))
+      .Times(1);
+  std::optional<size_t> position = std::nullopt;
+  EXPECT_CALL(*tab_group_sync_service_,
+              UpdateTab(local_id, web_state_id.identifier(), new_title, new_url,
+                        position))
+      .Times(1);
+
+  // Cancel the move to a position that is larger than the number of web states.
+  [mediator_ cancelMoveForTab:web_state_id
+                originBrowser:other_browser_.get()
+                  originIndex:3
+                   visualData:visual_data
+                 localGroupID:local_id
+                      savedID:saved_id];
+
+  // The tab was removed from the first web state list.
+  builder.GenerateIdentifiersForWebStateList();
+  EXPECT_EQ("| a* c", builder.GetWebStateListDescription());
+
+  // The tab has moved to its original web state list.
+  other_builder.GenerateIdentifiersForWebStateList();
+  EXPECT_EQ("| [ 0 a* b ] c [ 1 f ] d e",
+            other_builder.GetWebStateListDescription());
+  EXPECT_EQ(visual_data,
+            other_web_state_list->GetGroupOfWebStateAt(3)->visual_data());
+  EXPECT_EQ(web_state, other_web_state_list->GetWebStateAt(3));
 }

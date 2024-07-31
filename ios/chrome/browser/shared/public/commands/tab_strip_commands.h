@@ -5,15 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_TAB_STRIP_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_TAB_STRIP_COMMANDS_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import <set>
 
-class Browser;
 class TabGroup;
 enum class TabGroupActionType;
 @class TabGroupItem;
+@class TabStripLastTabDraggedAlertCommand;
 @class TabSwitcherItem;
+
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -38,12 +39,8 @@ class WebStateID;
 - (void)shareItem:(TabSwitcherItem*)tabSwitcherItem
        originView:(UIView*)originView;
 
-// Shows an alert for moving `tabID` out of its `group`, with its
-// `originBrowser` and `originIndex`.
-- (void)showTabGroupDeletionAlertForTab:(web::WebStateID)tabID
-                          originBrowser:(Browser*)browser
-                            originIndex:(int)index
-                            originGroup:(const TabGroup*)group;
+// Shows an alert for moving the last tab of a group in this tab strip.
+- (void)showAlertForLastTabDragged:(TabStripLastTabDraggedAlertCommand*)command;
 
 // Displays a confirmation dialog anchoring to `sourceView` to confirm that
 // selected `groupItem` is going to take an `actionType`.
