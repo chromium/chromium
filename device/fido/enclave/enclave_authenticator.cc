@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/cbor/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -337,37 +336,17 @@ void EnclaveAuthenticator::CompleteRequestWithError(
 void EnclaveAuthenticator::CompleteMakeCredentialRequest(
     MakeCredentialStatus status,
     std::optional<AuthenticatorMakeCredentialResponse> response) {
-  // Using PostTask guards against any lifetime concerns for this class and
-  // EnclaveWebSocketClient. It is safe to do cleanup after invoking the
-  // callback.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](MakeCredentialCallback callback, MakeCredentialStatus status,
-             std::optional<AuthenticatorMakeCredentialResponse> response) {
-            std::move(callback).Run(status, std::move(response));
-          },
-          std::move(pending_make_credential_request_->callback), status,
-          std::move(response)));
-  pending_make_credential_request_.reset();
+  std::move(pending_make_credential_request_->callback)
+      .Run(status, std::move(response));
+  // `this` may have been deleted at this point.
 }
 
 void EnclaveAuthenticator::CompleteGetAssertionRequest(
     GetAssertionStatus status,
     std::vector<AuthenticatorGetAssertionResponse> responses) {
-  // Using PostTask guards against any lifetime concerns for this class and
-  // EnclaveWebSocketClient. It is safe to do cleanup after invoking the
-  // callback.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](GetAssertionCallback callback, GetAssertionStatus status,
-             std::vector<AuthenticatorGetAssertionResponse> responses) {
-            std::move(callback).Run(status, std::move(responses));
-          },
-          std::move(pending_get_assertion_request_->callback), status,
-          std::move(responses)));
-  pending_get_assertion_request_.reset();
+  std::move(pending_get_assertion_request_->callback)
+      .Run(status, std::move(responses));
+  // `this` may have been deleted at this point.
 }
 
 void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
