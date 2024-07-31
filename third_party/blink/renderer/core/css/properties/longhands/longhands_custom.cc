@@ -2668,9 +2668,9 @@ const CSSValue* Content::ParseSingleValue(CSSParserTokenStream& stream,
               ConsumeAttr(css_parsing_utils::ConsumeFunction(stream), context);
         } else {
           alt_text = css_parsing_utils::ConsumeString(stream);
-          if (!alt_text) {
-            break;
-          }
+        }
+        if (!alt_text) {
+          break;
         }
         alt_text_values->Append(*alt_text);
         savepoint.Release();
