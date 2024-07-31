@@ -1434,6 +1434,19 @@ const CGFloat kFeedContainerExtraHeight = 500;
   } else {
     [self unfocusOmnibox];
   }
+
+  if (IsHomeCustomizationEnabled()) {
+    CGRect customizationMenuBounds =
+        [[self.headerViewController customizationMenuButton]
+            convertRect:[self.headerViewController customizationMenuButton]
+                            .bounds
+                 toView:self.view];
+
+    if (CGRectContainsPoint(customizationMenuBounds, location)) {
+      [[self.headerViewController customizationMenuButton]
+          sendActionsForControlEvents:UIControlEventTouchUpInside];
+    }
+  }
 }
 
 // Handles the pinning of the sticky elements to the top of the NTP. This

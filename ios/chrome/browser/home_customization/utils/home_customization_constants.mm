@@ -13,8 +13,6 @@ CustomizationSection* const kCustomizationSectionDiscoverLinks =
 CustomizationSection* const kCustomizationSectionMagicStackToggles =
     @"CustomizationSectionMagicStackToggles";
 
-NSString* const kBottomSheetDetentIdentifier = @"BottomSheetDetentIdentifier";
-
 NSString* const kNavigationBarDismissButtonIdentifier =
     @"NavigationBarDismissButtonIdentifier";
 

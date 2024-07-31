@@ -499,7 +499,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
                               action:@selector(customizationMenuWasTapped:)
                     forControlEvents:UIControlEventTouchUpInside];
 
-  [self.headerView setCustomizationMenuView:customizationMenuButton];
+  [self.headerView setCustomizationMenuButton:customizationMenuButton];
 }
 
 // Configures `identityDiscButton` with the current state of
@@ -828,6 +828,12 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
       beamWithPreferredLength:interaction.view.bounds.size.height / 2
                          axis:UIAxisVertical];
   return [UIPointerStyle styleWithEffect:effect shape:shape];
+}
+
+#pragma mark - Getters
+
+- (UIButton*)customizationMenuButton {
+  return [self.headerView customizationMenuButton];
 }
 
 @end

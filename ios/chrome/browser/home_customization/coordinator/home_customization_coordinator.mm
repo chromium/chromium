@@ -85,30 +85,17 @@
   self.navigationController = [[UINavigationController alloc]
       initWithRootViewController:self.mainViewController];
   self.navigationController.modalPresentationStyle =
-      UIModalPresentationPageSheet;
+      UIModalPresentationFormSheet;
   self.navigationController.presentationController.delegate = self;
 
   // Configure the presentation controller with a custom initial detent.
   UISheetPresentationController* presentationController =
       self.navigationController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
-
-  // TODO(crbug.com/350990359): Dynamically calculate height.
-  CGFloat bottomSheetHeight = 200;
-  auto detentResolver = ^CGFloat(
-      id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return bottomSheetHeight;
-  };
-  UISheetPresentationControllerDetent* initialDetent =
-      [UISheetPresentationControllerDetent
-          customDetentWithIdentifier:kBottomSheetDetentIdentifier
-                            resolver:detentResolver];
   presentationController.detents = @[
-    initialDetent,
     UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent,
   ];
-  presentationController.selectedDetentIdentifier =
-      kBottomSheetDetentIdentifier;
 
   // Present the navigation controller.
   [self.baseViewController presentViewController:self.navigationController
@@ -130,12 +117,14 @@
                                            animated:YES];
       break;
     case CustomizationMenuPage::kMagicStack:
+      [self expandMenu];
       [self.navigationController
           pushViewController:self.magicStackViewController
                     animated:YES];
       [self.mediator configureMagicStackPageData];
       break;
     case CustomizationMenuPage::kDiscover:
+      [self expandMenu];
       [self.navigationController pushViewController:self.discoverViewController
                                            animated:YES];
       [self.mediator configureDiscoverPageData];
@@ -158,6 +147,18 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self.delegate handleCustomizationMenuDismissed:self];
+}
+
+#pragma mark - Private
+
+// Expands the menu to a large detent.
+- (void)expandMenu {
+  UISheetPresentationController* presentationController =
+      self.navigationController.sheetPresentationController;
+  [presentationController animateChanges:^{
+    presentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierLarge;
+  }];
 }
 
 @end

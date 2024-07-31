@@ -269,28 +269,28 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   ]];
 }
 
-- (void)setCustomizationMenuView:(UIView*)customizationMenuView {
-  if (_customizationMenuView) {
-    [_customizationMenuView removeFromSuperview];
+- (void)setCustomizationMenuButton:(UIButton*)customizationMenuButton {
+  if (_customizationMenuButton) {
+    [_customizationMenuButton removeFromSuperview];
   }
 
-  customizationMenuView.translatesAutoresizingMaskIntoConstraints = NO;
+  customizationMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [self.toolBarView addSubview:customizationMenuView];
+  [self.toolBarView addSubview:customizationMenuButton];
   [NSLayoutConstraint activateConstraints:@[
-    [customizationMenuView.centerYAnchor
+    [customizationMenuButton.centerYAnchor
         constraintEqualToAnchor:self.toolBarView.centerYAnchor],
-    [customizationMenuView.heightAnchor
+    [customizationMenuButton.heightAnchor
         constraintEqualToConstant:ntp_home::kCustomizationMenuButtonDimension],
-    [customizationMenuView.widthAnchor
-        constraintEqualToAnchor:customizationMenuView.heightAnchor],
-    [customizationMenuView.leadingAnchor
+    [customizationMenuButton.widthAnchor
+        constraintEqualToAnchor:customizationMenuButton.heightAnchor],
+    [customizationMenuButton.leadingAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor
                        constant:(ntp_home::kIdentityAvatarPadding +
                                  ntp_home::kHeaderIconMargin)],
   ]];
 
-  _customizationMenuView = customizationMenuView;
+  _customizationMenuButton = customizationMenuButton;
 }
 
 - (void)addViewsToSearchField:(UIView*)searchField {

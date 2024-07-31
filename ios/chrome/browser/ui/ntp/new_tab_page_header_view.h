@@ -27,7 +27,7 @@
 @property(nonatomic, strong) UIView* identityDiscView;
 
 // The entrypoint for the Home customization menu.
-@property(nonatomic, strong) UIView* customizationMenuView;
+@property(nonatomic, strong) UIButton* customizationMenuButton;
 
 // Voice search button.
 @property(nonatomic, strong, readonly) UIButton* voiceSearchButton;

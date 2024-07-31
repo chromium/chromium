@@ -1759,11 +1759,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that the toggles in the main page of the customization menu can be used
 // to navigate to their respective submenus.
 - (void)testNavigateInCustomizationMenu {
-  // Customization is not yet supported on iPads.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    return;
-  }
-
   [self resetCustomizationPrefs];
 
   // Enable customization and reset state so the test can run repeatedly.
@@ -1826,11 +1821,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests the Discover submenu of the Home customization menu.
 - (void)testCustomizationDiscoverSubmenu {
-  // Customization is not yet supported on iPads.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    return;
-  }
-
   [self resetCustomizationPrefs];
 
   // Enable customization and reset state so the test can run repeatedly.

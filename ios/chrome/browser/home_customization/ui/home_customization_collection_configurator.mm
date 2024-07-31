@@ -69,6 +69,7 @@ const CGFloat kSpacingBelowHeader = 16;
   _viewController.navigationItem.rightBarButtonItem = dismissButton;
   _viewController.navigationItem.backBarButtonItem.accessibilityIdentifier =
       kNavigationBarBackButtonIdentifier;
+  [_viewController.navigationItem setHidesBackButton:YES];
 }
 
 - (NSCollectionLayoutSection*)verticalListSectionForLayoutEnvironment:
