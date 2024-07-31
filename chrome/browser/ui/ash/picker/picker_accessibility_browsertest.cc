@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.Call([this, &feature_tour]() {
     feature_tour.MaybeShowForFirstUse(browser()->profile()->GetPrefs(),
-                                      base::DoNothing());
+                                      base::DoNothing(), base::DoNothing());
   });
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
