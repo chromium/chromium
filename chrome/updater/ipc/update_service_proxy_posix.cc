@@ -94,6 +94,9 @@ constexpr base::TimeDelta kConnectionTimeout = base::Minutes(3);
   app_state.brand_code = app_state_mojo->brand_code;
   app_state.brand_path = app_state_mojo->brand_path;
   app_state.ecp = app_state_mojo->ecp;
+  if (app_state_mojo->cohort) {
+    app_state.cohort = *app_state_mojo->cohort;
+  }
 
   return app_state;
 }

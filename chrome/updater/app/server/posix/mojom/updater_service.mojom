@@ -119,7 +119,7 @@ import "mojo/public/mojom/base/file_path.mojom";
   string installer_cmd_line;
 };
 
-// Next version: 2
+// Next version: 3
 [Stable] struct AppState {
   string app_id;
   string version;
@@ -131,6 +131,7 @@ import "mojo/public/mojom/base/file_path.mojom";
   [MinVersion=1] string? ap_key;
   [MinVersion=1] mojo_base.mojom.FilePath? version_path;
   [MinVersion=1] string? version_key;
+  [MinVersion=2] string? cohort;
 };
 
 // The UpdateService is the cross-platform core of the updater.

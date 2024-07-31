@@ -660,6 +660,7 @@ void UpdateServiceImplImpl::GetAppStates(
     app_state.brand_code = persisted_data->GetBrandCode(app_id);
     app_state.brand_path = persisted_data->GetBrandPath(app_id);
     app_state.ecp = persisted_data->GetExistenceCheckerPath(app_id);
+    app_state.cohort = persisted_data->GetCohort(app_id);
     apps.push_back(app_state);
   }
   main_task_runner_->PostTask(

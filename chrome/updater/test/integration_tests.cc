@@ -1641,6 +1641,7 @@ TEST_F(IntegrationTest, GetAppStates) {
   expected_app_state.Set("brand_code", "");
   expected_app_state.Set("brand_path", "");
   expected_app_state.Set("ecp", "");
+  expected_app_state.Set("cohort", "");
   base::Value::Dict expected_app_states;
   expected_app_states.Set(kAppId, std::move(expected_app_state));
 
@@ -2324,6 +2325,7 @@ TEST_F(IntegrationTest, RegisterApp) {
   registration.ap = "TestAp";
   registration.version = base::Version("11.22.33.44");
   registration.existence_checker_path = base::FilePath::FromASCII("/");
+  registration.cohort = "cohort_test";
   test_commands_->RegisterApp(registration);
 
   base::Value::Dict expected_app_state;
@@ -2333,6 +2335,10 @@ TEST_F(IntegrationTest, RegisterApp) {
   expected_app_state.Set("ap", "TestAp");
   expected_app_state.Set("version", "11.22.33.44");
   expected_app_state.Set("ecp", "/");
+#if BUILDFLAG(IS_POSIX)
+  // Cohort is only communicated over IPC on POSIX. Refer to crbug.com/40283110.
+  expected_app_state.Set("cohort", "cohort_test");
+#endif
   base::Value::Dict expected_app_states;
   expected_app_states.Set("e595682b-02d5-46d1-b7ab-90034bd6be0f",
                           std::move(expected_app_state));

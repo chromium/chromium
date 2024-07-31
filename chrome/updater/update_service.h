@@ -212,6 +212,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     std::string brand_code;
     base::FilePath brand_path;
     base::FilePath ecp;
+    std::string cohort;
   };
 
   using Callback = base::OnceCallback<void(Result)>;
