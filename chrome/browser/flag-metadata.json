@@ -1126,6 +1126,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "bottom-browser-controls-refactor",
+    "owners": [ "wenyufu@chromium.org", "clhager@google.com", "twellington@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "bottom-omnibox-default-setting",
     "owners": [ "christianxu@google.com", "bling-flags@google.com"],
     "expiry_milestone": 130

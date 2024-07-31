@@ -4281,6 +4281,11 @@ const char kAccountReauthenticationRecentTimeWindow0mins[] = "0 mins";
 const char kAccountReauthenticationRecentTimeWindow1mins[] = "1 mins";
 const char kAccountReauthenticationRecentTimeWindow5mins[] = "5 mins";
 
+const char kBottomBrowserControlsRefactorName[] =
+    "BottomBrowserControlsRefactor";
+const char kBottomBrowserControlsRefactorDescription[] =
+    "Use BottomControlsStacker to position bottom controls layers.";
+
 const char kBrowsingDataModelName[] = "Browsing Data Model";
 const char kBrowsingDataModelDescription[] = "Enables BDM on Android.";
 

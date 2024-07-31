@@ -2515,6 +2515,9 @@ extern const char kAccountReauthenticationRecentTimeWindow0mins[];
 extern const char kAccountReauthenticationRecentTimeWindow1mins[];
 extern const char kAccountReauthenticationRecentTimeWindow5mins[];
 
+extern const char kBottomBrowserControlsRefactorName[];
+extern const char kBottomBrowserControlsRefactorDescription[];
+
 extern const char kBrowsingDataModelName[];
 extern const char kBrowsingDataModelDescription[];
 

@@ -20549,6 +20549,7 @@ from previous Chrome versions.
   <int value="-149260874" label="StorageAccessHeaders:disabled"/>
   <int value="-148627978" label="GlanceablesV2CalendarView:enabled"/>
   <int value="-148356419" label="PdfViewerPresentationMode:disabled"/>
+  <int value="-147955528" label="BottomBrowserControlsRefactor:enabled"/>
   <int value="-147560822" label="ArcInputOverlay:enabled"/>
   <int value="-147283486" label="enable-network-portal-notification"/>
   <int value="-146780296" label="EstablishGpuChannelAsync:enabled"/>
@@ -22289,6 +22290,7 @@ from previous Chrome versions.
   <int value="597542937" label="TabbedAppOverflowMenuRegroup:enabled"/>
   <int value="598312195" label="DestroySystemProfiles:disabled"/>
   <int value="598414726" label="EnablePixDetectionOnCopyEvent:enabled"/>
+  <int value="598741917" label="BottomBrowserControlsRefactor:disabled"/>
   <int value="598827460" label="enable-roboto-font-ui"/>
   <int value="598926697" label="VrLaunchIntent:disabled"/>
   <int value="600037637" label="AndroidSigninPromos:enabled"/>

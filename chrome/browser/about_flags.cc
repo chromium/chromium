@@ -3704,6 +3704,14 @@ const FeatureEntry::FeatureVariation kEdgeToEdgeBottomChinVariations[] = {
      std::size(kEdgeToEdgeBottomChinDebugFeatureParams), nullptr},
 };
 
+const FeatureEntry::FeatureParam kBottomBrowserControlsRefactorParams[] = {
+    {"disable_bottom_controls_stacker_y_offset", "false"}};
+const FeatureEntry::FeatureVariation
+    kBottomBrowserControlsRefactorVariations[] = {
+        {"Dispatch yOffset", kBottomBrowserControlsRefactorParams,
+         std::size(kBottomBrowserControlsRefactorParams), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const flags_ui::FeatureEntry::FeatureParam kParcelTrackingTestDataDelivered[] =
@@ -5553,6 +5561,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDynamicSafeAreaInsetsOnScrollName,
      flag_descriptions::kDynamicSafeAreaInsetsOnScrollDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kDynamicSafeAreaInsetsOnScroll)},
+    {"bottom-browser-controls-refactor",
+     flag_descriptions::kBottomBrowserControlsRefactorName,
+     flag_descriptions::kBottomBrowserControlsRefactorDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kBottomBrowserControlsRefactor,
+         kBottomBrowserControlsRefactorVariations,
+         "BottomBrowserControlsRefactor")},
 
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",
