@@ -373,13 +373,39 @@ suite('<facegaze-actions-add-dialog>', () => {
         assertTrue(isThresholdValueSetInPref(55));
       });
 
-  test('action page switches pages when initialPage value is set', async () => {
-    await initPage();
+  test(
+      'action page switches to gesture page when initialPage value is set',
+      async () => {
+        await initPage();
 
-    faceGazeAddActionDialog.actionToAssignGesture = MacroName.MOUSE_CLICK_LEFT;
-    faceGazeAddActionDialog.initialPage = AddDialogPage.SELECT_GESTURE;
-    flush();
+        faceGazeAddActionDialog.actionToAssignGesture =
+            MacroName.MOUSE_CLICK_LEFT;
+        faceGazeAddActionDialog.initialPage = AddDialogPage.SELECT_GESTURE;
+        flush();
 
-    assertGesturesListNoSelection();
-  });
+        assertGesturesListNoSelection();
+
+        const previousButton =
+            faceGazeAddActionDialog.shadowRoot!.querySelector<CrButtonElement>(
+                '#faceGazeGesturePreviousButton');
+        assertNull(previousButton);
+      });
+
+  test(
+      'action page switches to threshold page when initialPage value is set',
+      async () => {
+        await initPage();
+
+        faceGazeAddActionDialog.gestureToConfigure = FacialGesture.BROWS_DOWN;
+        faceGazeAddActionDialog.initialPage = AddDialogPage.GESTURE_THRESHOLD;
+        flush();
+
+        assertGestureSlider();
+
+        // Previous button should not be shown.
+        const previousButton =
+            faceGazeAddActionDialog.shadowRoot!.querySelector<CrButtonElement>(
+                '#faceGazeThresholdPreviousButton');
+        assertNull(previousButton);
+      });
 });

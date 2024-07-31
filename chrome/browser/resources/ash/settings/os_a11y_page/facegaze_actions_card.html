@@ -21,6 +21,7 @@
       left-click-gestures="[[leftClickGestures_]]"
       initial-page="[[dialogPageToShow_]]"
       action-to-assign-gesture="[[actionToAssignGesture_]]"
+      gesture-to-configure="[[gestureToConfigure_]]"
       on-facegaze-command-pair-added="onCommandPairAdded_"
       on-close="onAddActionDialogClose_">
   </facegaze-actions-add-dialog>
@@ -387,11 +388,17 @@
           <span>[[getActionDisplayText_(item.action)]]</span>
         </div>
         <template is="dom-if" if="[[item.gesture]]" restamp>
-          <cros-chip type="input" label="[[getGestureDisplayText_(item.gesture)]]">
+          <cros-chip
+              type="input"
+              label="[[getGestureDisplayText_(item.gesture)]]"
+              on-click="onConfigureGestureButtonClick_">
           </cros-chip>
         </template>
         <template is="dom-if" if="[[!item.gesture]]" restamp>
-          <cros-chip type="input" label="Assign a gesture" on-click="onAssignGestureButtonClick_">
+          <cros-chip
+              type="input"
+              label="Assign a gesture"
+              on-click="onAssignGestureButtonClick_">
             <iron-icon icon="cr:add" slot="icon"></iron-icon>
           </cros-chip>
         </template>

@@ -73,6 +73,11 @@ export class FaceGazeAddActionDialogElement extends
         observer: 'actionToAssignGestureChanged_',
       },
 
+      gestureToConfigure: {
+        type: Object,
+        observer: 'gestureToConfigureChanged_',
+      },
+
       leftClickGestures: {
         type: Array,
         value: () => [],
@@ -143,6 +148,11 @@ export class FaceGazeAddActionDialogElement extends
         type: Boolean,
         computed: 'shouldDisplayGesturePreviousButton_(initialPage)',
       },
+
+      displayThresholdPreviousButton_: {
+        type: Boolean,
+        computed: 'shouldDisplayThresholdPreviousButton_(initialPage)',
+      },
     };
   }
 
@@ -152,6 +162,7 @@ export class FaceGazeAddActionDialogElement extends
 
   actionToAssignGesture: MacroName|null = null;
   initialPage: AddDialogPage = AddDialogPage.SELECT_ACTION;
+  gestureToConfigure: FacialGesture|null = null;
   leftClickGestures: FacialGesture[] = [];
 
   // Internal state.
@@ -207,6 +218,12 @@ export class FaceGazeAddActionDialogElement extends
     return this.initialPage === AddDialogPage.SELECT_ACTION;
   }
 
+  private shouldDisplayThresholdPreviousButton_(): boolean {
+    // Only show the previous button on the threshold page if we are starting
+    // from an earlier dialog flow.
+    return this.initialPage !== AddDialogPage.GESTURE_THRESHOLD;
+  }
+
   // Dialog page navigation
   private shouldShowSelectAction_(): boolean {
     return this.currentPage_ === AddDialogPage.SELECT_ACTION;
@@ -230,6 +247,14 @@ export class FaceGazeAddActionDialogElement extends
     }
 
     this.selectedAction_ = newValue;
+  }
+
+  private gestureToConfigureChanged_(newValue: FacialGesture|null): void {
+    if (!newValue) {
+      return;
+    }
+
+    this.selectedGesture_ = newValue;
   }
 
   // If left-click action is assigned to a singular gesture then remove it

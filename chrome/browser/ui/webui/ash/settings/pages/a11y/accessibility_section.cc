@@ -939,6 +939,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_TITLE},
       {"faceGazeActionsDialogGestureThresholdSubtitle",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_SUBTITLE},
+      {"faceGazeActionsDialogGestureThresholdKnobLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_KNOB_LABEL},
       {"faceGazeCursorAccelerationLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_ACCELERATION_LABEL},
       {"faceGazeCursorAccelerationDescription",

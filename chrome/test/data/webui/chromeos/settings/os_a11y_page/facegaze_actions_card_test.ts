@@ -172,6 +172,23 @@ suite('<facegaze-actions-card>', () => {
         assertTrue(!!dialog.actionToAssignGesture);
       });
 
+  test('actions gesture button opens dialog on gesture page', async () => {
+    await initPage();
+
+    await fireCommandPairAddedEvent(
+        MacroName.MOUSE_CLICK_LEFT, FacialGesture.BROWS_DOWN);
+    flush();
+
+    const chip = faceGazeActionsCard.shadowRoot!.querySelector('cros-chip');
+    assertTrue(!!chip);
+    chip.click();
+    await flushTasks();
+
+    const dialog = getDialog();
+    assertEquals(AddDialogPage.GESTURE_THRESHOLD, dialog.initialPage);
+    assertTrue(!!dialog.gestureToConfigure);
+  });
+
   test('actions dialog left click gestures is updated', async () => {
     await initPage();
 

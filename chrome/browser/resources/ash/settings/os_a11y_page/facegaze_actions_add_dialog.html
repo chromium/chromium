@@ -77,6 +77,7 @@
   }
 
   #sliderContainer {
+    margin-top: 20px;
     display: flex;
     justify-content: center;
   }
@@ -190,6 +191,7 @@
           </cr-icon-button>
           <cr-slider
               id="faceGazeGestureThresholdSlider"
+              label_="$i18n{faceGazeActionsDialogGestureThresholdKnobLabel}"
               value="[[gestureThresholdValue_]]"
               on-cr-slider-value-changed="onThresholdSliderChanged_"
               key-press-slider-increment="5"
@@ -210,10 +212,12 @@
     </div>
     <div slot="button-container" class="justify-space-between">
       <div id="leftBtnGroup">
-        <cr-button id="faceGazeThresholdPreviousButton"
-            class="button" on-click="onGestureThresholdPreviousButtonClick_">
-          $i18n{faceGazePrevious}
-        </cr-button>
+        <template is="dom-if" if="[[displayGesturePreviousButton_]]" restamp>
+          <cr-button id="faceGazeThresholdPreviousButton"
+              class="button" on-click="onGestureThresholdPreviousButtonClick_">
+            $i18n{faceGazePrevious}
+          </cr-button>
+        </template>
       </div>
       <div id="rightBtnGroup">
         <cr-button class="cancel-button" on-click="onCancelButtonClick_">

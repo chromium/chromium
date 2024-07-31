@@ -46,6 +46,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   private leftClickGestures_: FacialGesture[] = [];
   private dialogPageToShow_: AddDialogPage;
   private actionToAssignGesture_: MacroName|null = null;
+  private gestureToConfigure_: FacialGesture|null = null;
 
   // This should be kept in sync with the pref with all interactions.
   private commandPairs_: FaceGazeCommandPair[] = [];
@@ -80,6 +81,10 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
       },
 
       actionToAssignGesture_: {
+        type: Object,
+      },
+
+      gestureToConfigure_: {
         type: Object,
       },
 
@@ -473,6 +478,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   private onAddActionDialogClose_(): void {
     this.showAddActionDialog_ = false;
     this.actionToAssignGesture_ = null;
+    this.gestureToConfigure_ = null;
   }
 
   // These values correspond to FacialGesture in
@@ -900,6 +906,13 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
       gestureName: string, confidence: number): void {
     this.setPrefDictEntry(
         FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, gestureName, confidence);
+  }
+
+  private onConfigureGestureButtonClick_(
+      e: DomRepeatEvent<FaceGazeCommandPair>): void {
+    this.dialogPageToShow_ = AddDialogPage.GESTURE_THRESHOLD;
+    this.gestureToConfigure_ = e.model.item.gesture;
+    this.showAddActionDialog_ = true;
   }
 
   private onAssignGestureButtonClick_(e: DomRepeatEvent<FaceGazeCommandPair>):
