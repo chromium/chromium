@@ -66,9 +66,8 @@ export interface DraggableTileListInterface {
 // are properly rendered.
 export class DragDropReorderTileListDelegate {
   private element: CrLitElement;
-  private titleList_: ProfileState[];
+  private tileList_: ProfileState[];
   private tileListInterface_: DraggableTileListInterface;
-  private tileCount_: number;
   private transitionDuration_: number;  // Unit: ms.
 
   private isDragEnabled_ = true;
@@ -84,13 +83,12 @@ export class DragDropReorderTileListDelegate {
   // public section:
 
   constructor(
-      element: CrLitElement, titleList: ProfileState[],
-      tileListInterface: DraggableTileListInterface, tileCount: number,
+      element: CrLitElement, tileList: ProfileState[],
+      tileListInterface: DraggableTileListInterface,
       transitionDuration: number = 300) {
     this.element = element;
-    this.titleList_ = titleList;
+    this.tileList_ = tileList;
     this.tileListInterface_ = tileListInterface;
-    this.tileCount_ = tileCount;
     this.transitionDuration_ = transitionDuration;
 
     this.eventTracker_ = new EventTracker();
@@ -100,15 +98,9 @@ export class DragDropReorderTileListDelegate {
 
   // Clear all drag events listeners and reset tiles drag state.
   clearListeners() {
-    for (let i = 0; i < this.tileCount_; ++i) {
+    for (let i = 0; i < this.tileList_.length; ++i) {
       const tile = this.getDraggableTile_(i);
-      // There's a chance clearListener() is called after the DOM is updated but
-      // before DragDropReorderTileListDelegate is re-initialized. During this
-      // time window, tile can be null if `this.tileCount_` has become
-      // out-of-sync with the DOM.
-      if (tile) {
-        tile.draggable = false;
-      }
+      tile.draggable = false;
     }
 
     this.eventTracker_.removeAll();
@@ -130,7 +122,7 @@ export class DragDropReorderTileListDelegate {
   // Expected to be called once so that a single event of each type is added to
   // the tiles.
   private initializeListeners_() {
-    for (let i = 0; i < this.tileCount_; ++i) {
+    for (let i = 0; i < this.tileList_.length; ++i) {
       const tile = this.getDraggableTile_(i);
       tile.draggable = true;
 
@@ -422,9 +414,9 @@ export class DragDropReorderTileListDelegate {
   // the Lit element.
   private applyChanges_() {
     // Remove the dragging tile from its original index.
-    const [draggingTile] = this.titleList_.splice(this.dragStartIndex_, 1);
+    const [draggingTile] = this.tileList_.splice(this.dragStartIndex_, 1);
     // Place it on the target index.
-    this.titleList_.splice(this.dropTargetIndex_, 0, draggingTile);
+    this.tileList_.splice(this.dropTargetIndex_, 0, draggingTile);
 
     this.element.requestUpdate();
   }
@@ -483,7 +475,7 @@ export class DragDropReorderTileListDelegate {
     // Reset all tiles potential transform values or shited/shifting values.
     // Also clear all tiles transition effects so that the repositioning doesn't
     // animate.
-    for (let i = 0; i < this.tileCount_; ++i) {
+    for (let i = 0; i < this.tileList_.length; ++i) {
       const tile = this.getDraggableTile_(i);
       tile.classList.remove(SHIFTED_TAG);
       tile.classList.remove(SHIFTING_TAG);
@@ -497,7 +489,7 @@ export class DragDropReorderTileListDelegate {
   // transform property is changed using the `this.transitionDuration_` value
   // set at construction.
   private setAllTilesTransitions_() {
-    for (let i = 0; i < this.tileCount_; ++i) {
+    for (let i = 0; i < this.tileList_.length; ++i) {
       const tile = this.getDraggableTile_(i);
       tile.style.transition =
           `transform ease-in-out ${this.transitionDuration_}ms`;

@@ -189,8 +189,7 @@ export class ProfilePickerMainViewElement extends
       }
 
       this.dragDelegate_ = new DragDropReorderTileListDelegate(
-          this, this.profilesList_, this, this.profilesList_.length,
-          this.dragDuration_);
+          this, this.profilesList_, this, this.dragDuration_);
     }
   }
 
