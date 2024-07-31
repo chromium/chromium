@@ -11914,6 +11914,27 @@
           }
         ]
       },
+      "mac13-skia-alt-arm64-rel-tests": {
+        "contact_team_email": "chrome-skia-graphite@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "mac13-wpt-chromium-rel": {
         "contact_team_email": "chrome-blink-engprod@google.com",
         "problem_specs": [
