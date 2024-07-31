@@ -4354,7 +4354,7 @@ enum WebFeature {
   kV8AITextSession_PromptStreaming_Method = 4985,
   kV8AI_CanCreateTextSession_Method = 4986,
   kV8AI_CreateTextSession_Method = 4987,
-  kV8AI_DefaultTextSessionOptions_Method = 4988,
+  kOBSOLETE_V8AI_DefaultTextSessionOptions_Method = 4988,
   kV8AITextSession_Destroy_Method = 4989,
   kImportMapIntegrity = 4990,
   kSelectElementAppearanceNone = 4991,
@@ -4410,6 +4410,7 @@ enum WebFeature {
   kSelectionGetComposedRanges = 5041,
   kEyeDropperOpen = 5042,
   kFlexNewColumnWrapIntrinsicSize = 5043,
+  kV8AI_TextModelInfo_Method = 5044,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

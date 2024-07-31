@@ -26,8 +26,9 @@ class AIMetrics {
     kDefaultTextSessionOptions = 4,
     kSessionDestroy = 5,
     kSessionClone = 6,
+    kTextModelInfo = 7,
 
-    kMaxValue = kSessionClone,
+    kMaxValue = kTextModelInfo,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIAPI)
 

@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_model_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -49,9 +50,8 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
       ScriptState* script_state,
       AITextSessionOptions* options,
       ExceptionState& exception_state);
-  ScriptPromise<AITextSessionOptions> defaultTextSessionOptions(
-      ScriptState* script_state,
-      ExceptionState& exception_state);
+  ScriptPromise<AITextModelInfo> textModelInfo(ScriptState* script_state,
+                                               ExceptionState& exception_state);
 
  private:
   HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();

@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_model_availability.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_model_info.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -178,21 +178,20 @@ ScriptPromise<AITextSession> AI::createTextSession(
   return promise;
 }
 
-ScriptPromise<AITextSessionOptions> AI::defaultTextSessionOptions(
+ScriptPromise<AITextModelInfo> AI::textModelInfo(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<AITextSessionOptions>();
+    return ScriptPromise<AITextModelInfo>();
   }
 
   base::UmaHistogramEnumeration(
       AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
-      AIMetrics::AIAPI::kDefaultTextSessionOptions);
+      AIMetrics::AIAPI::kTextModelInfo);
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<AITextSessionOptions>>(
-          script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<AITextModelInfo>>(
+      script_state);
   auto promise = resolver->Promise();
 
   if (!GetAIRemote().is_connected()) {
@@ -200,13 +199,14 @@ ScriptPromise<AITextSessionOptions> AI::defaultTextSessionOptions(
     return promise;
   }
 
-  GetAIRemote()->GetDefaultTextSessionSamplingParams(WTF::BindOnce(
-      [](ScriptPromiseResolver<AITextSessionOptions>* resolver,
-         mojom::blink::AITextSessionSamplingParamsPtr default_params) {
-        AITextSessionOptions* options = AITextSessionOptions::Create();
-        CHECK(default_params);
-        options->setTopK(default_params->top_k);
-        options->setTemperature(default_params->temperature);
+  GetAIRemote()->GetTextModelInfo(WTF::BindOnce(
+      [](ScriptPromiseResolver<AITextModelInfo>* resolver,
+         mojom::blink::AITextModelInfoPtr text_model_info) {
+        AITextModelInfo* options = AITextModelInfo::Create();
+        CHECK(text_model_info);
+        options->setDefaultTopK(text_model_info->default_top_k);
+        options->setMaxTopK(text_model_info->max_top_k);
+        options->setDefaultTemperature(text_model_info->default_temperature);
         resolver->Resolve(options);
       },
       WrapPersistent(resolver)));

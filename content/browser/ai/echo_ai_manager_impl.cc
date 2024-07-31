@@ -5,6 +5,7 @@
 #include "content/browser/ai/echo_ai_manager_impl.h"
 
 #include "base/no_destructor.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_text_session.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -38,10 +39,11 @@ void EchoAIManagerImpl::CreateTextSession(
   std::move(callback).Run(/*success=*/true);
 }
 
-void EchoAIManagerImpl::GetDefaultTextSessionSamplingParams(
-    GetDefaultTextSessionSamplingParamsCallback callback) {
-  std::move(callback).Run(blink::mojom::AITextSessionSamplingParams::New(
-      /*top_k=*/1, /*temperature=*/0));
+void EchoAIManagerImpl::GetTextModelInfo(GetTextModelInfoCallback callback) {
+  std::move(callback).Run(blink::mojom::AITextModelInfo::New(
+      optimization_guide::features::GetOnDeviceModelDefaultTopK(),
+      optimization_guide::features::GetOnDeviceModelMaxTopK(),
+      optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
 }
 
 }  // namespace content

@@ -42,10 +42,6 @@ namespace {
 
 constexpr uint32_t kReserveTokensForSafety = 2;
 
-const base::FeatureParam<int> kMaxTopK{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_max_topk", 128};
-
 const base::FeatureParam<bool> kPreferTextureWeights{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_model_prefer_texture_weights", true};
@@ -105,7 +101,8 @@ float GetTemperature(std::optional<float> temperature) {
 }
 
 uint32_t GetTopK(std::optional<uint32_t> top_k) {
-  return std::min(static_cast<uint32_t>(kMaxTopK.Get()),
+  return std::min(static_cast<uint32_t>(
+                      optimization_guide::features::GetOnDeviceModelMaxTopK()),
                   std::max(1u, top_k.value_or(1)));
 }
 
@@ -628,7 +625,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .model_data = &data,
       .max_tokens = max_tokens_,
       .temperature = 0.0f,
-      .top_k = kMaxTopK.Get(),
+      .top_k = optimization_guide::features::GetOnDeviceModelMaxTopK(),
       .ts_dimension = params->ts_dimension.value_or(0),
       .adaptation_ranks = params->adaptation_ranks.data(),
       .adaptation_ranks_size = params->adaptation_ranks.size(),

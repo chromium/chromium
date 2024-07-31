@@ -169,10 +169,11 @@ void AIManagerKeyedService::CreateTextSession(
                                             sampling_params));
 }
 
-void AIManagerKeyedService::GetDefaultTextSessionSamplingParams(
-    GetDefaultTextSessionSamplingParamsCallback callback) {
-  std::move(callback).Run(blink::mojom::AITextSessionSamplingParams::New(
+void AIManagerKeyedService::GetTextModelInfo(
+    GetTextModelInfoCallback callback) {
+  std::move(callback).Run(blink::mojom::AITextModelInfo::New(
       optimization_guide::features::GetOnDeviceModelDefaultTopK(),
+      optimization_guide::features::GetOnDeviceModelMaxTopK(),
       optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
 }
 

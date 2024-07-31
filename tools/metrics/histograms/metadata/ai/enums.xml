@@ -36,6 +36,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="ai.defaultTestSessionOptions"/>
   <int value="5" label="ai.sessionDestroy"/>
   <int value="6" label="ai.sessionClone"/>
+  <int value="7" label="ai.textModelInfo"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AIAPI) -->

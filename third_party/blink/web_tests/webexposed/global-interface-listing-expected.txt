@@ -8,7 +8,7 @@ interface AI
     method canCreateTextSession
     method constructor
     method createTextSession
-    method defaultTextSessionOptions
+    method textModelInfo
 interface AITextSession
     attribute @@toStringTag
     method clone

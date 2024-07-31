@@ -36,5 +36,5 @@ interface AI {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AITextSessionOptions> defaultTextSessionOptions();
+  Promise<AITextModelInfo> textModelInfo();
 };

@@ -47,8 +47,7 @@ class AIManagerKeyedService : public KeyedService,
       mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
       blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
       CreateTextSessionCallback callback) override;
-  void GetDefaultTextSessionSamplingParams(
-      GetDefaultTextSessionSamplingParamsCallback callback) override;
+  void GetTextModelInfo(GetTextModelInfoCallback callback) override;
 
   void OnModelPathValidationComplete(const std::string& model_path,
                                      bool is_valid_path);

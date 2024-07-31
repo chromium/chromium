@@ -38,8 +38,7 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
       CreateTextSessionCallback callback) override;
 
-  void GetDefaultTextSessionSamplingParams(
-      GetDefaultTextSessionSamplingParamsCallback callback) override;
+  void GetTextModelInfo(GetTextModelInfoCallback callback) override;
 
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
 };

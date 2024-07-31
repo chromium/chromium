@@ -66,6 +66,12 @@ struct AITextSessionSamplingParams {
   float temperature;
 };
 
+struct AITextModelInfo {
+  uint32 default_top_k;
+  uint32 max_top_k;
+  float default_temperature;
+};
+
 // The manager that could create a new session for the model.
 interface AIManager {
   // Returns if it is possible to create a text session. For example, when
@@ -80,8 +86,8 @@ interface AIManager {
     pending_receiver<blink.mojom.AITextSession> session,
     AITextSessionSamplingParams? sampling_params
   ) => (bool success);
-  // Returns the default configuration for `AITextSessionSamplingParams`.
-  GetDefaultTextSessionSamplingParams() => (
-    AITextSessionSamplingParams default_sampling_params
+  // Returns the default configuration for the text model information.
+  GetTextModelInfo() => (
+    AITextModelInfo text_model_info
   );
 };

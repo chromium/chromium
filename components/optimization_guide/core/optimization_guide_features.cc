@@ -831,6 +831,13 @@ int GetOnDeviceModelDefaultTopK() {
   return kTopK.Get();
 }
 
+int GetOnDeviceModelMaxTopK() {
+  static const base::FeatureParam<int> kMaxTopK{
+      &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+      "on_device_model_max_topk", 128};
+  return kMaxTopK.Get();
+}
+
 double GetOnDeviceModelDefaultTemperature() {
   static const base::FeatureParam<double> kTemperature{
       &kOptimizationGuideOnDeviceModel, "on_device_model_temperature", 0.8};

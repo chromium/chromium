@@ -11216,7 +11216,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4985" label="V8AITextSession_PromptStreaming_Method"/>
   <int value="4986" label="V8AI_CanCreateTextSession_Method"/>
   <int value="4987" label="V8AI_CreateTextSession_Method"/>
-  <int value="4988" label="V8AI_DefaultTextSessionOptions_Method"/>
+  <int value="4988" label="OBSOLETE_V8AI_DefaultTextSessionOptions_Method"/>
   <int value="4989" label="V8AITextSession_Destroy_Method"/>
   <int value="4990" label="ImportMapIntegrity"/>
   <int value="4991" label="SelectElementAppearanceNone"/>
@@ -11274,6 +11274,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5041" label="SelectionGetComposedRanges"/>
   <int value="5042" label="EyeDropperOpen"/>
   <int value="5043" label="FlexNewColumnWrapIntrinsicSize"/>
+  <int value="5044" label="V8AI_TextModelInfo_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
