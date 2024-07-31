@@ -230,7 +230,7 @@ class AwContents : public FindHelper::Listener,
   void RequestMIDISysexPermission(const GURL& origin,
                                   PermissionCallback callback) override;
   void CancelMIDISysexPermissionRequests(const GURL& origin) override;
-  void RequestStorageAccess(const url::Origin& origin,
+  void RequestStorageAccess(const url::Origin& top_level_origin,
                             PermissionCallback callback) override;
 
   // Find-in-page API and related methods.

@@ -813,7 +813,7 @@ void WebsiteStatementResults(
       content_relationship_verification::RelationshipCheckResult::kSuccess);
 }
 
-void AwContents::RequestStorageAccess(const url::Origin& origin,
+void AwContents::RequestStorageAccess(const url::Origin& top_level_origin,
                                       PermissionCallback callback) {
   base::TimeTicks time_requested = base::TimeTicks::Now();
 
@@ -822,10 +822,11 @@ void AwContents::RequestStorageAccess(const url::Origin& origin,
   // moment, we will just accept any string that the app declares, and then
   // verify the relation on the website's side.
   auto* domains = g_app_asset_domains();
-  bool is_defined = std::find_if(domains->begin(), domains->end(),
-                                 [&origin](const std::string& domain) {
-                                   return origin.DomainIs(domain);
-                                 }) != domains->end();
+  bool is_defined =
+      std::find_if(domains->begin(), domains->end(),
+                   [&top_level_origin](const std::string& domain) {
+                     return top_level_origin.DomainIs(domain);
+                   }) != domains->end();
 
   base::UmaHistogramEnumeration("Android.WebView.StorageAccessRelation2",
                                 is_defined
@@ -850,7 +851,7 @@ void AwContents::RequestStorageAccess(const url::Origin& origin,
   // the result per domain depending on how costly this is.
   constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";
   asset_link_handler_->CheckDigitalAssetLinkRelationshipForAndroidApp(
-      origin, kRelationship,
+      top_level_origin, kRelationship,
       std::vector<std::string>{
           base::android::BuildInfo::GetInstance()->host_signing_cert_sha256()},
       base::android::BuildInfo::GetInstance()->host_package_name(),

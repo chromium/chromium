@@ -376,9 +376,6 @@ void AwPermissionManager::RequestPermissions(
         pending_request_raw->SetPermissionStatus(permissions[i],
                                                  PermissionStatus::DENIED);
         break;
-      // The only reason we separate these request types out is to measure the
-      // calls for these requests. We are interested in the top level origin
-      // source for storage access requests.
       case PermissionType::STORAGE_ACCESS_GRANT:
       case PermissionType::TOP_LEVEL_STORAGE_ACCESS: {
         const url::Origin& outer_origin =

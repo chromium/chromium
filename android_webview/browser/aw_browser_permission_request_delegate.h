@@ -41,7 +41,7 @@ class AwBrowserPermissionRequestDelegate {
 
   virtual void CancelMIDISysexPermissionRequests(const GURL& origin) = 0;
 
-  virtual void RequestStorageAccess(const url::Origin& origin,
+  virtual void RequestStorageAccess(const url::Origin& top_level_origin,
                                     PermissionCallback callback) = 0;
 
  protected:
