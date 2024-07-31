@@ -1321,7 +1321,9 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [self scheduleSaveFieldTrialValuesForExternals];
   [self scheduleEnterpriseManagedDeviceCheck];
   [self scheduleFaviconsCleanup];
+#if !TARGET_IPHONE_SIMULATOR
   [self scheduleLogDocumentsSize];
+#endif
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
   [self scheduleDumpDocumentsStatistics];
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -1425,6 +1427,9 @@ SEQUENCE_CHECKER(_sequenceChecker);
             kMinimumTimeBetweenDocumentsSizeLogging) {
       continue;
     }
+
+    // TODO(crbug.com/356657400): Consider doing this a bit later in startup, or
+    // only ifif metrics are enabled.
     prefService->SetTime(prefs::kLastApplicationStorageMetricsLogTime,
                          base::Time::Now());
     base::FilePath profilePath = browserState->GetStatePath();
