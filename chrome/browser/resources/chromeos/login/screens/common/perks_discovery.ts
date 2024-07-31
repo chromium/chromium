@@ -146,7 +146,9 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
     this.currentPerk = -1;
     this.itemIconsRendered = 0;
     this.itemIllustrationsRendered = 0;
-    this.selectedPerks.clear();
+    if(this.selectedPerks) {
+      this.selectedPerks.clear();
+    }
   }
 
   isElementHidden(currentPerk: number, index: number): boolean {

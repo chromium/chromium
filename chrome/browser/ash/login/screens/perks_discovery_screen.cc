@@ -65,10 +65,15 @@ SinglePerkDiscoveryPayload::SinglePerkDiscoveryPayload(
       title(perk_data.title),
       subtitle(perk_data.subtitle),
       icon_url(perk_data.icon_url),
+      content(perk_data.content),
       primary_button(perk_data.primary_button.Clone()),
       secondary_button(perk_data.secondary_button.Clone()) {}
 
 Content::Content() = default;
+
+Content::Content(const Content& content) {
+  illustration = content.illustration;
+}
 
 Content::~Content() = default;
 
