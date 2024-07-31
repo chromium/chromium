@@ -18128,6 +18128,7 @@ from previous Chrome versions.
   <int value="-943304570" label="PaintHolding:enabled"/>
   <int value="-943223021"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:disabled"/>
+  <int value="-942935700" label="FastPairKeyboards:disabled"/>
   <int value="-941056354" label="CdmStorageDatabase:enabled"/>
   <int value="-940931658" label="UseDMSAAForTilesAndroidGL:disabled"/>
   <int value="-940915510" label="IgnoreCSPInWebPaymentAPI:disabled"/>
@@ -23826,6 +23827,7 @@ from previous Chrome versions.
   <int value="1478461926" label="GlobalMediaControlsPictureInPicture:enabled"/>
   <int value="1478835676" label="VcRelightingInferenceBackend:enabled"/>
   <int value="1479248574" label="disable-voice-input"/>
+  <int value="1479951837" label="FastPairKeyboards:enabled"/>
   <int value="1480073052" label="WallpaperSearchSettingsVisibility:enabled"/>
   <int value="1480507924" label="EnableNetworkingInDiagnosticsApp:enabled"/>
   <int value="1481562816" label="disable-password-link"/>

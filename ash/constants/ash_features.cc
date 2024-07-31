@@ -999,8 +999,13 @@ BASE_FEATURE(kFastPairHandshakeLongTermRefactor,
              "FastPairHandshakeLongTermRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables prototype support for Fast Pair HID.
+// Enables prototype support for Fast Pair HID (non-keyboard).
 BASE_FEATURE(kFastPairHID, "FastPairHID", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables prototype support for Fast Pair for keyboards.
+BASE_FEATURE(kFastPairKeyboards,
+             "FastPairKeyboards",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Saved Devices nicknames logic for Fast Pair.
 BASE_FEATURE(kFastPairSavedDevicesNicknames,
@@ -3730,6 +3735,10 @@ bool IsFastPairHandshakeLongTermRefactorEnabled() {
 
 bool IsFastPairHIDEnabled() {
   return base::FeatureList::IsEnabled(kFastPairHID);
+}
+
+bool IsFastPairKeyboardsEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairKeyboards);
 }
 
 bool IsFastPairSavedDevicesNicknamesEnabled() {

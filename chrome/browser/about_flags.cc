@@ -8081,6 +8081,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairHIDDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairHID)},
 
+    {"fast-pair-keyboards", flag_descriptions::kFastPairKeyboardsName,
+     flag_descriptions::kFastPairKeyboardsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFastPairKeyboards)},
+
     {"fast-pair-pwa-companion", flag_descriptions::kFastPairPwaCompanionName,
      flag_descriptions::kFastPairPwaCompanionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairPwaCompanion)},

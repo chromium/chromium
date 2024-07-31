@@ -3760,6 +3760,9 @@ extern const char kFastPairHandshakeLongTermRefactorDescription[];
 extern const char kFastPairHIDName[];
 extern const char kFastPairHIDDescription[];
 
+extern const char kFastPairKeyboardsName[];
+extern const char kFastPairKeyboardsDescription[];
+
 extern const char kFastPairPwaCompanionName[];
 extern const char kFastPairPwaCompanionDescription[];
 

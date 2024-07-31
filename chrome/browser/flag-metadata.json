@@ -4560,6 +4560,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "fast-pair-keyboards",
+    "owners": [
+      "//ash/quick_pair/OWNERS",
+      "jackshira@google.com"
+    ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "fast-pair-pwa-companion",
     "owners": [
       "//ash/quick_pair/OWNERS",

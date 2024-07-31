@@ -6529,7 +6529,11 @@ const char kFastPairHandshakeLongTermRefactorDescription[] =
 
 const char kFastPairHIDName[] = "Enable Fast Pair HID";
 const char kFastPairHIDDescription[] =
-    "Enables prototype support for Fast Pair HID.";
+    "Enables prototype support for Fast Pair HID (non-keyboard).";
+
+const char kFastPairKeyboardsName[] = "Enable Fast Pair Keyboards";
+const char kFastPairKeyboardsDescription[] =
+    "Enables prototype support for Fast Pair for keyboards.";
 
 const char kFastPairPwaCompanionName[] = "Enable Fast Pair Web Companion";
 const char kFastPairPwaCompanionDescription[] =
