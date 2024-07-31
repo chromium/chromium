@@ -37,16 +37,25 @@ using ScopedTabGroupSyncObservation =
     base::ScopedObservation<tab_groups::TabGroupSyncService,
                             tab_groups::TabGroupSyncService::Observer>;
 
+// Comparator for groups by creation date.
+bool CompareGroupByCreationDate(const tab_groups::SavedTabGroup& a,
+                                const tab_groups::SavedTabGroup& b) {
+  return a.creation_time_windows_epoch_micros() >
+         b.creation_time_windows_epoch_micros();
+}
+
 // Converts a vector of `SavedTabGroup`s into an array of `TabGroupsPanelItem`s.
 NSArray<TabGroupsPanelItem*>* CreateItems(
     std::vector<tab_groups::SavedTabGroup> groups) {
+  // Sort groups by creation date.
+  std::sort(groups.begin(), groups.end(), CompareGroupByCreationDate);
+
   NSMutableArray<TabGroupsPanelItem*>* items = [[NSMutableArray alloc] init];
   for (const auto& group : groups) {
     TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc] init];
     item.savedTabGroupID = group.saved_guid();
     [items addObject:item];
   }
-  // TODO(crbug.com/353479022): Sort by creation date.
   return items;
 }
 

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -372,4 +373,34 @@ TEST_F(TabGroupsPanelMediatorTest,
 
   EXPECT_EQ(consumer.items.count, 1u);
   EXPECT_EQ(consumer.populateItemsCallCount, 1u);
+}
+
+// Tests that the groups pushed to the consumer are sorted with the most recent
+// first.
+TEST_F(TabGroupsPanelMediatorTest, PopulatesSortedGroups) {
+  tab_groups::TabGroupSyncService::Observer* observer = nullptr;
+  EXPECT_CALL(tab_group_sync_service_, AddObserver(_))
+      .WillOnce(SaveArg<0>(&observer));
+  TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
+      initWithTabGroupSyncService:&tab_group_sync_service_
+              regularWebStateList:&web_state_list_
+                 disabledByPolicy:NO];
+  EXPECT_NE(observer, nullptr);
+  // Set a consumer.
+  FakeTabGroupsPanelConsumer* consumer =
+      [[FakeTabGroupsPanelConsumer alloc] init];
+  mediator.consumer = consumer;
+  // Set 2 saved tab group with the oldest first.
+  tab_groups::SavedTabGroup group_1 = tab_groups::test::CreateTestSavedTabGroup(
+      base::Time::Now() - base::Days(2));
+  tab_groups::SavedTabGroup group_2 =
+      tab_groups::test::CreateTestSavedTabGroup(base::Time::Now());
+  std::vector<tab_groups::SavedTabGroup> groups = {group_1, group_2};
+  EXPECT_CALL(tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(groups));
+  observer->OnInitialized();
+
+  EXPECT_EQ(consumer.items.count, 2u);
+  EXPECT_EQ(consumer.items[0].savedTabGroupID, group_2.saved_guid());
+  EXPECT_EQ(consumer.items[1].savedTabGroupID, group_1.saved_guid());
 }
