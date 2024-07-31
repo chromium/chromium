@@ -3383,6 +3383,7 @@ if (!is_android) {
 
     if (enable_click_to_call) {
       sources += [ "../browser/ui/views/sharing/click_to_call_browsertest.cc" ]
+      deps += [ "//components/sharing_message" ]
     }
 
     if (enable_pdf) {
@@ -6945,6 +6946,7 @@ test("unit_tests") {
     "//components/services/patch/content",
     "//components/services/unzip/content",
     "//components/session_proto_db:session_proto_db",
+    "//components/sharing_message:buildflags",
     "//components/sharing_message/proto",
     "//components/sharing_message/web_push",
     "//components/site_engagement/content",

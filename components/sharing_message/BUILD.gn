@@ -2,15 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//components/sharing_message/buildflags.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "ENABLE_DISCOVERY=$enable_discovery",
+    "ENABLE_CLICK_TO_CALL=$enable_click_to_call",
+  ]
+}
+
 source_set("sharing_message") {
   sources = [
     "features.cc",
     "features.h",
+    "pref_names.h",
     "sharing_message_bridge.h",
     "sharing_message_bridge_impl.cc",
     "sharing_message_bridge_impl.h",
   ]
   deps = [
+    ":buildflags",
     "//base",
     "//components/keyed_service/core",
     "//components/sharing_message/proto",

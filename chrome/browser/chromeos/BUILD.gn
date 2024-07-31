@@ -310,6 +310,7 @@ source_set("chromeos") {
     "//components/reporting/util:rate_limiter_interface",
     "//components/reporting/util:rate_limiter_slide_window",
     "//components/services/app_service",
+    "//components/sharing_message",
     "//components/strings:components_strings",
     "//components/sync/protocol",
     "//components/sync_device_info",

@@ -2249,17 +2249,6 @@ inline constexpr char kGoogleWorkspaceCloudUpload[] =
     "filebrowser.office.google_workspace_cloud_upload";
 #endif
 
-// A flag to enable/disable the Shared Clipboard feature which enables users to
-// send text across devices.
-inline constexpr char kSharedClipboardEnabled[] =
-    "browser.shared_clipboard_enabled";
-
-#if BUILDFLAG(ENABLE_CLICK_TO_CALL)
-// A flag to enable/disable the Click to Call feature which enables users to
-// send phone numbers from desktop to Android phones.
-inline constexpr char kClickToCallEnabled[] = "browser.click_to_call_enabled";
-#endif  // BUILDFLAG(ENABLE_CLICK_TO_CALL)
-
 // Extensions which should be opened upon completion.
 inline constexpr char kDownloadExtensionsToOpen[] =
     "download.extensions_to_open";
@@ -3841,10 +3830,6 @@ inline constexpr char kClientCertificateManagementAllowed[] =
 inline constexpr char kCACertificateManagementAllowed[] =
     "ca_certificate_management_allowed";
 #endif
-
-inline constexpr char kSharingVapidKey[] = "sharing.vapid_key";
-inline constexpr char kSharingFCMRegistration[] = "sharing.fcm_registration";
-inline constexpr char kSharingLocalSharingInfo[] = "sharing.local_sharing_info";
 
 // Dictionary that contains all of the Hats Survey Metadata for desktop surveys.
 inline constexpr char kHatsSurveyMetadata[] = "hats.survey_metadata";

@@ -33,6 +33,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/sharing_message/features.h"
+#include "components/sharing_message/pref_names.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"

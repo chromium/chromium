@@ -64,6 +64,7 @@ source_set("common_syncable_prefs_database") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/saved_tab_groups:model",
     "//components/search_engines",
+    "//components/sharing_message",
     "//components/translate/core/browser",
     "//components/variations/service",
   ]

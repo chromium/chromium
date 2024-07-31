@@ -2378,6 +2378,7 @@ static_library("browser") {
     "//components/sessions",
     "//components/shared_highlighting/browser",
     "//components/shared_highlighting/core/common",
+    "//components/sharing_message:buildflags",
     "//components/sharing_message/proto",
     "//components/sharing_message/web_push",
     "//components/signin/core/browser",

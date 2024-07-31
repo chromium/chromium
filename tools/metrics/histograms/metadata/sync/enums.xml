@@ -307,6 +307,7 @@ chromium-metrics-reviews@google.com.
   <int value="73" label="SyncableTabGroups"/>
   <int value="74" label="AutoPinNewTabGroups"/>
   <int value="75" label="ShowGoogleLensShortcut"/>
+  <int value="76" label="SharingVapidKey"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->
@@ -491,7 +492,7 @@ chromium-metrics-reviews@google.com.
   <int value="100169" label="ProtectedContentDefault"/>
   <int value="100170" label="RestoreOnStartup"/>
   <int value="100171" label="SearchSuggestEnabled"/>
-  <int value="100172" label="SharingVapidKey"/>
+  <int value="100172" label="(obsolete) SharingVapidKey"/>
   <int value="100173" label="URLsToRestoreOnStartup"/>
   <int value="100174" label="SpellCheckEnable"/>
   <int value="100175" label="ProfileContentSettingsExceptionsAntiAbuse"/>

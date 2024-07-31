@@ -16,6 +16,7 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/sharing_message/pref_names.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
@@ -226,7 +227,7 @@ enum {
   kProtectedContentDefault = 100169,
   kRestoreOnStartup = 100170,
   kSearchSuggestEnabled = 100171,
-  kSharingVapidKey = 100172,
+  // kSharingVapidKey = 100172, (moved to components)
   kURLsToRestoreOnStartup = 100173,
   kSpellCheckEnable = 100174,
   kProfileContentSettingsExceptionsAntiAbuse = 100175,
@@ -1294,10 +1295,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kSearchSuggestEnabled,
      {syncable_prefs_ids::kSearchSuggestEnabled, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kSharingVapidKey,
-     {syncable_prefs_ids::kSharingVapidKey, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kURLsToRestoreOnStartup,
