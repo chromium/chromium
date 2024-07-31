@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   auto* view =
       widget->SetContentsView(std::make_unique<ash::PickerSearchResultsView>(
           &mock_delegate, /*picker_width=*/1000, /*asset_fetcher=*/nullptr,
-          /*submenu_controller=*/nullptr));
+          /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
 
   sm_.Call([view]() {
     view->SetNumEmojiResultsForA11y(5);
@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   auto* view =
       widget->SetContentsView(std::make_unique<ash::PickerSearchResultsView>(
           &mock_delegate, /*picker_width=*/1000, /*asset_fetcher=*/nullptr,
-          /*submenu_controller=*/nullptr));
+          /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
 
   sm_.Call([view]() {
     view->SearchStopped(/*illustration=*/{}, /*description=*/u"");

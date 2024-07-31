@@ -17,6 +17,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_submenu_controller.h"
@@ -100,6 +101,7 @@ class PickerZeroStateViewTest : public views::ViewsTestBase {
  protected:
   MockPickerAssetFetcher asset_fetcher_;
   PickerSubmenuController submenu_controller_;
+  PickerPreviewBubbleController preview_controller_;
 
  private:
   AshColorProvider ash_color_provider_;
@@ -108,7 +110,8 @@ class PickerZeroStateViewTest : public views::ViewsTestBase {
 TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
   MockZeroStateViewDelegate mock_delegate;
   PickerZeroStateView view(&mock_delegate, kAllCategories, kPickerWidth,
-                           &asset_fetcher_, &submenu_controller_);
+                           &asset_fetcher_, &submenu_controller_,
+                           &preview_controller_);
 
   EXPECT_THAT(view.category_section_views_for_testing(),
               ElementsAre(Key(PickerCategoryType::kEditorWrite),
@@ -123,7 +126,8 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   MockZeroStateViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
       &mock_delegate, std::vector<PickerCategory>{PickerCategory::kExpressions},
-      kPickerWidth, &asset_fetcher_, &submenu_controller_));
+      kPickerWidth, &asset_fetcher_, &submenu_controller_,
+      &preview_controller_));
   widget->Show();
   ASSERT_THAT(view->category_section_views_for_testing(),
               Contains(Key(PickerCategoryType::kGeneral)));
@@ -159,7 +163,7 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
   base::test::TestFuture<const PickerSearchResult&> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
       &mock_delegate, kAllCategories, kPickerWidth, &asset_fetcher_,
-      &submenu_controller_));
+      &submenu_controller_, &preview_controller_));
   widget->Show();
 
   EXPECT_CALL(mock_delegate,
@@ -188,7 +192,8 @@ TEST_F(PickerZeroStateViewTest,
             std::move(callback).Run({});
           });
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
-                           kPickerWidth, &asset_fetcher_, &submenu_controller_);
+                           kPickerWidth, &asset_fetcher_, &submenu_controller_,
+                           &preview_controller_);
 
   EXPECT_THAT(view.primary_section_view_for_testing(), IsNull());
 }
@@ -214,7 +219,8 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
             });
           });
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
-                           kPickerWidth, &asset_fetcher_, &submenu_controller_);
+                           kPickerWidth, &asset_fetcher_, &submenu_controller_,
+                           &preview_controller_);
 
   EXPECT_THAT(
       view.primary_section_view_for_testing(),
@@ -252,7 +258,8 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
             });
           });
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
-                           kPickerWidth, &asset_fetcher_, &submenu_controller_);
+                           kPickerWidth, &asset_fetcher_, &submenu_controller_,
+                           &preview_controller_);
 
   EXPECT_THAT(
       view.primary_section_view_for_testing(),
@@ -286,7 +293,7 @@ TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
             });
           });
   PickerZeroStateView view(&mock_delegate, {}, kPickerWidth, &asset_fetcher_,
-                           &submenu_controller_);
+                           &submenu_controller_, &preview_controller_);
 
   EXPECT_THAT(
       view.category_section_views_for_testing(),
@@ -317,7 +324,7 @@ TEST_F(PickerZeroStateViewTest, RequestsPseudoFocusAfterGettingSuggestedItems) {
   widget->SetFullscreen(true);
   widget->SetContentsView(std::make_unique<PickerZeroStateView>(
       &mock_delegate, kAllCategories, kPickerWidth, &asset_fetcher_,
-      &submenu_controller_));
+      &submenu_controller_, &preview_controller_));
   widget->Show();
 
   EXPECT_CALL(mock_delegate, RequestPseudoFocus(_));

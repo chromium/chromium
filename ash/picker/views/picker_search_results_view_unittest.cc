@@ -12,6 +12,7 @@
 #include "ash/picker/views/mock_picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_section_list_view.h"
@@ -103,8 +104,9 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   view.AppendSearchResults(
       PickerSearchResultsSection(PickerSectionType::kNone,
@@ -127,8 +129,9 @@ TEST_F(PickerSearchResultsViewTest, ClearSearchResultsClearsView) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kClipboard, {{PickerSearchResult::Text(u"Result")}},
       /*has_more_results=*/false));
@@ -142,8 +145,9 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kNone,
@@ -159,8 +163,9 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithLocalFiles) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kLocalFiles,
@@ -180,8 +185,9 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kLocalFiles,
@@ -201,8 +207,9 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kLocalFiles,
@@ -223,8 +230,9 @@ TEST_F(PickerSearchResultsViewTest, GetsTopItem) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   EXPECT_CALL(mock_delegate,
               SelectSearchResult(PickerSearchResult::Text(u"Result A")));
@@ -242,8 +250,9 @@ TEST_F(PickerSearchResultsViewTest, GetsBottomItem) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   EXPECT_CALL(mock_delegate,
               SelectSearchResult(PickerSearchResult::Text(u"Result B")));
@@ -261,8 +270,9 @@ TEST_F(PickerSearchResultsViewTest, GetsItemAbove) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kNone,
       {{PickerSearchResult::Category(PickerCategory::kLinks),
@@ -281,8 +291,9 @@ TEST_F(PickerSearchResultsViewTest, GetsItemBelow) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kNone,
       {{PickerSearchResult::Category(PickerCategory::kLinks),
@@ -302,9 +313,11 @@ TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller));
+          &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller,
+          &preview_controller));
 
   view->AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kLocalFiles, {}, /*has_more_results=*/true));
@@ -324,9 +337,11 @@ TEST_F(PickerSearchResultsViewTest,
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller));
+          &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller,
+          &preview_controller));
 
   view->AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kLocalFiles, {}, /*has_more_results=*/false));
@@ -345,9 +360,11 @@ TEST_F(PickerSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller));
+          &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller,
+          &preview_controller));
   widget->Show();
   view->AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kLocalFiles, {}, /*has_more_results=*/true));
@@ -365,8 +382,9 @@ TEST_F(PickerSearchResultsViewTest,
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   EXPECT_TRUE(view.SearchStopped(/*illustration=*/{}, u"no results"));
 
@@ -382,8 +400,9 @@ TEST_F(PickerSearchResultsViewTest,
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   EXPECT_TRUE(view.SearchStopped(
       ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(1)),
@@ -401,8 +420,9 @@ TEST_F(PickerSearchResultsViewTest,
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kLocalFiles, {}, /*has_more_results=*/true));
@@ -416,8 +436,9 @@ TEST_F(PickerSearchResultsViewTest, SearchStoppedHidesLoaderView) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   view.ShowLoadingAnimation();
   ASSERT_TRUE(view.SearchStopped({}, u""));
@@ -429,8 +450,9 @@ TEST_F(PickerSearchResultsViewTest, ClearSearchResultsShowsSearchResults) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
   ASSERT_TRUE(view.SearchStopped({}, u""));
 
   view.ClearSearchResults();
@@ -443,8 +465,9 @@ TEST_F(PickerSearchResultsViewTest, ShowLoadingShowsLoaderView) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   view.ShowLoadingAnimation();
 
@@ -461,8 +484,9 @@ TEST_F(PickerSearchResultsViewTest, ShowLoadingAnimatesAfterDelay) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
 
   view.ShowLoadingAnimation();
   task_environment()->FastForwardBy(
@@ -480,8 +504,9 @@ TEST_F(PickerSearchResultsViewTest, AppendResultsDuringLoadingStopsAnimation) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
   task_environment()->FastForwardBy(
       PickerSearchResultsView::kLoadingAnimationDelay);
 
@@ -500,8 +525,9 @@ TEST_F(PickerSearchResultsViewTest, AppendResultsDuringLoadingAppendsResults) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
-                               &submenu_controller);
+                               &submenu_controller, &preview_controller);
   view.ShowLoadingAnimation();
 
   view.AppendSearchResults({PickerSearchResultsSection(
@@ -521,7 +547,7 @@ TEST_F(PickerSearchResultsViewTest,
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
           &mock_delegate, kPickerWidth, /*asset_fetcher=*/nullptr,
-          /*submenu_controller=*/nullptr));
+          /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
 
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_TRUE(view->SearchStopped(/*illustration=*/{}, u""));
@@ -539,7 +565,7 @@ TEST_F(PickerSearchResultsViewTest,
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
           &mock_delegate, kPickerWidth, /*asset_fetcher=*/nullptr,
-          /*submenu_controller=*/nullptr));
+          /*submenu_controller=*/nullptr, /*preview_controller=*/nullptr));
   view->SetNumEmojiResultsForA11y(5);
 
   views::test::AXEventCounter counter(views::AXEventManager::Get());
@@ -569,9 +595,11 @@ TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller));
+          &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller,
+          &preview_controller));
   widget->Show();
   view->AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kClipboard, {{test_case.result}},

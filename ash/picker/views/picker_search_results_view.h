@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_page_view.h"
-#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/picker/views/picker_submenu_controller.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -30,18 +29,21 @@ class PickerSearchResult;
 class PickerSearchResultsViewDelegate;
 class PickerSectionListView;
 class PickerSectionView;
+class PickerPreviewBubbleController;
 class PickerSkeletonLoaderView;
 
 class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   METADATA_HEADER(PickerSearchResultsView, PickerPageView)
 
  public:
-  // `delegate`, `asset_fetcher` and `submenu_controller` must remain valid for
-  // the lifetime of this class.
-  explicit PickerSearchResultsView(PickerSearchResultsViewDelegate* delegate,
-                                   int picker_view_width,
-                                   PickerAssetFetcher* asset_fetcher,
-                                   PickerSubmenuController* submenu_controller);
+  // `delegate`, `asset_fetcher`, `submenu_controller`, `preview_controller`
+  // must remain valid for the lifetime of this class.
+  explicit PickerSearchResultsView(
+      PickerSearchResultsViewDelegate* delegate,
+      int picker_view_width,
+      PickerAssetFetcher* asset_fetcher,
+      PickerSubmenuController* submenu_controller,
+      PickerPreviewBubbleController* preview_controller);
   PickerSearchResultsView(const PickerSearchResultsView&) = delete;
   PickerSearchResultsView& operator=(const PickerSearchResultsView&) = delete;
   ~PickerSearchResultsView() override;
@@ -136,7 +138,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // The skeleton loader view, shown when the results are pending.
   raw_ptr<PickerSkeletonLoaderView> skeleton_loader_view_ = nullptr;
 
-  PickerPreviewBubbleController preview_controller_;
+  raw_ptr<PickerPreviewBubbleController> preview_controller_;
 
   // Number of emoji search results displayed by the emoji bar. Used for
   // accessibility announcements.

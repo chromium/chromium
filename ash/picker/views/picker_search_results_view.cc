@@ -61,8 +61,9 @@ PickerSearchResultsView::PickerSearchResultsView(
     PickerSearchResultsViewDelegate* delegate,
     int picker_view_width,
     PickerAssetFetcher* asset_fetcher,
-    PickerSubmenuController* submenu_controller)
-    : delegate_(delegate) {
+    PickerSubmenuController* submenu_controller,
+    PickerPreviewBubbleController* preview_controller)
+    : delegate_(delegate), preview_controller_(preview_controller) {
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   SetProperty(views::kElementIdentifierKey, kPickerSearchResultsPageElementId);
@@ -224,7 +225,7 @@ void PickerSearchResultsView::AddResultToSection(
   // `base::Unretained` is safe here because `this` will own the item view which
   // takes this callback.
   PickerItemView* view = section_view->AddResult(
-      result, &preview_controller_,
+      result, preview_controller_,
       base::BindRepeating(&PickerSearchResultsView::SelectSearchResult,
                           base::Unretained(this), result));
 

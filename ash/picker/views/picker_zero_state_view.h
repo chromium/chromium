@@ -12,7 +12,6 @@
 #include "ash/ash_export.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_page_view.h"
-#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "base/containers/span.h"
@@ -29,6 +28,7 @@ namespace ash {
 
 class PickerAssetFetcher;
 class PickerClipboardHistoryProvider;
+class PickerPreviewBubbleController;
 class PickerSearchResult;
 class PickerSectionListView;
 class PickerSectionView;
@@ -38,14 +38,15 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   METADATA_HEADER(PickerZeroStateView, PickerPageView)
 
  public:
-  // `delegate`, `asset_fetcher` and `submenu_controller` must remain valid for
-  // the lifetime of this class.
+  // `delegate`, `asset_fetcher`, `submenu_controller`, `preview_controller`
+  // must remain valid for the lifetime of this class.
   explicit PickerZeroStateView(
       PickerZeroStateViewDelegate* delegate,
       base::span<const PickerCategory> available_categories,
       int picker_view_width,
       PickerAssetFetcher* asset_fetcher,
-      PickerSubmenuController* submenu_controller);
+      PickerSubmenuController* submenu_controller,
+      PickerPreviewBubbleController* preview_controller);
   PickerZeroStateView(const PickerZeroStateView&) = delete;
   PickerZeroStateView& operator=(const PickerZeroStateView&) = delete;
   ~PickerZeroStateView() override;
@@ -81,8 +82,8 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   void OnFetchSuggestedResults(std::vector<PickerSearchResult> result);
 
   raw_ptr<PickerZeroStateViewDelegate> delegate_;
-  PickerPreviewBubbleController preview_controller_;
   raw_ptr<PickerSubmenuController> submenu_controller_;
+  raw_ptr<PickerPreviewBubbleController> preview_controller_;
 
   // The section list view, contains the section views.
   raw_ptr<PickerSectionListView> section_list_view_ = nullptr;
