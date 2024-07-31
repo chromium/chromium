@@ -1794,11 +1794,8 @@ void AttributionStorageSql::RecordSourcesPerSourceOrigin() {
   std::map<std::string, int64_t> map;
   while (statement.Step()) {
     std::string source_origin = statement.ColumnString(0);
-    if (auto it = map.find(source_origin); it != map.end()) {
-      it->second++;
-    } else {
-      map.insert({std::move(source_origin), 1u});
-    }
+    auto [it, _] = map.try_emplace(std::move(source_origin), 0);
+    ++it->second;
   }
   if (!statement.Succeeded()) {
     return;

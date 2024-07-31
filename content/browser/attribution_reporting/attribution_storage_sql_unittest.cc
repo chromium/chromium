@@ -937,7 +937,7 @@ TEST_F(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramsRecorded) {
 }
 
 TEST_F(AttributionStorageSqlTest,
-       DBinitializationSucceeds_SourcesPerSourceOrginHistogramsRecorded) {
+       DBinitializationSucceeds_SourcesPerSourceOriginHistogramsRecorded) {
   auto create_n_origins = [](size_t n) -> std::vector<SuitableOrigin> {
     std::vector<SuitableOrigin> origins;
     origins.reserve(n);
