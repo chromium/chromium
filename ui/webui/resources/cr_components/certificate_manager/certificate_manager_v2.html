@@ -100,9 +100,7 @@
     </cr-menu-selector>
   </div>
 
-  <!-- TODO(crbug.com/40928765): migrate off of iron-pages. See:
-    https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md#polymer-iron_paper-elements-alternatives -->
-  <iron-pages id="main" attr-for-selected="path" fallback-selection="localcerts"
+  <cr-page-selector id="main" attr-for-selected="path"
       selected="[[selectedPage_]]">
 
     <div id="clientCertSection" class="cr-centered-card-container" path="clientcerts">
@@ -241,7 +239,7 @@
         subpage-title="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
         subpage-cert-lists="[[clientPlatformSubpageLists_]]">
     </certificate-subpage-v2>
-  </iron-pages>
+  </cr-page-selector>
 </div>
 
 <cr-toast id="toast" duration="5000">

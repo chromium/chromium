@@ -7,7 +7,7 @@
  */
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
-import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
+import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import './ca_trust_edit_dialog.js';
 import './certificate_delete_confirmation_dialog.js';
 import './certificate_list.js';
