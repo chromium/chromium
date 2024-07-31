@@ -4580,7 +4580,7 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
 
     // TODO(crbug.com/1286465): It's not consistent to only check
     // IsEnsuredInDisplayNone() on layoutless elements.
-    return GetNode()->IsElementNode() &&
+    return GetNode() && GetNode()->IsElementNode() &&
            (style->IsEnsuredInDisplayNone() ||
             style->Visibility() != EVisibility::kVisible);
   }
