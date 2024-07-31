@@ -1039,9 +1039,8 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
 
 base::TimeTicks AUAudioInputStream::GetCaptureTime(
     const AudioTimeStamp* input_time_stamp) {
-  // Total latency is composed by the dynamic latency and the fixed
-  // hardware latency.
-  // https://lists.apple.com/archives/coreaudio-api/2017/Jul/msg00035.html
+  // We must subtract the hardware latency to calculate when the sample was
+  // received by the hardware capture device.
   return (input_time_stamp->mFlags & kAudioTimeStampHostTimeValid
               ? base::TimeTicks::FromMachAbsoluteTime(
                     input_time_stamp->mHostTime)
