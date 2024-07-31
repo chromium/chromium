@@ -1551,6 +1551,20 @@
       ],
     },
   },
+  'xcode_16_main': {
+    'args': [
+      '--xcode-build-version',
+      '16a5211f',
+    ],
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'xcode_ios_16a5211f',
+          'path': 'Xcode.app',
+        },
+      ],
+    },
+  },
   'xcodebuild_sim_runner': {
     'args': [
       '--xcodebuild-sim-runner',

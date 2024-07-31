@@ -3672,7 +3672,7 @@
           'mac_default_arm64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_15_main',
+          'xcode_16_main',
           'xctest',
         ],
         'test_suites': {
@@ -3690,7 +3690,7 @@
           'mac_14_arm64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_15_main',
+          'xcode_16_main',
           'xctest',
         ],
         'test_suites': {
@@ -3730,7 +3730,7 @@
           'ioswpt-chromium-swarming-pool',
           'mac_13_x64',
           'mac_toolchain',
-          'xcode_15_main',
+          'xcode_16_main',
         ],
         'test_suites': {
           'isolated_scripts': 'wpt_tests_ios_suite',
@@ -5312,7 +5312,7 @@
           'mac_default_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_15_main',
+          'xcode_16_main',
           'xctest',
         ],
         'test_suites': {
