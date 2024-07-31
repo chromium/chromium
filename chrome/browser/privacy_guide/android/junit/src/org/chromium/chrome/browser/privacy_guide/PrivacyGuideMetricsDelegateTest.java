@@ -126,8 +126,6 @@ public class PrivacyGuideMetricsDelegateTest {
     @SmallTest
     public void testMSBB_offToOffSettingsStatesHistogram() {
         mockMSBBState(false, false);
-        // TODO(b/354677306): Replace all calls to
-        // `RecordHistogram.getHistogramValueCountForTesting` (Deprecated) with HistogramWatchers.
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF);
