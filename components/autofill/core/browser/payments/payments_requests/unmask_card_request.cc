@@ -289,7 +289,9 @@ std::string UnmaskCardRequest::GetRequestContent() {
                    request_details_.user_response.enable_fido_auth);
 
   if (request_details_.selected_challenge_option) {
+    base::Value::Dict selected_idv_method;
     base::Value::Dict challenge_option;
+    // TODO(crbug.com/356665737): fix selected challenge option for cvc and otp
     if (request_details_.selected_challenge_option->type ==
         CardUnmaskChallengeOptionType::kCvc) {
       challenge_option.Set(
@@ -325,8 +327,11 @@ std::string UnmaskCardRequest::GetRequestContent() {
                                ->vcn_3ds_metadata->url_to_open.spec());
       challenge_option.Set("redirect_completion_result",
                            request_details_.redirect_completion_result.value());
-      request_dict.Set("popup_challenge_option", std::move(challenge_option));
+      selected_idv_method.Set("popup_challenge_option",
+                              std::move(challenge_option));
     }
+    request_dict.Set("selected_idv_challenge_option",
+                     std::move(selected_idv_method));
   }
 
   bool is_cvc_auth = !request_details_.user_response.cvc.empty();
