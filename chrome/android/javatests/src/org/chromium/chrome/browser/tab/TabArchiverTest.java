@@ -154,6 +154,11 @@ public class TabArchiverTest {
                 () ->
                         assertEquals(
                                 Tab.INVALID_TAB_ID, mArchivedTabModel.getTabAt(0).getParentId()));
+        runOnUiThreadBlocking(
+                () ->
+                        assertEquals(
+                                mArchivedTabModel.getTabAt(0).getId(),
+                                mArchivedTabModel.getTabAt(0).getRootId()));
 
         runOnUiThreadBlocking(
                 () ->

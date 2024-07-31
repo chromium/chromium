@@ -134,9 +134,7 @@ public class TabArchiver implements TabWindowManager.Observer {
      */
     public Tab archiveAndRemoveTab(TabModel tabModel, Tab tab) {
         ThreadUtils.assertOnUiThread();
-        TabState tabState = TabStateExtractor.from(tab);
-        // Scrub the parent id prior to archiving to avoid ordering issues within the tab model.
-        tabState.parentId = Tab.INVALID_TAB_ID;
+        TabState tabState = prepareTabState(tab);
         Tab newTab = mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
         tabModel.closeTab(tab);
 
@@ -162,9 +160,7 @@ public class TabArchiver implements TabWindowManager.Observer {
      */
     public void unarchiveAndRestoreTab(TabCreator tabCreator, Tab tab) {
         ThreadUtils.assertOnUiThread();
-        TabState tabState = TabStateExtractor.from(tab);
-        // Scrub the parent id prior to restoration to avoid ordering issues within the tab model.
-        tabState.parentId = Tab.INVALID_TAB_ID;
+        TabState tabState = prepareTabState(tab);
         mArchivedTabModel.removeTab(tab);
         mAsyncTabParamsManager.add(tab.getId(), new TabReparentingParams(tab, null));
         tabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
@@ -237,5 +233,15 @@ public class TabArchiver implements TabWindowManager.Observer {
         if (timestampMillis == INVALID_TIMESTAMP) return (int) INVALID_TIMESTAMP;
 
         return (int) TimeUnit.MILLISECONDS.toDays(mClock.currentTimeMillis() - timestampMillis);
+    }
+
+    /** Extracts the tab state and prepares it for archive/restore. */
+    private TabState prepareTabState(Tab tab) {
+        TabState tabState = TabStateExtractor.from(tab);
+        // Strip the parent id to avoid ordering issues within the tab model.
+        tabState.parentId = Tab.INVALID_TAB_ID;
+        // Strip the root id to avoid re-using the old rootId from the tab state file.
+        tabState.rootId = Tab.INVALID_TAB_ID;
+        return tabState;
     }
 }
