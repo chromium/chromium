@@ -98,9 +98,8 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
   throttle->WillStartRequest(&request, &defer);
 
   EXPECT_FALSE(request.headers.HasHeader("X-Request-1"));
-  std::string value;
-  EXPECT_TRUE(request.headers.GetHeader("X-Request-2", &value));
-  EXPECT_EQ("Bar", value);
+  EXPECT_THAT(request.headers.GetHeader("X-Request-2"),
+              testing::Optional(std::string("Bar")));
 
   EXPECT_FALSE(defer);
 
@@ -186,8 +185,8 @@ TEST(ChromeSigninURLLoaderThrottleTest, Intercept) {
   EXPECT_FALSE(response_head->headers->HasHeader("X-Response-2"));
 
   EXPECT_THAT(request_headers_to_remove, ElementsAre("X-Request-2"));
-  EXPECT_TRUE(modified_request_headers.GetHeader("X-Request-3", &value));
-  EXPECT_EQ("Baz", value);
+  EXPECT_THAT(modified_request_headers.GetHeader("X-Request-3"),
+              testing::Optional(std::string("Baz")));
 
   EXPECT_TRUE(modified_cors_exempt_request_headers.IsEmpty());
 
