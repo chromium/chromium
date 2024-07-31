@@ -42,13 +42,17 @@ void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode);
 
 namespace internal {
 
-constexpr uint64_t kMemTagGranuleSize = 16u;
+inline constexpr uint64_t kMemTagGranuleSize = 16u;
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-constexpr uint64_t kPtrTagMask = 0xff00000000000000uLL;
+inline constexpr uint64_t kPtrTagMask = 0xff00000000000000uLL;
+inline constexpr size_t kPtrTagShift = 56;
+static_assert(kPtrTagMask == (0xffULL << kPtrTagShift),
+              "kPtrTagMask and kPtrTagShift must be consistent");
 #else
-constexpr uint64_t kPtrTagMask = 0;
+inline constexpr uint64_t kPtrTagMask = 0;
+inline constexpr size_t kPtrTagShift = 0;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-constexpr uint64_t kPtrUntagMask = ~kPtrTagMask;
+inline constexpr uint64_t kPtrUntagMask = ~kPtrTagMask;
 
 #if PA_BUILDFLAG(IS_ANDROID)
 // Changes the memory tagging mode for all threads in the current process.
@@ -93,16 +97,21 @@ PA_ALWAYS_INLINE void* TagMemoryRangeIncrement(uintptr_t address, size_t size) {
 // Randomly changes the tag of the ptr memory range. Useful for initial random
 // initialization. Returns the pointer with the new tag. Ensures that the entire
 // range is set to the same tag.
-PA_ALWAYS_INLINE void* TagMemoryRangeRandomly(uintptr_t address,
+PA_ALWAYS_INLINE void* TagMemoryRangeRandomly(void* ptr,
                                               size_t size,
                                               uint64_t mask = 0u) {
-  void* ptr = reinterpret_cast<void*>(address);
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   return reinterpret_cast<void*>(
       TagMemoryRangeRandomlyInternal(ptr, size, mask));
 #else
   return ptr;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+}
+
+PA_ALWAYS_INLINE void* TagMemoryRangeRandomly(uintptr_t address,
+                                              size_t size,
+                                              uint64_t mask = 0u) {
+  return TagMemoryRangeRandomly(reinterpret_cast<void*>(address), size, mask);
 }
 
 // Gets a version of ptr that's safe to dereference.
@@ -129,6 +138,13 @@ PA_ALWAYS_INLINE uintptr_t UntagAddr(uintptr_t address) {
   return address;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 }
+
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+template <typename T>
+inline uint8_t ExtractTagFromPtr(T* ptr) {
+  return (reinterpret_cast<uintptr_t>(ptr) >> kPtrTagShift) & 0xf;
+}
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
 }  // namespace internal
 

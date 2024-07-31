@@ -1144,6 +1144,9 @@ void PartitionRoot::Init(PartitionOptions opts) {
     PA_CHECK(!settings.memory_tagging_enabled_ ||
              !settings.use_configurable_pool);
 
+    settings.use_random_memory_tagging_ =
+        opts.memory_tagging.random_memory_tagging == PartitionOptions::kEnabled;
+
     settings.memory_tagging_reporting_mode_ =
         opts.memory_tagging.reporting_mode;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)

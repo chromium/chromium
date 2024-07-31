@@ -175,6 +175,7 @@ struct PartitionOptions {
 
   struct {
     EnableToggle enabled = kDisabled;
+    EnableToggle random_memory_tagging = kDisabled;
     TagViolationReportingMode reporting_mode =
         TagViolationReportingMode::kUndefined;
   } memory_tagging;
@@ -263,6 +264,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool scheduler_loop_quarantine = false;
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     bool memory_tagging_enabled_ = false;
+    bool use_random_memory_tagging_ = false;
     TagViolationReportingMode memory_tagging_reporting_mode_ =
         TagViolationReportingMode::kUndefined;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
@@ -594,6 +596,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   PA_ALWAYS_INLINE bool IsMemoryTaggingEnabled() const;
+  PA_ALWAYS_INLINE bool UseRandomMemoryTagging() const;
   PA_ALWAYS_INLINE TagViolationReportingMode
   memory_tagging_reporting_mode() const;
 
@@ -1416,6 +1419,14 @@ PA_ALWAYS_INLINE bool PartitionRoot::IsMemoryTaggingEnabled() const {
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 }
 
+PA_ALWAYS_INLINE bool PartitionRoot::UseRandomMemoryTagging() const {
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+  return settings.use_random_memory_tagging_;
+#else
+  return false;
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+}
+
 PA_ALWAYS_INLINE TagViolationReportingMode
 PartitionRoot::memory_tagging_reporting_mode() const {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
@@ -1497,7 +1508,15 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
       // Retag the `object` to provide MTE UaF mitigation. Doing so
       // invalidates the tag in the address of `object`, so it must
       // be refreshed.
-      object = internal::TagMemoryRangeIncrement(object, slot_size);
+      if (UseRandomMemoryTagging()) {
+        // Exclude the previous tag so that immediate use after free is detected
+        // 100% of the time.
+        uint8_t previous_tag = internal::ExtractTagFromPtr(object);
+        object = internal::TagMemoryRangeRandomly(object, slot_size,
+                                                  1 << previous_tag);
+      } else {
+        object = internal::TagMemoryRangeIncrement(object, slot_size);
+      }
     }
   }
 #else   // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
