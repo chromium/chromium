@@ -173,6 +173,28 @@ TEST_F(ModelExecutionFeaturesControllerTest,
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,
+       FeatureAllowedForSignedUserWithoutCapabilityWhenUnsignedUserAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::internal::kComposeSettingsVisibility,
+        {{"allow_unsigned_user", "true"}}},
+       {features::internal::kTabOrganizationSettingsVisibility,
+        {{"allow_unsigned_user", "true"}}}},
+      {features::internal::kComposeGraduated});
+  CreateController();
+  EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_TRUE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+
+  EnableSignInWithoutCapability();
+  EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_TRUE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
+}
+
+TEST_F(ModelExecutionFeaturesControllerTest,
        FeatureSettingDisabledWhenCapabilityDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
