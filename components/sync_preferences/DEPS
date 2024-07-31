@@ -33,5 +33,6 @@ specific_include_rules = {
     "+components/sharing_message",
     "+components/translate",
     "+components/variations",
+    "+components/sharing_message",
   ]
 }

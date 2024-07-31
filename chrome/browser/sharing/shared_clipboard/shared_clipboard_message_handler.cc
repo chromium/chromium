@@ -9,10 +9,10 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/sharing/sharing_device_source.h"
-#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "components/sharing_message/proto/shared_clipboard_message.pb.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
+#include "components/sharing_message/sharing_device_source.h"
+#include "components/sharing_message/sharing_target_device_info.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 

@@ -677,6 +677,7 @@ source_set("unit_tests") {
     "//components/reporting/storage:test_support",
     "//components/reporting/util:status",
     "//components/reporting/util:test_callbacks_support",
+    "//components/sharing_message:unit_tests",
     "//components/sharing_message/proto",
     "//components/strings:components_strings",
     "//components/ukm",

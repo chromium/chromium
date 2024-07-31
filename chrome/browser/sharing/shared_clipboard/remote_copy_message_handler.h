@@ -12,8 +12,8 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
-#include "chrome/browser/sharing/shared_clipboard/remote_copy_handle_message_result.h"
-#include "chrome/browser/sharing/sharing_message_handler.h"
+#include "components/sharing_message/shared_clipboard/remote_copy_handle_message_result.h"
+#include "components/sharing_message/sharing_message_handler.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "url/gurl.h"
 

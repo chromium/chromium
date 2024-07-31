@@ -84,6 +84,7 @@ include_rules = [
   "+components/profile_metrics",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/browser/db",
+  "+components/sharing_message",
   "+components/search",
   "+components/search_engines",
   "+components/security_interstitials/content",

@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "chrome/browser/sharing/mock_sharing_message_handler.h"
-#include "chrome/browser/sharing/sharing_device_registration.h"
+#include "components/sharing_message/mock_sharing_message_handler.h"
+#include "components/sharing_message/sharing_device_registration.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

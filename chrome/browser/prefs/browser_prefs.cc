@@ -70,7 +70,6 @@
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -98,6 +97,7 @@
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/print_preview/policy_settings.h"
 #include "components/privacy_sandbox/tpcd_pref_names.h"
+#include "components/sharing_message/sharing_sync_preference.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
