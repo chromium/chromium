@@ -58,7 +58,7 @@ Example bugs:
 * Memory corruption in an unsandboxed GPU process when it is reachable directly from web
   content without compromising the renderer.
   ([1420130](https://crbug.com/1420130), [1427865](https://crbug.com/1427865)).
-  (Note that on some platforms we consider the GPU process 'sandboxed').
+  ([on some platforms we consider the GPU process 'sandboxed'](../../docs/security/process-sandboxes-by-platform.md)).
 * Exploit chains made up of multiple bugs that can lead to code execution
   outside of the sandbox ([416449](https://crbug.com/416449)).
 * A bug that enables web content to read local files
@@ -66,7 +66,6 @@ Example bugs:
 
 Note that the individual bugs that make up the chain will have lower severity
 ratings.
-
 
 ## High severity (S1) {#TOC-High-severity}
 
@@ -104,15 +103,15 @@ such as memory corruption in the renderer process
 * Complete control over the apparent origin in the omnibox
 ([76666](https://crbug.com/76666)).
 * Memory corruption in the browser or another high privileged process (e.g. a
-  GPU or network process on a platform where they're not sandboxed),
+  GPU or network process on a [platform where they're not sandboxed](../../docs/security/process-sandboxes-by-platform.md)),
   that can only be triggered from a compromised renderer,
   leading to a sandbox escape ([1393177](https://crbug.com/1393177),
   [1421268](crbug.com/1421268)).
 * Kernel memory corruption that could be used as a sandbox escape from a
 compromised renderer ([377392](https://crbug.com/377392)).
 * Memory corruption in the browser or another high privileged process (e.g.
-  unsandboxed GPU or network process) that requires specific user interaction,
-  such as granting a permission ([455735](https://crbug.com/455735)).
+  GPU or network process on a [platform where they're not sandboxed](../../docs/security/process-sandboxes-by-platform.md))
+  that requires specific user interaction, such as granting a permission ([455735](https://crbug.com/455735)).
 * Site Isolation bypasses:
     - Cross-site execution contexts unexpectedly sharing a renderer process
       ([863069](https://crbug.com/863069), [886976](https://crbug.com/886976)).
