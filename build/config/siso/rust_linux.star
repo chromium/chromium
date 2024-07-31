@@ -221,10 +221,12 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
+            # rust/bindgen fails remotely when *.d does not exist.
+            # TODO(b/356496947): need to run scandeps?
             "name": "rust/bindgen",
             "command_prefix": "python3 ../../build/rust/run_bindgen.py",
             "inputs": rust_inputs + clang_inputs,
-            "remote": config.get(ctx, "cog"),
+            "remote": False,
             "timeout": "2m",
         },
     ])
