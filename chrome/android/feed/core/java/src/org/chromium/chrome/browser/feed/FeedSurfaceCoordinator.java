@@ -65,9 +65,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.supervised_user.SupervisedUserPreferences;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -786,9 +783,7 @@ public class FeedSurfaceCoordinator
      * Returns true if the supervised user feed should be displayed.
      */
     public boolean shouldDisplaySupervisedFeed() {
-        PrefService prefService = UserPrefs.get(mProfile);
-        return SupervisedUserPreferences.isSubjectToParentalControls(prefService)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED);
+        return mProfile.isChild();
     }
 
     /**

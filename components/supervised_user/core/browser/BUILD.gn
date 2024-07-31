@@ -136,10 +136,6 @@ static_library("browser") {
     "//ui/base",
     "//url",
   ]
-
-  if (is_android) {
-    deps += [ "//components/supervised_user/android:supervised_user_preferences_jni_headers" ]
-  }
 }
 
 if (is_android) {
