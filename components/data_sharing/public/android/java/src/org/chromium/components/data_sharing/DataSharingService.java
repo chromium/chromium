@@ -65,7 +65,7 @@ public interface DataSharingService {
         /** Result of the action */
         public final @ParseURLStatus int status;
 
-        ParseURLResult(GroupToken groupToken, int status) {
+        public ParseURLResult(GroupToken groupToken, int status) {
             this.groupToken = groupToken;
             this.status = status;
         }

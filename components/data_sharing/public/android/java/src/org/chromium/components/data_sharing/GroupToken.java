@@ -13,7 +13,13 @@ public class GroupToken {
     public final String groupId;
     public final String accessToken;
 
-    GroupToken(String groupId, String accessToken) {
+    /**
+     * Constructor for a {@link GroupToken} object.
+     *
+     * @param groupId The ID associated with the group.
+     * @param accessToken The access token associated with the group.
+     */
+    public GroupToken(String groupId, String accessToken) {
         this.groupId = groupId;
         this.accessToken = accessToken;
     }
