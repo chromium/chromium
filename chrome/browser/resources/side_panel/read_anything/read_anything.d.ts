@@ -276,10 +276,6 @@ declare namespace chrome {
     // Redraws images when the enabled state changes.
     function updateImages(): void;
 
-    // Updates an images src attribute with a data url. The data url must have
-    // been requested first.
-    function updateImage(nodeId: number): void;
-
     // Ping that the selection has been updated.
     function updateSelection(): void;
 
@@ -347,9 +343,19 @@ declare namespace chrome {
     function getAccessibleBoundary(text: string, maxSpeechLength: number):
         number;
 
-    // Requests the image in the form of a data url. The result will then be
-    // stored in the AXNode which can be fetched on content update.
-    function requestImageDataUrl(nodeId: number): void;
+    // Requests the image in the form of bitmap. onImageDownloaded will be
+    // called when the image has been downloaded.
+    function requestImageData(nodeId: number): void;
+
+    // Called to inform the web ui that an image has been downloaded for the
+    // given node id.
+    function onImageDownloaded(nodeId: number): void;
+
+    // Should be called in onImageDownloaded. This function gets the bitmap data
+    // as a byte array along with the height and width of the image so that the
+    // bitmap can be rendered to a canvas.
+    function getImageBitmap(nodeId: number):
+        {data: Uint8ClampedArray, width: number, height: number};
 
     // Gets the stored image data url from the AXNode.
     function getImageDataUrl(nodeId: number): string;

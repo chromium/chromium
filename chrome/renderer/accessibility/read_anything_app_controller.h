@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_node_position.h"
@@ -113,6 +114,9 @@ class ReadAnythingAppController
                                ukm::SourceId ukm_source_id,
                                bool is_pdf) override;
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
+  void OnImageDataDownloaded(const ui::AXTreeID& tree_id,
+                             ui::AXNodeID node_id,
+                             const SkBitmap& image) override;
   void OnSettingsRestoredFromPrefs(
       read_anything::mojom::LineSpacing line_spacing,
       read_anything::mojom::LetterSpacing letter_spacing,
@@ -222,6 +226,7 @@ class ReadAnythingAppController
   std::vector<std::string> GetSupportedFonts();
   void RequestImageDataUrl(ui::AXNodeID node_id) const;
   std::string GetImageDataUrl(ui::AXNodeID node_id) const;
+  v8::Local<v8::Value> GetImageBitmap(ui::AXNodeID node_id);
   void OnSpeechPlayingStateChanged(bool is_speech_active);
   std::string GetValidatedFontName(const std::string& font) const;
   std::vector<std::string> GetAllFonts();
@@ -358,6 +363,8 @@ class ReadAnythingAppController
   mojo::Remote<read_anything::mojom::UntrustedPageHandler> page_handler_;
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
 
+  std::map<ui::AXNodeID, SkBitmap> downloaded_images_;
+
   // Model that holds Read Aloud state for this controller.
   ReadAloudAppModel read_aloud_model_;
 
@@ -369,7 +376,6 @@ class ReadAnythingAppController
   ReadAnythingAppModel model_;
 
   // For metrics logging
-
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
 
   // The time when the renderer constructor is first triggered.

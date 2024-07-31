@@ -7,6 +7,7 @@
 module read_anything.mojom;
 
 import "skia/public/mojom/skcolor.mojom";
+import "skia/public/mojom/bitmap.mojom";
 import "ui/accessibility/mojom/ax_event.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
@@ -235,4 +236,10 @@ interface UntrustedPage {
 
   // Notifies the WebUI that the ScreenAI service is ready on this device.
   ScreenAIServiceReady();
+
+  // Notifies the WebUI that an image has been downloaded for a given node.
+  OnImageDataDownloaded(ax.mojom.AXTreeID tree_id,
+    int32 node_id,
+    skia.mojom.BitmapN32 image
+  );
 };

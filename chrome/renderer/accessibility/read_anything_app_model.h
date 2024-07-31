@@ -94,13 +94,6 @@ class ReadAnythingAppModel {
 
   bool redraw_required() const { return redraw_required_; }
   void reset_redraw_required() { redraw_required_ = false; }
-
-  const ui::AXNodeID& image_to_update_node_id() const {
-    return image_to_update_node_id_;
-  }
-  void reset_image_to_update_node_id() {
-    image_to_update_node_id_ = ui::kInvalidAXNodeID;
-  }
   bool selection_from_action() const { return selection_from_action_; }
   void set_selection_from_action(bool value) { selection_from_action_ = value; }
 
@@ -344,7 +337,6 @@ class ReadAnythingAppModel {
   bool requires_distillation_ = false;
   bool reset_draw_timer_ = false;
   bool requires_post_process_selection_ = false;
-  ui::AXNodeID image_to_update_node_id_ = ui::kInvalidAXNodeID;
   bool selection_from_action_ = false;
 
   // For screen2x data collection, Chrome is launched from the CLI to open one

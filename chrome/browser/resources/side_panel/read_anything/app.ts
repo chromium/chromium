@@ -138,12 +138,6 @@ export interface ReadAnythingElement {
   };
 }
 
-interface PendingImageRequest {
-  resolver: (dataUrl: string) => void;
-  cancel: () => void;
-  nodeId: number;
-}
-
 function isInvalidHighlightForWordHighlighting(textToHighlight: string|
                                                undefined): boolean {
   // If a highlight is just white space or punctuation, we can skip
@@ -198,7 +192,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // index down the pipeline, so we store that info here.
   private highlightedNodeToOffsetInParent: Map<Node, number> = new Map();
   private imageNodeIdsToFetch_: Set<number> = new Set();
-  private pendingImageRequest_?: PendingImageRequest;
 
   private scrollingOnSelection_: boolean;
   private hasContent_: boolean;
@@ -427,8 +420,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.updateImages();
     };
 
-    chrome.readingMode.updateImage = (nodeId) => {
-      this.updateImage(nodeId);
+    chrome.readingMode.onImageDownloaded = (nodeId) => {
+      this.onImageDownloaded(nodeId);
     };
 
     chrome.readingMode.updateSelection = () => {
@@ -539,6 +532,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       htmlTag = 'div';
     }
 
+    // Images will be written to a canvas.
+    if (htmlTag === 'img') {
+      htmlTag = 'canvas';
+    }
+
     const url = chrome.readingMode.getUrl(nodeId);
 
     if (!this.shouldShowLinks() && htmlTag === 'a') {
@@ -557,14 +555,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       element.setAttribute('dir', direction);
     }
 
-    if (element.nodeName === 'IMG') {
-      const dataUrl = chrome.readingMode.getImageDataUrl(nodeId);
-      if (!dataUrl) {
-        this.imageNodeIdsToFetch_.add(nodeId);
-      }
-      element.setAttribute('src', dataUrl);
+    if (element.nodeName === 'CANVAS') {
+      this.imageNodeIdsToFetch_.add(nodeId);
       const altText = chrome.readingMode.getAltText(nodeId);
       element.setAttribute('alt', altText);
+      element.classList.add('downloaded-image');
     }
 
     if (url && element.nodeName === 'A') {
@@ -704,11 +699,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.logger_.logNewPage(/*speechPlayed=*/ false);
     }
 
-    if (chrome.readingMode.imagesFeatureEnabled) {
-      // Always load images even if they are disabled to ensure a fast response
-      // when toggling.
-      this.loadImages_();
-    }
+    // Always load images even if they are disabled to ensure a fast response
+    // when toggling.
+    this.loadImages_();
 
     container.scrollTop = 0;
     this.hasContent_ = true;
@@ -716,11 +709,21 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.updateImages();
   }
 
-  updateImage(nodeId: number) {
-    const dataurl = chrome.readingMode.getImageDataUrl(nodeId);
-    if (this.pendingImageRequest_ &&
-        this.pendingImageRequest_.nodeId === nodeId) {
-      this.pendingImageRequest_.resolver(dataurl);
+  async onImageDownloaded(nodeId: number) {
+    const data = chrome.readingMode.getImageBitmap(nodeId);
+    const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
+    if (data && element && element instanceof HTMLCanvasElement) {
+      element.width = data.width;
+      element.height = data.height;
+      const context = element.getContext('2d');
+      // Context should not be null unless another was already requested.
+      assert(context);
+      const imgData = new ImageData(data.data, data.width);
+      const bitmap = await createImageBitmap(imgData, {
+        colorSpaceConversion: 'none',
+        premultiplyAlpha: 'premultiply',
+      });
+      context.drawImage(bitmap, 0, 0);
     }
   }
 
@@ -734,32 +737,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private async loadImages_() {
-    // Content was updated while a request was still pending.
-    if (this.pendingImageRequest_) {
-      this.pendingImageRequest_.cancel();
+    if (!chrome.readingMode.imagesFeatureEnabled) {
+      return;
     }
 
     for (const nodeId of this.imageNodeIdsToFetch_) {
-      // Create a promise that will be resolved on image updated.
-      try {
-        const dataUrl = await new Promise<string>((resolve, reject) => {
-          this.pendingImageRequest_ = {
-            resolver: resolve,
-            cancel: reject,
-            nodeId: nodeId,
-          };
-          chrome.readingMode.requestImageDataUrl(nodeId);
-        });
-        const node = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
-        if (node instanceof HTMLImageElement) {
-          node.src = dataUrl;
-        }
-      } catch {
-        // This catch will be called if cancel is called on the image request.
-        this.pendingImageRequest_ = undefined;
-        break;
-      }
+      chrome.readingMode.requestImageData(nodeId);
     }
+
     this.imageNodeIdsToFetch_.clear();
   }
 
@@ -873,6 +858,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   updateImages() {
     this.imagesEnabled = chrome.readingMode.imagesEnabled;
+    // There is some strange issue where the HTML css application does not work
+    // on canvases.
+    for (const canvas of document.querySelectorAll('canvas')) {
+      canvas.style.display = chrome.readingMode.imagesEnabled ? '' : 'none';
+    }
   }
 
   updateVoicePackStatusFromInstallResponse(lang: string, status: string) {
