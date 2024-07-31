@@ -79,7 +79,7 @@ bool ShouldSkipLinkClipboardInsertion(const GURL& url_of_target) {
 // into these text fields will result in a _plain text_ "Example", without a
 // link. As a result, we only insert link titles on a set of allowlisted
 // websites. If this returns false, we insert
-//     <a href="https://example.com">https://example.com</a>
+//     <a title="Example" href="https://example.com">https://example.com</a>
 // instead, which, if the `<a>` element is stripped, still inserts the link
 // "https://example.com".
 //

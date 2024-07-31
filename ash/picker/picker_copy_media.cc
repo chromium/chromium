@@ -41,12 +41,17 @@ std::unique_ptr<ui::ClipboardData> ClipboardDataFromMedia(
                  [&data, &options](const PickerLinkMedia& media) {
                    std::string escaped_spec =
                        base::EscapeForHTML(media.url.spec());
-                   std::string title = options.links_should_use_title
-                                           ? media.title
-                                           : escaped_spec;
+                   std::string escaped_title = base::EscapeForHTML(media.title);
                    data->set_text(media.url.spec());
-                   data->set_markup_data(base::StrCat(
-                       {"<a href=\"", escaped_spec, "\">", title, "</a>"}));
+                   if (options.links_should_use_title) {
+                     data->set_markup_data(
+                         base::StrCat({"<a href=\"", escaped_spec, "\">",
+                                       escaped_title, "</a>"}));
+                   } else {
+                     data->set_markup_data(base::StrCat(
+                         {"<a title=\"", escaped_title, "\" href=\"",
+                          escaped_spec, "\">", escaped_spec, "</a>"}));
+                   }
                  },
                  [&data](const PickerLocalFileMedia& media) {
                    data->set_filenames(
