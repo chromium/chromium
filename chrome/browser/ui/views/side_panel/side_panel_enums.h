@@ -48,4 +48,12 @@ enum class SidePanelContentState {
   kHideImmediately = 3,
 };
 
+enum class SidePanelEntryHideReason {
+  // Side panel entry was hidden because the side panel was closed.
+  kSidePanelClosed = 0,
+  // Side panel entry was hidden because another entry was loaded into the
+  // side panel.
+  kReplaced = 1,
+};
+
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENUMS_H_

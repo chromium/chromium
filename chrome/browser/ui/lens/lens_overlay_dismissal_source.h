@@ -69,7 +69,11 @@ enum class LensOverlayDismissalSource {
   // The user clicked exit on the preselection toast.
   kPreselectionToastExitButton = 16,
 
-  kMaxValue = kPreselectionToastExitButton
+  // The user opened a new side panel entry that replaced the
+  // Lens overlay.
+  kSidePanelEntryReplaced = 17,
+
+  kMaxValue = kSidePanelEntryReplaced
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
 

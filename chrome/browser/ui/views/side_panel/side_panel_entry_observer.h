@@ -8,6 +8,7 @@
 #include "base/observer_list_types.h"
 
 class SidePanelEntry;
+enum class SidePanelEntryHideReason;
 
 class SidePanelEntryObserver : public base::CheckedObserver {
  public:
@@ -16,7 +17,8 @@ class SidePanelEntryObserver : public base::CheckedObserver {
 
   // Called when a SidePanelEntry is preparing to hide, before any
   // close animations have started.
-  virtual void OnEntryWillHide(SidePanelEntry* entry) {}
+  virtual void OnEntryWillHide(SidePanelEntry* entry,
+                               SidePanelEntryHideReason reason) {}
 
   // Called when a SidePanelEntry is hidden.
   virtual void OnEntryHidden(SidePanelEntry* entry) {}
