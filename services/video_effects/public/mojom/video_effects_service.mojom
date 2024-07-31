@@ -8,6 +8,7 @@ import "media/capture/mojom/video_effects_manager.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/video_effects/public/mojom/video_effects_processor.mojom";
 import "services/viz/public/mojom/gpu.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 
 // Entry point to the Video Effects Service API.
 // This interface is intended to be hosted in the Video Effects utility
@@ -32,4 +33,8 @@ interface VideoEffectsService {
     pending_remote<viz.mojom.Gpu> gpu,
     pending_remote<media.mojom.VideoEffectsManager> manager,
     pending_receiver<VideoEffectsProcessor> processor);
+
+  // Passes a file containing the background segmentation model to be used by
+  // all Video Effects Processors created by this service.
+  SetBackgroundSegmentationModel(mojo_base.mojom.ReadOnlyFile model_file);
 };

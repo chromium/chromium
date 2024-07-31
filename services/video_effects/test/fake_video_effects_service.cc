@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
@@ -38,9 +39,24 @@ std::unique_ptr<base::test::TestFuture<void>>
 FakeVideoEffectsService::GetEffectsProcessorCreationFuture() {
   CHECK(!effects_processor_creation_cb_);
 
-  std::unique_ptr<base::test::TestFuture<void>> result =
-      std::make_unique<base::test::TestFuture<void>>();
+  auto result = std::make_unique<base::test::TestFuture<void>>();
   effects_processor_creation_cb_ = result->GetCallback();
+  return result;
+}
+
+void FakeVideoEffectsService::SetBackgroundSegmentationModel(
+    base::File model_file) {
+  if (background_segmentation_model_set_cb_) {
+    std::move(background_segmentation_model_set_cb_).Run(std::move(model_file));
+  }
+}
+
+std::unique_ptr<base::test::TestFuture<base::File>>
+FakeVideoEffectsService::GetBackgroundSegmentationModelFuture() {
+  CHECK(!background_segmentation_model_set_cb_);
+
+  auto result = std::make_unique<base::test::TestFuture<base::File>>();
+  background_segmentation_model_set_cb_ = result->GetCallback();
   return result;
 }
 

@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_
 #define COMPONENTS_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_
 
+#include <memory>
+
 #include "base/auto_reset.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/media_effects/media_effects_model_provider.h"
 #include "components/media_effects/video_effects_manager_impl.h"
 #include "components/viz/host/gpu_client.h"
 #include "content/public/browser/browser_context.h"
@@ -20,9 +24,13 @@
 SetVideoEffectsServiceRemoteForTesting(
     mojo::Remote<video_effects::mojom::VideoEffectsService>* service_override);
 
-class MediaEffectsService : public KeyedService {
+class MediaEffectsService : public KeyedService,
+                            public MediaEffectsModelProvider::Observer {
  public:
-  explicit MediaEffectsService(PrefService* prefs);
+  // `model_provider` may be null in case the video effects are not enabled.
+  explicit MediaEffectsService(
+      PrefService* prefs,
+      std::unique_ptr<MediaEffectsModelProvider> model_provider);
 
   MediaEffectsService(const MediaEffectsService&) = delete;
   MediaEffectsService& operator=(const MediaEffectsService&) = delete;
@@ -78,19 +86,38 @@ class MediaEffectsService : public KeyedService {
       mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
           effects_processor_receiver);
 
+  // MediaEffectsModelProvider::Observer:
+  void OnBackgroundSegmentationModelUpdated(
+      const base::FilePath& path) override;
+
  private:
   VideoEffectsManagerImpl& GetOrCreateVideoEffectsManager(
       const std::string& device_id);
 
   void OnLastReceiverDisconnected(const std::string& device_id);
 
+  // Invoked when the background segmentation model file has been opened.
+  void OnBackgroundSegmentationModelOpened(base::File model_file);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   raw_ptr<PrefService> prefs_;
+
+  // May be null if the video effects are not enabled:
+  std::unique_ptr<MediaEffectsModelProvider> model_provider_;
+
+  // The model file that was most recently opened. The file may be invalid
+  // (`.IsValid() == false`) if we have not opened any model file yet.
+  base::File latest_segmentation_model_file_;
 
   // Device ID strings mapped to effects manager instances.
   base::flat_map<std::string, std::unique_ptr<VideoEffectsManagerImpl>>
       video_effects_managers_;
 
   std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> gpu_client_;
+
+  // Must be last:
+  base::WeakPtrFactory<MediaEffectsService> weak_factory_{this};
 };
 
 #endif  // COMPONENTS_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_

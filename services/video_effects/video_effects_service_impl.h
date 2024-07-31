@@ -47,6 +47,8 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
       mojo::PendingRemote<media::mojom::VideoEffectsManager> manager,
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor) override;
 
+  void SetBackgroundSegmentationModel(base::File model_file) override;
+
  private:
   // Helper - used to clean up instances of `VideoEffectsProcessor`s that are
   // no longer functional.
