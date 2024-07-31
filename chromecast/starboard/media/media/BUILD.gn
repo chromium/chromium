@@ -108,6 +108,7 @@ test("media_pipeline_backend_starboard_test") {
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//chromecast/public",
+    "//chromecast/public/media",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -57,7 +57,7 @@ VideoPlane* CastMediaShlib::GetVideoPlane() {
 MediaPipelineBackend* CastMediaShlib::CreateMediaPipelineBackend(
     const MediaPipelineDeviceParams& params) {
   CHECK(g_video_plane);
-  return new MediaPipelineBackendStarboard(g_video_plane);
+  return new MediaPipelineBackendStarboard(params, g_video_plane);
 }
 
 double CastMediaShlib::GetMediaClockRate() {
