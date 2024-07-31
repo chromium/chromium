@@ -38,7 +38,6 @@ source_set("test_support") {
     "//components/policy/proto",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//testing/gmock",
     "//third_party/abseil-cpp:absl",
   ]

@@ -44,7 +44,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "components/guest_view/browser/guest_view_base.h"  // nogncheck
+#include "components/guest_view/browser/guest_view_base.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #endif

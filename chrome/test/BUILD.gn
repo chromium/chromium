@@ -633,7 +633,6 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/themes",
-      "//chrome/browser/web_applications:web_applications_test_support",
       "//components/constrained_window",
       "//components/performance_manager",
       "//components/performance_manager/test_support:test_support_common",
@@ -1904,7 +1903,6 @@ if (!is_android) {
       "//components/constrained_window",
       "//components/content_settings/browser",
       "//components/content_settings/common:mojom",
-      "//components/content_settings/core/test:test_support",
       "//components/cookie_config",
       "//components/country_codes",
       "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
@@ -1920,7 +1918,6 @@ if (!is_android) {
       "//components/enterprise:test_support",
       "//components/enterprise/browser/identifiers:identifiers",
       "//components/enterprise/common/proto:connectors_proto",
-      "//components/enterprise/connectors:connectors",
       "//components/error_page/content/browser",
       "//components/favicon/content",
       "//components/favicon/core",
@@ -2065,11 +2062,8 @@ if (!is_android) {
       "//components/tpcd/metadata/browser:test_support",
       "//components/tpcd/metadata/common/proto",
       "//components/variations/service",
-      "//components/web_package:web_package",
 
       # TODO(b/287255120) : Also add this as a dependency on Android for building test code.
-      "//components/guest_view/browser:browser",
-      "//components/guest_view/browser:test_support",
       "//components/optimization_guide/core:test_support",
       "//components/segmentation_platform/public:test_support",
       "//components/services/app_service",
@@ -8324,7 +8318,6 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
       "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/browser/web_applications:web_applications_unit_tests",
       "//chrome/browser/webauthn:test_support",
       "//chrome/browser/webauthn/proto",
       "//chrome/common/accessibility:mojo_bindings",
@@ -8366,7 +8359,6 @@ test("unit_tests") {
       "//components/services/app_service/public/cpp:test_support",
       "//components/services/app_service/public/cpp:unit_tests",
       "//components/session_proto_db:session_proto_db",
-      "//components/signin/core/browser:browser",
       "//components/signin/public/base:signin_buildflags",
       "//components/soda:constants",
       "//components/supervised_user/core/browser",
@@ -8377,7 +8369,6 @@ test("unit_tests") {
       "//components/user_notes/browser",
       "//components/user_notes/interfaces",
       "//components/webapps/browser",
-      "//google_apis/common:test_support",
       "//services/device/public/cpp/bluetooth",
       "//services/metrics/public/cpp:ukm_builders",
       "//services/network:test_support",
@@ -10378,11 +10369,7 @@ test("unit_tests") {
       "../browser/enterprise/data_protection/data_protection_clipboard_utils_unittest.cc",
       "../browser/enterprise/data_protection/paste_allowed_request_unittest.cc",
     ]
-    deps += [
-      "../browser/enterprise/data_controls:unit_tests",
-      "//components/enterprise/data_controls/core/browser:features",
-      "//components/enterprise/data_controls/core/browser:test_support",
-    ]
+    deps += [ "../browser/enterprise/data_controls:unit_tests" ]
   }
 
   if (enterprise_watermark) {
@@ -10393,8 +10380,6 @@ test("unit_tests") {
     ]
     deps += [
       "//chrome/browser/enterprise/watermark:watermark_view_lib",
-      "//components/enterprise/data_controls/core/browser:features",
-      "//components/enterprise/data_controls/core/browser:test_support",
       "//components/safe_browsing/core/browser/realtime:test_support",
       "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     ]

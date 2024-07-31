@@ -16,7 +16,7 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "components/guest_view/browser/guest_view_base.h"  // nogncheck
+#include "components/guest_view/browser/guest_view_base.h"
 #endif
 
 namespace {

@@ -65,7 +65,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "components/guest_view/browser/guest_view_manager.h"  // nogncheck
+#include "components/guest_view/browser/guest_view_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)

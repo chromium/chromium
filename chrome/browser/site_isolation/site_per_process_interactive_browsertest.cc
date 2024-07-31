@@ -58,9 +58,9 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
-#include "components/guest_view/browser/guest_view_base.h"  // nogncheck
-#include "components/guest_view/browser/guest_view_manager_delegate.h"  // nogncheck
-#include "components/guest_view/browser/test_guest_view_manager.h"  // nogncheck
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_manager_delegate.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "pdf/pdf_features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

@@ -32,7 +32,6 @@ source_set("app_icon") {
     "//components/keyed_service/content",
     "//components/services/app_service",
     "//components/webapps/common",
-    "//services/data_decoder/public/cpp",
   ]
 
   if (enable_extensions) {

@@ -115,7 +115,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
-#include "components/guest_view/browser/guest_view_manager.h"  // nogncheck
+#include "components/guest_view/browser/guest_view_manager.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
