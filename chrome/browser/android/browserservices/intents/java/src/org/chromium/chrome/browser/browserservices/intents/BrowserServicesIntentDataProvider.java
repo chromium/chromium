@@ -355,8 +355,15 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return Whether the Activity uses an off-the-record profile.
      */
     public boolean isOffTheRecord() {
-        return getCustomTabMode() == CustomTabProfileType.EPHEMERAL
-                || getCustomTabMode() == CustomTabProfileType.INCOGNITO;
+        switch (getCustomTabMode()) {
+            case CustomTabProfileType.EPHEMERAL:
+            case CustomTabProfileType.INCOGNITO:
+                return true;
+            case CustomTabProfileType.REGULAR:
+                return false;
+        }
+        assert false; // NOTREACHED
+        return false;
     }
 
     /**
