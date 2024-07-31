@@ -295,10 +295,8 @@ TEST_F(SignedExchangeCertFetcherTest, Simple) {
   EXPECT_EQ(mock_loader_factory_.url_request()->credentials_mode,
             network::mojom::CredentialsMode::kOmit);
   EXPECT_TRUE(mock_loader_factory_.url_request()->request_initiator->opaque());
-  std::string accept;
-  EXPECT_TRUE(
-      mock_loader_factory_.url_request()->headers.GetHeader("Accept", &accept));
-  EXPECT_EQ("application/cert-chain+cbor", accept);
+  EXPECT_THAT(mock_loader_factory_.url_request()->headers.GetHeader("Accept"),
+              testing::Optional(std::string("application/cert-chain+cbor")));
 
   CallOnReceiveResponse(CreateTestDataFilledDataPipe());
   mock_loader_factory_.client_remote()->OnComplete(
