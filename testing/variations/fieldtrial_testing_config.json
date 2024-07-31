@@ -22014,7 +22014,7 @@
             ]
         }
     ],
-    "SuppressesLoadingPredictorOnSlowNetwork": [
+    "SuppressesNetworkActivitiesOnSlowNetwork": [
         {
             "platforms": [
                 "android",
@@ -22026,57 +22026,15 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "SuppressesAll",
                     "params": {
-                        "slow_network_threshold": "208ms"
-                    },
-                    "enable_features": [
-                        "SuppressesLoadingPredictorOnSlowNetwork"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SuppressesPrerenderingOnSlowNetwork": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "slow_network_threshold_for_prerendering": "208ms"
-                    },
-                    "enable_features": [
-                        "SuppressesPrerenderingOnSlowNetwork"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SuppressesSearchPrefetchOnSlowNetwork": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
+                        "slow_network_threshold": "208ms",
+                        "slow_network_threshold_for_prerendering": "208ms",
                         "slow_network_threshold_for_search_prefetch": "208ms"
                     },
                     "enable_features": [
+                        "SuppressesLoadingPredictorOnSlowNetwork",
+                        "SuppressesPrerenderingOnSlowNetwork",
                         "SuppressesSearchPrefetchOnSlowNetwork"
                     ]
                 }
