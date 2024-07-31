@@ -104,7 +104,8 @@ class FrameNodeImpl
   bool HadUserEdits() const override;
   bool IsAudible() const override;
   bool IsCapturingMediaStream() const override;
-  std::optional<bool> IntersectsViewport() const override;
+  std::optional<ViewportIntersectionState> GetViewportIntersectionState()
+      const override;
   Visibility GetVisibility() const override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
   uint64_t GetResidentSetKbEstimate() const override;
@@ -131,7 +132,8 @@ class FrameNodeImpl
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
   void SetIsCapturingMediaStream(bool is_capturing_media_stream);
-  void SetIntersectsViewport(bool intersects_viewport);
+  void SetViewportIntersectionState(
+      ViewportIntersectionState viewport_intersection_state);
   void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
   void SetResidentSetKbEstimate(uint64_t rss_estimate);
@@ -354,16 +356,16 @@ class FrameNodeImpl
       &FrameNodeObserver::OnIsCapturingMediaStreamChanged>
       is_capturing_media_stream_{false};
 
-  // Indicates if the frame intersects with the viewport.
+  // Indicates the intersection between the frame and the viewport.
   //
   // Note that this property is always invalid for a main frame. This is because
   // the main frame always occupies the entirety of the viewport so there is no
   // point in tracking it. To avoid programming mistakes, it is forbidden to
   // query this property for the main frame.
   ObservedProperty::NotifiesOnlyOnChanges<
-      std::optional<bool>,
-      &FrameNodeObserver::OnIntersectsViewportChanged>
-      intersects_viewport_;
+      std::optional<ViewportIntersectionState>,
+      &FrameNodeObserver::OnViewportIntersectionStateChanged>
+      viewport_intersection_state_;
 
   // Indicates if the frame is visible. This is maintained by the
   // FrameVisibilityDecorator.

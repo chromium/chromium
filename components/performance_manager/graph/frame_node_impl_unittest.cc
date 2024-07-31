@@ -158,7 +158,7 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
   MOCK_METHOD1(OnHadUserEditsChanged, void(const FrameNode*));
   MOCK_METHOD1(OnIsAudibleChanged, void(const FrameNode*));
   MOCK_METHOD1(OnIsCapturingMediaStreamChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnIntersectsViewportChanged, void(const FrameNode*));
+  MOCK_METHOD1(OnViewportIntersectionStateChanged, void(const FrameNode*));
   MOCK_METHOD2(OnFrameVisibilityChanged,
                void(const FrameNode*, FrameNode::Visibility));
   MOCK_METHOD1(OnNonPersistentNotificationCreated, void(const FrameNode*));
@@ -541,7 +541,7 @@ TEST_F(FrameNodeImplTest, IsCapturingMediaStream) {
   graph()->RemoveFrameNodeObserver(&obs);
 }
 
-TEST_F(FrameNodeImplTest, IntersectsViewport) {
+TEST_F(FrameNodeImplTest, ViewportIntersectionState) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   // A child frame node is used because the intersection with the viewport of a
@@ -554,15 +554,19 @@ TEST_F(FrameNodeImplTest, IntersectsViewport) {
   graph()->AddFrameNodeObserver(&obs);
 
   // Initially unknown.
-  EXPECT_FALSE(child_frame_node->IntersectsViewport().has_value());
+  EXPECT_FALSE(child_frame_node->GetViewportIntersectionState().has_value());
 
-  EXPECT_CALL(obs, OnIntersectsViewportChanged(child_frame_node.get()));
-  child_frame_node->SetIntersectsViewport(true);
-  EXPECT_TRUE(child_frame_node->IntersectsViewport().value());
+  EXPECT_CALL(obs, OnViewportIntersectionStateChanged(child_frame_node.get()));
+  child_frame_node->SetViewportIntersectionState(
+      ViewportIntersectionState::kNotIntersecting);
+  EXPECT_EQ(child_frame_node->GetViewportIntersectionState().value(),
+            ViewportIntersectionState::kNotIntersecting);
 
-  EXPECT_CALL(obs, OnIntersectsViewportChanged(child_frame_node.get()));
-  child_frame_node->SetIntersectsViewport(false);
-  EXPECT_FALSE(child_frame_node->IntersectsViewport().value());
+  EXPECT_CALL(obs, OnViewportIntersectionStateChanged(child_frame_node.get()));
+  child_frame_node->SetViewportIntersectionState(
+      ViewportIntersectionState::kIntersecting);
+  EXPECT_EQ(child_frame_node->GetViewportIntersectionState().value(),
+            ViewportIntersectionState::kIntersecting);
 
   graph()->RemoveFrameNodeObserver(&obs);
 }

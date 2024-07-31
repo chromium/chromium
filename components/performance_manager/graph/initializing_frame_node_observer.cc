@@ -149,10 +149,10 @@ void InitializingFrameNodeObserverManager::OnIsCapturingMediaStreamChanged(
   }
 }
 
-void InitializingFrameNodeObserverManager::OnIntersectsViewportChanged(
+void InitializingFrameNodeObserverManager::OnViewportIntersectionStateChanged(
     const FrameNode* frame_node) {
   for (InitializingFrameNodeObserver& observer : observer_list_) {
-    observer.OnIntersectsViewportChanged(frame_node);
+    observer.OnViewportIntersectionStateChanged(frame_node);
   }
 }
 

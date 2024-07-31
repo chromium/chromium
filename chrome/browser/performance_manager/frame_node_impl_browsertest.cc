@@ -38,8 +38,8 @@ DerivedType* PassToPMGraph(std::unique_ptr<DerivedType> graph_owned) {
 }
 
 // A FrameNodeObserver that allows waiting until a frame's viewport intersection
-// is initialized to a set value.
-class IntersectsViewportChangedObserver
+// state is initialized to a set value.
+class ViewportIntersectionStateChangedObserver
     : public GraphOwned,
       public FrameNode::ObserverDefaultImpl {
  public:
@@ -50,18 +50,18 @@ class IntersectsViewportChangedObserver
   // viewport intersection can happen before the document URL is known.
   using FrameNodeMatcher = base::RepeatingCallback<bool(const FrameNode*)>;
 
-  IntersectsViewportChangedObserver(FrameNodeMatcher frame_node_matcher,
-                                    bool expected_intersects_viewport,
-                                    base::OnceClosure quit_closure)
+  ViewportIntersectionStateChangedObserver(FrameNodeMatcher frame_node_matcher,
+                                           bool expected_intersects_viewport,
+                                           base::OnceClosure quit_closure)
       : frame_node_matcher_(std::move(frame_node_matcher)),
         expected_intersects_viewport_(expected_intersects_viewport),
         quit_closure_(std::move(quit_closure)) {}
-  ~IntersectsViewportChangedObserver() override = default;
+  ~ViewportIntersectionStateChangedObserver() override = default;
 
-  IntersectsViewportChangedObserver(const IntersectsViewportChangedObserver&) =
-      delete;
-  IntersectsViewportChangedObserver& operator=(
-      const IntersectsViewportChangedObserver&) = delete;
+  ViewportIntersectionStateChangedObserver(
+      const ViewportIntersectionStateChangedObserver&) = delete;
+  ViewportIntersectionStateChangedObserver& operator=(
+      const ViewportIntersectionStateChangedObserver&) = delete;
 
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override {
@@ -72,12 +72,16 @@ class IntersectsViewportChangedObserver
   }
 
   // FrameNodeObserver:
-  void OnIntersectsViewportChanged(const FrameNode* frame_node) override {
+  void OnViewportIntersectionStateChanged(
+      const FrameNode* frame_node) override {
     if (!frame_node_matcher_.Run(frame_node))
       return;
 
-    EXPECT_EQ(frame_node->IntersectsViewport().value(),
-              expected_intersects_viewport_);
+    const ViewportIntersectionState new_state =
+        frame_node->GetViewportIntersectionState().value();
+    const bool is_intersecting =
+        new_state == ViewportIntersectionState::kIntersecting;
+    EXPECT_EQ(expected_intersects_viewport_, is_intersecting);
     std::move(quit_closure_).Run();
   }
 
@@ -90,7 +94,7 @@ class IntersectsViewportChangedObserver
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
-                       DISABLED_ViewportIntersection_OutOfView) {
+                       ViewportIntersection_OutOfView) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -108,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   base::RunLoop run_loop;
   PerformanceManagerImpl::PassToGraph(
       FROM_HERE,
-      std::make_unique<IntersectsViewportChangedObserver>(
+      std::make_unique<ViewportIntersectionStateChangedObserver>(
           std::move(frame_node_matcher), false, run_loop.QuitClosure()));
 
   // Navigate.
@@ -121,8 +125,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
-                       DISABLED_ViewportIntersection_Hidden) {
+IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Hidden) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -140,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   base::RunLoop run_loop;
   PerformanceManagerImpl::PassToGraph(
       FROM_HERE,
-      std::make_unique<IntersectsViewportChangedObserver>(
+      std::make_unique<ViewportIntersectionStateChangedObserver>(
           std::move(frame_node_matcher), false, run_loop.QuitClosure()));
 
   // Navigate.
@@ -154,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
-                       DISABLED_ViewportIntersection_PartiallyVisible) {
+                       ViewportIntersection_PartiallyVisible) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -172,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   base::RunLoop run_loop;
   PerformanceManagerImpl::PassToGraph(
       FROM_HERE,
-      std::make_unique<IntersectsViewportChangedObserver>(
+      std::make_unique<ViewportIntersectionStateChangedObserver>(
           std::move(frame_node_matcher), true, run_loop.QuitClosure()));
 
   // Navigate.
@@ -185,8 +188,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
-                       DISABLED_ViewportIntersection_Scaled) {
+IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Scaled) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -204,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   base::RunLoop run_loop;
   PerformanceManagerImpl::PassToGraph(
       FROM_HERE,
-      std::make_unique<IntersectsViewportChangedObserver>(
+      std::make_unique<ViewportIntersectionStateChangedObserver>(
           std::move(frame_node_matcher), true, run_loop.QuitClosure()));
 
   // Navigate.
@@ -217,8 +219,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
-                       DISABLED_ViewportIntersection_Rotated) {
+IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Rotated) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -236,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
   base::RunLoop run_loop;
   PerformanceManagerImpl::PassToGraph(
       FROM_HERE,
-      std::make_unique<IntersectsViewportChangedObserver>(
+      std::make_unique<ViewportIntersectionStateChangedObserver>(
           std::move(frame_node_matcher), true, run_loop.QuitClosure()));
 
   // Navigate.

@@ -201,6 +201,7 @@ static_library("performance_manager") {
     "public/v8_memory/v8_detailed_memory.h",
     "public/v8_memory/v8_detailed_memory_any_seq.h",
     "public/v8_memory/web_memory.h",
+    "public/viewport_intersection_state.h",
     "public/voting/optional_voting_channel.h",
     "public/voting/voting.h",
     "registered_objects.h",

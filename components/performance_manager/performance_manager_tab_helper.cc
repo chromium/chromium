@@ -345,12 +345,21 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
   }
   CHECK(render_frame_host->IsRenderFrameLive());
 
+  ViewportIntersectionState viewport_intersection_change = [visibility]() {
+    switch (visibility) {
+      case blink::mojom::FrameVisibility::kNotRendered:
+      case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
+        return ViewportIntersectionState::kNotIntersecting;
+      case blink::mojom::FrameVisibility::kRenderedInViewport:
+        return ViewportIntersectionState::kIntersecting;
+    }
+  }();
+
   auto* frame_node = frame_it->second.get();
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(
-          &FrameNodeImpl::SetIntersectsViewport, base::Unretained(frame_node),
-          visibility == blink::mojom::FrameVisibility::kRenderedInViewport));
+      FROM_HERE, base::BindOnce(&FrameNodeImpl::SetViewportIntersectionState,
+                                base::Unretained(frame_node),
+                                viewport_intersection_change));
 }
 
 void PerformanceManagerTabHelper::OnFrameIsCapturingMediaStreamChanged(
