@@ -11,8 +11,10 @@ import {ActionResponse} from '../switch_access_constants.js';
 import {BackButtonNode} from './back_button_node.js';
 import {SAChildNode, SARootNode} from './switch_access_node.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
-const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+type AutomationNode = chrome.automation.AutomationNode;
+import MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+type Rect = chrome.automation.Rect;
+import RoleType = chrome.automation.RoleType;
 
 /**
  * This class handles the grouping of nodes that are not grouped in the
@@ -22,50 +24,41 @@ const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
  */
 export class GroupNode extends SAChildNode {
   /**
-   * @param {!Array<!SAChildNode>} children The nodes that this group contains.
+   * @param children The nodes that this group contains.
    *     Should not include the back button.
-   * @param {!AutomationNode} containingNode The automation node most closely
-   * containing the children.
-   * @private
+   * @param containingNode The automation node most closely containing the
+   *     children.
    */
-  constructor(children, containingNode) {
+  private constructor(
+      private children_: SAChildNode[],
+      private containingNode_: AutomationNode) {
     super();
-
-    /** @private {!Array<!SAChildNode>} */
-    this.children_ = children;
-
-    /** @private {!AutomationNode} */
-    this.containingNode_ = containingNode;
   }
 
   // ================= Getters and setters =================
 
-  /** @override */
-  get actions() {
+  override get actions(): MenuAction[] {
     return [MenuAction.DRILL_DOWN];
   }
 
-  /** @override */
-  get automationNode() {
+  override get automationNode(): AutomationNode {
     return this.containingNode_;
   }
 
-  /** @override */
-  get location() {
+  override get location(): Rect {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     const childLocations =
-        this.children_.filter(c => c.isValidAndVisible()).map(c => c.location);
+        this.children_.filter(c => c.isValidAndVisible()).map(c => c.location!);
     return RectUtil.unionAll(childLocations);
   }
 
-  /** @override */
-  get role() {
-    return chrome.automation.RoleType.GROUP;
+  override get role(): RoleType {
+    return RoleType.GROUP;
   }
 
   // ================= General methods =================
 
-  /** @override */
-  asRootNode() {
+  override asRootNode(): SARootNode {
     const root = new SARootNode(this.containingNode_);
 
     // Make a copy of the children array.
@@ -77,13 +70,11 @@ export class GroupNode extends SAChildNode {
     return root;
   }
 
-  /** @override */
-  equals(other) {
+  override equals(other: SAChildNode): boolean {
     if (!(other instanceof GroupNode)) {
       return false;
     }
 
-    other = /** @type {GroupNode} */ (other);
     if (other.children_.length !== this.children_.length) {
       return false;
     }
@@ -95,8 +86,8 @@ export class GroupNode extends SAChildNode {
     return true;
   }
 
-  /** @override */
-  isEquivalentTo(node) {
+  override isEquivalentTo(node: AutomationNode | SAChildNode | SARootNode):
+      boolean {
     if (node instanceof GroupNode) {
       return this.equals(node);
     }
@@ -110,13 +101,11 @@ export class GroupNode extends SAChildNode {
     return false;
   }
 
-  /** @override */
-  isGroup() {
+  override isGroup(): boolean {
     return true;
   }
 
-  /** @override */
-  isValidAndVisible() {
+  override isValidAndVisible(): boolean {
     for (const child of this.children_) {
       if (child.isValidAndVisible()) {
         return super.isValidAndVisible();
@@ -125,8 +114,7 @@ export class GroupNode extends SAChildNode {
     return false;
   }
 
-  /** @override */
-  performAction(action) {
+  override performAction(action: MenuAction): ActionResponse {
     if (action === MenuAction.DRILL_DOWN) {
       Navigator.byItem.enterGroup();
       return ActionResponse.CLOSE_MENU;
@@ -136,17 +124,13 @@ export class GroupNode extends SAChildNode {
 
   // ================= Static methods =================
 
-  /**
-   * Assumes nodes are visually in rows.
-   * @param {!Array<!SAChildNode>} nodes
-   * @param {!AutomationNode} containingNode
-   * @return {!Array<!GroupNode>}
-   */
-  static separateByRow(nodes, containingNode) {
-    const result = [];
+  /** Assumes nodes are visually in rows. */
+  static separateByRow(nodes: SAChildNode[], containingNode: AutomationNode):
+      GroupNode[] {
+    const result: GroupNode[] = [];
 
     for (let i = 0; i < nodes.length;) {
-      const children = [];
+      const children: SAChildNode[] = [];
       children.push(nodes[i]);
       i++;
 
