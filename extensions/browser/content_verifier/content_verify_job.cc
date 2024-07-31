@@ -114,50 +114,10 @@ void ContentVerifyJob::StartWithContentHash(
   if (test_observer)
     test_observer->JobStarted(extension_id_, relative_path_);
   // Build |hash_reader_|.
-  hash_reader_ = ContentHashReader::Create(relative_path_, content_hash);
-
-  if (g_ignore_verification_for_tests) {
-    return;
-  }
-  if (test_observer) {
-    test_observer->OnHashesReady(extension_id_, relative_path_, *hash_reader_);
-  }
-
-  switch (hash_reader_->status()) {
-    case ContentHashReader::InitStatus::HASHES_MISSING: {
-      DispatchFailureCallback(MISSING_ALL_HASHES);
-      return;
-    }
-    case ContentHashReader::InitStatus::HASHES_DAMAGED: {
-      DispatchFailureCallback(CORRUPTED_HASHES);
-      return;
-    }
-    case ContentHashReader::InitStatus::NO_HASHES_FOR_RESOURCE: {
-      // Proceed and dispatch failure only if the file exists.
-      break;
-    }
-    case ContentHashReader::InitStatus::SUCCESS: {
-      // Just proceed with hashes in case of success.
-      break;
-    }
-  }
-
-  DCHECK(!failed_);
-
-  hashes_ready_ = true;
-  if (!queue_.empty()) {
-    DCHECK_EQ(read_error_, MOJO_RESULT_OK);
-    std::string tmp;
-    queue_.swap(tmp);
-    BytesReadImpl(std::data(tmp), tmp.size(), MOJO_RESULT_OK);
-    if (failed_) {
-      return;
-    }
-  }
-  if (done_reading_) {
-    ScopedElapsedTimer timer(&time_spent_);
-    OnDoneReadingAndHashesReady();
-  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ContentHashReader::Create, relative_path_, content_hash),
+      base::BindOnce(&ContentVerifyJob::OnHashesReady, this));
 }
 
 void ContentVerifyJob::BytesRead(const char* data,
@@ -177,56 +137,13 @@ void ContentVerifyJob::DoneReading() {
     return;
   DCHECK(!done_reading_);
   done_reading_ = true;
-  if (hashes_ready_) {
-    OnDoneReadingAndHashesReady();
-  }
-}
+  if (!hashes_ready_)
+    return;  // Wait for OnHashesReady.
 
-void ContentVerifyJob::OnDoneReadingAndHashesReady() {
-  // Some errors, such as the read being aborted, shouldn't cause a verification
-  // failure.
-  if (read_error_ != MOJO_RESULT_OK && IsIgnorableReadError(read_error_)) {
+  const bool can_proceed = has_ignorable_read_error_ || FinishBlock();
+  if (can_proceed) {
     ReportJobFinished(NONE);
-    return;
-  }
-
-  if (hash_reader_->status() ==
-      ContentHashReader::InitStatus::NO_HASHES_FOR_RESOURCE) {
-    // Making a request to a non-existent file or to a directory should not
-    // result in content verification failure.
-    if (read_error_ == MOJO_RESULT_NOT_FOUND) {
-      ReportJobFinished(NONE);
-    } else {
-      DispatchFailureCallback(NO_HASHES_FOR_FILE);
-    }
-    return;
-  }
-
-  // Other statuses are handled in `DidGetContentHashOnIO`.
-  DCHECK_EQ(hash_reader_->status(), ContentHashReader::InitStatus::SUCCESS);
-
-  // Any error that wasn't handled above should result in a verification
-  // failure.
-  if (read_error_ != MOJO_RESULT_OK) {
-    DispatchFailureCallback(HASH_MISMATCH);
-    return;
-  }
-
-  // Finish computing the hash and make sure the expected hash matches.
-  if (!FinishBlock()) {
-    DispatchFailureCallback(HASH_MISMATCH);
-    return;
-  }
-
-  ReportJobFinished(NONE);
-}
-
-void ContentVerifyJob::OnHashMismatch() {
-  if (hash_reader_->status() ==
-      ContentHashReader::InitStatus::NO_HASHES_FOR_RESOURCE) {
-    DispatchFailureCallback(NO_HASHES_FOR_FILE);
   } else {
-    DCHECK_EQ(hash_reader_->status(), ContentHashReader::InitStatus::SUCCESS);
     DispatchFailureCallback(HASH_MISMATCH);
   }
 }
@@ -239,21 +156,13 @@ void ContentVerifyJob::BytesReadImpl(const char* data,
     return;
   if (g_ignore_verification_for_tests)
     return;
-  if (read_error_ != MOJO_RESULT_OK) {
-    // If we have already seen an error, we should not continue verifying.
+  if (IsIgnorableReadError(read_result))
+    has_ignorable_read_error_ = true;
+  if (has_ignorable_read_error_)
     return;
-  }
-  if (read_result != MOJO_RESULT_OK) {
-    read_error_ = read_result;
-    queue_.clear();
-    return;
-  }
 
   if (!hashes_ready_) {
     queue_.append(data, count);
-    return;
-  }
-  if (hash_reader_->status() != ContentHashReader::InitStatus::SUCCESS) {
     return;
   }
   DCHECK_GE(count, 0);
@@ -261,7 +170,7 @@ void ContentVerifyJob::BytesReadImpl(const char* data,
 
   while (bytes_added < count) {
     if (current_block_ >= hash_reader_->block_count())
-      return OnHashMismatch();
+      return DispatchFailureCallback(HASH_MISMATCH);
 
     if (!current_hash_) {
       current_hash_byte_count_ = 0;
@@ -281,7 +190,7 @@ void ContentVerifyJob::BytesReadImpl(const char* data,
     // for it and make sure the expected hash matches.
     if (current_hash_byte_count_ == hash_reader_->block_size() &&
         !FinishBlock()) {
-      OnHashMismatch();
+      DispatchFailureCallback(HASH_MISMATCH);
       return;
     }
   }
@@ -315,6 +224,61 @@ bool ContentVerifyJob::FinishBlock() {
   }
 
   return true;
+}
+
+void ContentVerifyJob::OnHashesReady(
+    std::unique_ptr<const ContentHashReader> hash_reader) {
+  base::AutoLock auto_lock(lock_);
+  hash_reader_ = std::move(hash_reader);
+
+  if (g_ignore_verification_for_tests)
+    return;
+  scoped_refptr<TestObserver> test_observer = GetTestObserver();
+  if (test_observer)
+    test_observer->OnHashesReady(extension_id_, relative_path_, *hash_reader_);
+
+  switch (hash_reader_->status()) {
+    case ContentHashReader::InitStatus::HASHES_MISSING: {
+      DispatchFailureCallback(MISSING_ALL_HASHES);
+      return;
+    }
+    case ContentHashReader::InitStatus::HASHES_DAMAGED: {
+      DispatchFailureCallback(CORRUPTED_HASHES);
+      return;
+    }
+    case ContentHashReader::InitStatus::NO_HASHES_FOR_NON_EXISTING_RESOURCE: {
+      // Ignore verification of non-existent resources.
+      ReportJobFinished(NONE);
+      return;
+    }
+    case ContentHashReader::InitStatus::NO_HASHES_FOR_RESOURCE: {
+      DispatchFailureCallback(NO_HASHES_FOR_FILE);
+      return;
+    }
+    case ContentHashReader::InitStatus::SUCCESS: {
+      // Just proceed with hashes in case of success.
+    }
+  }
+  DCHECK_EQ(ContentHashReader::InitStatus::SUCCESS, hash_reader_->status());
+
+  DCHECK(!failed_);
+
+  hashes_ready_ = true;
+  if (!queue_.empty()) {
+    std::string tmp;
+    queue_.swap(tmp);
+    BytesReadImpl(std::data(tmp), tmp.size(), MOJO_RESULT_OK);
+    if (failed_)
+      return;
+  }
+  if (done_reading_) {
+    ScopedElapsedTimer timer(&time_spent_);
+    if (!has_ignorable_read_error_ && !FinishBlock()) {
+      DispatchFailureCallback(HASH_MISMATCH);
+    } else {
+      ReportJobFinished(NONE);
+    }
+  }
 }
 
 // static

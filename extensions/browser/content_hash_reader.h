@@ -32,7 +32,11 @@ class ContentHashReader {
     // Extension has hashes files, but they are unreadable or corrupted.
     HASHES_DAMAGED,
 
-    // Resource doesn't have entry in hashes.
+    // Resource doesn't have entry in hashes, and this is as expected since
+    // extension doesn't have such resource.
+    NO_HASHES_FOR_NON_EXISTING_RESOURCE,
+
+    // Resource doesn't have entry in hashes, but it should be there.
     NO_HASHES_FOR_RESOURCE,
 
     // Ready to verify resource's content.
