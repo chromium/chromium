@@ -3939,8 +3939,7 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
         mailbox,
         /*is_root=*/false,
         /*is_scanout=*/true,
-        /*scanout_dcomp_surface=*/
-        kOverlayUsage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE),
+        /*scanout_dcomp_surface=*/false,
     };
   } else {
     overlay_params = *it;
