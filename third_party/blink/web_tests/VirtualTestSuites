@@ -2959,31 +2959,6 @@
     "owners": ["fergal@chromium.org", "rakina@chromium.org"]
   },
   {
-    "prefix": "vertical-form-controls-direction-disabled-slider-vertical-disabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "css-parser/vertical-range-slider-appearance.html",
-      "fast/forms/color-scheme/meter/meter-appearance-basic-vertical.html",
-      "fast/forms/color-scheme/progress/progress-appearance-basic.html",
-      "fast/forms/range/range-appearance-border-padding.html"
-    ],
-    "args": ["--disable-features=FormControlsVerticalWritingModeDirectionSupport",
-             "--disable-features=NonStandardAppearanceValueSliderVertical"],
-    "owners": ["dizhangg@chromium.org"],
-    "expires": "Jun 1, 2025"
-  },
-  {
-    "prefix": "vertical-form-controls-direction-disabled-slider-vertical-enabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "css-parser/vertical-range-slider-appearance.html"
-    ],
-    "args": ["--disable-features=FormControlsVerticalWritingModeDirectionSupport",
-             "--enable-features=NonStandardAppearanceValueSliderVertical"],
-    "owners": ["dizhangg@chromium.org"],
-    "expires": "Jun 1, 2025"
-  },
-  {
     "prefix": "import-assertions-enabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

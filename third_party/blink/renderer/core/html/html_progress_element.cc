@@ -64,9 +64,7 @@ LayoutProgress* HTMLProgressElement::GetLayoutProgress() const {
 void HTMLProgressElement::DidRecalcStyle(const StyleRecalcChange change) {
   HTMLElement::DidRecalcStyle(change);
   const ComputedStyle* style = GetComputedStyle();
-  if (RuntimeEnabledFeatures::
-          FormControlsVerticalWritingModeDirectionSupportEnabled() &&
-      style) {
+  if (style) {
     bool is_horizontal = style->IsHorizontalWritingMode();
     bool is_ltr = style->IsLeftToRightDirection();
     if (is_horizontal && is_ltr) {

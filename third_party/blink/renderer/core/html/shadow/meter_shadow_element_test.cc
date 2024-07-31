@@ -52,29 +52,4 @@ TEST_F(MeterShadowElementTest, LayoutObjectIsNotNeeded) {
   EXPECT_FALSE(shadow_element->LayoutObjectIsNeeded(*style));
 }
 
-TEST_F(MeterShadowElementTest, DontChangeDirectionOnShadowElement) {
-  GetDocument().body()->setInnerHTML(R"HTML(
-    <meter id='m' style='writing-mode:vertical-lr; direction: ltr;' />
-  )HTML");
-
-  auto* meter =
-      To<HTMLMeterElement>(GetDocument().getElementById(AtomicString("m")));
-  ASSERT_TRUE(meter);
-
-  auto* shadow_element = To<Element>(meter->GetShadowRoot()->firstChild());
-  ASSERT_TRUE(shadow_element);
-
-  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  meter->SetForceReattachLayoutTree();
-  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  GetDocument().GetStyleEngine().RecalcStyle();
-
-  EXPECT_TRUE(meter->GetComputedStyle());
-  EXPECT_EQ(meter->GetComputedStyle()->Direction(), TextDirection::kLtr);
-
-  EXPECT_TRUE(shadow_element->GetComputedStyle());
-  EXPECT_EQ(shadow_element->GetComputedStyle()->Direction(),
-            TextDirection::kLtr);
-}
-
 }  // namespace blink

@@ -50,13 +50,6 @@ void ProgressShadowElement::AdjustStyle(ComputedStyleBuilder& builder) {
   DCHECK(progress_style);
   if (progress_style->HasEffectiveAppearance()) {
     builder.SetDisplay(EDisplay::kNone);
-  } else if (!RuntimeEnabledFeatures::
-                 FormControlsVerticalWritingModeDirectionSupportEnabled() &&
-             !IsHorizontalWritingMode(builder.GetWritingMode())) {
-    // For vertical writing-mode, when direction is not supported, we need to
-    // set the direction to rtl so that the progress value bar is rendered
-    // bottom up.
-    builder.SetDirection(TextDirection::kRtl);
   }
 }
 

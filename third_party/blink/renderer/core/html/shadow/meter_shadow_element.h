@@ -18,7 +18,6 @@ class MeterShadowElement : public HTMLDivElement {
 
  private:
   HTMLMeterElement* MeterElement() const;
-  void AdjustStyle(ComputedStyleBuilder&) override;
 };
 
 }  // namespace blink

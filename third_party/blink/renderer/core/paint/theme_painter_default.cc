@@ -174,8 +174,6 @@ DirectionFlippingScope::DirectionFlippingScope(
           !layout_object.StyleRef().IsLeftToRightDirection()),
       needs_vertical_flipping_(
           !IsHorizontalWritingMode(layout_object.StyleRef().GetWritingMode()) &&
-          RuntimeEnabledFeatures::
-              FormControlsVerticalWritingModeDirectionSupportEnabled() &&
           layout_object.StyleRef().IsLeftToRightDirection()),
       paint_info_(paint_info) {
   if (needs_horizontal_flipping_) {
@@ -579,9 +577,7 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
   // bottom-to-top.
   slider.right_to_left =
       (IsHorizontalWritingMode(writing_mode) && !is_slider_vertical) ||
-              (RuntimeEnabledFeatures::
-                   FormControlsVerticalWritingModeDirectionSupportEnabled() &&
-               is_writing_mode_vertical)
+              is_writing_mode_vertical
           ? !style.IsLeftToRightDirection()
           : true;
   if (writing_mode == WritingMode::kSidewaysLr) {

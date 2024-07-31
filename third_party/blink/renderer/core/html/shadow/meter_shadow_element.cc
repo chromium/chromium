@@ -10,22 +10,10 @@
 namespace blink {
 
 MeterShadowElement::MeterShadowElement(Document& document)
-    : HTMLDivElement(document) {
-  SetHasCustomStyleCallbacks();
-}
+    : HTMLDivElement(document) {}
 
 HTMLMeterElement* MeterShadowElement::MeterElement() const {
   return To<HTMLMeterElement>(OwnerShadowHost());
-}
-
-void MeterShadowElement::AdjustStyle(ComputedStyleBuilder& builder) {
-  // For vertical writing-mode, if direction is not supported, we need to set
-  // the direction to rtl so that the meter value bar is rendered bottom up.
-  if (!RuntimeEnabledFeatures::
-          FormControlsVerticalWritingModeDirectionSupportEnabled() &&
-      !IsHorizontalWritingMode(builder.GetWritingMode())) {
-    builder.SetDirection(TextDirection::kRtl);
-  }
 }
 
 }  // namespace blink

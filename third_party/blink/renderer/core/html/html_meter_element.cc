@@ -64,10 +64,7 @@ LayoutObject* HTMLMeterElement::CreateLayoutObject(const ComputedStyle& style) {
 
 void HTMLMeterElement::DidRecalcStyle(const StyleRecalcChange change) {
   HTMLElement::DidRecalcStyle(change);
-  const ComputedStyle* style = GetComputedStyle();
-  if (RuntimeEnabledFeatures::
-          FormControlsVerticalWritingModeDirectionSupportEnabled() &&
-      style) {
+  if (const ComputedStyle* style = GetComputedStyle()) {
     bool is_horizontal = style->IsHorizontalWritingMode();
     bool is_ltr = style->IsLeftToRightDirection();
     if (is_horizontal && is_ltr) {

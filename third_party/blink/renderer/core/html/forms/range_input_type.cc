@@ -106,8 +106,7 @@ void RangeInputType::DidRecalcStyle(const StyleRecalcChange) {
         style->EffectiveAppearance() == kSliderVerticalPart) {
       UseCounter::Count(GetElement().GetDocument(),
                         WebFeature::kInputTypeRangeVerticalAppearance);
-    } else if (RuntimeEnabledFeatures::
-                   FormControlsVerticalWritingModeDirectionSupportEnabled()) {
+    } else {
       bool is_horizontal = style->IsHorizontalWritingMode();
       bool is_ltr = style->IsLeftToRightDirection();
       if (is_horizontal && is_ltr) {
