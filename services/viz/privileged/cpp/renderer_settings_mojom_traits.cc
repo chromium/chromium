@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/viz/privileged/mojom/compositing/renderer_settings_mojom_traits.h"
+#include "services/viz/privileged/cpp/renderer_settings_mojom_traits.h"
 
 #include "build/build_config.h"
 
