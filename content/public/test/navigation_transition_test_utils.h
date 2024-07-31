@@ -10,6 +10,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace content {
+class NavigationController;
 
 // If set in `SetNavScreenshotCallbackForTesting`, this callback is invoked
 // for each committed navigation when kBackForwardTransitions is enabled.
@@ -35,6 +36,10 @@ struct NavigationTransitionTestUtils {
   // CaptureNavigationEntryScreenshot function.
   static void SetNavScreenshotCallbackForTesting(
       ScreenshotCallback screenshot_callback);
+
+  // Waits for the compressed screenshot and returns its size in bytes.
+  static size_t WaitForScreenshotCompressed(NavigationController& controller,
+                                            int nav_entry_index);
 };
 
 // Wraps `SetNavScreenshotCallbackForTesting()`, so that the test doesn't have

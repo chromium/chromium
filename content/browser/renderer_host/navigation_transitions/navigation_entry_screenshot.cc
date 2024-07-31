@@ -10,10 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
-#include "third_party/android_opengl/etc1/etc1.h"
-#include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkMallocPixelRef.h"
-#include "third_party/skia/include/core/SkPixelRef.h"
+#include "ui/android/resources/ui_resource_provider.h"
 #endif
 
 namespace content {
@@ -23,43 +20,21 @@ namespace {
 
 BASE_FEATURE(kNavigationEntryScreenshotCompression,
              "NavigationEntryScreenshotCompression",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 static bool g_disable_compression_for_testing = false;
 
 using CompressionDoneCallback = base::OnceCallback<void(sk_sp<SkPixelRef>)>;
 void CompressNavigationScreenshotOnWorkerThread(
     SkBitmap bitmap,
+    bool supports_etc_non_power_of_two,
     CompressionDoneCallback done_callback) {
   TRACE_EVENT0("navigation", "CompressNavigationScreenshotOnWorkerThread");
 
-  if (g_disable_compression_for_testing) {
-    return;
+  if (auto compressed_bitmap = ui::UIResourceProvider::CompressBitmap(
+          bitmap, supports_etc_non_power_of_two)) {
+    std::move(done_callback).Run(std::move(compressed_bitmap));
   }
-
-  gfx::Size bitmap_bounds(bitmap.width(), bitmap.height());
-  constexpr size_t kPixelSize = 4;  // For kARGB_8888_Config.
-  size_t stride = kPixelSize * bitmap_bounds.width();
-
-  size_t encoded_bytes =
-      etc1_get_encoded_data_size(bitmap_bounds.width(), bitmap_bounds.height());
-  SkImageInfo info =
-      SkImageInfo::Make(bitmap_bounds.width(), bitmap_bounds.height(),
-                        kUnknown_SkColorType, kUnpremul_SkAlphaType);
-  sk_sp<SkData> etc1_pixel_data(SkData::MakeUninitialized(encoded_bytes));
-  const size_t row_bytes = bitmap_bounds.width() / 2;
-  sk_sp<SkPixelRef> etc1_pixel_ref(SkMallocPixelRef::MakeWithData(
-      info, row_bytes, std::move(etc1_pixel_data)));
-
-  if (!etc1_encode_image(
-          reinterpret_cast<unsigned char*>(bitmap.getPixels()),
-          bitmap_bounds.width(), bitmap_bounds.height(), kPixelSize, stride,
-          reinterpret_cast<unsigned char*>(etc1_pixel_ref->pixels()),
-          bitmap_bounds.width(), bitmap_bounds.height())) {
-    return;
-  }
-
-  std::move(done_callback).Run(std::move(etc1_pixel_ref));
 }
 
 }  // namespace
@@ -70,22 +45,24 @@ const void* const NavigationEntryScreenshot::kUserDataKey =
     &NavigationEntryScreenshot::kUserDataKey;
 
 // static
-void NavigationEntryScreenshot::DisableCompressionForTesting() {
+void NavigationEntryScreenshot::SetDisableCompressionForTesting(bool disable) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if BUILDFLAG(IS_ANDROID)
-  g_disable_compression_for_testing = true;
+  g_disable_compression_for_testing = disable;
 #endif
 }
 
-NavigationEntryScreenshot::NavigationEntryScreenshot(const SkBitmap& bitmap,
-                                                     int navigation_entry_id)
+NavigationEntryScreenshot::NavigationEntryScreenshot(
+    const SkBitmap& bitmap,
+    int navigation_entry_id,
+    bool supports_etc_non_power_of_two)
     : bitmap_(cc::UIResourceBitmap(bitmap)),
       navigation_entry_id_(navigation_entry_id) {
   CHECK(AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  StartCompression(bitmap);
+  StartCompression(bitmap, supports_etc_non_power_of_two);
 }
 
 NavigationEntryScreenshot::~NavigationEntryScreenshot() {
@@ -125,9 +102,12 @@ size_t NavigationEntryScreenshot::CompressedSizeForTesting() const {
   return !bitmap_ ? compressed_bitmap_->SizeInBytes() : 0u;
 }
 
-void NavigationEntryScreenshot::StartCompression(const SkBitmap& bitmap) {
+void NavigationEntryScreenshot::StartCompression(
+    const SkBitmap& bitmap,
+    bool supports_etc_non_power_of_two) {
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(kNavigationEntryScreenshotCompression)) {
+  if (!base::FeatureList::IsEnabled(kNavigationEntryScreenshotCompression) ||
+      g_disable_compression_for_testing) {
     return;
   }
 
@@ -141,7 +121,7 @@ void NavigationEntryScreenshot::StartCompression(const SkBitmap& bitmap) {
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&CompressNavigationScreenshotOnWorkerThread, bitmap,
-                     std::move(done_callback)));
+                     supports_etc_non_power_of_two, std::move(done_callback)));
 #endif
 }
 
@@ -151,7 +131,8 @@ void NavigationEntryScreenshot::OnCompressionFinished(
   CHECK(bitmap_);
   CHECK(compressed_bitmap);
 
-  const auto size = GetDimensions();
+  const auto size =
+      gfx::Size(compressed_bitmap->width(), compressed_bitmap->height());
   compressed_bitmap_ = cc::UIResourceBitmap(std::move(compressed_bitmap), size);
   TRACE_EVENT2("navigation", "NavigationEntryScreenshot::OnCompressionFinished",
                "old_size", bitmap_->SizeInBytes(), "new_size",

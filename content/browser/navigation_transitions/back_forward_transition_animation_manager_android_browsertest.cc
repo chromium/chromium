@@ -56,6 +56,7 @@
 #include "ui/base/l10n/l10n_util_android.h"
 #include "ui/events/back_gesture_event.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
+#include "ui/snapshot/snapshot.h"
 
 namespace content {
 
@@ -2816,6 +2817,80 @@ IN_PROC_BROWSER_TEST_F(
   invoke_displayed.Run();
   crossfade_displayed.Run();
   destroyed.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       ScreenshotCompression) {
+  SkBitmap expected_pixels;
+  {
+    NavigationEntryScreenshot::SetDisableCompressionForTesting(true);
+    ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+              GreenURL());
+    std::vector<GestureType> expected;
+    expected.push_back(GestureType::kStart);
+    expected.push_back(GestureType::k60ViewportWidth);
+    HistoryBackNavAndAssertAnimatedTransition(expected);
+
+    base::test::TestFuture<gfx::Image> result;
+    auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
+    ui::GrabWindowSnapshot(window, gfx::Rect(), result.GetCallback());
+    expected_pixels = result.Get().AsBitmap();
+    ASSERT_FALSE(expected_pixels.empty());
+
+    for (int col = 0.6 * expected_pixels.width() + 1;
+         col < expected_pixels.width(); col++) {
+      for (int row = 0; row < expected_pixels.height(); row++) {
+        ASSERT_EQ(expected_pixels.getColor(col, row), SK_ColorGREEN)
+            << col << "," << row << " and image "
+            << cc::GetPNGDataUrl(expected_pixels);
+      }
+    }
+
+    base::test::TestFuture<void> destroyed;
+    GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
+    GetAnimationManager(web_contents())->OnGestureInvoked();
+    ASSERT_TRUE(destroyed.Wait());
+    ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+              RedURL());
+    observer.Wait();
+  }
+
+  SkBitmap actual_pixels;
+  {
+    NavigationEntryScreenshot::SetDisableCompressionForTesting(false);
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
+    ASSERT_TRUE(NavigateToURL(web_contents(), GreenURL()));
+    observer.Wait();
+    WaitForCopyableViewInWebContents(web_contents());
+    NavigationTransitionTestUtils::WaitForScreenshotCompressed(
+        web_contents()->GetController(),
+        web_contents()->GetController().GetLastCommittedEntryIndex() - 1);
+
+    std::vector<GestureType> expected;
+    expected.push_back(GestureType::kStart);
+    expected.push_back(GestureType::k60ViewportWidth);
+    HistoryBackNavAndAssertAnimatedTransition(expected);
+
+    base::test::TestFuture<gfx::Image> result;
+    auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
+    ui::GrabWindowSnapshot(window, gfx::Rect(), result.GetCallback());
+    actual_pixels = result.Get().AsBitmap();
+    ASSERT_FALSE(actual_pixels.empty());
+
+    base::test::TestFuture<void> destroyed;
+    GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+    GetAnimationManager(web_contents())->OnGestureCancelled();
+    ASSERT_TRUE(destroyed.Wait());
+  }
+
+  // Allow all pixels to be off by 1.
+  auto comparator = cc::FuzzyPixelComparator()
+                        .SetErrorPixelsPercentageLimit(100.0f)
+                        .SetAbsErrorLimit(1);
+  EXPECT_TRUE(cc::MatchesBitmap(actual_pixels, expected_pixels, comparator));
 }
 
 }  // namespace content

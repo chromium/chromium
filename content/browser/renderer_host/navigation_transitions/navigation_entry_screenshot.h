@@ -48,9 +48,11 @@ class CONTENT_EXPORT NavigationEntryScreenshot
  public:
   const static void* const kUserDataKey;
 
-  static void DisableCompressionForTesting();
+  static void SetDisableCompressionForTesting(bool disable);
 
-  NavigationEntryScreenshot(const SkBitmap& bitmap, int navigation_entry_id);
+  NavigationEntryScreenshot(const SkBitmap& bitmap,
+                            int navigation_entry_id,
+                            bool supports_etc_non_power_of_two);
   NavigationEntryScreenshot(const NavigationEntryScreenshot&) = delete;
   NavigationEntryScreenshot& operator=(const NavigationEntryScreenshot&) =
       delete;
@@ -82,7 +84,8 @@ class CONTENT_EXPORT NavigationEntryScreenshot
  private:
   void OnCompressionFinished(sk_sp<SkPixelRef> compressed_bitmap);
 
-  void StartCompression(const SkBitmap& bitmap);
+  void StartCompression(const SkBitmap& bitmap,
+                        bool supports_etc_non_power_of_two);
   const cc::UIResourceBitmap& GetBitmap() const;
 
   // The uncompressed bitmap cached when navigating away from this navigation

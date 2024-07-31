@@ -3255,7 +3255,6 @@ source_set("browser") {
       "//gpu/command_buffer/service:gles2",
       "//media",
       "//media/capture/video/android",
-      "//third_party/android_opengl/etc1",
       "//third_party/blink/public/common:font_unique_name_table_proto",
       "//third_party/blink/public/mojom:mojom_platform_blink",
       "//third_party/icu",

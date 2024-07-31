@@ -14,6 +14,12 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/renderer_host/compositor_impl_android.h"
+#include "ui/android/view_android.h"
+#include "ui/android/window_android.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -62,6 +68,18 @@ void InvokeTestCallback(int index,
   GetTestScreenshotCallback().Run(index, test_copy, requested, override_bitmap);
 }
 
+bool SupportsETC1NonPowerOfTwo(const NavigationRequest& navigation_request) {
+#if BUILDFLAG(IS_ANDROID)
+  auto* rfh = navigation_request.frame_tree_node()->current_frame_host();
+  auto* rwhv = rfh->GetView();
+  auto* window_android = rwhv->GetNativeView()->GetWindowAndroid();
+  auto* compositor = window_android->GetCompositor();
+  return static_cast<CompositorImpl*>(compositor)->SupportsETC1NonPowerOfTwo();
+#else
+  return false;
+#endif
+}
+
 // Returns the first entry that matches `destination_token`. Returns null if no
 // match is found.
 NavigationEntryImpl* GetEntryForToken(
@@ -84,6 +102,7 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
                          int navigation_entry_id,
                          bool is_copied_from_embedder,
                          int copy_output_request_sequence,
+                         bool supports_etc_non_power_of_two,
                          const SkBitmap& bitmap) {
   if (!controller) {
     // The tab was destroyed by the time we receive the bitmap from the GPU.
@@ -125,7 +144,7 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
   bitmap_copy.setImmutable();
 
   auto screenshot = std::make_unique<NavigationEntryScreenshot>(
-      bitmap_copy, navigation_entry_id);
+      bitmap_copy, navigation_entry_id, supports_etc_non_power_of_two);
   NavigationEntryScreenshotCache* cache =
       controller->GetNavigationEntryScreenshotCache();
   cache->SetScreenshot(std::move(navigation_request), std::move(screenshot),
@@ -342,7 +361,8 @@ bool NavigationTransitionUtils::
               &CacheScreenshotImpl, navigation_controller.GetWeakPtr(),
               navigation_request.GetWeakPtr(),
               navigation_controller.GetLastCommittedEntry()->GetUniqueID(),
-              /*is_copied_from_embedder=*/true, request_sequence));
+              /*is_copied_from_embedder=*/true, request_sequence,
+              SupportsETC1NonPowerOfTwo(navigation_request)));
 
   if (!copied_via_delegate && only_use_embedder_screenshot) {
     InvokeTestCallbackForNoScreenshot(navigation_request);
@@ -373,7 +393,8 @@ bool NavigationTransitionUtils::
           &CacheScreenshotImpl, navigation_controller.GetWeakPtr(),
           navigation_request.GetWeakPtr(),
           navigation_controller.GetLastCommittedEntry()->GetUniqueID(),
-          /*is_copied_from_embedder=*/false, request_sequence));
+          /*is_copied_from_embedder=*/false, request_sequence,
+          SupportsETC1NonPowerOfTwo(navigation_request)));
 
   ++g_num_copy_requests_issued_for_testing;
 
@@ -438,7 +459,8 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
       base::BindOnce(&CacheScreenshotImpl, nav_controller.GetWeakPtr(),
                      navigation_request.GetWeakPtr(),
                      nav_controller.GetLastCommittedEntry()->GetUniqueID(),
-                     /*is_copied_from_embedder=*/false, request_sequence));
+                     /*is_copied_from_embedder=*/false, request_sequence,
+                     SupportsETC1NonPowerOfTwo(navigation_request)));
 }
 
 }  // namespace content

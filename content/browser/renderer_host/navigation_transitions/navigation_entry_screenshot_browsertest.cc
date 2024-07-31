@@ -215,7 +215,7 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
     ContentBrowserTest::SetUpOnMainThread();
 
     if (!EnableCompression()) {
-      NavigationEntryScreenshot::DisableCompressionForTesting();
+      NavigationEntryScreenshot::SetDisableCompressionForTesting(true);
     }
 
     ASSERT_TRUE(
@@ -1718,25 +1718,6 @@ class NavigationEntryScreenshotCompressionBrowserTest
     return embedded_test_server()->GetURL(path);
   }
 
-  // Waits for the compressed screenshot and returns its size in bytes.
-  size_t WaitForScreenshotCompressed(int nav_entry_index) {
-    auto* screenshot = static_cast<NavigationEntryScreenshot*>(
-        controller()
-            .GetEntryAtIndex(nav_entry_index)
-            ->GetUserData(NavigationEntryScreenshot::kUserDataKey));
-
-    size_t compressed_size = screenshot->CompressedSizeForTesting();
-    if (!compressed_size) {
-      base::test::TestFuture<int> done;
-      NavigationEntryScreenshotCache::SetCompressedCallbackForTesting(
-          done.GetCallback());
-      EXPECT_EQ(nav_entry_index, done.Get());
-      compressed_size = screenshot->CompressedSizeForTesting();
-    }
-
-    return compressed_size;
-  }
-
   NavigationControllerImpl& controller() {
     return web_contents()->GetController();
   }
@@ -1745,8 +1726,7 @@ class NavigationEntryScreenshotCompressionBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(NavigationEntryScreenshotCompressionBrowserTest,
-                       DISABLED_Basic) {
+IN_PROC_BROWSER_TEST_F(NavigationEntryScreenshotCompressionBrowserTest, Basic) {
   // Start with only 1 regular screenshot allowed.
   const size_t screenshot_bytes = GetUncompressedScreenshotSizeInBytes();
   auto* manager = GetManagerForTab(web_contents());
@@ -1759,8 +1739,9 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryScreenshotCompressionBrowserTest,
                                           GetNextUrl("/green.html"));
     AssertOrderedScreenshotsAre(controller(), {SK_ColorRED, std::nullopt});
 
-    compressed_screenshot_bytes = WaitForScreenshotCompressed(
-        controller().GetLastCommittedEntryIndex() - 1);
+    compressed_screenshot_bytes =
+        NavigationTransitionTestUtils::WaitForScreenshotCompressed(
+            controller(), controller().GetLastCommittedEntryIndex() - 1);
     EXPECT_GT(compressed_screenshot_bytes, 0u);
     EXPECT_LT(compressed_screenshot_bytes, screenshot_bytes);
     ASSERT_EQ(manager->GetCurrentCacheSize(), compressed_screenshot_bytes);
@@ -1777,8 +1758,8 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryScreenshotCompressionBrowserTest,
     AssertOrderedScreenshotsAre(controller(),
                                 {SK_ColorRED, SK_ColorGREEN, std::nullopt});
     EXPECT_EQ(compressed_screenshot_bytes,
-              WaitForScreenshotCompressed(
-                  controller().GetLastCommittedEntryIndex() - 1));
+              NavigationTransitionTestUtils::WaitForScreenshotCompressed(
+                  controller(), controller().GetLastCommittedEntryIndex() - 1));
     ASSERT_EQ(manager->GetCurrentCacheSize(), 2 * compressed_screenshot_bytes);
   }
 
@@ -1789,8 +1770,8 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryScreenshotCompressionBrowserTest,
     AssertOrderedScreenshotsAre(controller(), {std::nullopt, SK_ColorGREEN,
                                                SK_ColorBLUE, std::nullopt});
     EXPECT_EQ(compressed_screenshot_bytes,
-              WaitForScreenshotCompressed(
-                  controller().GetLastCommittedEntryIndex() - 1));
+              NavigationTransitionTestUtils::WaitForScreenshotCompressed(
+                  controller(), controller().GetLastCommittedEntryIndex() - 1));
     ASSERT_EQ(manager->GetCurrentCacheSize(), 2 * compressed_screenshot_bytes);
   }
 }

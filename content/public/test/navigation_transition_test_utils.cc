@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 #include "content/public/test/navigation_transition_test_utils.h"
+
+#include "base/test/test_future.h"
+#include "content/browser/renderer_host/navigation_controller_impl.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 
 namespace content {
@@ -11,6 +16,26 @@ void NavigationTransitionTestUtils::SetNavScreenshotCallbackForTesting(
     ScreenshotCallback screenshot_callback) {
   NavigationTransitionUtils::SetNavScreenshotCallbackForTesting(
       std::move(screenshot_callback));
+}
+
+size_t NavigationTransitionTestUtils::WaitForScreenshotCompressed(
+    NavigationController& controller,
+    int nav_entry_index) {
+  auto* screenshot = static_cast<NavigationEntryScreenshot*>(
+      static_cast<NavigationControllerImpl&>(controller)
+          .GetEntryAtIndex(nav_entry_index)
+          ->GetUserData(NavigationEntryScreenshot::kUserDataKey));
+
+  size_t compressed_size = screenshot->CompressedSizeForTesting();
+  if (!compressed_size) {
+    base::test::TestFuture<int> done;
+    NavigationEntryScreenshotCache::SetCompressedCallbackForTesting(
+        done.GetCallback());
+    EXPECT_EQ(nav_entry_index, done.Get());
+    compressed_size = screenshot->CompressedSizeForTesting();
+  }
+
+  return compressed_size;
 }
 
 ScopedScreenshotCapturedObserverForTesting::
