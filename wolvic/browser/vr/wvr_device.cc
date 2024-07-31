@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "device/vr/public/cpp/features.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "ui/android/view_android.h"
@@ -38,7 +39,16 @@ WvrDevice::WvrDevice()
     : VRDeviceBase(device::mojom::XRDeviceId::WVR_DEVICE_ID),
       main_thread_task_runner_(
           base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  SetSupportedFeatures(GetSupportedFeatures());
+
+  std::vector<device::mojom::XRSessionFeature> device_features(
+      GetSupportedFeatures());
+
+  // Only support hand input if the feature flag is enabled.
+  if (base::FeatureList::IsEnabled(device::features::kWebXrHandInput)) {
+    device_features.emplace_back(device::mojom::XRSessionFeature::HAND_INPUT);
+  }
+
+  SetSupportedFeatures(device_features);
 }
 
 WvrDevice::~WvrDevice() {
