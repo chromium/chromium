@@ -310,24 +310,11 @@ void CustomizeToolbarHandler::PinAction(
 
 void CustomizeToolbarHandler::GetIsCustomized(
     GetIsCustomizedCallback callback) {
-  // By default, only forward is pinned.
-  // TODO(323962536): Chrome Labs should be pinned by default, if it exists.
-  const bool is_default = !prefs()->GetBoolean(prefs::kShowHomeButton) &&
-                          prefs()->GetBoolean(prefs::kShowForwardButton) &&
-                          model_->PinnedActionIds().size() == 0;
-  std::move(callback).Run(!is_default);
+  std::move(callback).Run(!model_->IsDefault());
 }
 
 void CustomizeToolbarHandler::ResetToDefault() {
-  prefs()->ClearPref(prefs::kShowHomeButton);
-  prefs()->ClearPref(prefs::kShowForwardButton);
-
-  // By default, only forward is pinned.
-  // TODO(323962536): Chrome Labs should be pinned by default, if it exists.
-  const std::vector<actions::ActionId> pinned_ids = model_->PinnedActionIds();
-  for (actions::ActionId id : pinned_ids) {
-    model_->UpdatePinnedState(id, false);
-  }
+  model_->ResetToDefault();
 }
 
 void CustomizeToolbarHandler::OnActionAdded(const actions::ActionId& id) {

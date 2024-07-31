@@ -85,6 +85,15 @@ class PinnedToolbarActionsModel : public KeyedService {
   void MaybeUpdateSearchCompanionPinnedState(
       bool companion_should_be_default_pinned);
 
+  // Resets the pinned actions to default. NOTE: This also affects the home and
+  // forward buttons, even though those are not otherwise managed by this model.
+  void ResetToDefault();
+
+  // Returns true if the set of pinned actions is the default set. NOTE: This
+  // also includes the home and forward buttons, even though those are not
+  // otherwise managed by this model.
+  bool IsDefault() const;
+
   // Returns the ordered list of pinned ActionIds.
   virtual const std::vector<actions::ActionId>& PinnedActionIds() const;
 
