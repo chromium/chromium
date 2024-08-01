@@ -4713,7 +4713,7 @@ class ServiceWorkerWarmUpBrowserTestBase : public ServiceWorkerBrowserTest {
       const a = document.createElement('a');
       a.id = $1;
       a.href = $2;
-      a.text = $1;
+      a.innerText = $1;
       document.body.appendChild(a);
     )";
     EXPECT_TRUE(ExecJs(GetPrimaryMainFrame(), JsReplace(script, id, url)));
@@ -4837,10 +4837,13 @@ class ServiceWorkerWarmUpByPointerBrowserTest
   void SimulateMouseEventAndWait(blink::WebInputEvent::Type type,
                                  blink::WebMouseEvent::Button button,
                                  const gfx::Point& point) {
+    base::RunLoop().RunUntilIdle();
     InputEventAckWaiter waiter(
         web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(), type);
     SimulateMouseEvent(web_contents(), type, button, point);
     waiter.Wait();
+    RunUntilInputProcessed(static_cast<WebContentsImpl*>(web_contents())
+                               ->GetRenderWidgetHostWithPageFocus());
   }
 
   void SimulateMouseMoveWithElementIdAndWait(const std::string& id) {
@@ -4862,6 +4865,13 @@ class ServiceWorkerWarmUpByPointerBrowserTest
     while (!version.IsWarmedUp()) {
       run_loop.RunUntilIdle();
     }
+  }
+
+  void RunUntilInputProcessed(RenderWidgetHost* host) {
+    base::RunLoop run_loop;
+    RenderWidgetHostImpl::From(host)->WaitForInputProcessed(
+        run_loop.QuitClosure());
+    run_loop.Run();
   }
 
  private:
