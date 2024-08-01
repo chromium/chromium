@@ -88,7 +88,7 @@ em {
   }
 
   .content > .learn-more-button {
-    display: block;
+    display: inline;
   }
 }
 
