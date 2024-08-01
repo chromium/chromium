@@ -110,6 +110,7 @@ class RecordInfo {
 
   bool RequiresTraceMethod();
   bool NeedsFinalization();
+  bool DeclaresGCMixinMethods();
   bool DeclaresLocalTraceMethod();
   TracingStatus NeedsTracing(Edge::NeedsTracingOption);
   clang::CXXMethodDecl* InheritsNonVirtualTrace();
@@ -148,6 +149,7 @@ class RecordInfo {
   enum CachedBool { kFalse = 0, kTrue = 1, kNotComputed = 2 };
   CachedBool is_stack_allocated_ = kNotComputed;
   CachedBool does_need_finalization_ = kNotComputed;
+  CachedBool has_gc_mixin_methods_ = kNotComputed;
   CachedBool is_declaring_local_trace_ = kNotComputed;
 
   bool determined_new_operator_ = false;

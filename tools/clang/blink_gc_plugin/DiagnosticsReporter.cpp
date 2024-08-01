@@ -77,14 +77,6 @@ const char kWeakPtrToGCManagedClass[] =
     "[blink-gc] WeakPtr or WeakPtrFactory field %0 to a GC managed class %1 "
     "declared here (use WeakCell or WeakCellFactory instead):";
 
-const char kGCedField[] =
-    "[blink-gc] Using GC managed class %1 as field %0 is not allowed (Allocate "
-    "with MakeGarbageCollected and use Member or Persistent instead):";
-
-const char kGCedVar[] =
-    "[blink-gc] Using GC managed class %1 as variable %0 is not allowed "
-    "(Allocate with MakeGarbageCollected and use raw pointer instead):";
-
 const char kTaskRunnerInGCManagedClassNote[] =
     "[blink-gc] TaskRunnerTimer field %0 used within a garbage collected "
     "context. "
@@ -321,8 +313,6 @@ DiagnosticsReporter::DiagnosticsReporter(
       getErrorLevel(), kTraceablePartObjectInUnmanaged);
   diag_weak_ptr_to_gc_managed_class_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kWeakPtrToGCManagedClass);
-  diag_gced_field_ = diagnostic_.getCustomDiagID(getErrorLevel(), kGCedField);
-  diag_gced_var_ = diagnostic_.getCustomDiagID(getErrorLevel(), kGCedVar);
   // Register note messages.
   diag_base_requires_tracing_note_ = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kBaseRequiresTracingNote);
@@ -855,15 +845,4 @@ void DiagnosticsReporter::WeakPtrToGCed(const clang::Decl* decl,
                                         const clang::CXXRecordDecl* gc_type) {
   ReportDiagnostic(decl->getBeginLoc(), diag_weak_ptr_to_gc_managed_class_)
       << weak_ptr << gc_type << decl->getSourceRange();
-}
-
-void DiagnosticsReporter::GCedField(const clang::FieldDecl* field,
-                                    const clang::CXXRecordDecl* gctype) {
-  ReportDiagnostic(field->getBeginLoc(), diag_gced_field_)
-      << field << gctype << field->getSourceRange();
-}
-void DiagnosticsReporter::GCedVar(const clang::VarDecl* var,
-                                  const clang::CXXRecordDecl* gctype) {
-  ReportDiagnostic(var->getBeginLoc(), diag_gced_var_)
-      << var << gctype << var->getSourceRange();
 }

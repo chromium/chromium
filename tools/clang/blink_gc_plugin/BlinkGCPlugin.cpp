@@ -47,8 +47,6 @@ class BlinkGCPluginAction : public PluginASTAction {
         options_.enable_off_heap_collections_of_gced_check = false;
       } else if (arg == "enable-ptrs-to-traceable-check") {
         options_.enable_ptrs_to_traceable_check = true;
-      } else if (arg == "enable-gced-vars-and-fields-check") {
-        options_.enable_gced_vars_and_fields_check = true;
       } else {
         llvm::errs() << "Unknown blink-gc-plugin argument: " << arg << "\n";
         return false;

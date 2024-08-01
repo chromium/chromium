@@ -3,17 +3,14 @@
 // found in the LICENSE file.
 
 #include "BadPatternFinder.h"
-
 #include <clang/AST/Decl.h>
 #include <clang/AST/RecordLayout.h>
-
-#include <algorithm>
-#include <filesystem>
-
 #include "BlinkGCPluginOptions.h"
 #include "Config.h"
 #include "DiagnosticsReporter.h"
 #include "RecordInfo.h"
+
+#include <algorithm>
 #include "clang/AST/ASTContext.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
@@ -521,68 +518,6 @@ class PaddingInGCedMatcher : public MatchFinder::MatchCallback {
   DiagnosticsReporter& diagnostics_;
 };
 
-class GCedVarOrField : public MatchFinder::MatchCallback {
- public:
-  GCedVarOrField(DiagnosticsReporter& diagnostics,
-                 const clang::SourceManager& source_manager)
-      : diagnostics_(diagnostics), source_manager_(source_manager) {}
-
-  void Register(MatchFinder& match_finder) {
-    auto gced_field =
-        fieldDecl(hasType(GarbageCollectedType())).bind("bad_field");
-    // As opposed to definitions, declarations of function templates with
-    // unfulfilled requires-clauses get instantiated and as such are observable
-    // in the clang AST (as functions without a body). If such a method takes a
-    // GCed type as a parameter, we should not alert on it since the method is
-    // never actually used. This is common in Blink due to the implementation of
-    // the variant CHECK_* and DCHECK_* macros (specifically the
-    // DEFINE_CHECK_OP_IMPL macro).
-    auto unimplemented_template_instance_parameter =
-        parmVarDecl(hasAncestor(functionDecl(hasParent(functionTemplateDecl()),
-                                             unless(hasBody(stmt())))));
-    auto gced_var = varDecl(hasType(GarbageCollectedType()),
-                            unless(unimplemented_template_instance_parameter))
-                        .bind("bad_var");
-    match_finder.addDynamicMatcher(gced_field, this);
-    match_finder.addDynamicMatcher(gced_var, this);
-  }
-
-  void run(const MatchFinder::MatchResult& result) override {
-    const auto* gctype = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
-    assert(gctype);
-    if (Config::IsGCCollection(gctype->getName())) {
-      return;
-    }
-    const auto* field = result.Nodes.getNodeAs<clang::FieldDecl>("bad_field");
-    if (field) {
-      if (Config::IsIgnoreAnnotated(field) || IsPartOfGTest(field)) {
-        return;
-      }
-      diagnostics_.GCedField(field, gctype);
-    } else {
-      const auto* var = result.Nodes.getNodeAs<clang::VarDecl>("bad_var");
-      assert(var);
-      if (Config::IsIgnoreAnnotated(var) || IsPartOfGTest(var)) {
-        return;
-      }
-      diagnostics_.GCedVar(var, gctype);
-    }
-  }
-
- private:
-  // Ignore violation in gtest since we can't change gtest and it won't affect
-  // production code.
-  bool IsPartOfGTest(const clang::Decl* decl) {
-    std::string filename =
-        source_manager_.getFilename(decl->getLocation()).str();
-    std::filesystem::path filepath(filename);
-    return filepath.parent_path().filename() == "gtest";
-  }
-
-  DiagnosticsReporter& diagnostics_;
-  const clang::SourceManager& source_manager_;
-};
-
 }  // namespace
 
 void FindBadPatterns(clang::ASTContext& ast_context,
@@ -619,11 +554,6 @@ void FindBadPatterns(clang::ASTContext& ast_context,
 
   WeakPtrToGCedMatcher weak_ptr_to_gced(diagnostics);
   weak_ptr_to_gced.Register(match_finder);
-
-  GCedVarOrField gced_var_or_field(diagnostics, ast_context.getSourceManager());
-  if (options.enable_gced_vars_and_fields_check) {
-    gced_var_or_field.Register(match_finder);
-  }
 
   match_finder.matchAST(ast_context);
 }

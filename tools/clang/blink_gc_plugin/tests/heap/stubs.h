@@ -8,9 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define GC_PLUGIN_IGNORE(reason) \
-  __attribute__((annotate("blink_gc_plugin_ignore")))
-
 namespace base {
 
 template <typename T>
@@ -176,7 +173,7 @@ class array {
   const Elem* end() const { return &elems_[N]; }
 
  private:
-  GC_PLUGIN_IGNORE("A mock of an array for testing") Elem elems_[N];
+  Elem elems_[N];
 };
 template <typename T1, typename T2>
 class pair {};
@@ -294,6 +291,8 @@ T* MakeGarbageCollected(int, Args&&... args) {
 
 class GarbageCollectedMixin {
  public:
+  virtual void AdjustAndMark(Visitor*) const = 0;
+  virtual bool IsHeapObjectAlive(Visitor*) const = 0;
   virtual void Trace(Visitor*) const {}
 };
 
@@ -406,6 +405,9 @@ using namespace WTF;
  private:                                                  \
   void* operator new(size_t) = delete;                     \
   void* operator new(size_t, void*) = delete
+
+#define GC_PLUGIN_IGNORE(bug) \
+  __attribute__((annotate("blink_gc_plugin_ignore")))
 
 template <typename T>
 class RefCountedGarbageCollected : public GarbageCollected<T> {};
