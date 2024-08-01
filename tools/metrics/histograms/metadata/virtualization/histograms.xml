@@ -85,12 +85,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.SecurityKeyAttach" enum="BooleanSuccess"
-    expires_after="2024-09-01">
+    expires_after="2025-02-01">
   <owner>morg@google.com</owner>
   <owner>uekawa@google.com</owner>
   <summary>
-    True when the vmc command to attach a security key to a VM is successful.
-    False when the command has failed.
+    True when the vmc key-attach command to attach a security key to a VM is
+    successful. False when the command has failed.
   </summary>
   <token key="Name" variants="VmName"/>
 </histogram>
