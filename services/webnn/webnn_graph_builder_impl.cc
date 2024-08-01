@@ -16,6 +16,7 @@
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_utils.h"
 
 namespace webnn {
 
@@ -743,14 +744,6 @@ bool ValidateConv2d(const ContextProperties& context_properties,
   }
 
   return true;
-}
-
-bool IsLogicalElementWiseBinary(mojom::ElementWiseBinary::Kind kind) {
-  return kind == mojom::ElementWiseBinary::Kind::kEqual ||
-         kind == mojom::ElementWiseBinary::Kind::kGreater ||
-         kind == mojom::ElementWiseBinary::Kind::kGreaterOrEqual ||
-         kind == mojom::ElementWiseBinary::Kind::kLesser ||
-         kind == mojom::ElementWiseBinary::Kind::kLesserOrEqual;
 }
 
 bool ValidateElementWiseBinaryDataTypes(

@@ -24,6 +24,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/overloaded.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -1203,7 +1204,7 @@ GraphBuilderCoreml::AddUnaryFloatsOperationWithEpsilon(
   SetInputWithName(*op->mutable_inputs(), kOpParamX, input_name);
 
   SetInputWithValue(*op->mutable_inputs(), kOpParamEpsilon,
-                    CreateScalarImmediateValue(epsilon));
+                    CreateFloatValue(input_mil_data_type, epsilon));
 
   PopulateNamedValueType(output_operand_id, *op->add_outputs());
   return base::ok();
@@ -1524,7 +1525,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConv2d(
 base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForElementwiseBinary(
     uint64_t lhs_operand_id,
-    uint64_t rhs_operand_id,
+    std::variant<uint64_t, CoreML::Specification::MILSpec::Value> rhs_operand,
     uint64_t output_operand_id,
     const mojom::ElementWiseBinary::Kind kind,
     CoreML::Specification::MILSpec::Block& block) {
@@ -1533,10 +1534,8 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
   std::string operand_op_name = OpKindToString(kind);
 
   const OperandInfo& lhs_operand_info = GetOperandInfo(lhs_operand_id);
-  const OperandInfo& rhs_operand_info = GetOperandInfo(rhs_operand_id);
 
-  if (!kFloatsAndInt32DataTypes.contains(lhs_operand_info.mil_data_type) ||
-      !kFloatsAndInt32DataTypes.contains(rhs_operand_info.mil_data_type)) {
+  if (!kFloatsAndInt32DataTypes.contains(lhs_operand_info.mil_data_type)) {
     return NewNotSupportedError(NotSupportedInputArgumentTypeError(
         operand_op_name,
         MILDataTypeToOperandType(lhs_operand_info.mil_data_type)));
@@ -1544,10 +1543,24 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
 
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    lhs_operand_info.coreml_name);
-  SetInputWithName(*op->mutable_inputs(), kOpParamY,
-                   rhs_operand_info.coreml_name);
 
-  bool is_logical_binary_operation = false;
+  std::visit(
+      base::Overloaded{[&](uint64_t rhs_operand_id) {
+                         const OperandInfo& rhs_operand_info =
+                             GetOperandInfo(rhs_operand_id);
+                         // TODO: crbug.com/345271830 - use context_properties
+                         // to check.
+                         CHECK(kFloatsAndInt32DataTypes.contains(
+                             rhs_operand_info.mil_data_type));
+                         SetInputWithName(*op->mutable_inputs(), kOpParamY,
+                                          rhs_operand_info.coreml_name);
+                       },
+                       [&](CoreML::Specification::MILSpec::Value rhs_value) {
+                         SetInputWithValue(*op->mutable_inputs(), kOpParamY,
+                                           rhs_value);
+                       }},
+      rhs_operand);
+
   switch (kind) {
     case mojom::ElementWiseBinary::Kind::kAdd: {
       op->set_type(kOpAddTypeName);
@@ -1579,32 +1592,27 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
     }
     case mojom::ElementWiseBinary::Kind::kEqual: {
       op->set_type(kOpLogicalEqual);
-      is_logical_binary_operation = true;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kGreater: {
       op->set_type(kOpLogicalGreater);
-      is_logical_binary_operation = true;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
       op->set_type(kOpLogicalGreaterEqual);
-      is_logical_binary_operation = true;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLesser: {
       op->set_type(kOpLogicalLess);
-      is_logical_binary_operation = true;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
       op->set_type(kOpLogicalLessEqual);
-      is_logical_binary_operation = true;
       break;
     }
   }
 
-  if (is_logical_binary_operation) {
+  if (IsLogicalElementWiseBinary(kind)) {
     // The output of logical binary ops need to be cast from a boolean
     // tensor that CoreML provides to an UInt8 that WebNN expects.
     ASSIGN_OR_RETURN(uint64_t internal_output_id,
@@ -1730,9 +1738,6 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
             input_data_type == CoreML::Specification::MILSpec::DataType::INT8);
 
       // Implement this as mul(a, -1)
-      ASSIGN_OR_RETURN(uint64_t negative_one_operand_id,
-                       GenerateInternalOperandInfo(input_data_type,
-                                                   /*dimensions=*/{}));
       CoreML::Specification::MILSpec::Value negative_one_value;
       switch (input_data_type) {
         case CoreML::Specification::MILSpec::DataType::FLOAT32:
@@ -1751,11 +1756,9 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
         default:
           NOTREACHED_NORETURN();
       }
-      RETURN_IF_ERROR(AddInternalConstantWithValue(negative_one_operand_id,
-                                                   negative_one_value, block));
       return AddOperationForElementwiseBinary(
           /*lhs_operand_id=*/input_operand_id,
-          /*rhs_operand_id=*/negative_one_operand_id,
+          /*rhs_operand=*/negative_one_value,
           /*output_operand_id=*/output_operand_id,
           mojom::ElementWiseBinary::Kind::kMul, block);
     }
@@ -1895,6 +1898,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGemm(
   const OperandInfo& b_operand_info = GetOperandInfo(operation.b_operand_id);
   CHECK(a_operand_info.dimensions.size() == 2 &&
         b_operand_info.dimensions.size() == 2);
+  CHECK(kFloatDataTypes.contains(a_operand_info.mil_data_type));
+  CHECK(kFloatDataTypes.contains(b_operand_info.mil_data_type));
 
   uint32_t first_dimension = operation.a_transpose
                                  ? a_operand_info.dimensions[1]
@@ -1918,32 +1923,17 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGemm(
       operation.b_transpose, matmul_output, block));
 
   if (operation.alpha != 1.0f) {
-    // TODO: crbug.com/339238741 - figure out how to support fp16. For
-    // `mul(alpha, matmul(A, B))`, the two inputs to `mul` must match.
-    if (a_operand_info.mil_data_type !=
-        CoreML::Specification::MILSpec::FLOAT32) {
-      static constexpr char kArgumentA[] = "a";
-      return NewNotSupportedError(NotSupportedArgumentTypeError(
-          ops::kGemm, kArgumentA,
-          MILDataTypeToOperandType(a_operand_info.mil_data_type)));
-    }
     uint64_t with_alpha_output = operation.output_operand_id;
     if (operation.c_operand_id) {
       ASSIGN_OR_RETURN(with_alpha_output,
                        GenerateInternalOperandInfo(a_operand_info.mil_data_type,
                                                    matmul_dimensions));
     }
-    ASSIGN_OR_RETURN(uint64_t alpha_operand_id,
-                     GenerateInternalOperandInfo(
-                         CoreML::Specification::MILSpec::DataType::FLOAT32,
-                         /*dimensions=*/{}));
-
-    RETURN_IF_ERROR(AddInternalConstantWithValue(
-        alpha_operand_id, CreateScalarImmediateValue(operation.alpha), block));
 
     RETURN_IF_ERROR(AddOperationForElementwiseBinary(
-        matmul_output, alpha_operand_id, with_alpha_output,
-        mojom::ElementWiseBinary::Kind::kMul, block));
+        matmul_output,
+        CreateFloatValue(a_operand_info.mil_data_type, operation.alpha),
+        with_alpha_output, mojom::ElementWiseBinary::Kind::kMul, block));
     matmul_output = with_alpha_output;
   }
 
@@ -1951,32 +1941,17 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForGemm(
     return base::ok();
   }
   uint64_t c_operand_id = operation.c_operand_id.value();
+  const OperandInfo& c_operand_info = GetOperandInfo(c_operand_id);
+  CHECK(kFloatDataTypes.contains(c_operand_info.mil_data_type));
 
   if (operation.beta != 1.0f) {
-    static constexpr char kOptionC[] = "c";
-
-    // TODO: crbug.com/339238741 - figure out how to support fp16. For
-    // `mul(beta, C)`, the two inputs to `mul` must match.
-    const OperandInfo& c_operand_info = GetOperandInfo(c_operand_id);
-    if (c_operand_info.mil_data_type !=
-        CoreML::Specification::MILSpec::FLOAT32) {
-      return NewNotSupportedError(NotSupportedOptionTypeError(
-          ops::kGemm, kOptionC,
-          MILDataTypeToOperandType(c_operand_info.mil_data_type)));
-    }
-    ASSIGN_OR_RETURN(uint64_t beta_operand_id,
-                     GenerateInternalOperandInfo(
-                         CoreML::Specification::MILSpec::DataType::FLOAT32,
-                         /*dimensions=*/{}));
-    RETURN_IF_ERROR(AddInternalConstantWithValue(
-        beta_operand_id, CreateScalarImmediateValue(operation.beta), block));
-
     ASSIGN_OR_RETURN(uint64_t with_beta_output,
                      GenerateInternalOperandInfo(a_operand_info.mil_data_type,
                                                  matmul_dimensions));
     RETURN_IF_ERROR(AddOperationForElementwiseBinary(
-        c_operand_id, beta_operand_id, with_beta_output,
-        mojom::ElementWiseBinary::Kind::kMul, block));
+        c_operand_id,
+        CreateFloatValue(c_operand_info.mil_data_type, operation.beta),
+        with_beta_output, mojom::ElementWiseBinary::Kind::kMul, block));
     c_operand_id = with_beta_output;
   }
   return AddOperationForElementwiseBinary(
@@ -2122,37 +2097,21 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForLinear(
   //   add(mul(alpha, a), beta)
 
   // Perform: mul(alpha, a)
-  //
-  // TODO: crbug.com/339238741 - Use float16 when the input is float16.
-  ASSIGN_OR_RETURN(uint64_t alpha_operand_id,
-                   GenerateInternalOperandInfo(
-                       CoreML::Specification::MILSpec::DataType::FLOAT32,
-                       /*dimensions=*/{}));
-  RETURN_IF_ERROR(AddInternalConstantWithValue(
-      alpha_operand_id, CreateScalarImmediateValue(operation.alpha), block));
-
   ASSIGN_OR_RETURN(uint64_t mul_output,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
       /*lhs_operand_id=*/operation.input_operand_id,
-      /*rhs_operand_id=*/alpha_operand_id,
+      /*rhs_operand=*/
+      CreateFloatValue(input_operand_info.mil_data_type, operation.alpha),
       /*output_operand_id=*/mul_output, mojom::ElementWiseBinary::Kind::kMul,
       block));
 
   // Perform: add(mul_output, beta)
-  //
-  // TODO: crbug.com/339238741 - Use float16 when the input is float16.
-  ASSIGN_OR_RETURN(uint64_t beta_operand_id,
-                   GenerateInternalOperandInfo(
-                       CoreML::Specification::MILSpec::DataType::FLOAT32,
-                       /*dimensions=*/{}));
-  RETURN_IF_ERROR(AddInternalConstantWithValue(
-      beta_operand_id, CreateScalarImmediateValue(operation.beta), block));
-
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
       /*lhs_operand_id=*/mul_output,
-      /*rhs_operand_id=*/beta_operand_id,
+      /*rhs_operand=*/
+      CreateFloatValue(input_operand_info.mil_data_type, operation.beta),
       /*output_operand_id=*/operation.output_operand_id,
       mojom::ElementWiseBinary::Kind::kAdd, block));
   return base::ok();
@@ -2259,24 +2218,12 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPad(
         "only supports 'constant' mode.");
   }
 
-  CoreML::Specification::MILSpec::Value constant_value;
-  switch (input_operand_info.mil_data_type) {
-    case CoreML::Specification::MILSpec::DataType::FLOAT32:
-      constant_value = CreateScalarImmediateValue(constant);
-      break;
-    case CoreML::Specification::MILSpec::DataType::FLOAT16:
-      constant_value = CreateScalarImmediateValue(
-          static_cast<Float16>(fp16_ieee_from_fp32_value(constant)));
-      break;
-    default:
-      NOTREACHED_NORETURN() << "Invalid input datatype for pad.";
-  }
-
   SetInputsWithValues(
       *op->mutable_inputs(),
       {{kOpParamPad, Create1DTensorImmediateValue<int32_t>(paddings)},
        {kParamMode, CreateStringImmediateValue(mode)},
-       {kParamConstantVal, constant_value}});
+       {kParamConstantVal,
+        CreateFloatValue(input_operand_info.mil_data_type, constant)}});
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
 }
@@ -2804,20 +2751,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddConstantFileValue(
   blob->set_filename(kWeightsRelativeFilePath);
   blob->set_offset(offset);
   attributes["val"] = std::move(blob_value);
-  return base::ok();
-}
-
-base::expected<void, mojom::ErrorPtr>
-GraphBuilderCoreml::AddInternalConstantWithValue(
-    uint64_t internal_operand_id,
-    CoreML::Specification::MILSpec::Value value,
-    CoreML::Specification::MILSpec::Block& block) {
-  auto* op = block.add_operations();
-  RETURN_IF_ERROR(PopulateConstantOpFromOperand(internal_operand_id, *op));
-  auto& attributes = *op->mutable_attributes();
-  attributes["name"] = CreateStringImmediateValue(
-      GetOperandInfo(internal_operand_id).coreml_name);
-  attributes["val"] = std::move(value);
   return base::ok();
 }
 

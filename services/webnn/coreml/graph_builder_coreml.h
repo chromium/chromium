@@ -215,7 +215,7 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForElementwiseBinary(
       uint64_t lhs_operand_id,
-      uint64_t rhs_operand_id,
+      std::variant<uint64_t, CoreML::Specification::MILSpec::Value> rhs_operand,
       uint64_t output_operand_id,
       const mojom::ElementWiseBinary::Kind kind,
       CoreML::Specification::MILSpec::Block& block);
@@ -309,11 +309,6 @@ class GraphBuilderCoreml {
       uint64_t constant_id,
       uint64_t offset,
       CoreML::Specification::MILSpec::Block& block);
-  // Create a `const` operation for an internal operand with `value`.
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-  AddInternalConstantWithValue(uint64_t internal_operand_id,
-                               CoreML::Specification::MILSpec::Value value,
-                               CoreML::Specification::MILSpec::Block& block);
 
   // Populate generic fields that apply to all `const` operations.
   base::expected<void, mojom::ErrorPtr> PopulateConstantOpFromOperand(

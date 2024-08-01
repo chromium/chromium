@@ -53,6 +53,9 @@ std::vector<uint32_t> COMPONENT_EXPORT(WEBNN_UTILS)
     PermuteArray(base::span<const uint32_t> array,
                  base::span<const uint32_t> permutation);
 
+bool COMPONENT_EXPORT(WEBNN_UTILS)
+    IsLogicalElementWiseBinary(mojom::ElementWiseBinary::Kind kind);
+
 }  // namespace webnn
 
 #endif  // SERVICES_WEBNN_WEBNN_UTILS_H_
