@@ -16891,6 +16891,7 @@
                     "enable_features": [
                         "PlusAddressAffiliations",
                         "PlusAddressFallbackFromContextMenu",
+                        "PlusAddressOfferCreationOnSingleUsernameForms",
                         "PlusAddressRefresh",
                         "PlusAddressSettingsRefreshDesktop",
                         "PlusAddressesEnabled",
