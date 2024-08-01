@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
+import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.WebApkSplashscreenMetrics;
 
 import javax.inject.Inject;
@@ -43,6 +44,7 @@ public class WebApkActivityLifecycleUmaTracker
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final SplashController mSplashController;
     private final Lazy<LegacyTabStartupMetricsTracker> mLegacyTabStartupMetricsTracker;
+    private final Lazy<StartupMetricsTracker> mStartupMetricsTracker;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
 
     /** The start time that the activity becomes focused in milliseconds since boot. */
@@ -56,11 +58,13 @@ public class WebApkActivityLifecycleUmaTracker
             ActivityLifecycleDispatcher lifecycleDispatcher,
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
             Lazy<LegacyTabStartupMetricsTracker> legacyStartupMetricsTracker,
+            Lazy<StartupMetricsTracker> startupMetricsTracker,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
         mActivity = activity;
         mIntentDataProvider = intentDataProvider;
         mSplashController = splashController;
         mLegacyTabStartupMetricsTracker = legacyStartupMetricsTracker;
+        mStartupMetricsTracker = startupMetricsTracker;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
 
         lifecycleDispatcher.register(this);
@@ -91,6 +95,7 @@ public class WebApkActivityLifecycleUmaTracker
         // in ChromeTabbedActivity.performPreInflationStartup refer to the comment there for why.
         if (!LibraryLoader.getInstance().isInitialized()) {
             mLegacyTabStartupMetricsTracker.get().setHistogramSuffix(ActivityType.WEB_APK);
+            mStartupMetricsTracker.get().setHistogramSuffix(ActivityType.WEB_APK);
             // If there is a saved instance state, then the intent (and its stored timestamp) might
             // be stale (Android replays intents if there is a recents entry for the activity).
             if (mSavedInstanceStateSupplier.get() == null) {

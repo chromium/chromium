@@ -140,7 +140,6 @@ import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
-import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -428,8 +427,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // Delegate to handle drag and drop features for tablets.
     private DragAndDropDelegate mDragDropDelegate;
 
-    private StartupMetricsTracker mStartupMetricsTracker;
-
     private OneshotSupplierImpl<ModuleRegistry> mModuleRegistrySupplier =
             new OneshotSupplierImpl<>();
 
@@ -534,7 +531,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     protected void onPreCreate() {
         super.onPreCreate();
-        mStartupMetricsTracker = new StartupMetricsTracker(getTabModelSelectorSupplier());
         mMultiInstanceManager =
                 MultiInstanceManager.create(
                         this,
@@ -1366,9 +1362,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private void setTrackColdStartupMetrics(boolean shouldTrackColdStartupMetrics) {
         assert getLegacyTabStartupMetricsTracker() != null;
+        assert getStartupMetricsTracker() != null;
 
         if (shouldTrackColdStartupMetrics) {
             getLegacyTabStartupMetricsTracker().setHistogramSuffix(ActivityType.TABBED);
+            getStartupMetricsTracker().setHistogramSuffix(ActivityType.TABBED);
         } else {
             getLegacyTabStartupMetricsTracker().cancelTrackingStartupMetrics();
         }
@@ -2157,6 +2155,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 this.getLifecycleDispatcher(), tabModelSelector, this::isWarmOnResume);
 
         assert getLegacyTabStartupMetricsTracker() != null;
+        assert getStartupMetricsTracker() != null;
         StartupPaintPreviewHelper paintPreviewHelper =
                 new StartupPaintPreviewHelper(
                         getWindowAndroid(),
@@ -2170,8 +2169,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         });
         mStartupPaintPreviewHelperSupplier.set(paintPreviewHelper);
         getLegacyTabStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
-        assert mStartupMetricsTracker != null;
-        mStartupMetricsTracker.registerPaintPreviewObserver(paintPreviewHelper);
+        getStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
 
         maybeRegisterHomeModules();
     }
@@ -3221,11 +3219,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (mDragDropDelegate != null) {
             mDragDropDelegate.destroy();
-        }
-
-        if (mStartupMetricsTracker != null) {
-            mStartupMetricsTracker.destroy();
-            mStartupMetricsTracker = null;
         }
 
         if (mHubProvider != null) mHubProvider.destroy();

@@ -95,14 +95,6 @@ public class LegacyTabStartupMetricsTracker {
     // value is not lost after posting a few tasks.
     private final AtomicLong mFirstSafetyNetResponseTimeMicros = new AtomicLong();
 
-    // The time it took for SafeBrowsing API to return a Safe Browsing response for the first time.
-    // The SB request is on the critical path to navigation commit, and the response may be severely
-    // delayed by GmsCore (see http://crbug.com/1296097). The value is recorded only when the
-    // navigation commits successfully and the URL of first navigation is checked by SafeBrowsing
-    // API. Updating the value atomically from another thread to provide a simpler guarantee that
-    // the value is not lost after posting a few tasks.
-    private final AtomicLong mFirstSafeBrowsingResponseTimeMicros = new AtomicLong();
-
     public LegacyTabStartupMetricsTracker(
             long activityId, ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivityId = activityId;
@@ -111,21 +103,16 @@ public class LegacyTabStartupMetricsTracker {
         tabModelSelectorSupplier.addObserver(this::registerObservers);
         SafeBrowsingApiBridge.setOneTimeSafetyNetApiUrlCheckObserver(
                 this::updateSafetyNetCheckTime);
-        SafeBrowsingApiBridge.setOneTimeSafeBrowsingApiUrlCheckObserver(
-                this::updateSafeBrowsingCheckTime);
     }
 
     private void updateSafetyNetCheckTime(long urlCheckTimeDeltaMicros) {
         mFirstSafetyNetResponseTimeMicros.compareAndSet(0, urlCheckTimeDeltaMicros);
     }
 
-    private void updateSafeBrowsingCheckTime(long urlCheckTimeDeltaMicros) {
-        mFirstSafeBrowsingResponseTimeMicros.compareAndSet(0, urlCheckTimeDeltaMicros);
-    }
-
     /**
      * Choose the UMA histogram to record later. The {@link ActivityType} parameter indicates the
      * kind of startup scenario to track. Only two scenarios are supported.
+     *
      * @param activityType Either TABBED or WEB_APK.
      */
     public void setHistogramSuffix(@ActivityType int activityType) {
@@ -315,12 +302,6 @@ public class LegacyTabStartupMetricsTracker {
             RecordHistogram.recordMediumTimesHistogram(
                     "Startup.Android.Cold.FirstSafeBrowsingResponseTime.Tabbed",
                     safetyNetDeltaMicros / 1000);
-        }
-        long safeBrowsingDeltaMicros = mFirstSafeBrowsingResponseTimeMicros.getAndSet(0);
-        if (safeBrowsingDeltaMicros != 0) {
-            RecordHistogram.recordMediumTimesHistogram(
-                    "Startup.Android.Cold.FirstSafeBrowsingApiResponseTime.Tabbed",
-                    safeBrowsingDeltaMicros / 1000);
         }
     }
 

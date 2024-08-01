@@ -124,6 +124,7 @@ import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
+import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -351,6 +352,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     private LegacyTabStartupMetricsTracker mLegacyTabStartupMetricsTracker;
 
+    private StartupMetricsTracker mStartupMetricsTracker;
+
     /** A means of providing the foreground tab of the activity to different features. */
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
@@ -433,6 +436,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // lifetime.
         mLegacyTabStartupMetricsTracker =
                 new LegacyTabStartupMetricsTracker(mActivityId, mTabModelSelectorSupplier);
+        mStartupMetricsTracker = new StartupMetricsTracker(mTabModelSelectorSupplier);
         CachedFlagsSafeMode.getInstance().onStartOrResumeCheckpoint();
         super.onPreCreate();
         initializeBackPressHandling();
@@ -608,6 +612,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 this::getNotificationManagerProxy,
                                 getTabContentManagerSupplier(),
                                 this::getLegacyTabStartupMetricsTracker,
+                                this::getStartupMetricsTracker,
                                 /* compositorViewHolderInitializer= */ this,
                                 /* chromeActivityNativeDelegate= */ this,
                                 getModalDialogManagerSupplier(),
@@ -641,6 +646,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 this::getNotificationManagerProxy,
                                 getTabContentManagerSupplier(),
                                 this::getLegacyTabStartupMetricsTracker,
+                                this::getStartupMetricsTracker,
                                 /* CompositorViewHolder.Initializer */ this,
                                 /* ChromeActivityNativeDelegate */ this,
                                 getModalDialogManagerSupplier(),
@@ -769,6 +775,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     public LegacyTabStartupMetricsTracker getLegacyTabStartupMetricsTracker() {
         return mLegacyTabStartupMetricsTracker;
+    }
+
+    public StartupMetricsTracker getStartupMetricsTracker() {
+        return mStartupMetricsTracker;
     }
 
     @Override
@@ -1675,6 +1685,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (mLegacyTabStartupMetricsTracker != null) {
             mLegacyTabStartupMetricsTracker.destroy();
             mLegacyTabStartupMetricsTracker = null;
+        }
+
+        if (mStartupMetricsTracker != null) {
+            mStartupMetricsTracker.destroy();
+            mStartupMetricsTracker = null;
         }
 
         destroyTabModels();

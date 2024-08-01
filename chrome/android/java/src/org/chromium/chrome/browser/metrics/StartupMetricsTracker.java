@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.base.ColdStartTracker;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.PaintPreviewMetricsObserver;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -124,11 +126,36 @@ public class StartupMetricsTracker {
     private TabModelSelectorTabObserver mTabObserver;
     private PageObserver mPageObserver;
     private boolean mShouldTrack = true;
+    private @ActivityType int mHistogramSuffix;
 
-    public StartupMetricsTracker(
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+    // The time it took for SafeBrowsing API to return a Safe Browsing response for the first time.
+    // The SB request is on the critical path to navigation commit, and the response may be severely
+    // delayed by GmsCore (see http://crbug.com/1296097). The value is recorded only when the
+    // navigation commits successfully and the URL of first navigation is checked by SafeBrowsing
+    // API. Utilizing a volatile long here to ensure the write is immediately visible to other
+    // threads.
+    private volatile long mFirstSafeBrowsingResponseTimeMicros;
+    private boolean mFirstSafeBrowsingResponseTimeRecorded;
+
+    public StartupMetricsTracker(ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
         tabModelSelectorSupplier.addObserver(this::registerObservers);
+        SafeBrowsingApiBridge.setOneTimeSafeBrowsingApiUrlCheckObserver(
+                this::updateSafeBrowsingCheckTime);
+    }
+
+    private void updateSafeBrowsingCheckTime(long urlCheckTimeDeltaMicros) {
+        mFirstSafeBrowsingResponseTimeMicros = urlCheckTimeDeltaMicros;
+    }
+
+    /**
+     * Choose the UMA histogram to record later. The {@link ActivityType} parameter indicates the
+     * kind of startup scenario to track.
+     *
+     * @param activityType Either TABBED or WEB_APK.
+     */
+    public void setHistogramSuffix(@ActivityType int activityType) {
+        mHistogramSuffix = activityType;
     }
 
     private void registerObservers(TabModelSelector tabModelSelector) {
@@ -167,21 +194,29 @@ public class StartupMetricsTracker {
         }
     }
 
+    private String activityTypeToSuffix(@ActivityType int type) {
+        if (type == ActivityType.TABBED) return ".Tabbed";
+        assert type == ActivityType.WEB_APK;
+        return ".WebApk";
+    }
+
     private void recordExperimentalHistogram(String name, long ms) {
         RecordHistogram.recordMediumTimesHistogram(
                 "Startup.Android.Experimental." + name + ".Tabbed.ColdStartTracker", ms);
     }
 
-    private void recordColdStartHistogram(String name, long ms) {
-        RecordHistogram.recordMediumTimesHistogram("Startup.Android.Cold." + name + ".Tabbed", ms);
-    }
-
     private void recordNavigationCommitMetrics(long firstCommitMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
-            recordExperimentalHistogram("FirstNavigationCommit", firstCommitMs);
-            recordColdStartHistogram("TimeToFirstNavigationCommit3", firstCommitMs);
-            recordTimeToFirstVisibleContent3(firstCommitMs);
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Startup.Android.Cold.TimeToFirstNavigationCommit3"
+                            + activityTypeToSuffix(mHistogramSuffix),
+                    firstCommitMs);
+            if (mHistogramSuffix == ActivityType.TABBED) {
+                recordExperimentalHistogram("FirstNavigationCommit", firstCommitMs);
+                recordFirstSafeBrowsingResponseTime();
+                recordTimeToFirstVisibleContent3(firstCommitMs);
+            }
         }
     }
 
@@ -189,7 +224,8 @@ public class StartupMetricsTracker {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
             recordExperimentalHistogram("FirstContentfulPaint", firstFcpMs);
-            recordColdStartHistogram("TimeToFirstContentfulPaint3", firstFcpMs);
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed", firstFcpMs);
         }
     }
 
@@ -198,6 +234,17 @@ public class StartupMetricsTracker {
 
         mFirstVisibleContent3Recorded = true;
         RecordHistogram.recordMediumTimesHistogram(
-            "Startup.Android.Cold.TimeToFirstVisibleContent3", durationMs);
+                "Startup.Android.Cold.TimeToFirstVisibleContent3", durationMs);
+    }
+
+    private void recordFirstSafeBrowsingResponseTime() {
+        if (mFirstSafeBrowsingResponseTimeRecorded) return;
+        mFirstSafeBrowsingResponseTimeRecorded = true;
+
+        if (mFirstSafeBrowsingResponseTimeMicros != 0) {
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Startup.Android.Cold.FirstSafeBrowsingApiResponseTime2.Tabbed",
+                    mFirstSafeBrowsingResponseTimeMicros / 1000);
+        }
     }
 }

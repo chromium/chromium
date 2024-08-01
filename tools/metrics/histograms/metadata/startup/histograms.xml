@@ -78,16 +78,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.Cold.FirstSafeBrowsingApiResponseTime.Tabbed"
-    units="ms" expires_after="2024-12-08">
+<histogram name="Startup.Android.Cold.FirstSafeBrowsingApiResponseTime2.Tabbed"
+    units="ms" expires_after="2025-01-29">
   <owner>xinghuilu@chromium.org</owner>
+  <owner>nafisabedin@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    The time it took GmsCore SafeBrowsing API to respond to SafeBrowsing request
-    (either through hash-prefix database or hash-prefix real time) in the
-    process lifetime. Recorded at the same time as
-    Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed. Only logged if the
-    URL of the first navigation is checked by SafeBrowsing API.
+    The time it took GmsCore SafeBrowsing API to respond to the first
+    SafeBrowsing request for the Tabbed Activity during a cold start. Cold start
+    is determined by whether the process creation reason is Activity.
+
+    Similarly to Startup.Android.Cold.TimeToFirstVisibleContent2 omits recording
+    a sample:
+
+    1. when the first Activity is a CCT/WebAPK/TWA,
+
+    2. when an error page is committed,
+
+    3. for non-http(s) pages,
+
+    4. for downloads,
+
+    5. when another activity was shown and hidden before the first navigation
+    committed,
+
+    6. when the first navigation was preceded by showing a NTP (New Tab Page).
+
+    This v2 metric is recorded at the same time as
+    Startup.Android.Cold.TimeToFirstNavigationCommit3.Tabbed, utilizing
+    ColdStartTracker. Only logged if the URL of the first navigation is checked
+    by SafeBrowsing API.
   </summary>
 </histogram>
 
@@ -180,23 +200,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.Cold.TimeToFirstNavigationCommit3.Tabbed"
+<histogram
+    name="Startup.Android.Cold.TimeToFirstNavigationCommit3.{ActivityType}"
     units="ms" expires_after="2025-01-26">
   <owner>pasko@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <owner>nafisabedin@google.com</owner>
   <summary>
-    The time from activity creation on a cold start to FirstNavigationCommit
-    happening in this activity. Cold start is determined by whether the process
-    creation reason is Activity.
+    The time from activity creation on a cold start to the FirstNavigationCommit
+    happening for a particular {ActivityType}. Cold start is determined by
+    whether the process creation reason is Activity.
 
-    Recorded only for tabbed activity and on cold starts. Therefore it cannot be
-    recorded more than once in the application lifetime.
+    Recorded for both Tabbed Activities and WebApks only during cold starts.
 
-    Similarly to Startup.Android.Cold.TimeToFirstVisibleContent2 omits recording
-    a sample:
+    Omits recording a sample:
 
-    1. when the first Activity is a CCT/WebAPK/TWA,
+    1. when the first Activity is a CCT/TWA,
 
     2. when an error page is committed,
 
@@ -211,16 +230,20 @@ chromium-metrics-reviews@google.com.
 
     This metric aims to replace
     Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed due to a loss of
-    samples for the v2 metric.
+    samples for the v2 metric as well as add a .WebApk variant similar to the v1
+    metric.
 
-    It utilizes ColdStartTracker and is semantically the same as
-    Startup.Android.Experimental.FirstNavigationCommit.Tabbed.ColdStartTracker.
-    This v3 metric records 5x more samples than what the v2 metric currently
-    records. The Experimental metric is currently being used to diagnose A/B
-    problems running in the field so the new metric will replace it and the v2
-    metric once it approximately reaches the counts of the Experimental one on
-    Chrome Stable.
+    It utilizes ColdStartTracker and records 5x more samples than what the v2
+    metric currently records. The Experimental metric,
+    Startup.Android.Experimental.FirstNavigationCommit.Tabbed.ColdStartTracker
+    is currently being used to diagnose A/B problems running in the field so the
+    new metric will replace it and the v2 metric once it approximately reaches
+    the counts of the Experimental one on Chrome Stable.
   </summary>
+  <token key="ActivityType">
+    <variant name="Tabbed"/>
+    <variant name="WebApk"/>
+  </token>
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToFirstVisibleContent" units="ms"
@@ -388,7 +411,7 @@ chromium-metrics-reviews@google.com.
     Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed, was one of the
     sub-metrics, however, moving the native library initialization to be earlier
     resulted in a loss of samples. Therefore, the new sub-metric,
-    TimeToFirstNavigationCommit3, utilizes ColdStartTracker for its lower
+    TimeToFirstNavigationCommit3.Tabbed, utilizes ColdStartTracker for its lower
     maintenance risks, and preservation of the good properties from v2, all
     while providing 5x more samples.
   </summary>
