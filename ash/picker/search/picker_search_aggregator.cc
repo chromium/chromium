@@ -153,10 +153,10 @@ void PickerSearchAggregator::PublishBurnInResults() {
   base::flat_set<PickerSectionType> published_types;
 
   // The None section always goes first.
-  if (auto it = accumulated_results_.find(PickerSectionType::kNone);
-      it != accumulated_results_.end() && !it->second.results.empty()) {
+  if (UnpublishedResults* none_results =
+          AccumulatedResultsForSection(PickerSectionType::kNone)) {
     sections.emplace_back(PickerSectionType::kNone,
-                          std::move(it->second.results),
+                          std::move(none_results->results),
                           /*has_more=*/false);
     published_types.insert(PickerSectionType::kNone);
   }
@@ -168,11 +168,10 @@ void PickerSearchAggregator::PublishBurnInResults() {
            PickerSectionType::kDriveFiles,
            PickerSectionType::kClipboard,
        }) {
-    if (auto it = accumulated_results_.find(type);
-        it != accumulated_results_.end() &&
-        base::ranges::any_of(it->second.results, &ShouldPromote)) {
-      sections.emplace_back(type, std::move(it->second.results),
-                            it->second.has_more);
+    if (UnpublishedResults* results = AccumulatedResultsForSection(type);
+        results && base::ranges::any_of(results->results, &ShouldPromote)) {
+      sections.emplace_back(type, std::move(results->results),
+                            results->has_more);
       published_types.insert(type);
     }
   }
@@ -189,10 +188,9 @@ void PickerSearchAggregator::PublishBurnInResults() {
     if (published_types.contains(type)) {
       continue;
     }
-    if (auto it = accumulated_results_.find(type);
-        it != accumulated_results_.end() && !it->second.results.empty()) {
-      sections.emplace_back(type, std::move(it->second.results),
-                            it->second.has_more);
+    if (UnpublishedResults* results = AccumulatedResultsForSection(type)) {
+      sections.emplace_back(type, std::move(results->results),
+                            results->has_more);
     }
   }
   if (!sections.empty()) {
@@ -202,6 +200,18 @@ void PickerSearchAggregator::PublishBurnInResults() {
 
 base::WeakPtr<PickerSearchAggregator> PickerSearchAggregator::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+PickerSearchAggregator::UnpublishedResults*
+PickerSearchAggregator::AccumulatedResultsForSection(PickerSectionType type) {
+  auto it = accumulated_results_.find(type);
+  if (it == accumulated_results_.end()) {
+    return nullptr;
+  }
+  if (it->second.results.empty()) {
+    return nullptr;
+  }
+  return &it->second;
 }
 
 }  // namespace ash

@@ -62,6 +62,9 @@ class ASH_EXPORT PickerSearchAggregator {
 
   void PublishBurnInResults();
 
+  // Returns nullptr if there are no accumulated results for the section type.
+  UnpublishedResults* AccumulatedResultsForSection(PickerSectionType type);
+
   base::OneShotTimer burn_in_timer_;
 
   PickerViewDelegate::SearchResultsCallback current_callback_;
