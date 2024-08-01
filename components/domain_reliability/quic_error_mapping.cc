@@ -480,6 +480,10 @@ const struct QuicErrorMapping {
     {quic::QUIC_HANDSHAKE_FAILED_PACKETS_BUFFERED_TOO_LONG,
      "quic.quic_handshake_failed_packets_buffered_too_long"},
 
+    // Client application lost network access.
+    {quic::QUIC_CLIENT_LOST_NETWORK_ACCESS,
+     "quic.quic_client_lost_network_access"},
+
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};
 
