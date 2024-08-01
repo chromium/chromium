@@ -8887,30 +8887,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "upm-local-no-migration",
-    "owners": [
-      "izuzic@google.com",
-      "ioanap@chromium.org"
-    ],
-    "expiry_milestone": 128
-  },
-  {
-    "name": "upm-local-with-migration",
-    "owners": [
-      "izuzic@google.com",
-      "ioanap@chromium.org"
-    ],
-    "expiry_milestone": 128
-  },
-  {
-    "name": "upm-sync-only-in-gms-core",
-    "owners": [
-      "sygiet@google.com",
-      "vasilii@chromium.org"
-    ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "upstream-trusted-reports-firmware",
     "owners": [ "rishabhagr@chromium.org" ],
     "expiry_milestone": 127

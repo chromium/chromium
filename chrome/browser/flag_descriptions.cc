@@ -4889,41 +4889,6 @@ const char
         "various communication channels about data/feature access loss unless "
         "they upgrade GMSCore.";
 
-const char kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationName[] =
-    "Google Mobile Services for passwords for users with empty local password "
-    "storage";
-const char
-    kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationDescription[] =
-        "Uses Google Mobile Services to store and retrieve passwords. "
-        "This only applies for users with no passwords saved locally and "
-        "default password settings. "
-        "Warning: Highly experimental. May lead to loss of passwords and "
-        "impact performance.";
-
-const char kUnifiedPasswordManagerLocalPasswordsAndroidWithMigrationName[] =
-    "Google Mobile Services for passwords for users with non-empty local "
-    "password storage";
-const char
-    kUnifiedPasswordManagerLocalPasswordsAndroidWithMigrationDescription[] =
-        "Uses Google Mobile Services to store and retrieve passwords. "
-        "This only applies for users with passwords saved locally or "
-        "custom password settings. "
-        "This flag must only be enabled together with upm-local-no-migration "
-        "(the 2 should actually have been bundled under a single entry, but "
-        "weren't for technical reasons). "
-        "Warning: Highly experimental. May lead to loss of passwords and "
-        "impact performance.";
-
-const char kUnifiedPasswordManagerSyncOnlyInGMSCoreName[] =
-    "Password sync moves entirely to Google Mobile Services";
-const char kUnifiedPasswordManagerSyncOnlyInGMSCoreDescription[] =
-    "Password Sync engine is no longer needed to for syncing passwords, "
-    "because passwords live in the Google Mobile Services device storage. "
-    "Users "
-    "should experience fewer errors."
-    "Warning: Highly experimental. May lead to loss of passwords and "
-    "impact performance.";
-
 const char kUpdateMenuBadgeName[] = "Force show update menu badge";
 const char kUpdateMenuBadgeDescription[] =
     "When enabled, a badge will be shown on the app menu button if the update "

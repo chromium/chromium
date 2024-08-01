@@ -11189,27 +11189,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          permissions::features::kShowRelatedWebsiteSetsPermissionGrants)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"upm-local-no-migration",
-     flag_descriptions::
-         kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationName,
-     flag_descriptions::
-         kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration)},
-    {"upm-local-with-migration",
-     flag_descriptions::
-         kUnifiedPasswordManagerLocalPasswordsAndroidWithMigrationName,
-     flag_descriptions::
-         kUnifiedPasswordManagerLocalPasswordsAndroidWithMigrationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"coral-feature-key", flag_descriptions::kCoralFeatureKeyName,
      flag_descriptions::kCoralFeatureKeyDescription, kOsCrOS,
@@ -11622,15 +11601,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReduceIPAddressChangeNotificationDescription, kOsMac,
      FEATURE_VALUE_TYPE(net::features::kReduceIPAddressChangeNotification)},
 #endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"upm-sync-only-in-gms-core",
-     flag_descriptions::kUnifiedPasswordManagerSyncOnlyInGMSCoreName,
-     flag_descriptions::kUnifiedPasswordManagerSyncOnlyInGMSCoreDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore)},
-#endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-save-card-local-save-fallback",
      flag_descriptions::kAutofillEnableSaveCardLocalSaveFallbackName,

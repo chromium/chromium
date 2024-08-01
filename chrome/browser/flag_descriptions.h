@@ -2866,18 +2866,6 @@ extern const char
 extern const char
     kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningDescription[];
 
-extern const char kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationName[];
-extern const char
-    kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationDescription[];
-
-extern const char
-    kUnifiedPasswordManagerLocalPasswordsAndroidWithMigrationName[];
-extern const char
-    kUnifiedPasswordManagerLocalPasswordsAndroidWithMigrationDescription[];
-
-extern const char kUnifiedPasswordManagerSyncOnlyInGMSCoreName[];
-extern const char kUnifiedPasswordManagerSyncOnlyInGMSCoreDescription[];
-
 extern const char kUpdateMenuBadgeName[];
 extern const char kUpdateMenuBadgeDescription[];
 
