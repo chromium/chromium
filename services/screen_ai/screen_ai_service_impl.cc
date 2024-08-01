@@ -40,6 +40,9 @@ namespace screen_ai {
 
 namespace {
 
+// How often it would be checked that the service is idle and can be shutdown.
+constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(10);
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class OcrClientTypeForMetrics {
@@ -161,9 +164,17 @@ ScreenAIService::ScreenAIService(
     : factory_receiver_(this, std::move(receiver)),
       ocr_receiver_(this),
       main_content_extraction_receiver_(this) {
+  // Monitor client disconnections for shutdown.
+  screen_2x_main_content_extractors_.set_disconnect_handler(base::BindRepeating(
+      &ScreenAIService::ShutDownIfNoClients, weak_ptr_factory_.GetWeakPtr()));
+  // `ReceiverDisconnected` will also call `ShutDownIfNoClients`.
   screen_ai_annotators_.set_disconnect_handler(base::BindRepeating(
       &ScreenAIService::ReceiverDisconnected, weak_ptr_factory_.GetWeakPtr()));
+
   model_data_holder_ = std::make_unique<ModelDataHolder>();
+  idle_checking_timer_ = std::make_unique<base::RepeatingTimer>();
+  idle_checking_timer_->Start(FROM_HERE, kIdleCheckingDelay, this,
+                              &ScreenAIService::ShutDownIfNoClients);
 }
 
 ScreenAIService::~ScreenAIService() = default;
@@ -237,6 +248,7 @@ void ScreenAIService::InitializeMainContentExtraction(
       std::move(main_content_extractor_service_receiver));
 
   std::move(callback).Run(true);
+  main_content_extraction_last_used_ = base::TimeTicks::Now();
 }
 
 void ScreenAIService::InitializeOCR(
@@ -270,6 +282,7 @@ void ScreenAIService::InitializeOCR(
   ocr_receiver_.Bind(std::move(ocr_service_receiver));
 
   std::move(callback).Run(true);
+  ocr_last_used_ = base::TimeTicks::Now();
 }
 
 void ScreenAIService::BindAnnotator(
@@ -292,9 +305,9 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
   base::UmaHistogramEnumeration("Accessibility.ScreenAI.OCR.ClientType",
                                 GetClientType(entry->second));
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
+  ocr_last_used_ = base::TimeTicks::Now();
   auto result = library_->PerformOcr(image);
-  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - ocr_last_used_;
   int lines_count = result ? result->lines_size() : 0;
   unsigned image_size = image.width() * image.height();
   VLOG(1) << "OCR returned " << lines_count << " lines in " << elapsed_time;
@@ -367,11 +380,12 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                                          ukm::SourceId ukm_source_id,
                                          ExtractMainContentCallback callback) {
-  base::TimeTicks start_time = base::TimeTicks::Now();
+  main_content_extraction_last_used_ = base::TimeTicks::Now();
   ui::AXTree tree;
   std::optional<std::vector<int32_t>> content_node_ids;
   bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
-  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  base::TimeDelta elapsed_time =
+      base::TimeTicks::Now() - main_content_extraction_last_used_;
   RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time, success);
 
   if (success) {
@@ -457,13 +471,39 @@ void ScreenAIService::ReceiverDisconnected() {
   if (entry != ocr_client_types_.end()) {
     ocr_client_types_.erase(entry);
   }
+
+  ShutDownIfNoClients();
 }
 
 void ScreenAIService::ShutDownIfNoClients() {
-  bool no_clients = screen_ai_annotators_.empty() &&
-                    screen_2x_main_content_extractors_.empty();
-  if (no_clients) {
+  bool ocr_has_clients = screen_ai_annotators_.size();
+  bool main_content_extraction_has_clients =
+      screen_2x_main_content_extractors_.size();
+  if (!ocr_has_clients && !main_content_extraction_has_clients) {
+    VLOG(2) << "Shutting down since no client.";
     base::Process::TerminateCurrentProcessImmediately(0);
+  }
+
+  // Collect data on whether each functionality of the service is idle.
+  // This will be used to plan further to shut down the service when idle, or
+  // track features which keep the service in idle state.
+  // TODO(b/353718857): Shut down when both features are idle, after ensuring
+  // all clients support reconnecting.
+  const base::TimeTicks kIdlenessThreshold =
+      base::TimeTicks::Now() - kIdleCheckingDelay;
+  if (!ocr_idle_reported_ && !ocr_last_used_.is_null() &&
+      ocr_last_used_ < kIdlenessThreshold) {
+    ocr_idle_reported_ = true;
+    base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Idle.Connected",
+                              ocr_has_clients);
+  }
+  if (!main_content_extraction_idle_reported_ &&
+      !main_content_extraction_last_used_.is_null() &&
+      main_content_extraction_last_used_ < kIdlenessThreshold) {
+    main_content_extraction_idle_reported_ = true;
+    base::UmaHistogramBoolean(
+        "Accessibility.ScreenAI.MainContentExtraction.Idle.Connected",
+        main_content_extraction_has_clients);
   }
 }
 
