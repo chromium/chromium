@@ -171,16 +171,18 @@ void ImeControllerImpl::ShowImeMenuOnShelf(bool show) {
 void ImeControllerImpl::UpdateCapsLockState(bool caps_enabled) {
   is_caps_lock_enabled_ = caps_enabled;
 
-  for (ImeControllerImpl::Observer& observer : observers_)
+  for (ImeController::Observer& observer : observers_) {
     observer.OnCapsLockChanged(caps_enabled);
+  }
 }
 
 void ImeControllerImpl::OnKeyboardLayoutNameChanged(
     const std::string& layout_name) {
   keyboard_layout_name_ = layout_name;
 
-  for (ImeControllerImpl::Observer& observer : observers_)
+  for (ImeController::Observer& observer : observers_) {
     observer.OnKeyboardLayoutNameChanged(layout_name);
+  }
 }
 
 void ImeControllerImpl::OnKeyboardEnabledChanged(bool is_enabled) {

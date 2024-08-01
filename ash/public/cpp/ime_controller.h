@@ -20,6 +20,16 @@ namespace ash {
 // Interface for ash client (e.g. Chrome) to send input method info to ash.
 class ASH_PUBLIC_EXPORT ImeController {
  public:
+  class Observer {
+   public:
+    // Called when the caps lock state has changed.
+    virtual void OnCapsLockChanged(bool enabled) = 0;
+
+    // Called when the keyboard layout name has changed.
+    virtual void OnKeyboardLayoutNameChanged(
+        const std::string& layout_name) = 0;
+  };
+
   // Sets the global ImeController instance returned by ImeController::Get().
   // Use this when you need to override existing ImeController instances.
   static void SetInstanceForTest(ImeController* controller);
@@ -27,6 +37,9 @@ class ASH_PUBLIC_EXPORT ImeController {
   virtual ~ImeController();
 
   static ImeController* Get();
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Sets the client interface.
   virtual void SetClient(ImeControllerClient* client) = 0;
@@ -72,6 +85,9 @@ class ASH_PUBLIC_EXPORT ImeController {
   // The anchor bounds is in the universal screen coordinates in DIP.
   virtual void ShowModeIndicator(const gfx::Rect& anchor_bounds,
                                  const std::u16string& ime_short_name) = 0;
+
+  // Synchronously returns the cached caps lock state.
+  virtual bool IsCapsLockEnabled() const = 0;
 
  protected:
   ImeController();

@@ -10,6 +10,7 @@
 #include "ash/auth/views/auth_textfield.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/non_accessible_view.h"
+#include "ash/public/cpp/ime_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/logging.h"
@@ -121,7 +122,7 @@ void AuthPanel::InitializeUi(AuthFactorsSet factors,
   std::optional<AshAuthFactor> password_type = GetPasswordFactorType(factors);
 
   store_ =
-      store_factory_->CreateAuthFactorStore(ash::Shell::Get(), connector,
+      store_factory_->CreateAuthFactorStore(ImeController::Get(), connector,
                                             /*password_type=*/password_type);
   event_dispatcher_ =
       event_dispatcher_factory_->CreateAuthPanelEventDispatcher(store_.get());

@@ -24,7 +24,7 @@ class RgbKeyboardManagerObserver;
 // of the rgbkbd DBus client.
 // This class is owned by ash/shell and should NOT be created by any other
 // means.
-class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer,
+class ASH_EXPORT RgbKeyboardManager : public ImeController::Observer,
                                       public RgbkbdClient::Observer {
  public:
   explicit RgbKeyboardManager(ImeControllerImpl* ime_controller);
@@ -66,7 +66,7 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer,
     kStaticZones,
   };
 
-  // ImeControllerImpl::Observer:
+  // ImeController::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string&) override {}
 

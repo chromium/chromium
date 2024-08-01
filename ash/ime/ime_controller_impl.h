@@ -34,25 +34,12 @@ class ModeIndicatorObserver;
 class ASH_EXPORT ImeControllerImpl : public ImeController,
                                      public KeyboardControllerObserver {
  public:
-  class Observer {
-   public:
-    // Called when the caps lock state has changed.
-    virtual void OnCapsLockChanged(bool enabled) = 0;
-
-    // Called when the keyboard layout name has changed.
-    virtual void OnKeyboardLayoutNameChanged(
-        const std::string& layout_name) = 0;
-  };
-
   ImeControllerImpl();
 
   ImeControllerImpl(const ImeControllerImpl&) = delete;
   ImeControllerImpl& operator=(const ImeControllerImpl&) = delete;
 
   ~ImeControllerImpl() override;
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   const std::vector<ImeInfo>& GetVisibleImes() const;
   bool IsCurrentImeVisible() const;
@@ -97,6 +84,8 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
   void SwitchImeWithAccelerator(const ui::Accelerator& accelerator);
 
   // ImeController:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void SetClient(ImeControllerClient* client) override;
   void RefreshIme(const std::string& current_ime_id,
                   std::vector<ImeInfo> available_imes,
@@ -117,7 +106,7 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
                          const std::u16string& ime_short_name) override;
 
   // Synchronously returns the cached caps lock state.
-  bool IsCapsLockEnabled() const;
+  bool IsCapsLockEnabled() const override;
 
   // Synchronously returns the cached keyboard layout name
   const std::string& keyboard_layout_name() const {

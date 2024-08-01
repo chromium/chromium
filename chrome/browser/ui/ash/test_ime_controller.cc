@@ -23,6 +23,9 @@ TestImeController::TestImeController() = default;
 
 TestImeController::~TestImeController() = default;
 
+void TestImeController::AddObserver(Observer* observer) {}
+void TestImeController::RemoveObserver(Observer* observer) {}
+
 void TestImeController::SetClient(ash::ImeControllerClient* client) {}
 
 void TestImeController::RefreshIme(const std::string& current_ime_id,
@@ -64,4 +67,8 @@ void TestImeController::SetExtraInputOptionsEnabledState(
 void TestImeController::ShowModeIndicator(const gfx::Rect& anchor_bounds,
                                           const std::u16string& text) {
   show_mode_indicator_ = true;
+}
+
+bool TestImeController::IsCapsLockEnabled() const {
+  return is_caps_lock_enabled_;
 }

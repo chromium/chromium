@@ -56,7 +56,7 @@ class LoginArrowNavigationDelegate;
 //  ------------------
 class ASH_EXPORT LoginPasswordView : public views::View,
                                      public views::TextfieldController,
-                                     public ImeControllerImpl::Observer,
+                                     public ImeController::Observer,
                                      public ui::ImplicitAnimationObserver {
   METADATA_HEADER(LoginPasswordView, views::View)
 
@@ -142,7 +142,7 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
 
-  // ImeControllerImpl::Observer:
+  // ImeController::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string&) override {}
 

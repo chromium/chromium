@@ -497,7 +497,7 @@ void Keyboard::OnKeyRepeatSettingsChanged(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ash::ImeControllerImpl::Observer overrides:
+// ash::ImeController::Observer overrides:
 
 void Keyboard::OnCapsLockChanged(bool enabled) {}
 

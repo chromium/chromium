@@ -22,7 +22,7 @@ namespace ash::eche_app {
 // SWA. Additionally, provides the current keyboard layout to the SWA upon
 // request.
 class EcheKeyboardLayoutHandler : public mojom::KeyboardLayoutHandler,
-                                  public ImeControllerImpl::Observer {
+                                  public ImeController::Observer {
  public:
   EcheKeyboardLayoutHandler();
   ~EcheKeyboardLayoutHandler() override;
@@ -32,7 +32,7 @@ class EcheKeyboardLayoutHandler : public mojom::KeyboardLayoutHandler,
   void SetKeyboardLayoutObserver(
       mojo::PendingRemote<mojom::KeyboardLayoutObserver> observer) override;
 
-  // ImeControllerImpl::Observer:
+  // ImeController::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
 

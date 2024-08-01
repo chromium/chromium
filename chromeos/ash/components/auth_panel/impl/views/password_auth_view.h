@@ -8,8 +8,8 @@
 #include <string>
 
 #include "ash/auth/views/auth_textfield.h"
-#include "ash/ime/ime_controller_impl.h"
 #include "ash/login/ui/non_accessible_view.h"
+#include "ash/public/cpp/ime_controller.h"
 #include "ash/style/system_textfield_controller.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -44,7 +44,7 @@ class AuthPanelEventDispatcher;
 // payload. The password submission logic does not live in this class. Here, we
 // only handle UI behavior.
 class PasswordAuthView : public FactorAuthView,
-                         public ImeControllerImpl::Observer,
+                         public ImeController::Observer,
                          public AuthTextfield::Observer {
   METADATA_HEADER(PasswordAuthView, FactorAuthView)
 
@@ -75,7 +75,7 @@ class PasswordAuthView : public FactorAuthView,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
-  // ImeControllerImpl::Observer:
+  // ImeController::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override {}
 
@@ -122,7 +122,7 @@ class PasswordAuthView : public FactorAuthView,
 
   base::CallbackListSubscription auth_factor_store_subscription_;
 
-  base::ScopedObservation<ImeControllerImpl, ImeControllerImpl::Observer>
+  base::ScopedObservation<ImeController, ImeController::Observer>
       input_methods_observer_{this};
 
   ui::ImageModel capslock_icon_highlighted_;

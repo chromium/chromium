@@ -36,6 +36,8 @@ class TestImeController : private ImeControllerResetterForTest,
   ~TestImeController() override;
 
   // ash::ImeController:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void SetClient(ash::ImeControllerClient* client) override;
   void RefreshIme(const std::string& current_ime_id,
                   std::vector<ash::ImeInfo> available_imes,
@@ -50,6 +52,7 @@ class TestImeController : private ImeControllerResetterForTest,
                                         bool is_voice_enabled) override;
   void ShowModeIndicator(const gfx::Rect& anchor_bounds,
                          const std::u16string& text) override;
+  bool IsCapsLockEnabled() const override;
 
   // The most recent values received via mojo.
   std::string current_ime_id_;
