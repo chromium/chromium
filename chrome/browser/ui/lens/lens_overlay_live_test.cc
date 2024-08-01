@@ -10,6 +10,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_timeouts.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/e2e_tests/account_capabilities_observer.h"
 #include "chrome/browser/signin/e2e_tests/accounts_removed_waiter.h"
@@ -47,25 +48,29 @@ namespace {
 using State = LensOverlayController::State;
 using LensOverlayInvocationSource = lens::LensOverlayInvocationSource;
 
-// Helper script to verify that the overlay WebUI has rendered text that it has
-// received from the server.
-constexpr char kFindWordDivScript[] = R"(
-      function findWordDiv(parentElement) {
-        if (parentElement.querySelector('div.word')) {
+constexpr char kDivWordClass[] = "word";
+constexpr char kDivObjectClass[] = "object";
+
+// Helper script to verify that the overlay WebUI has rendered divs with the CSS
+// class provided.
+constexpr char kFindDivWithClassScript[] = R"(
+      function findDivWithClass(parentElement) {
+        if (parentElement.querySelector('div.' + $1)) {
             return true;
         }
         for (const child of parentElement.children) {
-            if (findWordDiv(child) ||
-                (child.shadowRoot && findWordDiv(child.shadowRoot))) {
+            if (findDivWithClass(child) ||
+                (child.shadowRoot && findDivWithClass(child.shadowRoot))) {
                 return true;
             }
         }
         return false;
       }
-      findWordDiv(document.body);
+      findDivWithClass(document.body);
 )";
 
 const char kNpsUrl[] = "https://www.nps.gov/articles/route-66-overview.htm";
+const char kPuppiesUrl[] = "https://puppiesbydesignonline.com/pooton/";
 }  // namespace
 
 // Live tests for Companion.
@@ -78,7 +83,6 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
 
   void SetUp() override {
     SetUpFeatureList();
-    histogram_tester_ = std::make_unique<base::HistogramTester>();
     LiveTest::SetUp();
     // Always disable animation for stability.
     ui::ScopedAnimationDurationScaleMode disable_animation(
@@ -92,11 +96,16 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
     // permission dialog.
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
+
+    // Set the default timeout for our run loops.
+    base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
+                                             TestTimeouts::action_timeout());
   }
 
   void SetUpInProcessBrowserTestFixture() override {
     // Allowlists hosts.
     host_resolver()->AllowDirectLookup("*.nps.gov");
+    host_resolver()->AllowDirectLookup("puppiesbydesignonline.com");
 
     LiveTest::SetUpInProcessBrowserTestFixture();
   }
@@ -151,7 +160,6 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
     }
 
     // Else, wait until the histogram is recorded.
-    base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(10));
     base::RunLoop run_loop;
     auto histogram_observer = std::make_unique<
         base::StatisticsRecorder::ScopedHistogramSampleObserver>(
@@ -188,19 +196,18 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInAndSynced) {
   TestAccount ta;
-  // Sign in to opted in test account.
+  // Sign in and sync to opted in test account.
   CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT", ta));
   sign_in_functions.TurnOnSync(ta, 0);
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   // Navigate to a website and wait for paint before starting controller.
   WaitForPaint(kNpsUrl);
-  content::WaitForLoadStop(web_contents());
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   // State should start in off.
   auto* controller = browser()
@@ -223,8 +230,190 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText) {
   WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
 
   // Verify that the page returns text that is selectable on the overlay.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivWordClass))
+        .ExtractBool();
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInNotSynced) {
+  TestAccount ta;
+  // Sign in but do not sync to opted in test account.
+  CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT", ta));
+  sign_in_functions.SignInFromWeb(ta, 0);
+  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
+  // Navigate to a website and wait for paint before starting controller.
+  WaitForPaint(kNpsUrl);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return EvalJs(kFindWordDivScript).ExtractBool(); }));
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Confirm that the WebUI has reported that it is ready. This means the local
+  // DOM should be initialized on our WebUI.
+  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
+
+  // Verify that the page returns text that is selectable on the overlay.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivWordClass))
+        .ExtractBool();
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedOut) {
+  // Navigate to a website and wait for paint before starting controller.
+  WaitForPaint(kNpsUrl);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Confirm that the WebUI has reported that it is ready. This means the local
+  // DOM should be initialized on our WebUI.
+  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
+
+  // Verify that the page returns text that is selectable on the overlay.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivWordClass))
+        .ExtractBool();
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
+                       OverlayHasObject_SignedInAndSynced) {
+  TestAccount ta;
+  // Sign in and sync to opted in test account.
+  CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT", ta));
+  sign_in_functions.TurnOnSync(ta, 0);
+  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
+
+  // Navigate to a website and wait for paint before starting controller.
+  WaitForPaint(kPuppiesUrl);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Confirm that the WebUI has reported that it is ready. This means the local
+  // DOM should be initialized on our WebUI.
+  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
+
+  // Verify that the page returns objects that is selectable on the overlay.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivObjectClass))
+        .ExtractBool();
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
+                       OverlayHasObject_SignedInNotSynced) {
+  TestAccount ta;
+  // Sign in but do not sync to opted in test account.
+  CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT", ta));
+  sign_in_functions.SignInFromWeb(ta, 0);
+  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
+  // Navigate to a website and wait for paint before starting controller.
+  WaitForPaint(kPuppiesUrl);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Confirm that the WebUI has reported that it is ready. This means the local
+  // DOM should be initialized on our WebUI.
+  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
+
+  // Verify that the page returns objects that is selectable on the overlay.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivObjectClass))
+        .ExtractBool();
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasObject_SignedOut) {
+  // Navigate to a website and wait for paint before starting controller.
+  WaitForPaint(kPuppiesUrl);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Confirm that the WebUI has reported that it is ready. This means the local
+  // DOM should be initialized on our WebUI.
+  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
+
+  // Verify that the page returns objects that is selectable on the overlay.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivObjectClass))
+        .ExtractBool();
+  }));
 }
 
 }  // namespace signin::test
