@@ -5606,6 +5606,52 @@ TEST_F(SnapGroupOverviewTest, HideCloseButtonsOnDragStart) {
   }
 }
 
+// Tests that if one of `OverviewItem`s hosted by the `OverviewGroupItem` has a
+// focus ring before being dragged, the focus ring is cleared when dragging
+// begins.
+TEST_F(SnapGroupOverviewTest, ClearFocusOnDragStart) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  std::unique_ptr<aura::Window> w0 = CreateAppWindow();
+  std::unique_ptr<aura::Window> w1 = CreateAppWindow();
+  auto* event_generator = GetEventGenerator();
+  SnapTwoTestWindows(w0.get(), w1.get(), /*horizontal=*/true, event_generator);
+
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& item_list = overview_grid->item_list();
+  ASSERT_EQ(1u, item_list.size());
+
+  auto* group_item =
+      static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(w0.get()));
+  const auto& overview_items = group_item->overview_items_for_testing();
+  ASSERT_EQ(2u, overview_items.size());
+
+  OverviewFocusCycler* focus_cycler =
+      overview_controller->overview_session()->focus_cycler();
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(overview_items[0]->overview_item_view(),
+            focus_cycler->GetOverviewFocusedView());
+
+  // Verify that the focus ring gets cleared on drag starts.
+  DragGroupItemToPoint(
+      group_item,
+      Shell::GetPrimaryRootWindow()->GetBoundsInScreen().CenterPoint(),
+      event_generator, /*by_touch_gestures=*/false, /*drop=*/false);
+
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(focus_cycler->GetOverviewFocusedView());
+  event_generator->ReleaseLeftButton();
+}
+
 // Tests that fling-to-close gestures on `OverviewGroupItem` closes the windows
 // in the Snap Group.
 TEST_F(SnapGroupOverviewTest, FlingToCloseGroupItem) {

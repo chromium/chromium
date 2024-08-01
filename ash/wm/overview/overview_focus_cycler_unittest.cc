@@ -329,19 +329,15 @@ TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
 
   // Tests that the there is no focused view while dragging. Drag the item in a
   // way which does not enter splitview, or close overview.
-  const gfx::PointF start_point = item3->target_bounds().CenterPoint();
-  const gfx::PointF end_point(20.f, 20.f);
-  GetOverviewSession()->InitiateDrag(item3, start_point,
-                                     /*is_touch_dragging=*/true,
-                                     /*event_source_item=*/item3);
+  DragItemToPoint(item3, gfx::Point(20, 20), event_generator,
+                  /*by_touch_gestures=*/false, /*drop=*/false);
   EXPECT_FALSE(GetFocusedView());
 
-  GetOverviewSession()->Drag(item3, end_point);
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_FALSE(GetFocusedView());
 
-  GetOverviewSession()->Drag(item3, start_point);
-  GetOverviewSession()->CompleteDrag(item3, start_point);
+  DragItemToPoint(item3, gfx::Point(300, 200), event_generator,
+                  /*by_touch_gestures=*/false, /*drop=*/true);
   EXPECT_FALSE(GetFocusedView());
 
   // Tests that tabbing after dragging works as expected.

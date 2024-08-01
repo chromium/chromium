@@ -752,6 +752,9 @@ void OverviewItem::StartDrag() {
   // app windows, as well as above the desks bar.
   aura::Window* window = GetWindow();
   window->parent()->StackChildAtTop(window);
+
+  // Clear the focus ring from the `item_widget_` if it is currently focused.
+  item_widget_->GetFocusManager()->ClearFocus();
 }
 
 void OverviewItem::OnOverviewItemDragStarted() {
