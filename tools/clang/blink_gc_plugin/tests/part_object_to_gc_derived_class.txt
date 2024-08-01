@@ -5,4 +5,7 @@ class B : public GarbageCollected<B> {
 ./part_object_to_gc_derived_class.h:19:5: note: [blink-gc] Part-object field 'm_a' to a GC derived class declared here:
     A m_a;
     ^
-1 warning generated.
+./part_object_to_gc_derived_class.h:19:5: warning: [blink-gc] Using GC managed class 'A' as field 'm_a' is not allowed (Allocate with MakeGarbageCollected and use Member or Persistent instead):
+    A m_a;
+    ^~~~~
+2 warnings generated.
