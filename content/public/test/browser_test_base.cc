@@ -934,9 +934,12 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 
       {
         auto* test = ::testing::UnitTest::GetInstance()->current_test_info();
-        TRACE_EVENT("test", "RunTestOnMainThread", "test_name",
-                    test->test_suite_name() + std::string(".") + test->name(),
-                    "file", test->file(), "line", test->line());
+        // This might be nullptr in a fuzz test or something else without gtest.
+        if (test) {
+          TRACE_EVENT("test", "RunTestOnMainThread", "test_name",
+                      test->test_suite_name() + std::string(".") + test->name(),
+                      "file", test->file(), "line", test->line());
+        }
         base::ScopedDisallowBlocking disallow_blocking;
         RunTestOnMainThread();
       }
