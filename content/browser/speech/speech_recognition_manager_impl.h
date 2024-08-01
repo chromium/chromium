@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SPEECH_SPEECH_RECOGNITION_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,10 @@
 #include "content/public/browser/speech_recognition_manager.h"
 #include "content/public/browser/speech_recognition_session_config.h"
 #include "content/public/browser/speech_recognition_session_context.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_error.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 
 namespace media {
@@ -57,13 +61,19 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   // issued when it is not created yet or destroyed (by BrowserMainLoop).
   static SpeechRecognitionManagerImpl* GetInstance();
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
   static bool IsOnDeviceSpeechRecognitionAvailable(
       const SpeechRecognitionSessionConfig& config);
-#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
 
   // SpeechRecognitionManager implementation.
   int CreateSession(const SpeechRecognitionSessionConfig& config) override;
+  int CreateSession(
+      const SpeechRecognitionSessionConfig& config,
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+          session_receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+          client_remote,
+      std::optional<SpeechRecognitionAudioForwarderConfig>
+          audio_forwarder_config) override;
   void StartSession(int session_id) override;
   void AbortSession(int session_id) override;
   void AbortAllSessionsForRenderFrame(int render_process_id,
@@ -72,6 +82,8 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   const SpeechRecognitionSessionConfig& GetSessionConfig(
       int session_id) override;
   SpeechRecognitionSessionContext GetSessionContext(int session_id) override;
+  bool UseOnDeviceSpeechRecognition(
+      const SpeechRecognitionSessionConfig& config) override;
 
   // SpeechRecognitionEventListener methods.
   void OnRecognitionStart(int session_id) override;
@@ -134,6 +146,7 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
     SpeechRecognitionSessionContext context;
     scoped_refptr<SpeechRecognizer> recognizer;
     std::unique_ptr<MediaStreamUIProxy> ui;
+    bool use_microphone;
   };
 
   void AbortSessionImpl(int session_id);
@@ -188,6 +201,9 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   bool is_dispatching_event_;
   std::unique_ptr<SpeechRecognitionManagerDelegate> delegate_;
   const int requester_id_;
+
+  mojo::Remote<media::mojom::SpeechRecognitionContext>
+      speech_recognition_context_;
 
   // Used for posting asynchronous tasks (on the IO thread) without worrying
   // about this class being destroyed in the meanwhile (due to browser shutdown)

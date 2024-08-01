@@ -11,11 +11,13 @@
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
+#include "chrome/services/speech/soda_speech_recognizer_impl.h"
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace speech {
 
@@ -73,29 +75,40 @@ void SpeechRecognitionServiceImpl::BindRecognizer(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
-  // This is currently only used by LiveCaption and server side
-  // speech recognition is not available to it.
-  if (options->is_server_based ||
-      options->recognizer_client_type !=
-          media::mojom::RecognizerClientType::kLiveCaption) {
-    mojo::ReportBadMessage(kInvalidSpeechRecogntionOptions);
-    return;
+  if (CreateRecognizer(std::move(receiver), std::move(client),
+                       std::move(options))) {
+    std::move(callback).Run(
+        SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
   }
+}
 
-  // Destroy the speech recognition service if the SODA files haven't been
-  // downloaded yet.
-  if (!FilePathsExist()) {
-    speech_recognition_contexts_.Clear();
-    receiver_.reset();
-    return;
+void SpeechRecognitionServiceImpl::BindWebSpeechRecognizer(
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+        session_receiver,
+    mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+        session_client,
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionAudioForwarder>
+        audio_forwarder,
+    int channel_count,
+    int sample_rate,
+    media::mojom::SpeechRecognitionOptionsPtr options,
+    bool continuous) {
+  mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizer>
+      speech_recognition_recognizer;
+  mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
+      speech_recognition_recognizer_client;
+
+  if (CreateRecognizer(
+          speech_recognition_recognizer.InitWithNewPipeAndPassReceiver(),
+          speech_recognition_recognizer_client.InitWithNewPipeAndPassRemote(),
+          std::move(options))) {
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<SodaSpeechRecognizerImpl>(
+            continuous, sample_rate, std::move(speech_recognition_recognizer),
+            std::move(speech_recognition_recognizer_client),
+            std::move(session_client), std::move(audio_forwarder)),
+        std::move(session_receiver));
   }
-
-  SpeechRecognitionRecognizerImpl::Create(
-      std::move(receiver), std::move(client), std::move(options), binary_path_,
-      config_paths_, primary_language_name_, mask_offensive_words_,
-      weak_factory_.GetWeakPtr());
-  std::move(callback).Run(
-      SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
 
 void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
@@ -148,6 +161,35 @@ bool SpeechRecognitionServiceImpl::FilePathsExist() {
     if (!base::PathExists(config.second))
       return false;
   }
+
+  return true;
+}
+
+bool SpeechRecognitionServiceImpl::CreateRecognizer(
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
+    mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
+    media::mojom::SpeechRecognitionOptionsPtr options) {
+  // This is currently only used by Live Caption and server side
+  // speech recognition is not available to it.
+  if (options->is_server_based ||
+      options->recognizer_client_type !=
+          media::mojom::RecognizerClientType::kLiveCaption) {
+    mojo::ReportBadMessage(kInvalidSpeechRecogntionOptions);
+    return false;
+  }
+
+  // Destroy the speech recognition service if the SODA files haven't been
+  // downloaded yet.
+  if (!FilePathsExist()) {
+    speech_recognition_contexts_.Clear();
+    receiver_.reset();
+    return false;
+  }
+
+  SpeechRecognitionRecognizerImpl::Create(
+      std::move(receiver), std::move(client), std::move(options), binary_path_,
+      config_paths_, primary_language_name_, mask_offensive_words_,
+      weak_factory_.GetWeakPtr());
 
   return true;
 }

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -41,6 +42,20 @@ void FakeSpeechRecognitionService::BindRecognizer(
       &FakeSpeechRecognitionService::OnRecognizerClientDisconnected,
       base::Unretained(this)));
   std::move(callback).Run(is_multichannel_supported_);
+}
+
+void FakeSpeechRecognitionService::BindWebSpeechRecognizer(
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+        session_receiver,
+    mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+        session_client,
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionAudioForwarder>
+        audio_forwarder,
+    int channel_count,
+    int sample_rate,
+    media::mojom::SpeechRecognitionOptionsPtr options,
+    bool continuous) {
+  NOTIMPLEMENTED();
 }
 
 void FakeSpeechRecognitionService::BindAudioSourceFetcher(

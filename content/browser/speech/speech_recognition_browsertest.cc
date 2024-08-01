@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
   mock_soda_installer_.NotifySodaInstalledForTesting(
       speech::LanguageCode::kEnUs);
   EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
-      .WillOnce(InvokeWithoutArgs([]() {
+      .WillRepeatedly(InvokeWithoutArgs([]() {
         std::vector<std::string> langs;
         langs.push_back("en-US");
         return langs;

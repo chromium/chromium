@@ -193,6 +193,7 @@ void SodaSpeechRecognizerImpl::ProcessAudioPipeline(
     const FSMEventArgs& event_args) {
   DCHECK(event_args.audio_data);
 
+  SendAudioToSpeechRecognitionService(event_args.audio_data->Clone());
   num_samples_recorded_ += event_args.audio_data->frame_count;
   if (state_ >= STATE_ESTIMATING_ENVIRONMENT && state_ <= STATE_RECOGNIZING) {
     float rms = 0.0f;

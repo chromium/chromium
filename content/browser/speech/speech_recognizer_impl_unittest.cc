@@ -21,6 +21,7 @@
 #include "base/threading/thread.h"
 #include "content/browser/speech/network_speech_recognition_engine_impl.h"
 #include "content/public/browser/google_streaming_api.pb.h"
+#include "content/public/browser/speech_recognition_audio_forwarder_config.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -114,9 +115,9 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
         std::make_unique<media::AudioSystemImpl>(audio_manager_.get());
     SpeechRecognizerImpl::SetAudioEnvironmentForTesting(
         audio_system_.get(), audio_capturer_source_.get());
-    recognizer_ =
-        new SpeechRecognizerImpl(this, audio_system_.get(), kTestingSessionId,
-                                 false, false, std::move(sr_engine));
+    recognizer_ = new SpeechRecognizerImpl(this, audio_system_.get(),
+                                           kTestingSessionId, false, false,
+                                           std::move(sr_engine), std::nullopt);
 
     int audio_packet_length_bytes =
         (SpeechRecognizerImpl::kAudioSampleRate *

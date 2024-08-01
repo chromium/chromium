@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/notimplemented.h"
 #include "base/types/optional_util.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
@@ -95,6 +96,20 @@ void CrosSpeechRecognitionService::BindRecognizer(
       config_paths, language_name, /* mask_offensive_words= */ false);
   std::move(callback).Run(
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
+}
+
+void CrosSpeechRecognitionService::BindWebSpeechRecognizer(
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+        session_receiver,
+    mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+        session_client,
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionAudioForwarder>
+        audio_forwarder,
+    int channel_count,
+    int sample_rate,
+    media::mojom::SpeechRecognitionOptionsPtr options,
+    bool continuous) {
+  NOTIMPLEMENTED();
 }
 
 void CrosSpeechRecognitionService::BindAudioSourceFetcher(

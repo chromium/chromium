@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "content/public/browser/speech_recognition_audio_forwarder_config.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager.h"
 #include "content/public/browser/speech_recognition_session_config.h"
@@ -59,6 +60,14 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
 
   // SpeechRecognitionManager methods.
   int CreateSession(const SpeechRecognitionSessionConfig& config) override;
+  int CreateSession(
+      const SpeechRecognitionSessionConfig& config,
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+          session_receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+          client_remote,
+      std::optional<SpeechRecognitionAudioForwarderConfig>
+          audio_forwarder_config) override;
   void StartSession(int session_id) override;
   void AbortSession(int session_id) override;
   void StopAudioCaptureForSession(int session_id) override;
@@ -67,6 +76,8 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   const SpeechRecognitionSessionConfig& GetSessionConfig(
       int session_id) override;
   SpeechRecognitionSessionContext GetSessionContext(int session_id) override;
+  bool UseOnDeviceSpeechRecognition(
+      const SpeechRecognitionSessionConfig& config) override;
 
   // SpeechRecognitionEventListener implementation.
   void OnRecognitionStart(int session_id) override {}

@@ -4,6 +4,7 @@
 
 module media.mojom;
 
+import "media/mojo/mojom/speech_recognition_audio_forwarder.mojom";
 import "media/mojo/mojom/speech_recognition_error.mojom";
 import "media/mojo/mojom/speech_recognition_grammar.mojom";
 import "media/mojo/mojom/speech_recognition_result.mojom";
@@ -33,6 +34,23 @@ struct StartSpeechRecognitionRequestParams {
 
   // Whether the user requested interim results.
   bool interim_results;
+
+  // Whether the speech recognition may happen on-device.
+  bool on_device;
+
+  // Whether the speech recognition is allowed to fallback to a Cloud-based
+  // speech recognition service.
+  bool allow_cloud_fallback;
+
+  // Used to pass audio from the renderer to the browser.
+  pending_receiver<media.mojom.SpeechRecognitionAudioForwarder>?
+      audio_forwarder;
+
+  // The channel count of the forwarded audio.
+  int32 channel_count;
+
+  // The sample rate of the forwarded audio.
+  int32 sample_rate;
 };
 
 // API for the renderer process to start a speech recognition session in the

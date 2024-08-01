@@ -7,9 +7,15 @@
 
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
+#include "media/mojo/mojom/speech_recognition_audio_forwarder.mojom.h"
+#include "media/mojo/mojom/speech_recognizer.mojom-forward.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 
+struct SpeechRecognitionAudioForwarderConfig;
 class SpeechRecognitionEventListener;
 struct SpeechRecognitionSessionConfig;
 struct SpeechRecognitionSessionContext;
@@ -39,6 +45,20 @@ class SpeechRecognitionManager {
   // Creates a new recognition session.
   virtual int CreateSession(const SpeechRecognitionSessionConfig& config) = 0;
 
+  // Creates a new recognition session. If the session mojo remotes are not
+  // null, speech recognition session will be managed by the speech recognition
+  // service, otherwise the session will be managed by the browser. If the audio
+  // forwarder config is not null, the audio forwarder will be used to receive
+  // audio, otherwise the audio will be received from the microphone.
+  virtual int CreateSession(
+      const SpeechRecognitionSessionConfig& config,
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+          session_receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+          client_remote,
+      std::optional<SpeechRecognitionAudioForwarderConfig>
+          audio_forwarder_config) = 0;
+
   // Starts/restarts recognition for an existing session, after performing a
   // preliminary check on the delegate (CheckRecognitionIsAllowed).
   virtual void StartSession(int session_id) = 0;
@@ -61,6 +81,9 @@ class SpeechRecognitionManager {
 
   // Retrieves the context associated to a session.
   virtual SpeechRecognitionSessionContext GetSessionContext(int session_id) = 0;
+
+  virtual bool UseOnDeviceSpeechRecognition(
+      const SpeechRecognitionSessionConfig& config) = 0;
 
  protected:
   virtual ~SpeechRecognitionManager() {}

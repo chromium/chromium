@@ -11,7 +11,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Next MinVersion: 6
+// Next MinVersion: 7
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -48,6 +48,17 @@ interface SpeechRecognitionContext {
                    pending_remote<SpeechRecognitionRecognizerClient> client,
                    SpeechRecognitionOptions options)
       => (bool is_multichannel_supported);
+
+  // Bind the recognizer used by the Web Speech API.
+  [MinVersion=6]
+  BindWebSpeechRecognizer@1(
+      pending_receiver<media.mojom.SpeechRecognitionSession> session_receiver,
+      pending_remote<media.mojom.SpeechRecognitionSessionClient> session_client,
+      pending_receiver<SpeechRecognitionAudioForwarder> audio_forwarder,
+      int32 channel_count,
+      int32 sample_rate,
+      SpeechRecognitionOptions options,
+      bool continuous);
 };
 
 // The interface used to pass raw audio from the renderer to the speech
@@ -316,4 +327,12 @@ struct SpeechRecognitionOptions {
   // The optional experiment recognizer routing key for current request.
   [MinVersion=5]
   string? experiment_recognizer_routing_key;
+
+  // The channel count of the forwarded audio.
+  [MinVersion=6]
+  int32 channel_count;
+
+  // The sample rate of the forwarded audio.
+  [MinVersion=6]
+  int32 sample_rate;
 };
