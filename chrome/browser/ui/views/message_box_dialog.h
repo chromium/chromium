@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MESSAGE_BOX_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_MESSAGE_BOX_DIALOG_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/simple_message_box.h"
-
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -26,12 +27,12 @@ class MessageBoxDialog : public views::DialogDelegate,
 
   static chrome::MessageBoxResult Show(
       gfx::NativeWindow parent,
-      const std::u16string& title,
-      const std::u16string& message,
+      std::u16string_view title,
+      std::u16string_view message,
       chrome::MessageBoxType type,
-      const std::u16string& yes_text,
-      const std::u16string& no_text,
-      const std::u16string& checkbox_text,
+      std::u16string_view yes_text,
+      std::u16string_view no_text,
+      std::u16string_view checkbox_text,
       MessageBoxResultCallback callback = MessageBoxResultCallback());
 
   // views::DialogDelegate:
@@ -44,12 +45,12 @@ class MessageBoxDialog : public views::DialogDelegate,
   void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
-  MessageBoxDialog(const std::u16string& title,
-                   const std::u16string& message,
+  MessageBoxDialog(std::u16string_view title,
+                   std::u16string_view message,
                    chrome::MessageBoxType type,
-                   const std::u16string& yes_text,
-                   const std::u16string& no_text,
-                   const std::u16string& checkbox_text,
+                   std::u16string_view yes_text,
+                   std::u16string_view no_text,
+                   std::u16string_view checkbox_text,
                    bool is_system_modal);
   ~MessageBoxDialog() override;
 
