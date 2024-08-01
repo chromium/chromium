@@ -13,6 +13,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
@@ -318,15 +319,17 @@ void CheckCurrentURLContainsString(std::string string) {
 }
 
 void FocusOmnibox() {
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
-        performAction:grey_tap()];
-    [ChromeEarlGrey
-        waitForUIElementToAppearWithMatcher:grey_allOf(
-                                                chrome_test_util::Omnibox(),
-                                                grey_interactable(), nil)];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-        assertWithMatcher:firstResponder()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_allOf(chrome_test_util::DefocusedLocationView(),
+                                 grey_interactable(), nil)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_allOf(
+                                              chrome_test_util::Omnibox(),
+                                              grey_interactable(), nil)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:firstResponder()];
 }
 
 UIViewController* TopPresentedViewControllerFrom(
