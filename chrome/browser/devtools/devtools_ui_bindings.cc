@@ -1009,7 +1009,7 @@ void DevToolsUIBindings::OnAidaConversationResponse(
 void DevToolsUIBindings::OnAidaClientResponse(
     DevToolsEmbedderMessageDispatcher::Delegate::DispatchCallback callback,
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader->ResponseInfo() &&
       simple_url_loader->ResponseInfo()->headers) {
@@ -1018,14 +1018,14 @@ void DevToolsUIBindings::OnAidaClientResponse(
   if (response_code != net::HTTP_OK) {
     base::Value::Dict error_dict;
     error_dict.Set("error", "Got error response from AIDA");
-    error_dict.Set("detail", std::move(*response_body));
+    error_dict.Set("detail", response_body.value_or(""));
     auto error = base::Value(std::move(error_dict));
     std::move(callback).Run(&error);
     return;
   }
 
   base::Value::Dict response_dict;
-  response_dict.Set("response", std::move(*response_body));
+  response_dict.Set("response", response_body.value_or(""));
   auto response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
