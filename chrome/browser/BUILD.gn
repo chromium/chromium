@@ -6137,6 +6137,7 @@ static_library("browser") {
       "//chrome/browser/chromeos/platform_keys",
       "//chrome/browser/chromeos/quickoffice",
       "//chrome/browser/chromeos/upload_office_to_cloud",
+      "//chrome/browser/chromeos/video_conference",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/policy:onc",
       "//chrome/browser/ui/chromeos/read_write_cards",

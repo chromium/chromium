@@ -1,0 +1,93 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("video_conference") {
+  sources = [
+    "video_conference_manager_client.cc",
+    "video_conference_manager_client.h",
+    "video_conference_manager_client_common.cc",
+    "video_conference_manager_client_common.h",
+    "video_conference_media_listener.cc",
+    "video_conference_media_listener.h",
+    "video_conference_ukm_helper.cc",
+    "video_conference_ukm_helper.h",
+    "video_conference_web_app.cc",
+    "video_conference_web_app.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/media/webrtc",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/public/common:headers",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/crosapi" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "video_conference_ukm_helper_unittest.cc" ]
+
+  deps = [
+    ":video_conference",
+    "//base",
+    "//base/test:test_support",
+    "//components/ukm:test_support",
+    "//content/test:test_support",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "video_conference_media_listener_browsertest.cc" ]
+
+  deps = [
+    ":video_conference",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash",
+      "//ash/constants",
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/video_conference",
+    ]
+  }
+}

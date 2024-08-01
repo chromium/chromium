@@ -157,16 +157,6 @@ source_set("chromeos") {
     "reporting/websites/website_usage_observer.h",
     "reporting/websites/website_usage_telemetry_sampler.cc",
     "reporting/websites/website_usage_telemetry_sampler.h",
-    "video_conference/video_conference_manager_client.cc",
-    "video_conference/video_conference_manager_client.h",
-    "video_conference/video_conference_manager_client_common.cc",
-    "video_conference/video_conference_manager_client_common.h",
-    "video_conference/video_conference_media_listener.cc",
-    "video_conference/video_conference_media_listener.h",
-    "video_conference/video_conference_ukm_helper.cc",
-    "video_conference/video_conference_ukm_helper.h",
-    "video_conference/video_conference_web_app.cc",
-    "video_conference/video_conference_web_app.h",
 
     # Extension API implementations.
     "extensions/desk_api/desk_api_extension_manager.cc",
@@ -608,7 +598,6 @@ source_set("unit_tests") {
     "reporting/websites/website_events_observer_unittest.cc",
     "reporting/websites/website_usage_observer_unittest.cc",
     "reporting/websites/website_usage_telemetry_sampler_unittest.cc",
-    "video_conference/video_conference_ukm_helper_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
@@ -693,6 +682,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/launcher_search:unit_tests",
     "//chrome/browser/chromeos/office_web_app:unit_tests",
     "//chrome/browser/chromeos/tast_support:unit_tests",
+    "//chrome/browser/chromeos/video_conference:unit_tests",
   ]
 
   if (is_chromeos_ash) {
@@ -787,6 +777,7 @@ group("browser_tests") {
       # Browser tests from subdirectories.
       "//chrome/browser/chromeos/network:browser_tests",
       "//chrome/browser/chromeos/smart_reader:browser_tests",
+      "//chrome/browser/chromeos/video_conference:browser_tests",
     ]
   }
 }
