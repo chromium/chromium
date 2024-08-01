@@ -1056,6 +1056,38 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.DomainLookupTiming.NavigationToDomainLookupEnd"
+    units="ms" expires_after="2024-10-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    domain lookup ended, for Google Search page loads. Only recorded for Search
+    navigations that start in the foreground and stay in the foreground until
+    domain lookup end.
+
+    In cases where navigation start occurs after connect start (e.g. pre-fetch,
+    pre-connect), this metric will contain zero.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.DomainLookupTiming.NavigationToDomainLookupStart"
+    units="ms" expires_after="2024-10-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    domain lookup started, for Google Search page loads. Only recorded for
+    Search navigations that start in the foreground and stay in the foreground
+    until domain lookup start.
+
+    In cases where navigation start occurs after connect start (e.g. pre-fetch,
+    pre-connect), this metric will contain zero.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFinalLoaderCallback"
     units="ms" expires_after="2024-12-08">
   <owner>nidhijaju@chromium.org</owner>
@@ -1148,6 +1180,22 @@ chromium-metrics-reviews@google.com.
     The time relative to navigation start that the page load metrics observer is
     destructed (i.e. the page is closed), for Google Search page loads. The
     metric is emitted when the navigation is completed.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationToConnectStart"
+    units="ms" expires_after="2024-10-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    navigation start, for Google Search page loads. Only recorded for Search
+    navigations that start in the foreground and stay in the foreground until
+    connect start.
+
+    In cases where navigation start occurs after connect start (e.g. pre-fetch,
+    pre-connect), this metric will contain zero.
   </summary>
 </histogram>
 

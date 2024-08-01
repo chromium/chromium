@@ -161,6 +161,14 @@ struct CustomUserTimingMark {
   mojo_base.mojom.TimeDelta start_time;
 };
 
+struct DomainLookupTiming {
+  // Time that the domain lookup started relative to navigation start time.
+  mojo_base.mojom.TimeDelta? domain_lookup_start;
+
+  // Time that the domain lookup ended relative to navigation start time.
+  mojo_base.mojom.TimeDelta? domain_lookup_end;
+};
+
 // PageLoadTiming contains timing metrics associated with a page load. Many of
 // the metrics here are based on the Navigation Timing spec:
 // http://www.w3.org/TR/navigation-timing/.
@@ -171,6 +179,10 @@ struct PageLoadTiming {
   // future.
   mojo_base.mojom.Time navigation_start;
 
+  // Time relative to navigation_start that the network connection is going to
+  // be established.
+  mojo_base.mojom.TimeDelta? connect_start;
+
   // Time relative to navigation_start that the first byte of the response is
   // received.
   mojo_base.mojom.TimeDelta? response_start;
@@ -178,6 +190,7 @@ struct PageLoadTiming {
   InteractiveTiming interactive_timing;
   PaintTiming paint_timing;
   ParseTiming parse_timing;
+  DomainLookupTiming domain_lookup_timing;
 
   // List of back-forward cache timings, one for each time a page was restored
   // from the cache.

@@ -400,6 +400,9 @@ class PageLoadMetricsObserverInterface {
   virtual void OnLoadEventStart(const mojom::PageLoadTiming& timing) = 0;
   virtual void OnParseStart(const mojom::PageLoadTiming& timing) = 0;
   virtual void OnParseStop(const mojom::PageLoadTiming& timing) = 0;
+  virtual void OnConnectStart(const mojom::PageLoadTiming& timing) = 0;
+  virtual void OnDomainLookupStart(const mojom::PageLoadTiming& timing) = 0;
+  virtual void OnDomainLookupEnd(const mojom::PageLoadTiming& timing) = 0;
 
   // On*PaintInPage(...) are invoked when the first relevant paint in the
   // page, across all frames, is observed.

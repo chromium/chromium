@@ -33,6 +33,9 @@ extern const char kHistogramGWSAFTStart[];
 extern const char kHistogramGWSFirstContentfulPaint[];
 extern const char kHistogramGWSLargestContentfulPaint[];
 extern const char kHistogramGWSParseStart[];
+extern const char kHistogramGWSConnectStart[];
+extern const char kHistogramGWSDomainLookupStart[];
+extern const char kHistogramGWSDomainLookupEnd[];
 
 extern const char kGwsAFTStartMarkName[];
 extern const char kGwsAFTEndMarkName[];
@@ -71,6 +74,12 @@ class GWSPageLoadMetricsObserver
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnParseStart(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnConnectStart(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnDomainLookupStart(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnDomainLookupEnd(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;

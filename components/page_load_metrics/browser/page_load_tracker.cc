@@ -263,6 +263,17 @@ void DispatchObserverTimingCallbacks(PageLoadMetricsObserverInterface* observer,
       !last_timing.parse_timing->parse_stop) {
     observer->OnParseStop(new_timing);
   }
+  if (new_timing.domain_lookup_timing->domain_lookup_start &&
+      !last_timing.domain_lookup_timing->domain_lookup_start) {
+    observer->OnDomainLookupStart(new_timing);
+  }
+  if (new_timing.domain_lookup_timing->domain_lookup_end &&
+      !last_timing.domain_lookup_timing->domain_lookup_end) {
+    observer->OnDomainLookupEnd(new_timing);
+  }
+  if (new_timing.connect_start && !last_timing.connect_start) {
+    observer->OnConnectStart(new_timing);
+  }
 }
 
 internal::PageLoadTrackerPageType CalculatePageType(

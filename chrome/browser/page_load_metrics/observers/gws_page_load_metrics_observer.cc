@@ -70,6 +70,12 @@ const char kHistogramGWSLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToLargestContentfulPaint";
 const char kHistogramGWSParseStart[] =
     HISTOGRAM_PREFIX "ParseTiming.NavigationToParseStart";
+const char kHistogramGWSConnectStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationToConnectStart";
+const char kHistogramGWSDomainLookupStart[] =
+    HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupStart";
+const char kHistogramGWSDomainLookupEnd[] =
+    HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupEnd";
 
 const char kGwsAFTStartMarkName[] = "SearchAFTStart";
 const char kGwsAFTEndMarkName[] = "trigger:SearchAFTEnd";
@@ -156,6 +162,36 @@ void GWSPageLoadMetricsObserver::OnParseStart(
   }
   PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSParseStart,
                       timing.parse_timing->parse_start.value());
+}
+
+void GWSPageLoadMetricsObserver::OnConnectStart(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.connect_start, GetDelegate())) {
+    return;
+  }
+  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSConnectStart,
+                      timing.connect_start.value());
+}
+
+void GWSPageLoadMetricsObserver::OnDomainLookupStart(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.domain_lookup_timing->domain_lookup_start, GetDelegate())) {
+    return;
+  }
+  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSDomainLookupStart,
+                      timing.domain_lookup_timing->domain_lookup_start.value());
+}
+
+void GWSPageLoadMetricsObserver::OnDomainLookupEnd(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.domain_lookup_timing->domain_lookup_end, GetDelegate())) {
+    return;
+  }
+  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSDomainLookupEnd,
+                      timing.domain_lookup_timing->domain_lookup_end.value());
 }
 
 void GWSPageLoadMetricsObserver::OnComplete(

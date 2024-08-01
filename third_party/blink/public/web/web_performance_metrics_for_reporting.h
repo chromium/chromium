@@ -86,10 +86,16 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   WebNavigationType GetNavigationType() const;
 
   // These functions return time in seconds (not milliseconds) since the epoch.
+  //
+  // TODO (crbug.com/355962211): Update the methods which return double for
+  // timing information to return `base::TimeTicks`.
   double InputForNavigationStart() const;
   double NavigationStart() const;
   base::TimeTicks NavigationStartAsMonotonicTime() const;
   BackForwardCacheRestoreTimings BackForwardCacheRestore() const;
+  double DomainLookupStart() const;
+  double DomainLookupEnd() const;
+  double ConnectStart() const;
   double ResponseStart() const;
   double DomContentLoadedEventStart() const;
   double DomContentLoadedEventEnd() const;

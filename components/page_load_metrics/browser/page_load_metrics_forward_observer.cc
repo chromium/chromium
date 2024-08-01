@@ -215,6 +215,13 @@ void PageLoadMetricsForwardObserver::OnParseStart(
 void PageLoadMetricsForwardObserver::OnParseStop(
     const mojom::PageLoadTiming& timing) {}
 
+void PageLoadMetricsForwardObserver::OnConnectStart(
+    const mojom::PageLoadTiming& timing) {}
+void PageLoadMetricsForwardObserver::OnDomainLookupStart(
+    const mojom::PageLoadTiming& timing) {}
+void PageLoadMetricsForwardObserver::OnDomainLookupEnd(
+    const mojom::PageLoadTiming& timing) {}
+
 void PageLoadMetricsForwardObserver::OnFirstPaintInPage(
     const mojom::PageLoadTiming& timing) {}
 

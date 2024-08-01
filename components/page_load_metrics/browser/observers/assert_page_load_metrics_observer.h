@@ -97,6 +97,13 @@ class AssertPageLoadMetricsObserver final
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnParseStop(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+
+  void OnConnectStart(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnDomainLookupStart(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnDomainLookupEnd(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnDomContentLoadedEventStart(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnLoadEventStart(

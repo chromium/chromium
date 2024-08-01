@@ -686,6 +686,18 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
         CreateTimeDeltaFromTimestampsInSeconds(
             (*perf.FirstScrollTimestamp()).InSecondsF(), start);
   }
+  if (perf.DomainLookupStart() > 0.0) {
+    timing->domain_lookup_timing->domain_lookup_start =
+        CreateTimeDeltaFromTimestampsInSeconds(perf.DomainLookupStart(), start);
+  }
+  if (perf.DomainLookupEnd() > 0.0) {
+    timing->domain_lookup_timing->domain_lookup_end =
+        CreateTimeDeltaFromTimestampsInSeconds(perf.DomainLookupEnd(), start);
+  }
+  if (perf.ConnectStart() > 0.0) {
+    timing->connect_start =
+        CreateTimeDeltaFromTimestampsInSeconds(perf.ConnectStart(), start);
+  }
   if (perf.ResponseStart() > 0.0) {
     timing->response_start =
         CreateTimeDeltaFromTimestampsInSeconds(perf.ResponseStart(), start);
