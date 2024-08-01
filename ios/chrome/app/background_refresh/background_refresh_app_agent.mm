@@ -130,13 +130,14 @@
   //    it.
   //  - Handle tracking completion of each task, and only signal success if
   //    all tasks succeeded overall.
-  //  - Only execute tasks which are due; skip (and don't tract completion of)
-  //    tasks that don't need to be run.
   ProceduralBlock completion = ^{
     [task setTaskCompletedWithSuccess:YES];
   };
   for (AppRefreshProvider* provider in self.providers) {
-    [provider handleRefreshWithCompletion:completion];
+    // Only execute due tasks.
+    if ([provider isDue]) {
+      [provider handleRefreshWithCompletion:completion];
+    }
   }
 }
 
