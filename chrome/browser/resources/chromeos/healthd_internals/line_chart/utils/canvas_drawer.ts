@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BACKGROUND_COLOR, GRID_COLOR, MIN_LABEL_HORIZONTAL_SPACING, MIN_LABEL_VERTICAL_SPACING, MIN_TIME_LABEL_HORIZONTAL_SPACING, SAMPLE_RATE, TEXT_COLOR, TEXT_SIZE, TIME_STEP_UNITS, Y_AXIS_TICK_LENGTH} from '../configs.js';
+import {BACKGROUND_COLOR, GRID_COLOR, MIN_LABEL_HORIZONTAL_SPACING, MIN_LABEL_VERTICAL_SPACING, MIN_TIME_LABEL_HORIZONTAL_SPACING, MIN_TIME_SCALE, SAMPLE_RATE, TEXT_COLOR, TEXT_SIZE, TIME_STEP_UNITS, Y_AXIS_TICK_LENGTH} from '../configs.js';
 
+import type {DataPoint} from './data_series.js';
 import {DataSeries} from './data_series.js';
 import {UnitLabel} from './unit_label.js';
 
 /**
  * Find the minimum time step for rendering time labels.
+ *
  * @param minSpacing - The minimum spacing between two time tick.
  * @param timeScale - The horizontal scale of the line chart.
  */
@@ -22,6 +24,21 @@ function getMinimumTimeStep(minSpacing: number, timeScale: number): number {
     }
   }
   return timeStep;
+}
+/**
+ * Get the step size based on the current time scale. We will only display one
+ * point in one step.
+ *
+ * @param timeScale - The horizontal scale of the line chart.
+ * @returns - The step size in millisecond.
+ */
+function getStepSize(timeScale: number): number {
+  const baseStepSize: number = MIN_TIME_SCALE * SAMPLE_RATE;
+  const minStepSize: number = timeScale * SAMPLE_RATE;
+  const minExponent = Math.log(minStepSize / baseStepSize) / Math.LN2;
+  // Round up to the next `baseStepSize` multiplied by the power of 2 to avoid
+  // shaking during zooming.
+  return baseStepSize * Math.pow(2, Math.ceil(minExponent));
 }
 
 /**
@@ -44,24 +61,10 @@ export class CanvasDrawer {
   // value of unit label will be set from the real maximum value of data series.
   private maxValue: number|null = null;
 
-  // The step size between two data points, in millisecond.
-  private stepSize: number = 1;
-
   // The width and height of the graph for drawing line chart, excluding the
   // bottom labels.
   private graphWidth: number = 1;
   private graphHeight: number = 1;
-
-  // The time to query the data. It will be smaller than the `visibleStartTime`,
-  // so the line chart won't leave blanks beside the edge of the chart.
-  private queryStartTime: number = 0;
-
-  // The offset of the current visible range. To make sure we draw the data
-  // points at the same absolute position.
-  private offset: number = 0;
-
-  // Number of the points need to be draw on the screen.
-  private numOfPoint: number = 0;
 
   // Add a data series to this sub chart.
   addDataSeries(dataSeries: DataSeries) {
@@ -71,7 +74,6 @@ export class CanvasDrawer {
   // Overwrite the maximum value of this chart.
   setMaxValue(maxValue: number|null) {
     this.maxValue = maxValue;
-    this.updateMaxValue();
   }
 
   // Return true if there is any data series in this chart.
@@ -79,37 +81,33 @@ export class CanvasDrawer {
     return this.dataSeriesList.length > 0;
   }
 
-  // Render the canvas content.
+  /**
+   * Render the canvas content.
+   *
+   * @param context - 2D rendering context for the drawing the line chart.
+   * @param canvasWidth - The width of canvas element.
+   * @param canvasHeight - The height of canvas element.
+   * @param visibleStartTime - The start time of visible part of line chart.
+   * @param visibleEndTime - The end time of visible part of line chart.
+   * @param timeScale - The number of milliseconds between two pixels.
+   */
   renderCanvas(
       context: CanvasRenderingContext2D, canvasWidth: number,
-      canvasHeight: number, scrollbarPosition: number, startTime: number,
-      timeSscale: number) {
+      canvasHeight: number, visibleStartTime: number, visibleEndTime: number,
+      timeScale: number) {
     this.initAndClearContext(context, canvasWidth, canvasHeight);
 
     this.graphWidth = canvasWidth;
     this.graphHeight = canvasHeight - TEXT_SIZE - MIN_LABEL_VERTICAL_SPACING;
 
-    // To reduce CPU usage, the chart do not draw points at every pixels. Use
-    // `offset` to make sure the graph won't shaking during scrolling, the line
-    // chart will render the data points at the same absolute position.
-    this.offset = scrollbarPosition % SAMPLE_RATE;
-
-    // Draw a data point on every `SAMPLE_RATE` pixels.
-    this.stepSize = timeSscale * SAMPLE_RATE;
-
-    // First point's position(`queryStartTime`) may go out of the canvas to make
-    // the line chart continuous at the begin of the visible range, as well as
-    // the last points.
-    const visibleStartTime: number = startTime + scrollbarPosition * timeSscale;
-    this.queryStartTime = visibleStartTime - this.offset * timeSscale;
-    const queryWidth: number = this.graphWidth + this.offset;
-    this.numOfPoint = Math.ceil(queryWidth / SAMPLE_RATE) + 1;
-
-    this.updateMaxValue();
     this.renderChartGrid(context);
-    this.renderTimeLabels(context, visibleStartTime, timeSscale);
+    this.renderTimeLabels(context, visibleStartTime, timeScale);
     this.renderUnitLabels(context);
-    this.renderLines(context);
+
+    const stepSize = getStepSize(timeScale);
+    this.updateMaxValue(visibleStartTime, visibleEndTime, stepSize);
+    this.renderLines(
+        context, visibleStartTime, visibleEndTime, timeScale, stepSize);
   }
 
   private initAndClearContext(
@@ -163,45 +161,50 @@ export class CanvasDrawer {
     context.stroke();
   }
 
-  // Render the lines of all data series.
-  private renderLines(context: CanvasRenderingContext2D) {
-    const dataSeriesList: DataSeries[] = this.dataSeriesList;
-    for (let i: number = 0; i < dataSeriesList.length; ++i) {
-      this.renderLineOfDataSeries(context, dataSeriesList[i]);
+  // Render lines for all data series.
+  private renderLines(
+      context: CanvasRenderingContext2D, startTime: number, endTime: number,
+      timeScale: number, stepSize: number) {
+    for (const dataSeries of this.dataSeriesList) {
+      this.renderLine(
+          context, dataSeries, startTime, endTime, timeScale, stepSize);
     }
   }
 
-  private renderLineOfDataSeries(
-      context: CanvasRenderingContext2D, dataSeries: DataSeries) {
+  // Render the line for one data series.
+  private renderLine(
+      context: CanvasRenderingContext2D, dataSeries: DataSeries,
+      startTime: number, endTime: number, timeScale: number, stepSize: number) {
     // Query the the values of data points from the data series.
-    const values: Array<number|null> = dataSeries.getDisplayedValues(
-        this.queryStartTime, this.stepSize, this.numOfPoint);
+    const dataPoints: DataPoint[] =
+        dataSeries.getDisplayedPoints(startTime, endTime, stepSize);
+    if (dataPoints.length === 0) {
+      return;
+    }
 
     context.strokeStyle = dataSeries.getColor();
     context.fillStyle = dataSeries.getColor();
     context.beginPath();
 
     const valueScale: number = this.unitLabel.getValueScale();
-    let firstXCoord: number = this.graphWidth;
-    let xCoord: number = -this.offset;
-    for (let i: number = 0; i < values.length; ++i) {
-      if (values[i] !== null) {
-        const chartYCoord: number = Math.round(values[i]! / valueScale);
-        const realYCoord: number = this.graphHeight - 1 - chartYCoord;
-        context.lineTo(xCoord, realYCoord);
-        if (firstXCoord > xCoord) {
-          firstXCoord = xCoord;
-        }
-      }
-      xCoord += SAMPLE_RATE;
+    for (const point of dataPoints) {
+      const xCoord: number = Math.round((point.time - startTime) / timeScale);
+      const chartYCoord: number = Math.round(point.value / valueScale);
+      const realYCoord: number = this.graphHeight - 1 - chartYCoord;
+      context.lineTo(xCoord, realYCoord);
     }
     context.stroke();
-    this.fillAreaBelowLine(context, firstXCoord);
+    const firstXCoord: number =
+        Math.round((dataPoints[0].time - startTime) / timeScale);
+    const lastXCoord: number = Math.round(
+        (dataPoints[dataPoints.length - 1].time - startTime) / timeScale);
+    this.fillAreaBelowLine(context, firstXCoord, lastXCoord);
   }
 
   private fillAreaBelowLine(
-      context: CanvasRenderingContext2D, firstXCoord: number) {
-    context.lineTo(this.graphWidth, this.graphHeight);
+      context: CanvasRenderingContext2D, firstXCoord: number,
+      lastXCoord: number) {
+    context.lineTo(lastXCoord, this.graphHeight);
     context.lineTo(firstXCoord, this.graphHeight);
     context.globalAlpha = 0.05;
     context.fill();
@@ -231,15 +234,14 @@ export class CanvasDrawer {
   }
 
   // Calculate the max value for the current layout of unit label.
-  private updateMaxValue() {
+  private updateMaxValue(startTime: number, endTime: number, stepSize: number) {
     const dataSeriesList: DataSeries[] = this.dataSeriesList;
     if (this.maxValue != null) {
       this.unitLabel.setMaxValue(this.maxValue);
       return;
     }
     const valueList: number[] = dataSeriesList.map((dataSeries: DataSeries) => {
-      return dataSeries.getMaxValue(
-          this.queryStartTime, this.stepSize, this.numOfPoint);
+      return dataSeries.getDisplayedMaxValue(startTime, endTime, stepSize);
     });
     this.unitLabel.setMaxValue(Math.max(...valueList));
   }

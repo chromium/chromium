@@ -7,7 +7,7 @@ import './scrollbar.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DEFAULT_TIME_SCALE, DRAG_RATE, MAX_TIME_SCALE, MIN_TIME_SCALE, MOUSE_WHEEL_SCROLL_RATE, MOUSE_WHEEL_UNITS, SAMPLE_RATE, TOUCH_ZOOM_UNITS, ZOOM_RATE} from './configs.js';
+import {DEFAULT_TIME_SCALE, DRAG_RATE, MAX_TIME_SCALE, MIN_TIME_SCALE, MOUSE_WHEEL_SCROLL_RATE, MOUSE_WHEEL_UNITS, TOUCH_ZOOM_UNITS, ZOOM_RATE} from './configs.js';
 import {getTemplate} from './line_chart.html.js';
 import type {HealthdInternalsLineChartMenuElement} from './menu.js';
 import type {HealthdInternalsLineChartScrollbarElement} from './scrollbar.js';
@@ -314,13 +314,7 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
   // Get the whole line chart width, in pixel.
   private getChartWidth(): number {
     const timeRange: number = this.endTime - this.startTime;
-    const numOfPixels: number = Math.floor(timeRange / this.timeScale);
-
-    // To reduce CPU usage, the chart do not draw points at every pixels.
-    // Remove the last few pixels to avoid the graph showing some blank at
-    // the end of the graph.
-    const extraPixels: number = numOfPixels % SAMPLE_RATE;
-    return numOfPixels - extraPixels;
+    return Math.floor(timeRange / this.timeScale);
   }
 
   // Get the visible chart width.
@@ -362,9 +356,13 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
       return;
     }
 
+    const visibleStartTime: number =
+        this.startTime + scrollbarPosition * this.timeScale;
+    const visibleEndTime: number =
+        visibleStartTime + this.getChartVisibleWidth() * this.timeScale;
     this.canvasDrawer.renderCanvas(
         context, this.$.mainCanvas.width, this.$.mainCanvas.height,
-        scrollbarPosition, this.startTime, this.timeScale);
+        visibleStartTime, visibleEndTime, this.timeScale);
   }
 }
 

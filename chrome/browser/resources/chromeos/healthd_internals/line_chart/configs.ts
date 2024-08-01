@@ -46,7 +46,7 @@ export const DRAG_RATE: number = 3;
 
 /**
  * The sample rate of the line chart, in pixels. To reduce the cpu usage, we
- * only draw data points at the position which are exact multiple of this value.
+ * only draw one data point per `SAMPLE_RATE` pixel.
  */
 export const SAMPLE_RATE: number = 15;
 
