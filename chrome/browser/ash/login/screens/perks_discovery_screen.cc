@@ -271,18 +271,17 @@ void PerksDiscoveryScreen::OnPerksSelectionFinished(
 
 void PerksDiscoveryScreen::PerformButtonAction(
     const base::Value::Dict& button_data) {
-  const growth::Action* action =
-      new growth::Action(button_data.FindDict("action"));
+  if (!button_data.FindDict("action")) {
+    // TODO(b/347181006) Record error metrics.
+    return;
+  }
+  const growth::Action action = growth::Action(button_data.FindDict("action"));
   auto* campaigns_manager = growth::CampaignsManager::Get();
   if (!campaigns_manager) {
     // TODO(b/347181006) Record error metrics.
     return;
   }
-  if (!action) {
-    // TODO(b/347181006) Record error metrics.
-    return;
-  }
-  campaigns_manager->PerformAction(campaign_id_, group_id_, action);
+  campaigns_manager->PerformAction(campaign_id_, group_id_, &action);
 }
 
 }  // namespace ash
