@@ -12,6 +12,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
+import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
+import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.PaintPreviewMetricsObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -24,10 +26,10 @@ import org.chromium.url.GURL;
 /**
  * Records UMA page load metrics for the first navigation on a cold start.
  *
- * <p>Uses different cold start heuristics from {@link ActivityTabStartupMetricsTracker}. These
+ * <p>Uses different cold start heuristics from {@link LegacyTabStartupMetricsTracker}. These
  * heuristics aim to replace a few metrics from Startup.Android.Cold.*.
  */
-public class ExperimentalStartupMetricsTracker {
+public class StartupMetricsTracker {
 
     private boolean mFirstNavigationCommitted;
 
@@ -117,12 +119,13 @@ public class ExperimentalStartupMetricsTracker {
     // The time of the activity onCreate(). All metrics (such as time to first visible content) are
     // reported in uptimeMillis relative to this value.
     private final long mActivityStartTimeMs;
+    private boolean mFirstVisibleContent3Recorded;
 
     private TabModelSelectorTabObserver mTabObserver;
     private PageObserver mPageObserver;
     private boolean mShouldTrack = true;
 
-    public ExperimentalStartupMetricsTracker(
+    public StartupMetricsTracker(
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
         tabModelSelectorSupplier.addObserver(this::registerObservers);
@@ -133,6 +136,23 @@ public class ExperimentalStartupMetricsTracker {
         mTabObserver = new TabObserver(tabModelSelector);
         mPageObserver = new PageObserver();
         PageLoadMetrics.addObserver(mPageObserver, /* supportPrerendering= */ false);
+    }
+
+    /**
+     * Register an observer to be notified on the first paint of a paint preview if present.
+     * @param startupPaintPreviewHelper the helper to register the observer to.
+     */
+    public void registerPaintPreviewObserver(StartupPaintPreviewHelper startupPaintPreviewHelper) {
+        startupPaintPreviewHelper.addMetricsObserver(
+            new PaintPreviewMetricsObserver() {
+                @Override
+                public void onFirstPaint(long durationMs) {
+                    recordTimeToFirstVisibleContent3(durationMs);
+                }
+
+                @Override
+                public void onUnrecordedFirstPaint() {}
+            });
     }
 
     public void destroy() {
@@ -147,22 +167,37 @@ public class ExperimentalStartupMetricsTracker {
         }
     }
 
-    private void recordHistogram(String name, long ms) {
+    private void recordExperimentalHistogram(String name, long ms) {
         RecordHistogram.recordMediumTimesHistogram(
                 "Startup.Android.Experimental." + name + ".Tabbed.ColdStartTracker", ms);
+    }
+
+    private void recordColdStartHistogram(String name, long ms) {
+        RecordHistogram.recordMediumTimesHistogram("Startup.Android.Cold." + name + ".Tabbed", ms);
     }
 
     private void recordNavigationCommitMetrics(long firstCommitMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
-            recordHistogram("FirstNavigationCommit", firstCommitMs);
+            recordExperimentalHistogram("FirstNavigationCommit", firstCommitMs);
+            recordColdStartHistogram("TimeToFirstNavigationCommit3", firstCommitMs);
+            recordTimeToFirstVisibleContent3(firstCommitMs);
         }
     }
 
     private void recordFcpMetrics(long firstFcpMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
-            recordHistogram("FirstContentfulPaint", firstFcpMs);
+            recordExperimentalHistogram("FirstContentfulPaint", firstFcpMs);
+            recordColdStartHistogram("TimeToFirstContentfulPaint3", firstFcpMs);
         }
+    }
+
+    private void recordTimeToFirstVisibleContent3(long durationMs) {
+        if (mFirstVisibleContent3Recorded) return;
+
+        mFirstVisibleContent3Recorded = true;
+        RecordHistogram.recordMediumTimesHistogram(
+            "Startup.Android.Cold.TimeToFirstVisibleContent3", durationMs);
     }
 }

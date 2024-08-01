@@ -59,16 +59,22 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed";
     private static final String FIRST_CONTENTFUL_PAINT_HISTOGRAM =
             "Startup.Android.Cold.TimeToFirstContentfulPaint";
+    private static final String FIRST_CONTENTFUL_PAINT_HISTOGRAM3 =
+            "Startup.Android.Cold.TimeToFirstContentfulPaint3";
     private static final String FIRST_VISIBLE_CONTENT_HISTOGRAM =
             "Startup.Android.Cold.TimeToFirstVisibleContent";
     private static final String FIRST_VISIBLE_CONTENT_HISTOGRAM2 =
             "Startup.Android.Cold.TimeToFirstVisibleContent2";
+    private static final String FIRST_VISIBLE_CONTENT_HISTOGRAM3 =
+            "Startup.Android.Cold.TimeToFirstVisibleContent3";
     private static final String VISIBLE_CONTENT_HISTOGRAM =
             "Startup.Android.Cold.TimeToVisibleContent";
     private static final String FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
             "Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground";
     private static final String FIRST_COMMIT_COLD_START_TRACKER_HISTOGRAM =
             "Startup.Android.Experimental.FirstNavigationCommit.Tabbed.ColdStartTracker";
+    private static final String FIRST_COMMIT_COLD_HISTOGRAM3 =
+            "Startup.Android.Cold.TimeToFirstNavigationCommit3.Tabbed";
 
     private CustomTabsConnection mConnectionToCleanup;
 
@@ -160,6 +166,9 @@ public class StartupLoadingMetricsTest {
                 isTabbedSuffix ? expectedCount : 0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_COMMIT_COLD_START_TRACKER_HISTOGRAM));
+        Assert.assertEquals(
+                isTabbedSuffix ? expectedCount : 0,
+                RecordHistogram.getHistogramTotalCountForTesting(FIRST_COMMIT_COLD_HISTOGRAM3));
 
         int firstCommitSamples =
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -170,6 +179,10 @@ public class StartupLoadingMetricsTest {
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_CONTENTFUL_PAINT_HISTOGRAM + histogramSuffix);
         Assert.assertTrue(firstContentfulPaintSamples < 2);
+        int coldStartFirstContentfulPaintSamples =
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        FIRST_CONTENTFUL_PAINT_HISTOGRAM3 + histogramSuffix);
+        Assert.assertTrue(coldStartFirstContentfulPaintSamples < 2);
 
         int visibleContentSamples =
                 RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM);
@@ -205,6 +218,10 @@ public class StartupLoadingMetricsTest {
                     expectedCount,
                     RecordHistogram.getHistogramTotalCountForTesting(
                             FIRST_VISIBLE_CONTENT_HISTOGRAM2));
+            Assert.assertEquals(
+                    expectedCount,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            FIRST_VISIBLE_CONTENT_HISTOGRAM3));
         }
     }
 

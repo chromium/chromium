@@ -137,10 +137,10 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
-import org.chromium.chrome.browser.metrics.ExperimentalStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
+import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -428,7 +428,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // Delegate to handle drag and drop features for tablets.
     private DragAndDropDelegate mDragDropDelegate;
 
-    private ExperimentalStartupMetricsTracker mExperimentalStartupMetricsTracker;
+    private StartupMetricsTracker mStartupMetricsTracker;
 
     private OneshotSupplierImpl<ModuleRegistry> mModuleRegistrySupplier =
             new OneshotSupplierImpl<>();
@@ -534,8 +534,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     protected void onPreCreate() {
         super.onPreCreate();
-        mExperimentalStartupMetricsTracker =
-                new ExperimentalStartupMetricsTracker(getTabModelSelectorSupplier());
+        mStartupMetricsTracker = new StartupMetricsTracker(getTabModelSelectorSupplier());
         mMultiInstanceManager =
                 MultiInstanceManager.create(
                         this,
@@ -1366,12 +1365,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void setTrackColdStartupMetrics(boolean shouldTrackColdStartupMetrics) {
-        assert getActivityTabStartupMetricsTracker() != null;
+        assert getLegacyTabStartupMetricsTracker() != null;
 
         if (shouldTrackColdStartupMetrics) {
-            getActivityTabStartupMetricsTracker().setHistogramSuffix(ActivityType.TABBED);
+            getLegacyTabStartupMetricsTracker().setHistogramSuffix(ActivityType.TABBED);
         } else {
-            getActivityTabStartupMetricsTracker().cancelTrackingStartupMetrics();
+            getLegacyTabStartupMetricsTracker().cancelTrackingStartupMetrics();
         }
     }
 
@@ -2157,7 +2156,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         TabGroupUsageTracker.initialize(
                 this.getLifecycleDispatcher(), tabModelSelector, this::isWarmOnResume);
 
-        assert getActivityTabStartupMetricsTracker() != null;
+        assert getLegacyTabStartupMetricsTracker() != null;
         StartupPaintPreviewHelper paintPreviewHelper =
                 new StartupPaintPreviewHelper(
                         getWindowAndroid(),
@@ -2170,7 +2169,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                     : getToolbarManager().getProgressBarCoordinator();
                         });
         mStartupPaintPreviewHelperSupplier.set(paintPreviewHelper);
-        getActivityTabStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
+        getLegacyTabStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
+        assert mStartupMetricsTracker != null;
+        mStartupMetricsTracker.registerPaintPreviewObserver(paintPreviewHelper);
 
         maybeRegisterHomeModules();
     }
@@ -3222,9 +3223,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mDragDropDelegate.destroy();
         }
 
-        if (mExperimentalStartupMetricsTracker != null) {
-            mExperimentalStartupMetricsTracker.destroy();
-            mExperimentalStartupMetricsTracker = null;
+        if (mStartupMetricsTracker != null) {
+            mStartupMetricsTracker.destroy();
+            mStartupMetricsTracker = null;
         }
 
         if (mHubProvider != null) mHubProvider.destroy();

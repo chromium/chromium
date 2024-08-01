@@ -117,6 +117,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.Cold.TimeToFirstContentfulPaint3" units="ms"
+    expires_after="2025-01-26">
+  <owner>pasko@chromium.org</owner>
+  <owner>nafisabedin@google.com</owner>
+  <summary>
+    The time from activity creation on a cold start to FirstContentfulPaint
+    happening in this activity. Cold start is determined by whether the process
+    creation reason is Activity.
+
+    Recorded only for tabbed activity and on cold starts. Therefore it cannot be
+    recorded more than once in the application lifetime.
+
+    Similarly to Startup.Android.Cold.TimeToFirstVisibleContent2 omits recording
+    a sample:
+
+    1. when the first Activity is a CCT/WebAPK/TWA,
+
+    2. when an error page is committed,
+
+    3. for non-http(s) pages,
+
+    4. for downloads,
+
+    5. when another activity was shown and hidden before the first navigation
+    committed,
+
+    6. when the first navigation was preceded by showing a NTP (New Tab Page).
+
+    This v3 metric uses ColdStartTracker and is a rename for
+    Startup.Android.Experimental.FirstContentfulPaint.Tabbed. It otherwise
+    preserves the same semantics and aims to replace the original v1 metric as
+    well.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Startup.Android.Cold.TimeToFirstNavigationCommit"
     units="ms" expires_after="2025-01-05">
   <owner>pasko@chromium.org</owner>
@@ -142,6 +177,49 @@ chromium-metrics-reviews@google.com.
     The first difference is to record navigation commits happening before
     post-native initialization. The second modifications is not to record
     samples when FRE is shown.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.Cold.TimeToFirstNavigationCommit3.Tabbed"
+    units="ms" expires_after="2025-01-26">
+  <owner>pasko@chromium.org</owner>
+  <owner>agrieve@chromium.org</owner>
+  <owner>nafisabedin@google.com</owner>
+  <summary>
+    The time from activity creation on a cold start to FirstNavigationCommit
+    happening in this activity. Cold start is determined by whether the process
+    creation reason is Activity.
+
+    Recorded only for tabbed activity and on cold starts. Therefore it cannot be
+    recorded more than once in the application lifetime.
+
+    Similarly to Startup.Android.Cold.TimeToFirstVisibleContent2 omits recording
+    a sample:
+
+    1. when the first Activity is a CCT/WebAPK/TWA,
+
+    2. when an error page is committed,
+
+    3. for non-http(s) pages,
+
+    4. for downloads,
+
+    5. when another activity was shown and hidden before the first navigation
+    committed,
+
+    6. when the first navigation was preceded by showing a NTP (New Tab Page).
+
+    This metric aims to replace
+    Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed due to a loss of
+    samples for the v2 metric.
+
+    It utilizes ColdStartTracker and is semantically the same as
+    Startup.Android.Experimental.FirstNavigationCommit.Tabbed.ColdStartTracker.
+    This v3 metric records 5x more samples than what the v2 metric currently
+    records. The Experimental metric is currently being used to diagnose A/B
+    problems running in the field so the new metric will replace it and the v2
+    metric once it approximately reaches the counts of the Experimental one on
+    Chrome Stable.
   </summary>
 </histogram>
 
@@ -277,6 +355,42 @@ chromium-metrics-reviews@google.com.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.Cold.TimeToFirstVisibleContent3" units="ms"
+    expires_after="2025-01-26">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <owner>nafisabedin@google.com</owner>
+  <summary>
+    The time from the first Chrome tabbed activity creation to the moment Chrome
+    first appears ready to the user.
+
+    This metric captures when the omnibox is painted and either a navigation has
+    committed or a Paint Preview is shown. The intent is to reflect Clank's
+    perceived cold start performance regardless of different launch paths, while
+    controlling for the factors that we have the most direct influence over and
+    minimizing external factors. Note that network connectivity is mostly but
+    not entirely omitted as it does impact the initial response time for a site
+    which impacts the omnibox UX and loading metric.
+
+    This metric captures the value of the first emitted metric out of the
+    'Startup.Android.Cold.TimeToFirstNavigationCommit3.Tabbed' and
+    'Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap' metrics and emits the
+    value, skipping the record when both are missing.
+
+    The metric is meant to replace
+    Startup.Android.Cold.TimeToFirstVisibleContent2 as a guardrail metric and
+    therefore has the same semantics as the v2 version except with one of the
+    sub-metrics changed. For the v2 metric,
+    Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed, was one of the
+    sub-metrics, however, moving the native library initialization to be earlier
+    resulted in a loss of samples. Therefore, the new sub-metric,
+    TimeToFirstNavigationCommit3, utilizes ColdStartTracker for its lower
+    maintenance risks, and preservation of the good properties from v2, all
+    while providing 5x more samples.
   </summary>
 </histogram>
 

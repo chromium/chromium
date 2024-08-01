@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Tracks the first navigation and first contentful paint events for a tab within an activity during
  * startup.
  */
-public class ActivityTabStartupMetricsTracker {
+public class LegacyTabStartupMetricsTracker {
     private static final String FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
             "Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground";
     private static final String FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
@@ -103,7 +103,7 @@ public class ActivityTabStartupMetricsTracker {
     // the value is not lost after posting a few tasks.
     private final AtomicLong mFirstSafeBrowsingResponseTimeMicros = new AtomicLong();
 
-    public ActivityTabStartupMetricsTracker(
+    public LegacyTabStartupMetricsTracker(
             long activityId, ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivityId = activityId;
         mActivityStartTimeMs = SystemClock.uptimeMillis();
