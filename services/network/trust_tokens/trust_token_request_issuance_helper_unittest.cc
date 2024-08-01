@@ -354,15 +354,14 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, SetsRequestHeaders) {
   ASSERT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
             mojom::TrustTokenOperationStatus::kOk);
 
-  std::string attached_header;
-  EXPECT_TRUE(request->extra_request_headers().GetHeader(
-      kTrustTokensSecTrustTokenHeader, &attached_header));
-  EXPECT_EQ(attached_header, "this string contains some blinded tokens");
+  EXPECT_THAT(
+      request->extra_request_headers().GetHeader(
+          kTrustTokensSecTrustTokenHeader),
+      Optional(std::string("this string contains some blinded tokens")));
 
-  std::string attached_version_header;
-  EXPECT_TRUE(request->extra_request_headers().GetHeader(
-      kTrustTokensSecTrustTokenVersionHeader, &attached_version_header));
-  EXPECT_EQ(attached_version_header, "PrivateStateTokenV3PMB");
+  EXPECT_THAT(request->extra_request_headers().GetHeader(
+                  kTrustTokensSecTrustTokenVersionHeader),
+              Optional(std::string("PrivateStateTokenV3PMB")));
 }
 
 // Check that the issuance helper rejects responses lacking the
