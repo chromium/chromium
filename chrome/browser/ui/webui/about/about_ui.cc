@@ -615,6 +615,42 @@ std::string AboutLinuxProxyConfig() {
 
 }  // namespace
 
+AboutUIConfigBase::AboutUIConfigBase(std::string_view host)
+    : WebUIConfig(content::kChromeUIScheme, host) {}
+
+std::unique_ptr<content::WebUIController>
+AboutUIConfigBase::CreateWebUIController(content::WebUI* web_ui,
+                                         const GURL& url) {
+  return std::make_unique<AboutUI>(web_ui, url);
+}
+
+ChromeURLsUIConfig::ChromeURLsUIConfig()
+    : AboutUIConfigBase(chrome::kChromeUIChromeURLsHost) {}
+
+CreditsUIConfig::CreditsUIConfig()
+    : AboutUIConfigBase(chrome::kChromeUICreditsHost) {}
+
+#if !BUILDFLAG(IS_ANDROID)
+TermsUIConfig::TermsUIConfig()
+    : AboutUIConfigBase(chrome::kChromeUITermsHost) {}
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
+LinuxProxyConfigUI::LinuxProxyConfigUI()
+    : AboutUIConfigBase(chrome::kChromeUILinuxProxyConfigHost) {}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+OSCreditsUI::OSCreditsUI()
+    : AboutUIConfigBase(chrome::kChromeUIOSCreditsHost) {}
+
+BorealisCreditsUI::BorealisCreditsUI()
+    : AboutUIConfigBase(chrome::kChromeUIBorealisCreditsHost) {}
+
+CrostiniCreditsUI::CrostiniCreditsUI()
+    : AboutUIConfigBase(chrome::kChromeUICrostiniCreditsHost) {}
+#endif
+
 // AboutUIHTMLSource ----------------------------------------------------------
 
 AboutUIHTMLSource::AboutUIHTMLSource(const std::string& source_name,
@@ -732,7 +768,7 @@ std::string AboutUIHTMLSource::GetAccessControlAllowOriginForOrigin(
   return content::URLDataSource::GetAccessControlAllowOriginForOrigin(origin);
 }
 
-AboutUI::AboutUI(content::WebUI* web_ui, const std::string& host)
+AboutUI::AboutUI(content::WebUI* web_ui, const GURL& url)
     : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
@@ -742,7 +778,7 @@ AboutUI::AboutUI(content::WebUI* web_ui, const std::string& host)
 #endif
 
   content::URLDataSource::Add(
-      profile, std::make_unique<AboutUIHTMLSource>(host, profile));
+      profile, std::make_unique<AboutUIHTMLSource>(url.host(), profile));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

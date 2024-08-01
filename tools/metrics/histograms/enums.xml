@@ -34342,6 +34342,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-853789543" label="chrome://bluetooth-pairing/"/>
   <int value="-833683433" label="chrome://on-device-internals/"/>
   <int value="-823585847" label="chrome://chrome-signin/"/>
+  <int value="-769094624" label="chrome://borealis-credits/"/>
   <int value="-756514973" label="chrome://version/"/>
   <int value="-753390931" label="chrome://interstitials/"/>
   <int value="-734627230" label="chrome://extension-icon/"/>

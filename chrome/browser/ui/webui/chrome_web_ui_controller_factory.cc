@@ -312,12 +312,6 @@ WebUIController* NewWebUI<PageNotAvailableForGuestUI>(WebUI* web_ui,
 }
 #endif
 
-// Special case for older about: handlers.
-template <>
-WebUIController* NewWebUI<AboutUI>(WebUI* web_ui, const GURL& url) {
-  return new AboutUI(web_ui, url.host());
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 template <>
 WebUIController* NewWebUI<ash::kiosk_vision::UIController>(WebUI* web_ui,
@@ -370,23 +364,6 @@ WebUIController* NewWebUI<WelcomeUI>(WebUI* web_ui, const GURL& url) {
   return new WelcomeUI(web_ui, url);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-bool IsAboutUI(const GURL& url) {
-  return (url.host_piece() == chrome::kChromeUIChromeURLsHost ||
-          url.host_piece() == chrome::kChromeUICreditsHost
-#if !BUILDFLAG(IS_ANDROID)
-          || url.host_piece() == chrome::kChromeUITermsHost
-#endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
-          || url.host_piece() == chrome::kChromeUILinuxProxyConfigHost
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-          || url.host_piece() == chrome::kChromeUIOSCreditsHost ||
-          url.host_piece() == chrome::kChromeUIBorealisCreditsHost ||
-          url.host_piece() == chrome::kChromeUICrostiniCreditsHost
-#endif
-  );  // NOLINT
-}
 
 // Returns a function that can be used to create the right type of WebUI for a
 // tab, based on its URL. Returns nullptr if the URL doesn't have WebUI
@@ -701,8 +678,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<policy::DlpInternalsUI>;
   }
 #endif
-  if (IsAboutUI(url))
-    return &NewWebUI<AboutUI>;
 
   if (url.host_piece() == security_interstitials::kChromeUIConnectionHelpHost) {
     return &NewWebUI<security_interstitials::ConnectionHelpUI>;

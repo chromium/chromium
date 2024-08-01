@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
@@ -238,11 +239,13 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<AssistantOptInUIConfig>());
   map.AddWebUIConfig(std::make_unique<AudioUIConfig>());
   map.AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<BorealisCreditsUI>());
   map.AddWebUIConfig(std::make_unique<BorealisInstallerUIConfig>());
   map.AddWebUIConfig(std::make_unique<cloud_upload::CloudUploadUIConfig>());
   map.AddWebUIConfig(std::make_unique<ColorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ConfirmPasswordChangeUIConfig>());
   map.AddWebUIConfig(MakeConnectivityDiagnosticsUIConfig());
+  map.AddWebUIConfig(std::make_unique<CrostiniCreditsUI>());
   map.AddWebUIConfig(std::make_unique<CrostiniInstallerUIConfig>());
   map.AddWebUIConfig(std::make_unique<CrostiniUpgraderUIConfig>());
   map.AddWebUIConfig(std::make_unique<CryptohomeUIConfig>());
@@ -295,6 +298,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(
       std::make_unique<office_fallback::OfficeFallbackUIConfig>());
   map.AddWebUIConfig(std::make_unique<OobeUIConfig>());
+  map.AddWebUIConfig(std::make_unique<OSCreditsUI>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<OSFeedbackUIConfig, OSFeedbackUI,
                                       ChromeOsFeedbackDelegate>());
