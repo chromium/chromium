@@ -654,10 +654,10 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    for (const char* scope_extension :
+    for (const ScopeExtensionInfo& scope_extension_info :
          ChromeOsWebAppExperiments::GetScopeExtensions(app.app_id())) {
-      filters.push_back(
-          apps_util::MakeIntentFilterForUrlScope(GURL(scope_extension)));
+      base::Extend(filters, CreateIntentFiltersFromScopeExtensionInfo(
+                                scope_extension_info));
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
