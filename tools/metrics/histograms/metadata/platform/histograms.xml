@@ -1565,7 +1565,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.Modemfwd.DlcInstallResult"
     enum="ModemfwdDlcInstallResult" expires_after="2025-01-05">
   <owner>andrewlassalle@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>ujjwalpande@google.com</owner>
   <summary>
     Result of the DLC install action performed by modemfwd. Some device variants
     use a DLC to store their FW. When this DLC is installed, a metric is logged.
@@ -1573,9 +1573,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.DlcUninstallResult"
-    enum="ModemfwdDlcUninstallResult" expires_after="2024-09-01">
+    enum="ModemfwdDlcUninstallResult" expires_after="2025-09-01">
   <owner>andrewlassalle@google.com</owner>
-  <owner>cros-connectivity@google.com</owner>
+  <owner>ujjwalpande@google.com</owner>
   <summary>
     Result of each DLC uninstall action performed by modemfwd. Modemfwd will
     remove any modem DLCs that are not for the device's variant. Each uninstall
