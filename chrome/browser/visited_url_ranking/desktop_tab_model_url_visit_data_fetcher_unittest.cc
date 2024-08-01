@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,14 +36,15 @@ class DesktopTabModelURLVisitDataFetcherTest
     FetchResult result = FetchResult(FetchResult::Status::kError, {});
     base::RunLoop wait_loop;
     desktop_tab_model_url_visit_data_fetcher_->FetchURLVisitData(
-        options, base::BindOnce(
-                     [](base::OnceClosure stop_waiting, FetchResult* result,
-                        FetchResult result_arg) {
-                       result->status = result_arg.status;
-                       result->data = std::move(result_arg.data);
-                       std::move(stop_waiting).Run();
-                     },
-                     wait_loop.QuitClosure(), &result));
+        options, FetcherConfig(),
+        base::BindOnce(
+            [](base::OnceClosure stop_waiting, FetchResult* result,
+               FetchResult result_arg) {
+              result->status = result_arg.status;
+              result->data = std::move(result_arg.data);
+              std::move(stop_waiting).Run();
+            },
+            wait_loop.QuitClosure(), &result));
     wait_loop.Run();
     return result;
   }

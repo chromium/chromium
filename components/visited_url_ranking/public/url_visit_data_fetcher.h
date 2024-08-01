@@ -7,6 +7,7 @@
 
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/fetcher_config.h"
 
 namespace visited_url_ranking {
 
@@ -19,6 +20,7 @@ class URLVisitDataFetcher {
 
   using FetchResultCallback = base::OnceCallback<void(FetchResult)>;
   virtual void FetchURLVisitData(const FetchOptions& options,
+                                 const FetcherConfig& config,
                                  FetchResultCallback callback) = 0;
 };
 

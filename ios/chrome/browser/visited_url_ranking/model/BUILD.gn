@@ -15,6 +15,7 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/sync_device_info",
+    "//components/url_deduplication",
     "//components/visited_url_ranking/internal",
     "//components/visited_url_ranking/public",
     "//ios/chrome/browser/bookmarks/model",

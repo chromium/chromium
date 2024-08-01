@@ -13,8 +13,10 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
@@ -59,6 +61,7 @@ DesktopTabModelURLVisitDataFetcher::~DesktopTabModelURLVisitDataFetcher() =
 
 void DesktopTabModelURLVisitDataFetcher::FetchURLVisitData(
     const FetchOptions& options,
+    const FetcherConfig& config,
     FetchResultCallback callback) {
   std::map<URLMergeKey, URLVisitAggregate::TabData> url_visit_tab_data_map;
   const BrowserList* browser_list = BrowserList::GetInstance();
@@ -79,7 +82,8 @@ void DesktopTabModelURLVisitDataFetcher::FetchURLVisitData(
         continue;
       }
 
-      auto url_key = ComputeURLMergeKey(web_contents->GetLastCommittedURL());
+      auto url_key = ComputeURLMergeKey(web_contents->GetLastCommittedURL(),
+                                        config.deduplication_helper);
       auto it = url_visit_tab_data_map.find(url_key);
       bool tab_data_map_already_has_url_entry =
           (it != url_visit_tab_data_map.end());

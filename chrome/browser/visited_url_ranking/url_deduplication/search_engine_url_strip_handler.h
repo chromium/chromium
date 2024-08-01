@@ -18,10 +18,10 @@ namespace url_deduplication {
 
 class SearchEngineURLStripHandler : public URLStripHandler {
  public:
-  SearchEngineURLStripHandler(TemplateURLService* template_url_service,
-                              bool keep_search_intent_params,
-                              bool normalize_search_terms,
-                              std::u16string keyword);
+  explicit SearchEngineURLStripHandler(TemplateURLService* template_url_service,
+                                       bool keep_search_intent_params = true,
+                                       bool normalize_search_terms = true,
+                                       std::u16string keyword = u"");
 
   SearchEngineURLStripHandler(const SearchEngineURLStripHandler&) = delete;
   SearchEngineURLStripHandler& operator=(const SearchEngineURLStripHandler&) =

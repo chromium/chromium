@@ -13,6 +13,8 @@ class ChromeBrowserState;
 
 namespace visited_url_ranking {
 
+struct FetcherConfig;
+
 // The IOS implementation of URLVisitDataFetcher that gather the currently
 // opened normal tabs.
 class IOSTabModelURLVisitDataFetcher : public URLVisitDataFetcher {
@@ -26,6 +28,7 @@ class IOSTabModelURLVisitDataFetcher : public URLVisitDataFetcher {
 
   // URLVisitDataFetcher::
   void FetchURLVisitData(const FetchOptions& options,
+                         const FetcherConfig& config,
                          FetchResultCallback callback) override;
 
  private:

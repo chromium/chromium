@@ -16,8 +16,10 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
@@ -51,6 +53,7 @@ AndroidTabModelURLVisitDataFetcher::~AndroidTabModelURLVisitDataFetcher() =
 
 void AndroidTabModelURLVisitDataFetcher::FetchURLVisitData(
     const FetchOptions& options,
+    const FetcherConfig& config,
     FetchResultCallback callback) {
   std::map<URLMergeKey, URLVisitAggregate::TabData> url_visit_tab_data_map;
   syncer::DeviceInfo::FormFactor form_factor =
@@ -75,7 +78,7 @@ void AndroidTabModelURLVisitDataFetcher::FetchURLVisitData(
         continue;
       }
 
-      auto url_key = ComputeURLMergeKey(url);
+      auto url_key = ComputeURLMergeKey(url, config.deduplication_helper);
       bool tab_data_map_already_has_url_entry =
           (url_visit_tab_data_map.find(url_key) !=
            url_visit_tab_data_map.end());

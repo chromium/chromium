@@ -6,6 +6,7 @@
 
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "components/visited_url_ranking/public/fetcher_config.h"
 #import "components/visited_url_ranking/public/url_visit.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -88,7 +89,8 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, FetchNormalTabsAndNotOtr) {
   visited_url_ranking::FetchOptions options = visited_url_ranking::
       FetchOptions::CreateDefaultFetchOptionsForTabResumption();
   fetcher->FetchURLVisitData(
-      options, base::BindOnce(^(visited_url_ranking::FetchResult result) {
+      options, visited_url_ranking::FetcherConfig(),
+      base::BindOnce(^(visited_url_ranking::FetchResult result) {
         EXPECT_EQ(result.status,
                   visited_url_ranking::FetchResult::Status::kSuccess);
         ASSERT_EQ(result.data.size(), 3u);
@@ -150,7 +152,8 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, FetchNormalTabsWithData) {
   visited_url_ranking::FetchOptions options = visited_url_ranking::
       FetchOptions::CreateDefaultFetchOptionsForTabResumption();
   fetcher->FetchURLVisitData(
-      options, base::BindOnce(^(visited_url_ranking::FetchResult result) {
+      options, visited_url_ranking::FetcherConfig(),
+      base::BindOnce(^(visited_url_ranking::FetchResult result) {
         EXPECT_EQ(result.status,
                   visited_url_ranking::FetchResult::Status::kSuccess);
         ASSERT_EQ(result.data.size(), 2u);
@@ -201,7 +204,8 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, FetchUnrealizedTab) {
   visited_url_ranking::FetchOptions options = visited_url_ranking::
       FetchOptions::CreateDefaultFetchOptionsForTabResumption();
   fetcher->FetchURLVisitData(
-      options, base::BindOnce(^(visited_url_ranking::FetchResult result) {
+      options, visited_url_ranking::FetcherConfig(),
+      base::BindOnce(^(visited_url_ranking::FetchResult result) {
         ASSERT_EQ(result.data.size(), 1u);
         EXPECT_TRUE(result.data.count(url));
         auto element_iterator = result.data.find(url);
@@ -272,7 +276,8 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, AggregateEntries) {
   visited_url_ranking::FetchOptions options = visited_url_ranking::
       FetchOptions::CreateDefaultFetchOptionsForTabResumption();
   fetcher->FetchURLVisitData(
-      options, base::BindOnce(^(visited_url_ranking::FetchResult result) {
+      options, visited_url_ranking::FetcherConfig(),
+      base::BindOnce(^(visited_url_ranking::FetchResult result) {
         ASSERT_EQ(result.data.size(), 2u);
 
         std::string key0 = url;

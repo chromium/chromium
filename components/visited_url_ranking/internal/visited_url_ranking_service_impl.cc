@@ -34,11 +34,13 @@
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/public/url_visit_schema.h"
@@ -192,7 +194,9 @@ VisitedURLRankingServiceImpl::VisitedURLRankingServiceImpl(
         segmentation_platform_service,
     std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers,
     std::map<URLVisitAggregatesTransformType,
-             std::unique_ptr<URLVisitAggregatesTransformer>> transformers)
+             std::unique_ptr<URLVisitAggregatesTransformer>> transformers,
+    std::unique_ptr<url_deduplication::URLDeduplicationHelper>
+        deduplication_helper)
     : segmentation_platform_service_(segmentation_platform_service),
       data_fetchers_(std::move(data_fetchers)),
       transformers_(std::move(transformers)),
@@ -203,7 +207,8 @@ VisitedURLRankingServiceImpl::VisitedURLRankingServiceImpl(
       seen_records_sampling_rate_(base::GetFieldTrialParamByFeatureAsInt(
           features::kVisitedURLRankingService,
           "seen_record_action_sampling_rate",
-          kSeenRecordsSamplingRate)) {}
+          kSeenRecordsSamplingRate)),
+      deduplication_helper_(std::move(deduplication_helper)) {}
 
 VisitedURLRankingServiceImpl::~VisitedURLRankingServiceImpl() = default;
 
@@ -230,7 +235,7 @@ void VisitedURLRankingServiceImpl::FetchURLVisitAggregates(
     }
     const auto& data_fetcher = data_fetchers_.at(fetcher_entry.first);
     data_fetcher->FetchURLVisitData(
-        options,
+        options, FetcherConfig(deduplication_helper_.get()),
         base::BindOnce(
             [](base::RepeatingCallback<void(std::pair<Fetcher, FetchResult>)>
                    barrier_callback,

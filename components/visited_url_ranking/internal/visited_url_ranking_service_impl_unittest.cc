@@ -21,7 +21,9 @@
 #include "components/segmentation_platform/public/testing/mock_database_client.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/segmentation_platform/public/trigger.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
+#include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
@@ -63,8 +65,10 @@ class MockURLVisitDataFetcher : public URLVisitDataFetcher {
   MockURLVisitDataFetcher& operator=(const MockURLVisitDataFetcher&) = delete;
   ~MockURLVisitDataFetcher() override = default;
 
-  MOCK_METHOD2(FetchURLVisitData,
-               void(const FetchOptions& options, FetchResultCallback callback));
+  MOCK_METHOD3(FetchURLVisitData,
+               void(const FetchOptions& options,
+                    const FetcherConfig& config,
+                    FetchResultCallback callback));
 };
 
 class MockURLVisitAggregatesTransformer : public URLVisitAggregatesTransformer {
@@ -89,9 +93,10 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
   std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>>
   PrepareMockDataFetchers() {
     auto session_tab_data_fetcher = std::make_unique<MockURLVisitDataFetcher>();
-    EXPECT_CALL(*session_tab_data_fetcher, FetchURLVisitData(_, _))
+    EXPECT_CALL(*session_tab_data_fetcher, FetchURLVisitData(_, _, _))
         .Times(1)
         .WillOnce(testing::Invoke([](const FetchOptions& options,
+                                     const FetcherConfig& config,
                                      URLVisitDataFetcher::FetchResultCallback
                                          callback) {
           std::map<URLMergeKey, URLVisitAggregate::URLVisitVariant> data = {};
@@ -123,7 +128,9 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
         std::make_unique<MockSegmentationPlatformService>();
     service_impl_ = std::make_unique<VisitedURLRankingServiceImpl>(
         segmentation_platform_service_.get(), std::move(data_fetchers),
-        std::move(transformers));
+        std::move(transformers),
+        std::make_unique<url_deduplication::URLDeduplicationHelper>(
+            url_deduplication::DeduplicationStrategy()));
 
     EXPECT_CALL(*segmentation_platform_service_, GetDatabaseClient())
         .WillRepeatedly(testing::Return(database_client_.get()));
