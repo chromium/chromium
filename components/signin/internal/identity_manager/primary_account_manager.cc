@@ -788,12 +788,14 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
 
   ComputeExplicitBrowserSignin(event_details, scoped_pref_commit);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       PrimaryAccountChangeEvent::Type::kCleared) {
     SigninPrefs(*client_->GetPrefs())
         .SetChromeLastSignoutTime(previous_state.primary_account.gaia,
                                   base::Time::Now());
   }
+#endif
 
   client_->OnPrimaryAccountChanged(event_details);
 

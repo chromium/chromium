@@ -210,12 +210,14 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   CoreAccountId main_account_id =
       AddToAccountTracker("account_id", "user@gmail.com");
   AccountInfo account_info = account_tracker()->GetAccountInfo(main_account_id);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   {
     SigninPrefs signin_prefs(*prefs());
     std::optional<base::Time> last_signout_time =
         signin_prefs.GetChromeLastSignoutTime(account_info.gaia);
     EXPECT_FALSE(last_signout_time.has_value());
   }
+#endif
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSync,
                                   AccessPoint::ACCESS_POINT_UNKNOWN);
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_UNKNOWN,
@@ -232,6 +234,7 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
                       .sync_opt_in = AccessPoint::ACCESS_POINT_UNKNOWN,
                       .sign_out = signin_metrics::ProfileSignout::kTest,
                       .turn_off_sync = signin_metrics::ProfileSignout::kTest});
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   {
     SigninPrefs signin_prefs(*prefs());
     std::optional<base::Time> last_signout_time =
@@ -239,6 +242,7 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
     ASSERT_TRUE(last_signout_time.has_value());
     EXPECT_LE(base::Time::Now() - last_signout_time.value(), base::Seconds(10));
   }
+#endif
 
   // Should not be persisted anymore
   ShutDownManager();
