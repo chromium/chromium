@@ -303,6 +303,22 @@ RequestPriority HttpStreamPool::Job::GetPriority() const {
   return static_cast<RequestPriority>(requests_.FirstMax().priority());
 }
 
+bool HttpStreamPool::Job::IsStalledByPoolLimit() {
+  if (!GetIPEndPointToAttempt().has_value()) {
+    return false;
+  }
+
+  switch (CanAttemptConnection()) {
+    case CanAttemptResult::kAttempt:
+    case CanAttemptResult::kReachedPoolLimit:
+      return true;
+    case CanAttemptResult::kNoPendingRequest:
+    case CanAttemptResult::kThrottledForSpdy:
+    case CanAttemptResult::kReachedGroupLimit:
+      return false;
+  }
+}
+
 void HttpStreamPool::Job::StartInternal(RequestPriority priority) {
   if (service_endpoint_request_ || service_endpoint_request_finished_) {
     MaybeAttemptConnection();
@@ -433,7 +449,7 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
   // There might be multiple pending requests. Make attempts as much as needed
   // and allowed.
   size_t num_attempts = 0;
-  while (ShouldAttemptConnection()) {
+  while (IsConnectionAttemptReady()) {
     std::unique_ptr<StreamAttempt> attempt;
     if (UsingTls()) {
       attempt = std::make_unique<TlsStreamAttempt>(
@@ -476,36 +492,62 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
   }
 }
 
-bool HttpStreamPool::Job::ShouldAttemptConnection() {
-  size_t pending_count =
-      std::max(PendingRequestCount(), PendingPreconnectCount());
-  if (pending_count == 0) {
-    return false;
-  }
-
-  if (ShouldThrottleAttemptForSpdy()) {
-    return false;
-  }
-
-  if (group_->ReachedMaxStreamLimit()) {
-    // TODO(crbug.com/346835898): Better to handle cases where we partially
-    // attempted some connections.
-    NotifyPreconnectsComplete(ERR_PRECONNECT_MAX_SOCKET_LIMIT);
-    return false;
-  }
-
-  // If we can't attempt connection due to the pool's limit, try to close an
-  // idle stream in the pool.
-  if (pool()->ReachedMaxStreamLimit()) {
-    if (!pool()->CloseOneIdleStreamSocket()) {
+bool HttpStreamPool::Job::IsConnectionAttemptReady() {
+  switch (CanAttemptConnection()) {
+    case CanAttemptResult::kAttempt:
+      return true;
+    case CanAttemptResult::kNoPendingRequest:
+      return false;
+    case CanAttemptResult::kThrottledForSpdy:
+      // TODO(crbug.com/346835898): Consider throttling less aggressively (e.g.
+      // allow TCP handshake but throttle TLS handshake) so that endpoints we've
+      // used HTTP/2 on aren't penalised on slow or lossy connections.
+      if (!spdy_throttle_timer_.IsRunning()) {
+        spdy_throttle_timer_.Start(
+            FROM_HERE, kSpdyThrottleDelay,
+            base::BindOnce(&Job::OnSpdyThrottleDelayPassed,
+                           base::Unretained(this)));
+      }
+      return false;
+    case CanAttemptResult::kReachedGroupLimit:
       // TODO(crbug.com/346835898): Better to handle cases where we partially
       // attempted some connections.
       NotifyPreconnectsComplete(ERR_PRECONNECT_MAX_SOCKET_LIMIT);
       return false;
-    }
+    case CanAttemptResult::kReachedPoolLimit:
+      // If we can't attempt connection due to the pool's limit, try to close an
+      // idle stream in the pool.
+      if (!pool()->CloseOneIdleStreamSocket()) {
+        // TODO(crbug.com/346835898): Better to handle cases where we partially
+        // attempted some connections.
+        NotifyPreconnectsComplete(ERR_PRECONNECT_MAX_SOCKET_LIMIT);
+        return false;
+      }
+      return true;
+  }
+}
+
+HttpStreamPool::Job::CanAttemptResult
+HttpStreamPool::Job::CanAttemptConnection() {
+  size_t pending_count =
+      std::max(PendingRequestCount(), PendingPreconnectCount());
+  if (pending_count == 0) {
+    return CanAttemptResult::kNoPendingRequest;
   }
 
-  return true;
+  if (ShouldThrottleAttemptForSpdy()) {
+    return CanAttemptResult::kThrottledForSpdy;
+  }
+
+  if (group_->ReachedMaxStreamLimit()) {
+    return CanAttemptResult::kReachedGroupLimit;
+  }
+
+  if (pool()->ReachedMaxStreamLimit()) {
+    return CanAttemptResult::kReachedPoolLimit;
+  }
+
+  return CanAttemptResult::kAttempt;
 }
 
 bool HttpStreamPool::Job::ShouldThrottleAttemptForSpdy() {
@@ -527,17 +569,6 @@ bool HttpStreamPool::Job::ShouldThrottleAttemptForSpdy() {
   }
 
   CHECK(!spdy_session_);
-
-  // TODO(crbug.com/346835898): Consider throttling less aggressively (e.g.
-  // allow TCP handshake but throttle TLS handshake) so that endpoints we've
-  // used HTTP/2 on aren't penalised on slow or lossy connections.
-
-  if (!spdy_throttle_timer_.IsRunning()) {
-    spdy_throttle_timer_.Start(FROM_HERE, kSpdyThrottleDelay,
-                               base::BindOnce(&Job::OnSpdyThrottleDelayPassed,
-                                              base::Unretained(this)));
-  }
-
   return true;
 }
 
@@ -559,8 +590,8 @@ size_t HttpStreamPool::Job::PendingCountInternal(size_t pending_count) const {
 }
 
 std::optional<IPEndPoint> HttpStreamPool::Job::GetIPEndPointToAttempt() {
-  CHECK(service_endpoint_request_);
-  if (service_endpoint_request_->GetEndpointResults().empty()) {
+  if (!service_endpoint_request_ ||
+      service_endpoint_request_->GetEndpointResults().empty()) {
     return std::nullopt;
   }
 

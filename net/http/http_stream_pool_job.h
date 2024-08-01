@@ -104,6 +104,9 @@ class HttpStreamPool::Job
   // Returns the highest priority in `requests_`.
   RequestPriority GetPriority() const;
 
+  // Returns true when `this` is blocked by the pool's stream limit.
+  bool IsStalledByPoolLimit();
+
  private:
   // Represents failure of connection attempts. Used to call request's delegate
   // methods.
@@ -111,6 +114,15 @@ class HttpStreamPool::Job
     kStreamFailed,
     kCertifcateError,
     kNeedsClientAuth,
+  };
+
+  // Represents reasons if future connection attempts could be blocked or not.
+  enum class CanAttemptResult {
+    kAttempt,
+    kNoPendingRequest,
+    kThrottledForSpdy,
+    kReachedGroupLimit,
+    kReachedPoolLimit,
   };
 
   // A peer of an HttpStreamRequest. Holds the HttpStreamRequest's delegate
@@ -193,8 +205,14 @@ class HttpStreamPool::Job
       std::optional<size_t> max_attempts = std::nullopt);
 
   // Returns true if there are pending requests and the pool and the group
-  // haven't reached stream limits. May close idle sockets in other groups.
-  bool ShouldAttemptConnection();
+  // haven't reached stream limits. If the pool reached the stream limit, may
+  // close idle sockets in other groups. Also may cancel preconnects or trigger
+  // `spdy_throttle_timer_`.
+  bool IsConnectionAttemptReady();
+
+  // Actual implementation of IsConnectionAttemptReady(), without having side
+  // effects.
+  CanAttemptResult CanAttemptConnection();
 
   // Returns true when connection attempts should be throttled because there is
   // an in-flight attempt and the destination is known to support HTTP/2.

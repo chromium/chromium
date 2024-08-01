@@ -1306,6 +1306,26 @@ TEST_F(HttpStreamPoolJobTest,
   ASSERT_EQ(group_a.IdleStreamSocketCount(), 1u);
 }
 
+TEST_F(HttpStreamPoolJobTest, ProcessPendingRequestDnsResolutionOngoing) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  auto data = std::make_unique<SequencedSocketData>();
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  StreamRequester requester;
+  requester.RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // This should not enter an infinite loop.
+  pool().ProcessPendingRequestsInGroups();
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
 // Tests that all in-flight requests and connection attempts are canceled
 // when an IP address change event happens.
 TEST_F(HttpStreamPoolJobTest, CancelAttemptAndRequestsOnIPAddressChange) {
@@ -1768,6 +1788,9 @@ TEST_F(HttpStreamPoolJobTest, ThrottleAttemptForSpdyBlockSecondAttempt) {
   // There should be only one in-flight attempt because attempts are throttled.
   Group& group = pool().GetOrCreateGroupForTesting(requester1.GetStreamKey());
   ASSERT_EQ(group.GetJobForTesting()->InFlightAttemptCount(), 1u);
+
+  // This should not enter an infinite loop.
+  pool().ProcessPendingRequestsInGroups();
 
   RunUntilIdle();
   EXPECT_THAT(requester1.result(), Optional(IsOk()));

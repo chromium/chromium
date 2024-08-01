@@ -222,15 +222,13 @@ bool HttpStreamPool::Group::ReachedMaxStreamLimit() const {
 
 std::optional<RequestPriority>
 HttpStreamPool::Group::GetPriorityIfStalledByPoolLimit() const {
-  if (ReachedMaxStreamLimit()) {
+  if (!in_flight_job_) {
     return std::nullopt;
   }
 
-  if (!in_flight_job_ || in_flight_job_->PendingRequestCount() == 0) {
-    return std::nullopt;
-  }
-
-  return in_flight_job_->GetPriority();
+  return in_flight_job_->IsStalledByPoolLimit()
+             ? std::make_optional(in_flight_job_->GetPriority())
+             : std::nullopt;
 }
 
 void HttpStreamPool::Group::Refresh() {
