@@ -203,8 +203,9 @@ class AbandonedPageLoadMetricsObserver
   // page load is complete (or navigate away from the page).
   void FinalizeLCP();
 
-  // The ID of the navigation being tracked.
+  // The ID and start time of the navigation being tracked.
   int64_t navigation_id_ = 0;
+  base::TimeTicks navigation_start_time_;
 
   base::TimeTicks renderer_process_init_time_;
 

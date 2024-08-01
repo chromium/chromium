@@ -308,10 +308,8 @@ void AbandonedPageLoadMetricsObserver::LogMilestoneHistogram(
 void AbandonedPageLoadMetricsObserver::LogMilestoneHistogram(
     NavigationMilestone milestone,
     base::TimeDelta event_time) {
-  const base::TimeTicks navigation_start_time =
-      GetDelegate().GetNavigationStart();
-  LogMilestoneHistogram(milestone, navigation_start_time + event_time,
-                        navigation_start_time);
+  LogMilestoneHistogram(milestone, navigation_start_time_ + event_time,
+                        navigation_start_time_);
 }
 
 void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
@@ -353,33 +351,32 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
   builder.SetAbandonReason(static_cast<int>(abandon_reason));
   builder.SetLastMilestoneBeforeAbandon(static_cast<int>(milestone));
 
-  const base::TimeTicks navigation_start_time =
-      GetDelegate().GetNavigationStart();
   builder.SetAbandonTimingFromNavigationStart(
-      (event_time - navigation_start_time).InMilliseconds());
+      (event_time - navigation_start_time_).InMilliseconds());
   builder.SetAbandonTimingFromLastMilestone(
       (event_time - relative_start_time).InMilliseconds());
   if (IsEventAfter(event_time, first_backgrounded_timestamp_)) {
     builder.SetPreviousBackgroundedTime(
-        (first_backgrounded_timestamp_ - navigation_start_time)
+        (first_backgrounded_timestamp_ - navigation_start_time_)
             .InMilliseconds());
   }
 
   if (IsEventAfter(event_time, first_hidden_timestamp_)) {
     builder.SetPreviousHiddenTime(
-        (first_hidden_timestamp_ - navigation_start_time).InMilliseconds());
+        (first_hidden_timestamp_ - navigation_start_time_).InMilliseconds());
   }
 
   if (IsEventAfter(event_time, renderer_process_init_time_)) {
     builder.SetRendererProcessInitTime(
-        (renderer_process_init_time_ - navigation_start_time).InMilliseconds());
+        (renderer_process_init_time_ - navigation_start_time_)
+            .InMilliseconds());
   }
 
   if (IsEventAfter(event_time,
                    latest_navigation_handle_timing_.loader_start_time)) {
     builder.SetLoaderStartTime(
         (latest_navigation_handle_timing_.loader_start_time -
-         navigation_start_time)
+         navigation_start_time_)
             .InMilliseconds());
   }
 
@@ -395,7 +392,7 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
             latest_navigation_handle_timing_.first_request_start_time)) {
       builder.SetFirstRedirectedRequestStartTime(
           (latest_navigation_handle_timing_.first_request_start_time -
-           navigation_start_time)
+           navigation_start_time_)
               .InMilliseconds());
     }
   } else {
@@ -410,7 +407,7 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
           latest_navigation_handle_timing_.non_redirected_request_start_time)) {
     builder.SetNonRedirectedRequestStartTime(
         (latest_navigation_handle_timing_.non_redirected_request_start_time -
-         navigation_start_time)
+         navigation_start_time_)
             .InMilliseconds());
   }
 
@@ -419,7 +416,7 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
           latest_navigation_handle_timing_.navigation_commit_sent_time)) {
     builder.SetCommitSentTime(
         (latest_navigation_handle_timing_.navigation_commit_sent_time -
-         navigation_start_time)
+         navigation_start_time_)
             .InMilliseconds());
   }
 
@@ -428,7 +425,7 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
           latest_navigation_handle_timing_.navigation_commit_received_time)) {
     builder.SetCommitReceivedTime(
         (latest_navigation_handle_timing_.navigation_commit_received_time -
-         navigation_start_time)
+         navigation_start_time_)
             .InMilliseconds());
   }
 
@@ -437,13 +434,13 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
           latest_navigation_handle_timing_.navigation_did_commit_time)) {
     builder.SetDidCommitTime(
         (latest_navigation_handle_timing_.navigation_did_commit_time -
-         navigation_start_time)
+         navigation_start_time_)
             .InMilliseconds());
   }
 
   for (const auto& loading_milestone : loading_milestones_) {
     if (!IsEventAfter(event_time,
-                      loading_milestone.second + navigation_start_time)) {
+                      loading_milestone.second + navigation_start_time_)) {
       continue;
     }
     if (loading_milestone.first == NavigationMilestone::kParseStart) {
@@ -491,6 +488,7 @@ AbandonedPageLoadMetricsObserver::OnStart(
     const GURL& currently_committed_url,
     bool started_in_foreground) {
   navigation_id_ = navigation_handle->GetNavigationId();
+  navigation_start_time_ = GetDelegate().GetNavigationStart();
 
   page_load_metrics::PageLoadMetricsObserver::ObservePolicy
       navigation_handling_result = OnNavigationEvent(navigation_handle);
@@ -539,7 +537,7 @@ AbandonedPageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
                                       ->GetProcess()
                                       ->GetLastInitTime();
     bool renderer_process_created_before_navigation =
-        (renderer_process_init_time_ < GetDelegate().GetNavigationStart());
+        (renderer_process_init_time_ < navigation_start_time_);
     std::string base_suffix = GetHistogramSuffix(
         NavigationMilestone::kCommitSent, renderer_process_init_time_);
     for (std::string additional_suffix : GetAdditionalSuffixes()) {
@@ -551,10 +549,10 @@ AbandonedPageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
       if (renderer_process_created_before_navigation) {
         continue;
       }
-      PAGE_LOAD_HISTOGRAM(
-          GetHistogramPrefix() + internal::kRendererProcessInitHistogramName +
-              suffix,
-          renderer_process_init_time_ - GetDelegate().GetNavigationStart());
+      PAGE_LOAD_HISTOGRAM(GetHistogramPrefix() +
+                              internal::kRendererProcessInitHistogramName +
+                              suffix,
+                          renderer_process_init_time_ - navigation_start_time_);
     }
   }
 
@@ -592,11 +590,11 @@ AbandonedPageLoadMetricsObserver::OnCommit(
   LogMilestoneHistogram(NavigationMilestone::kCommitReceived,
                         navigation_handle->GetNavigationHandleTiming()
                             .navigation_commit_received_time,
-                        GetDelegate().GetNavigationStart());
+                        navigation_start_time_);
   LogMilestoneHistogram(
       NavigationMilestone::kDidCommit,
       navigation_handle->GetNavigationHandleTiming().navigation_did_commit_time,
-      GetDelegate().GetNavigationStart());
+      navigation_start_time_);
 
   // If there's any previous hiding/backgrounding that hasn't been logged (e.g.
   // if the navigation didn't allow logging when these abandonments happen),
@@ -798,8 +796,7 @@ void AbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
   // found, log it as an abandoned milesone later.
   std::optional<LoadingMilestone> latest_loading_milestone_to_abandon;
   for (const auto& milestone : loading_milestones_) {
-    if (abandon_timing <=
-        milestone.second + GetDelegate().GetNavigationStart()) {
+    if (abandon_timing <= milestone.second + navigation_start_time_) {
       continue;
     }
     if (!latest_loading_milestone_to_abandon.has_value() ||
@@ -819,11 +816,10 @@ void AbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
     // `latest_loading_milestone_to_abandon` has the taken time from the
     // navigation start time as base::TimeDelta, adding the navigation start
     // time to measure the abandoned time.
-    LogAbandonHistograms(abandon_reason,
-                         latest_loading_milestone_to_abandon->first,
-                         abandon_timing,
-                         latest_loading_milestone_to_abandon->second +
-                             GetDelegate().GetNavigationStart());
+    LogAbandonHistograms(
+        abandon_reason, latest_loading_milestone_to_abandon->first,
+        abandon_timing,
+        latest_loading_milestone_to_abandon->second + navigation_start_time_);
   } else if (!latest_navigation_handle_timing_.navigation_commit_sent_time
                   .is_null() &&
              abandon_timing >
@@ -857,7 +853,7 @@ void AbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
                          latest_navigation_handle_timing_.loader_start_time);
   } else {
     LogAbandonHistograms(abandon_reason, NavigationMilestone::kNavigationStart,
-                         abandon_timing, GetDelegate().GetNavigationStart());
+                         abandon_timing, navigation_start_time_);
   }
 }
 
@@ -865,12 +861,10 @@ void AbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
   CHECK(IsAllowedToLogMetrics());
   CHECK(!did_abandon_navigation_ || WasBackgrounded() || WasHidden());
 
-  const base::TimeTicks navigation_start_time =
-      GetDelegate().GetNavigationStart();
   if (!did_log_navigation_start_) {
     // Log NavigationStart exactly once.
     LogMilestoneHistogram(NavigationMilestone::kNavigationStart,
-                          base::TimeTicks::Now(), navigation_start_time);
+                          base::TimeTicks::Now(), navigation_start_time_);
     did_log_navigation_start_ = true;
   }
 
@@ -884,7 +878,7 @@ void AbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
     LogMilestoneHistogram(
         NavigationMilestone::kCommitSent,
         latest_navigation_handle_timing_.navigation_commit_sent_time,
-        navigation_start_time);
+        navigation_start_time_);
   }
 
   if (!latest_navigation_handle_timing_
@@ -896,20 +890,20 @@ void AbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
         NavigationMilestone::kNonRedirectResponseLoaderCallback,
         latest_navigation_handle_timing_
             .non_redirect_response_loader_callback_time,
-        navigation_start_time);
+        navigation_start_time_);
     if (!latest_navigation_handle_timing_.non_redirect_response_start_time
              .is_null()) {
       LogMilestoneHistogram(
           NavigationMilestone::kNonRedirectResponseStart,
           latest_navigation_handle_timing_.non_redirect_response_start_time,
-          navigation_start_time);
+          navigation_start_time_);
     }
     if (!latest_navigation_handle_timing_.non_redirected_request_start_time
              .is_null()) {
       LogMilestoneHistogram(
           NavigationMilestone::kNonRedirectedRequestStart,
           latest_navigation_handle_timing_.non_redirected_request_start_time,
-          navigation_start_time);
+          navigation_start_time_);
     }
   }
 
@@ -924,19 +918,19 @@ void AbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
     LogMilestoneHistogram(
         NavigationMilestone::kFirstRedirectResponseLoaderCallback,
         latest_navigation_handle_timing_.first_loader_callback_time,
-        navigation_start_time);
+        navigation_start_time_);
     if (!latest_navigation_handle_timing_.first_response_start_time.is_null()) {
       LogMilestoneHistogram(
           NavigationMilestone::kFirstRedirectResponseStart,
           latest_navigation_handle_timing_.first_response_start_time,
-          navigation_start_time);
+          navigation_start_time_);
     }
 
     if (!latest_navigation_handle_timing_.first_request_start_time.is_null()) {
       LogMilestoneHistogram(
           NavigationMilestone::kFirstRedirectedRequestStart,
           latest_navigation_handle_timing_.first_request_start_time,
-          navigation_start_time);
+          navigation_start_time_);
     }
   }
 
@@ -944,7 +938,7 @@ void AbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
       last_logged_navigation_handle_timing_.loader_start_time.is_null()) {
     LogMilestoneHistogram(NavigationMilestone::kLoaderStart,
                           latest_navigation_handle_timing_.loader_start_time,
-                          navigation_start_time);
+                          navigation_start_time_);
   }
 
   last_logged_navigation_handle_timing_ = latest_navigation_handle_timing_;
