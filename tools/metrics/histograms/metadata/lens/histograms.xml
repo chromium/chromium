@@ -98,6 +98,7 @@ chromium-metrics-reviews@google.com.
     invocation source. Indicates whether or not a search was performed at any
     point since the overlay was invoked.
   </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
 </histogram>
 
 <histogram
@@ -110,6 +111,7 @@ chromium-metrics-reviews@google.com.
     invocation source. Measures the elapsed time between when the overlay was
     invoked and when it was dismissed.
   </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
 </histogram>
 
 <histogram
@@ -123,6 +125,7 @@ chromium-metrics-reviews@google.com.
     invoked and when the user first interacts with the overlay. Nothing is
     logged when the user enters through the image context menu.
   </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
 </histogram>
 
 <histogram name="Lens.Overlay.Dismissed" enum="LensOverlayDismissalSource"
