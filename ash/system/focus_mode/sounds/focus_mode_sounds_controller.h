@@ -162,6 +162,10 @@ class ASH_EXPORT FocusModeSoundsController
       std::vector<std::unique_ptr<Playlist>> youtube_music_playlists) {
     youtube_music_playlists_.swap(youtube_music_playlists);
   }
+  void set_selected_playlist_for_testing(
+      const focus_mode_util::SelectedPlaylist& playlist) {
+    selected_playlist_ = playlist;
+  }
 
  private:
   bool IsPlaylistAllowed(

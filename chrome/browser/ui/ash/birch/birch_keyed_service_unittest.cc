@@ -12,6 +12,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -373,15 +376,15 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   BirchKeyedServiceTest()
       : BrowserWithTestWindowTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        fake_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
-
-  void SetUp() override {
+        fake_user_manager_(std::make_unique<FakeChromeUserManager>()) {
     feature_list_.InitWithFeatures(
         {features::kForestFeature,
          ash::features::kReleaseNotesNotificationAllChannels,
          ash::features::kBirchVideoConferenceSuggestions},
         {});
+  }
 
+  void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     BrowserWithTestWindowTest::SetUp();
@@ -646,6 +649,22 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage_;
 
   base::test::ScopedFeatureList feature_list_;
+};
+
+// A test harness that enables focus mode.
+class BirchKeyedServiceFocusModeTest : public BirchKeyedServiceTest {
+ public:
+  BirchKeyedServiceFocusModeTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kFocusMode);
+  }
+  BirchKeyedServiceFocusModeTest(const BirchKeyedServiceFocusModeTest&) =
+      delete;
+  BirchKeyedServiceFocusModeTest& operator=(
+      const BirchKeyedServiceFocusModeTest&) = delete;
+  ~BirchKeyedServiceFocusModeTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(BirchKeyedServiceTest, HasDataProviders) {
@@ -1022,6 +1041,33 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider_PausedDoesNotShow) {
 
   // The media item appears in the model.
   EXPECT_EQ(lost_media_items.size(), 1u);
+}
+
+TEST_F(BirchKeyedServiceFocusModeTest, LostMediaProvider_FocusModeDoesNotShow) {
+  BirchModel* model = Shell::Get()->birch_model();
+  BirchDataProvider* lost_media_provider =
+      birch_keyed_service()->GetLostMediaProvider();
+  ClearMediaApps();
+
+  // Simulate a playing audio stream.
+  SimulateMediaMetadataInit();
+  SimulateMediaSessionInfoChanged(/*is_playing=*/true,
+                                  SecondaryIconType::kLostMediaAudio);
+
+  // Simulate that the audio is coming from a focus mode playlist.
+  focus_mode_util::SelectedPlaylist playlist;
+  playlist.id = "123";
+  playlist.state = focus_mode_util::SoundState::kPlaying;
+  FocusModeController::Get()
+      ->focus_mode_sounds_controller()
+      ->set_selected_playlist_for_testing(playlist);
+
+  // Fetch the birch items.
+  lost_media_provider->RequestBirchDataFetch();
+  auto& lost_media_items = model->GetLostMediaItemsForTest();
+
+  // The lost media item does not appear in the model.
+  EXPECT_EQ(lost_media_items.size(), 0u);
 }
 
 TEST_F(BirchKeyedServiceTest, LostMediaProvider_VideoItem) {

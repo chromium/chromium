@@ -10,6 +10,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
@@ -30,6 +33,22 @@
 #endif
 
 namespace ash {
+namespace {
+
+// Returns true if focus mode is playing media (e.g. an audio playlist).
+bool IsFocusModePlayingMedia() {
+  if (!features::IsFocusModeEnabled()) {
+    return false;
+  }
+  const focus_mode_util::SelectedPlaylist& playlist =
+      FocusModeController::Get()
+          ->focus_mode_sounds_controller()
+          ->selected_playlist();
+  return !playlist.empty() &&
+         playlist.state == focus_mode_util::SoundState::kPlaying;
+}
+
+}  // namespace
 
 BirchLostMediaProvider::BirchLostMediaProvider(Profile* profile)
     : profile_(profile) {
@@ -145,6 +164,13 @@ void BirchLostMediaProvider::SetMediaAppsFromMediaController() {
   // details are missing.
   if (!media_controller_remote_.is_bound() || !is_playing_ ||
       media_title_.empty() || source_url_.empty()) {
+    Shell::Get()->birch_model()->SetLostMediaItems({});
+    return;
+  }
+
+  // If focus mode is playing audio, don't show the lost media suggestion, since
+  // there's no tab associated with the focus mode audio.
+  if (IsFocusModePlayingMedia()) {
     Shell::Get()->birch_model()->SetLostMediaItems({});
     return;
   }
