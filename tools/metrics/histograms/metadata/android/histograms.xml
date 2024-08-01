@@ -3364,6 +3364,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.OverscrollFromBottom.BottomControlsStatus"
+    enum="BottomControlsStatus" expires_after="2024-12-15">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/chrome/browser/ui/android/edge_to_edge/OWNERS</owner>
+  <summary>
+    Records when user starts a overscroll from the bottom on a tab, the status
+    of the bottom browser controls. This only records when the content is
+    scrollable, and the scroll starts from the bottom of the content page.
+  </summary>
+</histogram>
+
 <histogram name="Android.PackageStats.CacheSize" units="MB"
     expires_after="2024-05-05">
   <owner>nyquist@chromium.org</owner>

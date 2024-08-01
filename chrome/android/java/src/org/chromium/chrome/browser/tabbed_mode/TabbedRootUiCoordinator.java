@@ -210,13 +210,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         private void swapToTab(Tab tab) {
             if (mTab != null && !mTab.isDestroyed()) {
-                SwipeRefreshHandler.from(mTab).setNavigationCoordinator(null);
+                var swipeHandler = SwipeRefreshHandler.from(mTab);
+                swipeHandler.setNavigationCoordinator(null);
+                swipeHandler.setBrowserControls(null);
             }
             mTab = tab;
 
             if (tab != null) {
-                SwipeRefreshHandler.from(tab)
-                        .setNavigationCoordinator(mHistoryNavigationCoordinator);
+                var swipeHandler = SwipeRefreshHandler.from(mTab);
+                swipeHandler.setNavigationCoordinator(mHistoryNavigationCoordinator);
+                swipeHandler.setBrowserControls(mBrowserControlsManager);
             }
         }
 
