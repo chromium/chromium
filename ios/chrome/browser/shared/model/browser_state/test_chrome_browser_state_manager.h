@@ -8,9 +8,11 @@
 #include <map>
 #include <memory>
 
+#include "base/observer_list.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
 #include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 
 // ChromeBrowserStateManager implementation for tests.
@@ -28,6 +30,8 @@ class TestChromeBrowserStateManager : public ChromeBrowserStateManager {
   ~TestChromeBrowserStateManager() override;
 
   // ChromeBrowserStateManager:
+  void AddObserver(ChromeBrowserStateManagerObserver* observer) override;
+  void RemoveObserver(ChromeBrowserStateManagerObserver* observer) override;
   ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
   ChromeBrowserState* GetBrowserStateByName(std::string_view name) override;
   BrowserStateInfoCache* GetBrowserStateInfoCache() override;
@@ -52,6 +56,9 @@ class TestChromeBrowserStateManager : public ChromeBrowserStateManager {
   // Mapping of name to TestChromeBrowserState instances.
   std::map<std::string, std::unique_ptr<TestChromeBrowserState>, std::less<>>
       browser_states_;
+
+  // The list of registered observers.
+  base::ObserverList<ChromeBrowserStateManagerObserver, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_TEST_CHROME_BROWSER_STATE_MANAGER_H_

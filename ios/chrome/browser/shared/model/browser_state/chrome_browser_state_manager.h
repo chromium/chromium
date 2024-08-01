@@ -11,6 +11,7 @@
 
 class BrowserStateInfoCache;
 class ChromeBrowserState;
+class ChromeBrowserStateManagerObserver;
 
 // Provides methods that allow for various ways of creating non-incognito
 // ChromeBrowserState instances. Owns all instances that it creates.
@@ -21,6 +22,10 @@ class ChromeBrowserStateManager {
       delete;
 
   virtual ~ChromeBrowserStateManager() {}
+
+  // Registers/unregisters observers.
+  virtual void AddObserver(ChromeBrowserStateManagerObserver* observer) = 0;
+  virtual void RemoveObserver(ChromeBrowserStateManagerObserver* observer) = 0;
 
   // Returns the ChromeBrowserState that was last used. Only use this method for
   // the very specific purpose of finding which of the several available browser

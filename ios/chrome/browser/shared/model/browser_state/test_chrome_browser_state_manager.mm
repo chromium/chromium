@@ -22,7 +22,23 @@ TestChromeBrowserStateManager::TestChromeBrowserStateManager()
 
 TestChromeBrowserStateManager::~TestChromeBrowserStateManager() {
   CHECK_EQ(GetApplicationContext()->GetChromeBrowserStateManager(), this);
+
+  // Notify observers before unregistering from ApplicationContext.
+  for (auto& observer : observers_) {
+    observer.OnChromeBrowserStateManagerDestroyed(this);
+  }
+
   TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(nullptr);
+}
+
+void TestChromeBrowserStateManager::AddObserver(
+    ChromeBrowserStateManagerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TestChromeBrowserStateManager::RemoveObserver(
+    ChromeBrowserStateManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 ChromeBrowserState*
@@ -48,6 +64,14 @@ TestChromeBrowserStateManager::AddBrowserStateWithBuilder(
       std::make_pair(browser_state_name, std::move(browser_state)));
   DCHECK(insertion_success);
 
+  // Notify of the creation of the ChromeBrowserState before updating the
+  // BrowserStateInfoCache or the last_used_browser_state_name_ since the
+  // observers may observe similar behaviour with the real implementation
+  // when the ChromeBrowserState is loaded asynchronously.
+  for (auto& observer : observers_) {
+    observer.OnChromeBrowserStateCreated(this, iterator->second.get());
+  }
+
   if (last_used_browser_state_name_.empty()) {
     last_used_browser_state_name_ = browser_state_name;
   }
@@ -55,6 +79,10 @@ TestChromeBrowserStateManager::AddBrowserStateWithBuilder(
   browser_state_info_cache_.AddBrowserState(browser_state_name,
                                             /*gaia_id=*/std::string(),
                                             /*user_name=*/std::string());
+
+  for (auto& observer : observers_) {
+    observer.OnChromeBrowserStateLoaded(this, iterator->second.get());
+  }
 
   return iterator->second.get();
 }

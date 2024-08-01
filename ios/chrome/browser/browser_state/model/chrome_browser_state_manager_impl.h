@@ -13,9 +13,11 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
 
 class PrefService;
 
@@ -36,6 +38,8 @@ class ChromeBrowserStateManagerImpl : public ChromeBrowserStateManager,
   ~ChromeBrowserStateManagerImpl() override;
 
   // ChromeBrowserStateManager:
+  void AddObserver(ChromeBrowserStateManagerObserver* observer) override;
+  void RemoveObserver(ChromeBrowserStateManagerObserver* observer) override;
   ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
   ChromeBrowserState* GetBrowserStateByName(std::string_view name) override;
   BrowserStateInfoCache* GetBrowserStateInfoCache() override;
@@ -90,6 +94,9 @@ class ChromeBrowserStateManagerImpl : public ChromeBrowserStateManager,
 
   // The owned BrowserStateInfoCache instance. Lazily created.
   std::unique_ptr<BrowserStateInfoCache> browser_state_info_cache_;
+
+  // The list of registered observers.
+  base::ObserverList<ChromeBrowserStateManagerObserver, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_MANAGER_IMPL_H_

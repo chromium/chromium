@@ -111,7 +111,21 @@ ChromeBrowserStateManagerImpl::ChromeBrowserStateManagerImpl(
   CHECK(!data_dir_.empty());
 }
 
-ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {}
+ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {
+  for (auto& observer : observers_) {
+    observer.OnChromeBrowserStateManagerDestroyed(this);
+  }
+}
+
+void ChromeBrowserStateManagerImpl::AddObserver(
+    ChromeBrowserStateManagerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ChromeBrowserStateManagerImpl::RemoveObserver(
+    ChromeBrowserStateManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 ChromeBrowserState*
 ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDeprecatedDoNotUse() {
@@ -200,6 +214,10 @@ void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationStarted(
     ChromeBrowserState* browser_state,
     ChromeBrowserState::CreationMode creation_mode) {
   DCHECK(browser_state);
+
+  for (auto& observer : observers_) {
+    observer.OnChromeBrowserStateCreated(this, browser_state);
+  }
 }
 
 void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationFinished(
@@ -228,6 +246,10 @@ void ChromeBrowserStateManagerImpl::LoadBrowserState(
 
   DoFinalInit(browser_state);
   std::move(callback).Run(browser_state);
+
+  for (auto& observer : observers_) {
+    observer.OnChromeBrowserStateLoaded(this, browser_state);
+  }
 }
 
 void ChromeBrowserStateManagerImpl::DoFinalInit(
