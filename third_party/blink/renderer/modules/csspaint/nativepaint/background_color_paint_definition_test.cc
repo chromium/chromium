@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -69,8 +70,10 @@ class BackgroundColorPaintDefinitionTest : public RenderingTest {
                        const Vector<double>& offsets,
                        const CompositorPaintWorkletJob::AnimatedPropertyValues&
                            property_values) {
-    BackgroundColorPaintDefinition definition;
-    definition.PaintForTest(animated_colors, offsets, property_values);
+    BackgroundColorPaintDefinition* definition =
+        MakeGarbageCollected<BackgroundColorPaintDefinition>(
+            BackgroundColorPaintDefinition::KeyForTest());
+    definition->PaintForTest(animated_colors, offsets, property_values);
   }
 
  private:

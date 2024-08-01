@@ -115,8 +115,9 @@ bool MediaAttributeMatches(const MediaValuesCached& media_values,
   // trials for media queries are not needed.
   MediaQuerySet* media_queries =
       MediaQuerySet::Create(attribute_value, nullptr);
-  MediaQueryEvaluator media_query_evaluator(&media_values);
-  return media_query_evaluator.Eval(*media_queries);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(&media_values);
+  return media_query_evaluator->Eval(*media_queries);
 }
 
 void ScanScriptWebBundle(

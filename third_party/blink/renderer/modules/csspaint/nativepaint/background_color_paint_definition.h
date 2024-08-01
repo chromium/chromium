@@ -22,6 +22,9 @@ class Node;
 class MODULES_EXPORT BackgroundColorPaintDefinition final
     : public GarbageCollected<BackgroundColorPaintDefinition>,
       public NativeCssPaintDefinition {
+  // Key strcut used for limiting access to the for testing default constructor.
+  struct KeyForTest {};
+
  public:
   static BackgroundColorPaintDefinition* Create(LocalFrame&);
   explicit BackgroundColorPaintDefinition(LocalFrame&);
@@ -43,11 +46,12 @@ class MODULES_EXPORT BackgroundColorPaintDefinition final
 
   void Trace(Visitor* visitor) const override;
 
+  // Constructor for testing purpose only.
+  explicit BackgroundColorPaintDefinition(KeyForTest) {}
+
  private:
   friend class BackgroundColorPaintDefinitionTest;
 
-  // Constructor for testing purpose only.
-  BackgroundColorPaintDefinition() = default;
   PaintRecord PaintForTest(
       const Vector<Color>& animated_colors,
       const Vector<double>& offsets,

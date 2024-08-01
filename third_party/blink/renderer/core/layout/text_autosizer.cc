@@ -766,8 +766,9 @@ TextAutosizer::BlockFlags TextAutosizer::ClassifyBlock(
 bool TextAutosizer::ClusterWouldHaveEnoughTextToAutosize(
     const LayoutBlock* root,
     const LayoutBlock* width_provider) {
-  Cluster hypothetical_cluster(root, ClassifyBlock(root), nullptr);
-  return ClusterHasEnoughTextToAutosize(&hypothetical_cluster, width_provider);
+  Cluster* hypothetical_cluster =
+      MakeGarbageCollected<Cluster>(root, ClassifyBlock(root), nullptr);
+  return ClusterHasEnoughTextToAutosize(hypothetical_cluster, width_provider);
 }
 
 bool TextAutosizer::ClusterHasEnoughTextToAutosize(

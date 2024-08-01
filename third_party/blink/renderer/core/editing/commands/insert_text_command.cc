@@ -122,12 +122,13 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
       return false;
   }
 
-  RelocatablePosition relocatable_start(start);
+  RelocatablePosition* relocatable_start =
+      MakeGarbageCollected<RelocatablePosition>(start);
   Position end_position = ReplaceSelectedTextInNode(text);
   if (end_position.IsNull())
     return false;
 
-  SetEndingSelectionWithoutValidation(relocatable_start.GetPosition(),
+  SetEndingSelectionWithoutValidation(relocatable_start->GetPosition(),
                                       end_position);
   SetEndingSelection(SelectionForUndoStep::From(
       SelectionInDOMTree::Builder()

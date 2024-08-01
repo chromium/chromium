@@ -314,10 +314,12 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
       VisiblePosition::LastPositionInNode(*enclosing_element);
   VisiblePosition end_of_enclosing_block =
       EndOfBlock(last_position_in_enclosing_block);
-  RelocatablePosition start_of_paragraph(
-      visible_start_of_paragraph.DeepEquivalent());
-  RelocatablePosition end_of_paragraph(
-      visible_end_of_paragraph.DeepEquivalent());
+  RelocatablePosition* start_of_paragraph =
+      MakeGarbageCollected<RelocatablePosition>(
+          visible_start_of_paragraph.DeepEquivalent());
+  RelocatablePosition* end_of_paragraph =
+      MakeGarbageCollected<RelocatablePosition>(
+          visible_end_of_paragraph.DeepEquivalent());
   if (visible_start_of_paragraph.DeepEquivalent() ==
           start_of_enclosing_block.DeepEquivalent() &&
       visible_end_of_paragraph.DeepEquivalent() ==
@@ -353,7 +355,7 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
     DCHECK(!first_child || first_child->isConnected());
     visible_start_of_paragraph =
         CreateVisiblePosition(first_child ? Position::BeforeNode(*first_child)
-                                          : start_of_paragraph.GetPosition());
+                                          : start_of_paragraph->GetPosition());
     if (visible_start_of_paragraph.IsNotNull() &&
         !IsStartOfParagraph(visible_start_of_paragraph)) {
       InsertNodeAt(MakeGarbageCollected<HTMLBRElement>(GetDocument()),
@@ -369,7 +371,7 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
     DCHECK(!last_child || last_child->isConnected());
     visible_end_of_paragraph =
         CreateVisiblePosition(last_child ? Position::AfterNode(*last_child)
-                                         : end_of_paragraph.GetPosition());
+                                         : end_of_paragraph->GetPosition());
     // Insert BR after the old paragraph end if it got merged into the next
     // paragraph. This happens if the original paragraph end is no longer a
     // paragraph end, or if it is followed by a BR.
@@ -439,9 +441,9 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
     // Re-canonicalize visible_{start,end}_of_paragraph, make them valid again
     // after DOM change.
     visible_start_of_paragraph =
-        CreateVisiblePosition(start_of_paragraph.GetPosition());
+        CreateVisiblePosition(start_of_paragraph->GetPosition());
     visible_end_of_paragraph =
-        CreateVisiblePosition(end_of_paragraph.GetPosition());
+        CreateVisiblePosition(end_of_paragraph->GetPosition());
   }
 
   VisiblePosition visible_start_of_paragraph_to_move =
@@ -451,10 +453,12 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
   if (visible_start_of_paragraph_to_move.IsNull() ||
       visible_end_of_paragraph_to_move.IsNull())
     return;
-  RelocatablePosition start_of_paragraph_to_move(
-      visible_start_of_paragraph_to_move.DeepEquivalent());
-  RelocatablePosition end_of_paragraph_to_move(
-      visible_end_of_paragraph_to_move.DeepEquivalent());
+  RelocatablePosition* start_of_paragraph_to_move =
+      MakeGarbageCollected<RelocatablePosition>(
+          visible_start_of_paragraph_to_move.DeepEquivalent());
+  RelocatablePosition* end_of_paragraph_to_move =
+      MakeGarbageCollected<RelocatablePosition>(
+          visible_end_of_paragraph_to_move.DeepEquivalent());
   auto* placeholder = MakeGarbageCollected<HTMLBRElement>(GetDocument());
   InsertNodeBefore(placeholder, split_blockquote_node, editing_state);
   if (editing_state->IsAborted())
@@ -464,9 +468,9 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
   // again after DOM change.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   visible_start_of_paragraph_to_move =
-      CreateVisiblePosition(start_of_paragraph_to_move.GetPosition());
+      CreateVisiblePosition(start_of_paragraph_to_move->GetPosition());
   visible_end_of_paragraph_to_move =
-      CreateVisiblePosition(end_of_paragraph_to_move.GetPosition());
+      CreateVisiblePosition(end_of_paragraph_to_move->GetPosition());
   MoveParagraph(visible_start_of_paragraph_to_move,
                 visible_end_of_paragraph_to_move,
                 VisiblePosition::BeforeNode(*placeholder), editing_state,

@@ -13,8 +13,6 @@ namespace blink {
 class CSSParserContext;
 
 class FormattedTextStyle : public GarbageCollectedMixin {
-  DISALLOW_NEW();
-
  public:
   explicit FormattedTextStyle() = default;
 

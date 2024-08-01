@@ -830,11 +830,12 @@ void CompositeEditCommand::PrepareWhitespaceAtPositionForSplit(
 
   // Delete collapsed whitespace so that inserting nbsps doesn't uncollapse it.
   Position upstream_pos = MostBackwardCaretPosition(position);
-  RelocatablePosition relocatable_upstream_pos(upstream_pos);
+  RelocatablePosition* relocatable_upstream_pos =
+      MakeGarbageCollected<RelocatablePosition>(upstream_pos);
   DeleteInsignificantText(upstream_pos, MostForwardCaretPosition(position));
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  position = MostForwardCaretPosition(relocatable_upstream_pos.GetPosition());
+  position = MostForwardCaretPosition(relocatable_upstream_pos->GetPosition());
   VisiblePosition visible_pos = CreateVisiblePosition(position);
   VisiblePosition previous_visible_pos = PreviousPositionOf(visible_pos);
   ReplaceCollapsibleWhitespaceWithNonBreakingSpaceIfNeeded(
@@ -1345,10 +1346,12 @@ void CompositeEditCommand::MoveParagraphWithClones(
   DCHECK(outer_node);
   DCHECK(block_element);
 
-  RelocatablePosition relocatable_before_paragraph(
-      PreviousPositionOf(start_of_paragraph_to_move).DeepEquivalent());
-  RelocatablePosition relocatable_after_paragraph(
-      NextPositionOf(end_of_paragraph_to_move).DeepEquivalent());
+  RelocatablePosition* relocatable_before_paragraph =
+      MakeGarbageCollected<RelocatablePosition>(
+          PreviousPositionOf(start_of_paragraph_to_move).DeepEquivalent());
+  RelocatablePosition* relocatable_after_paragraph =
+      MakeGarbageCollected<RelocatablePosition>(
+          NextPositionOf(end_of_paragraph_to_move).DeepEquivalent());
 
   // We upstream() the end and downstream() the start so that we don't include
   // collapsed whitespace in the move. When we paste a fragment, spaces after
@@ -1393,9 +1396,9 @@ void CompositeEditCommand::MoveParagraphWithClones(
   // a br. Must recononicalize these two VisiblePositions after the pruning
   // above.
   const VisiblePosition& before_paragraph =
-      CreateVisiblePosition(relocatable_before_paragraph.GetPosition());
+      CreateVisiblePosition(relocatable_before_paragraph->GetPosition());
   const VisiblePosition& after_paragraph =
-      CreateVisiblePosition(relocatable_after_paragraph.GetPosition());
+      CreateVisiblePosition(relocatable_after_paragraph->GetPosition());
 
   if (before_paragraph.IsNotNull() &&
       !IsDisplayInsideTable(before_paragraph.DeepEquivalent().AnchorNode()) &&
@@ -1494,13 +1497,15 @@ void CompositeEditCommand::MoveParagraphs(
     }
   }
 
-  RelocatablePosition before_paragraph_position(
-      PreviousPositionOf(start_of_paragraph_to_move,
-                         kCannotCrossEditingBoundary)
-          .DeepEquivalent());
-  RelocatablePosition after_paragraph_position(
-      NextPositionOf(end_of_paragraph_to_move, kCannotCrossEditingBoundary)
-          .DeepEquivalent());
+  RelocatablePosition* before_paragraph_position =
+      MakeGarbageCollected<RelocatablePosition>(
+          PreviousPositionOf(start_of_paragraph_to_move,
+                             kCannotCrossEditingBoundary)
+              .DeepEquivalent());
+  RelocatablePosition* after_paragraph_position =
+      MakeGarbageCollected<RelocatablePosition>(
+          NextPositionOf(end_of_paragraph_to_move, kCannotCrossEditingBoundary)
+              .DeepEquivalent());
 
   const Position& start_candidate = start_of_paragraph_to_move.DeepEquivalent();
   const Position& end_candidate = end_of_paragraph_to_move.DeepEquivalent();
@@ -1578,9 +1583,9 @@ void CompositeEditCommand::MoveParagraphs(
   // a br. Must recononicalize these two VisiblePositions after the pruning
   // above.
   VisiblePosition before_paragraph =
-      CreateVisiblePosition(before_paragraph_position.GetPosition());
+      CreateVisiblePosition(before_paragraph_position->GetPosition());
   VisiblePosition after_paragraph =
-      CreateVisiblePosition(after_paragraph_position.GetPosition());
+      CreateVisiblePosition(after_paragraph_position->GetPosition());
   if (before_paragraph.IsNotNull() &&
       ((!IsStartOfParagraph(before_paragraph) &&
         !IsEndOfParagraph(before_paragraph)) ||

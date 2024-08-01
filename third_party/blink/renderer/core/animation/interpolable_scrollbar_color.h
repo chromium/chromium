@@ -22,7 +22,7 @@ class CORE_EXPORT InterpolableScrollbarColor : public InterpolableValue {
   InterpolableScrollbarColor(InterpolableColor* thumb_color,
                              InterpolableColor* track_color);
 
-  static InterpolableScrollbarColor* Create(StyleScrollbarColor);
+  static InterpolableScrollbarColor* Create(const StyleScrollbarColor&);
   bool IsScrollbarColor() const final { return true; }
 
   StyleScrollbarColor* GetScrollbarColor(const StyleResolverState&) const;

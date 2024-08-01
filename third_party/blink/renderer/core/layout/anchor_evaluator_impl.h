@@ -167,8 +167,6 @@ struct CORE_EXPORT PhysicalAnchorReference
 
 class CORE_EXPORT PhysicalAnchorQuery
     : public AnchorQueryBase<PhysicalAnchorReference> {
-  DISALLOW_NEW();
-
  public:
   using Base = AnchorQueryBase<PhysicalAnchorReference>;
 

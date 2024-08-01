@@ -787,14 +787,15 @@ void DeleteSelectionCommand::HandleGeneralDelete(EditingState* editing_state) {
             text_node_to_trim, start_offset,
             downstream_end_.ComputeOffsetInContainerNode() - start_offset);
       } else {
-        RelocatablePosition relocatable_downstream_end(downstream_end_);
+        RelocatablePosition* relocatable_downstream_end =
+            MakeGarbageCollected<RelocatablePosition>(downstream_end_);
         RemoveChildrenInRange(start_node, start_offset,
                               downstream_end_.ComputeEditingOffset(),
                               editing_state);
         if (editing_state->IsAborted())
           return;
         ending_position_ = upstream_start_;
-        downstream_end_ = relocatable_downstream_end.GetPosition();
+        downstream_end_ = relocatable_downstream_end->GetPosition();
       }
       // We should update layout to associate |start_node| to layout object.
       GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
@@ -982,7 +983,8 @@ void DeleteSelectionCommand::MergeParagraphs(EditingState* editing_state) {
     return;
   }
 
-  RelocatablePosition relocatable_start(merge_origin.DeepEquivalent());
+  RelocatablePosition* relocatable_start =
+      MakeGarbageCollected<RelocatablePosition>(merge_origin.DeepEquivalent());
 
   // We need to merge into upstream_start_'s block, but it's been emptied out
   // and collapsed by deletion.
@@ -999,7 +1001,7 @@ void DeleteSelectionCommand::MergeParagraphs(EditingState* editing_state) {
       return;
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
     merge_destination = CreateVisiblePosition(upstream_start_);
-    merge_origin = CreateVisiblePosition(relocatable_start.GetPosition());
+    merge_origin = CreateVisiblePosition(relocatable_start->GetPosition());
   }
 
   if (merge_destination.DeepEquivalent() == merge_origin.DeepEquivalent())
@@ -1047,7 +1049,7 @@ void DeleteSelectionCommand::MergeParagraphs(EditingState* editing_state) {
           editing_state);
       if (editing_state->IsAborted())
         return;
-      ending_position_ = relocatable_start.GetPosition();
+      ending_position_ = relocatable_start->GetPosition();
       return;
     }
   }
@@ -1229,7 +1231,8 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
     return;
   }
 
-  RelocatablePosition relocatable_reference_position(reference_move_position_);
+  RelocatablePosition* relocatable_reference_position =
+      MakeGarbageCollected<RelocatablePosition>(reference_move_position_);
 
   // save this to later make the selection with
   TextAffinity affinity = selection_to_delete_.Affinity();
@@ -1365,14 +1368,14 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
   SetEndingSelection(
       SelectionForUndoStep::From(visible_selection.AsSelection()));
 
-  if (relocatable_reference_position.GetPosition().IsNull()) {
+  if (relocatable_reference_position->GetPosition().IsNull()) {
     ClearTransientState();
     return;
   }
 
   // This deletion command is part of a move operation, we need to cleanup after
   // deletion.
-  reference_move_position_ = relocatable_reference_position.GetPosition();
+  reference_move_position_ = relocatable_reference_position->GetPosition();
   // If the node for the destination has been removed as a result of the
   // deletion, set the destination to the ending point after the deletion.
   // Fixes: <rdar://problem/3910425> REGRESSION (Mail): Crash in

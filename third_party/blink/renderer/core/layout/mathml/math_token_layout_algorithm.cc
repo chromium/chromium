@@ -28,13 +28,14 @@ const LayoutResult* MathTokenLayoutAlgorithm::Layout() {
   DCHECK(!child.NextSibling());
   DCHECK(!child.IsOutOfFlowPositioned());
 
-  TextMetrics metrics(Style().GetFont(), Style().Direction(),
-                      kAlphabeticTextBaseline, kStartTextAlign,
-                      DynamicTo<MathMLTokenElement>(Node().GetDOMNode())
-                          ->GetTokenContent()
-                          .characters);
-  LayoutUnit ink_ascent(metrics.actualBoundingBoxAscent());
-  LayoutUnit ink_descent(metrics.actualBoundingBoxDescent());
+  TextMetrics* metrics = MakeGarbageCollected<TextMetrics>(
+      Style().GetFont(), Style().Direction(), kAlphabeticTextBaseline,
+      kStartTextAlign,
+      DynamicTo<MathMLTokenElement>(Node().GetDOMNode())
+          ->GetTokenContent()
+          .characters);
+  LayoutUnit ink_ascent(metrics->actualBoundingBoxAscent());
+  LayoutUnit ink_descent(metrics->actualBoundingBoxDescent());
   LayoutUnit ascent = BorderScrollbarPadding().block_start + ink_ascent;
   LayoutUnit descent = ink_descent + BorderScrollbarPadding().block_end;
 

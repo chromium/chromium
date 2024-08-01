@@ -173,11 +173,13 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertValue(
     return nullptr;
   }
 
-  StyleScrollbarColor scrollbar_color(thumb_color.value(), track_color.value());
+  StyleScrollbarColor* scrollbar_color =
+      MakeGarbageCollected<StyleScrollbarColor>(thumb_color.value(),
+                                                track_color.value());
 
   return InterpolationValue(
-      InterpolableScrollbarColor::Create(scrollbar_color),
-      CSSScrollbarColorNonInterpolableValue::Create(&scrollbar_color));
+      InterpolableScrollbarColor::Create(*scrollbar_color),
+      CSSScrollbarColorNonInterpolableValue::Create(scrollbar_color));
 }
 
 PairwiseInterpolationValue

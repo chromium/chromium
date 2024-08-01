@@ -451,8 +451,9 @@ bool HTMLLinkElement::MediaQueryMatches() const {
   if (LocalFrame* frame = GetDocument().GetFrame(); frame && !media_.empty()) {
     auto* media_queries =
         MediaQuerySet::Create(media_, GetDocument().GetExecutionContext());
-    MediaQueryEvaluator evaluator(frame);
-    return evaluator.Eval(*media_queries);
+    MediaQueryEvaluator* evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(frame);
+    return evaluator->Eval(*media_queries);
   }
   return true;
 }

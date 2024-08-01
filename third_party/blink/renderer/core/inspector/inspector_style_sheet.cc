@@ -1205,8 +1205,8 @@ bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
   CSSTokenizedValue tokenized_value{CSSParserTokenRange(tokens),
                                     property.value};
 
-  PropertyRegistry empty_registry;
-  CustomProperty p(atomic_name, &empty_registry);
+  PropertyRegistry* empty_registry = MakeGarbageCollected<PropertyRegistry>();
+  CustomProperty p(atomic_name, empty_registry);
 
   const CSSParserContext* parser_context = ParserContextForDocument(document);
   const CSSValue* result = p.Parse(tokenized_value, *parser_context, {});

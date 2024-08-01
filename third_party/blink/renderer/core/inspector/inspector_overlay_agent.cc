@@ -1047,11 +1047,11 @@ protocol::Response InspectorOverlayAgent::getHighlightObjectForTest(
   } else {
     config->color_format = ColorFormat::kHex;
   }
-  NodeHighlightTool tool(this, GetFrontend(), node, "" /* selector_list */,
-                         std::move(config));
+  NodeHighlightTool* tool = MakeGarbageCollected<NodeHighlightTool>(
+      this, GetFrontend(), node, "" /* selector_list */, std::move(config));
   node->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kInspector);
-  *result = tool.GetNodeInspectorHighlightAsJson(
+  *result = tool->GetNodeInspectorHighlightAsJson(
       true /* append_element_info */, include_distance.value_or(false));
   return protocol::Response::Success();
 }
@@ -1059,7 +1059,8 @@ protocol::Response InspectorOverlayAgent::getHighlightObjectForTest(
 protocol::Response InspectorOverlayAgent::getGridHighlightObjectsForTest(
     std::unique_ptr<protocol::Array<int>> node_ids,
     std::unique_ptr<protocol::DictionaryValue>* highlights) {
-  PersistentTool persistent_tool(this, GetFrontend());
+  PersistentTool* persistent_tool =
+      MakeGarbageCollected<PersistentTool>(this, GetFrontend());
 
   HeapHashMap<WeakMember<Node>, std::unique_ptr<InspectorGridHighlightConfig>>
       configs;
@@ -1072,8 +1073,8 @@ protocol::Response InspectorOverlayAgent::getGridHighlightObjectsForTest(
     configs.insert(node, std::make_unique<InspectorGridHighlightConfig>(
                              InspectorHighlight::DefaultGridConfig()));
   }
-  persistent_tool.SetGridConfigs(std::move(configs));
-  *highlights = persistent_tool.GetGridInspectorHighlightsAsJson();
+  persistent_tool->SetGridConfigs(std::move(configs));
+  *highlights = persistent_tool->GetGridInspectorHighlightsAsJson();
   return protocol::Response::Success();
 }
 
@@ -1089,8 +1090,9 @@ protocol::Response InspectorOverlayAgent::getSourceOrderHighlightObjectForTest(
   auto config = std::make_unique<InspectorSourceOrderConfig>(
       InspectorSourceOrderHighlight::DefaultConfig());
 
-  SourceOrderTool tool(this, GetFrontend(), node, std::move(config));
-  *result = tool.GetNodeInspectorSourceOrderHighlightAsJson();
+  SourceOrderTool* tool = MakeGarbageCollected<SourceOrderTool>(
+      this, GetFrontend(), node, std::move(config));
+  *result = tool->GetNodeInspectorSourceOrderHighlightAsJson();
   return protocol::Response::Success();
 }
 

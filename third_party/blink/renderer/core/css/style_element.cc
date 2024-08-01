@@ -177,8 +177,9 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
       media_queries =
           MediaQuerySet::Create(media_string, element.GetExecutionContext());
       if (LocalFrame* frame = document.GetFrame()) {
-        MediaQueryEvaluator evaluator(frame);
-        media_query_matches = evaluator.Eval(*media_queries);
+        MediaQueryEvaluator* evaluator =
+            MakeGarbageCollected<MediaQueryEvaluator>(frame);
+        media_query_matches = evaluator->Eval(*media_queries);
       }
     }
     auto type_and_behavior = ComputePendingSheetTypeAndRenderBlockingBehavior(
