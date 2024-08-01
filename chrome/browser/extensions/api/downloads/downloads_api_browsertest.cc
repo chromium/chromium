@@ -1177,6 +1177,15 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
           download_item->GetTargetFilePath(), IconLoader::NORMAL, "foo"),
       args32, &result_string));
 
+  // Asking for an icon that is neither 16 nor 32 px should fail.
+  // Regression test for https://crbug.com/348379083.
+  EXPECT_EQ(
+      RunFunctionAndReturnError(
+          MockedGetFileIconFunction(download_item->GetTargetFilePath(),
+                                    IconLoader::NORMAL, "foo"),
+          base::StringPrintf(R"([%d, {"size": 10}])", download_item->GetId())),
+      "Invalid `size`. Must be either `16` or `32`.");
+
   // Finish the download and try again.
   FinishFirstSlowDownloads();
   EXPECT_EQ(DownloadItem::COMPLETE, download_item->GetState());
