@@ -29,10 +29,6 @@ class MockPlatformHandle : public PlatformHandle {
               (ContentSettingsType type,
                SystemPermissionResponseCallback callback),
               (override));
-  MOCK_METHOD(std::unique_ptr<ScopedObservation>,
-              Observe,
-              (SystemPermissionChangedCallback observer),
-              (override));
 };
 
 }  // namespace system_permission_settings

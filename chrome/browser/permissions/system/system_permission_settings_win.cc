@@ -6,10 +6,8 @@
 
 #include <memory>
 
-#include "base/check_deref.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/permissions/system/geolocation_observation.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -23,7 +21,9 @@ namespace system_permission_settings {
 
 namespace {
 
-class PlatformHandleImpl : public PlatformHandle {
+class PlatformHandleImpl
+    : public PlatformHandle,
+      public device::GeolocationSystemPermissionManager::PermissionObserver {
  public:
   // PlatformHandle:
   bool CanPrompt(ContentSettingsType type) override {
@@ -104,14 +104,13 @@ class PlatformHandleImpl : public PlatformHandle {
         // The system permission prompt is modal and requires a user decision
         // (Allow or Deny) before it can be dismissed.
         if (geolocation_callbacks_.size() == 1u) {
-          CHECK(!observation_);
+          auto* geolocation_system_permission_manager =
+              device::GeolocationSystemPermissionManager::GetInstance();
+          CHECK(geolocation_system_permission_manager);
+          CHECK(!observation_.IsObserving());
           // Lazily setup geolocation status observation
-          SystemPermissionChangedCallback clb = base::BindRepeating(
-              &PlatformHandleImpl::OnSystemPermissionUpdated,
-              weak_factory_.GetWeakPtr());
-          observation_ = Observe(std::move(clb));
-          CHECK_DEREF(device::GeolocationSystemPermissionManager::GetInstance())
-              .RequestSystemPermission();
+          observation_.Observe(geolocation_system_permission_manager);
+          geolocation_system_permission_manager->RequestSystemPermission();
         }
         return;
       }
@@ -121,21 +120,15 @@ class PlatformHandleImpl : public PlatformHandle {
     }
   }
 
-  std::unique_ptr<ScopedObservation> Observe(
-      SystemPermissionChangedCallback observer) override {
-    return std::make_unique<GeolocationObservation>(std::move(observer));
-  }
-
- private:
-  void OnSystemPermissionUpdated(ContentSettingsType content_type,
-                                 bool /*is_blocked*/) {
-    CHECK(content_type == ContentSettingsType::GEOLOCATION);
-    // No further observation needed as all the current requests will now be
-    // resolved
-    observation_.reset();
+  // device::GeolocationSystemPermissionManager::PermissionObserver
+  // implementation.
+  void OnSystemPermissionUpdated(
+      device::LocationSystemPermissionStatus new_status) override {
+    observation_.Reset();
     FlushGeolocationCallbacks();
   }
 
+ private:
   void FlushGeolocationCallbacks() {
     auto callbacks = std::move(geolocation_callbacks_);
     for (auto& cb : callbacks) {
@@ -144,8 +137,10 @@ class PlatformHandleImpl : public PlatformHandle {
   }
 
   std::vector<SystemPermissionResponseCallback> geolocation_callbacks_;
-  std::unique_ptr<ScopedObservation> observation_;
-  base::WeakPtrFactory<PlatformHandleImpl> weak_factory_{this};
+  base::ScopedObservation<
+      device::GeolocationSystemPermissionManager,
+      device::GeolocationSystemPermissionManager::PermissionObserver>
+      observation_{this};
 };
 
 }  // namespace

@@ -197,9 +197,6 @@ void TestingBrowserProcess::Init() {
   usb_system_tray_icon_ = std::make_unique<UsbStatusIcon>();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-  features_ = GlobalFeatures::CreateGlobalFeatures();
-  features_->Init();
 }
 
 void TestingBrowserProcess::FlushLocalStateAndReply(base::OnceClosure reply) {
