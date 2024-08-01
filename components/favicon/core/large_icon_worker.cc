@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,6 +20,14 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace favicon {
+
+// The resized and decoded images generated from LargeIconService are sometimes
+// (but not always) shown to the user, so the task priority was increased from
+// BEST_EFFORT to USER_VISIBLE. If this potentially expensive change causes any
+// issues, enable the kill switch below.
+BASE_FEATURE(kLargeIconWorkerTaskPriorityKillSwitch,
+             "LargeIconWorkerTaskPriorityKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 using NoBigEnoughIconBehavior = LargeIconService::NoBigEnoughIconBehavior;
 
@@ -128,7 +137,10 @@ LargeIconWorker::LargeIconWorker(
       raw_bitmap_callback_(std::move(raw_bitmap_callback)),
       image_callback_(std::move(image_callback)),
       background_task_runner_(base::ThreadPool::CreateTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+          {base::MayBlock(),
+           base::FeatureList::IsEnabled(kLargeIconWorkerTaskPriorityKillSwitch)
+               ? base::TaskPriority::BEST_EFFORT
+               : base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       tracker_(tracker) {}
 
