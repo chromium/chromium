@@ -41,8 +41,7 @@ class GpuMojoMediaClientMac final : public GpuMojoMediaClient {
   }
 
   std::optional<SupportedVideoDecoderConfigs>
-  GetPlatformSupportedVideoDecoderConfigs(
-      GetVdaConfigsCB get_vda_configs) final {
+  GetPlatformSupportedVideoDecoderConfigs() final {
     return VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
         gpu_workarounds_);
   }

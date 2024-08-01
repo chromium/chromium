@@ -203,12 +203,6 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     // |format| indicates what format the decoded frames will be produced in
     // by the VDA, or PIXEL_FORMAT_UNKNOWN if the underlying platform handles
     // this transparently.
-    virtual void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
-                                       VideoPixelFormat format,
-                                       const gfx::Size& dimensions) = 0;
-
-    // This is the same as ProvidePictureBuffers() except that |visible_rect| is
-    // also included.
     virtual void ProvidePictureBuffersWithVisibleRect(
         uint32_t requested_num_of_buffers,
         VideoPixelFormat format,

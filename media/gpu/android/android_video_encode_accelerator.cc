@@ -21,16 +21,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
-#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
-#include "media/video/picture.h"
+#include "media/base/video_frame.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 #include "ui/gl/android/scoped_java_surface.h"
-#include "ui/gl/gl_bindings.h"
 
 namespace media {
 

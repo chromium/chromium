@@ -64,9 +64,6 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
  private:
   // media::VideoDecodeAccelerator::Client implementation
   void NotifyInitializationComplete(DecoderStatus status) override;
-  void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
-                             VideoPixelFormat format,
-                             const gfx::Size& dimensions) override;
   void ProvidePictureBuffersWithVisibleRect(
       uint32_t requested_num_of_buffers,
       VideoPixelFormat format,

@@ -21,6 +21,7 @@
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_media_log.h"
+#include "media/base/video_frame.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"

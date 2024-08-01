@@ -137,12 +137,9 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient : public MojoMediaClient {
       VideoDecoderTraits& traits) = 0;
 
   // Queries the platform-specific VideoDecoder implementation for its
-  // supported profiles. Some platforms fall back to use the VDAVideoDecoder
-  // so that implementation is shared, and its supported configs can be
-  // queries using the |get_vda_configs| callback.
-  using GetVdaConfigsCB = base::OnceCallback<SupportedVideoDecoderConfigs()>;
+  // supported profiles.
   virtual std::optional<SupportedVideoDecoderConfigs>
-  GetPlatformSupportedVideoDecoderConfigs(GetVdaConfigsCB get_vda_configs) = 0;
+  GetPlatformSupportedVideoDecoderConfigs() = 0;
 
   // Queries the platform decoder type.
   virtual VideoDecoderType GetPlatformDecoderImplementationType() = 0;

@@ -4,17 +4,18 @@
 
 #include "media/gpu/test/video_player/test_vda_video_decoder.h"
 
-#include <utility>
-#include <vector>
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+
+#include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_preferences.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -89,16 +90,6 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   output_cb_ = output_cb;
 
-  // Create decoder factory.
-  std::unique_ptr<GpuVideoDecodeAcceleratorFactory> decoder_factory;
-  decoder_factory = GpuVideoDecodeAcceleratorFactory::Create();
-
-  if (!decoder_factory) {
-    ASSERT_TRUE(decoder_) << "Failed to create VideoDecodeAccelerator factory";
-    std::move(init_cb).Run(DecoderStatus::Codes::kFailed);
-    return;
-  }
-
   // Create Decoder.
   VideoDecodeAccelerator::Config vda_config(config.profile());
   vda_config.output_mode = VideoDecodeAccelerator::Config::OutputMode::kImport;
@@ -109,8 +100,6 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
   vda_config.target_color_space = target_color_space_;
   vda_config.hdr_metadata = config.hdr_metadata();
 
-  gpu::GpuDriverBugWorkarounds gpu_driver_bug_workarounds;
-  gpu::GpuPreferences gpu_preferences;
   if (use_vd_vda_) {
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
     DVLOGF(2) << "Use VdVideoDecodeAccelerator";
@@ -122,8 +111,8 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   } else {
     DVLOGF(2) << "Use original VDA";
-    decoder_ = decoder_factory->CreateVDA(
-        this, vda_config, gpu_driver_bug_workarounds, gpu_preferences);
+    decoder_ = GpuVideoDecodeAcceleratorFactory::CreateVDA(
+        this, vda_config, gpu::GpuPreferences());
   }
 
   if (!decoder_) {
@@ -188,13 +177,6 @@ int TestVDAVideoDecoder::GetMaxDecodeRequests() const {
   return 4;
 }
 
-void TestVDAVideoDecoder::ProvidePictureBuffers(
-    uint32_t requested_num_of_buffers,
-    VideoPixelFormat format,
-    const gfx::Size& dimensions) {
-  NOTIMPLEMENTED() << "VDA must call ProvidePictureBuffersWithVisibleRect()";
-}
-
 void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
     uint32_t requested_num_of_buffers,
     VideoPixelFormat format,
@@ -214,7 +196,7 @@ void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
   // Create a set of DMABuf-backed video frames.
   std::vector<PictureBuffer> picture_buffers;
   for (uint32_t i = 0; i < requested_num_of_buffers; ++i) {
-    picture_buffers.emplace_back(GetNextPictureBufferId(), dimensions);
+    picture_buffers.emplace_back(GetNextPictureBufferId());
   }
 
   decoder_->AssignPictureBuffers(picture_buffers);

@@ -24,7 +24,6 @@
 #include "media/base/media_util.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
-#include "media/gpu/gpu_video_decode_accelerator_factory.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/ipc/service/media_gpu_channel_manager.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
@@ -62,19 +61,6 @@ gpu::CommandBufferStub* GetCommandBufferStub(
 #endif
 
   return stub;
-}
-
-SupportedVideoDecoderConfigs GetVDAVideoDecoderConfigs(
-    const gpu::GpuPreferences& gpu_preferences,
-    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
-  VideoDecodeAccelerator::Capabilities capabilities =
-      GpuVideoAcceleratorUtil::ConvertGpuToMediaDecodeCapabilities(
-          GpuVideoDecodeAcceleratorFactory::GetDecoderCapabilities(
-              gpu_preferences, gpu_workarounds));
-  return ConvertFromSupportedProfiles(
-      capabilities.supported_profiles,
-      capabilities.flags &
-          VideoDecodeAccelerator::Capabilities::SUPPORTS_ENCRYPTED_STREAMS);
 }
 
 }  // namespace
@@ -176,9 +162,7 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
          gpu::kGpuFeatureStatusEnabled)) {
       supported_config_cache_ = SupportedVideoDecoderConfigs();
     } else {
-      supported_config_cache_ =
-          GetPlatformSupportedVideoDecoderConfigs(base::BindOnce(
-              &GetVDAVideoDecoderConfigs, gpu_preferences_, gpu_workarounds_));
+      supported_config_cache_ = GetPlatformSupportedVideoDecoderConfigs();
     }
 
     // Once per GPU process record accelerator information. Profile support is

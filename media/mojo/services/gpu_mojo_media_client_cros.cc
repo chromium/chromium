@@ -124,8 +124,7 @@ class GpuMojoMediaClientCrOS final : public GpuMojoMediaClient {
   }
 
   std::optional<SupportedVideoDecoderConfigs>
-  GetPlatformSupportedVideoDecoderConfigs(
-      GetVdaConfigsCB get_vda_configs) final {
+  GetPlatformSupportedVideoDecoderConfigs() final {
     VideoDecoderType decoder_implementation =
         GetActualPlatformDecoderImplementation(gpu_preferences_);
     switch (decoder_implementation) {

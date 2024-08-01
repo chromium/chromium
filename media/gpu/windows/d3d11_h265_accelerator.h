@@ -16,7 +16,6 @@
 #include "media/gpu/h265_decoder.h"
 #include "media/gpu/h265_dpb.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
-#include "media/video/picture.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
 
