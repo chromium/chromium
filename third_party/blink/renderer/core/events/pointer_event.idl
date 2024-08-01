@@ -23,6 +23,6 @@
     [Measure, RuntimeEnabled=PointerEventDeviceId]   readonly    attribute long persistentDeviceId;
 
     // https://w3c.github.io/pointerevents/extension.html#extensions-to-the-pointerevent-interface
-    [Measure] sequence<PointerEvent> getCoalescedEvents();
+    [Measure, SecureContext] sequence<PointerEvent> getCoalescedEvents();
     [Measure] sequence<PointerEvent> getPredictedEvents();
 };
