@@ -730,7 +730,7 @@ Browser::~Browser() {
   if (tab_restore_service)
     tab_restore_service->BrowserClosed(live_tab_context());
 
-  profile_pref_registrar_.RemoveAll();
+  profile_pref_registrar_.Reset();
 
   // Destroy BrowserExtensionWindowController before the incognito profile
   // is destroyed to make sure the chrome.windows.onRemoved event is sent.
