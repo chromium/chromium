@@ -627,7 +627,7 @@ BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
 constexpr base::FeatureParam<int> kDefaultBrowserEligibilitySlidingWindowParam{
     &kDefaultBrowserEligibilitySlidingWindow,
     /*name=*/"sliding-window-days",
-    /*default_value=*/365};
+    /*default_value=*/180};
 
 const char kGestureInProductHelpMaxOccurrence[] = "gesture-iph-max-occurrence";
 const char kGestureInProductHelpDaysBetweenOccurrences[] =
