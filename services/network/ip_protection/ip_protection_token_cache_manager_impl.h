@@ -88,7 +88,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
   void MeasureTokenRates();
   void MaybeRefillCache();
   void ScheduleMaybeRefillCache();
-  bool NeedsRefill() const;
+  bool NeedsRefill(const std::string& geo_id) const;
   bool IsTokenLimitExceeded(const std::string& geo_id) const;
 
   // Current geo of the client.

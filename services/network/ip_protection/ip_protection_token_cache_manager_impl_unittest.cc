@@ -167,8 +167,7 @@ class IpProtectionTokenCacheManagerImplTest : public testing::Test {
  protected:
   IpProtectionTokenCacheManagerImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        mock_(),
-        mock_config_cache_() {}
+        mock_() {}
 
   // In order to test geo caching feature, the initialization of the token cache
   // manager must be after the feature value is set.
@@ -1015,8 +1014,6 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   // Trigger refill.
   ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kSunnyvaleGeoId);
 
-  // New tokens should contain new geo.
-  CallTryGetAuthTokensAndWait(IpProtectionProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // New geo should return a valid token.
@@ -1036,7 +1033,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   // 2. `SetCurrentGeo("Sunnyvale")` causes refill and current geo to change.
   //    Refill however returns "Mountain View" which causes an additional
   //    `GeoChangeObserved`.
-  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(3);
+  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(2);
 
   // Mountain View geo that will be maintained from token refill requests.
   mock_.ExpectTryGetAuthTokensCall(
@@ -1055,7 +1052,6 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kSunnyvaleGeoId);
 
   // New tokens will still contain the old geo.
-  CallTryGetAuthTokensAndWait(IpProtectionProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Cache should have valid tokens now. New Sunnyvale geo will be set to
@@ -1066,13 +1062,10 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
   ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kSunnyvaleGeoId);
 
-  // New tokens will still contain the old geo.
-  CallTryGetAuthTokensAndWait(IpProtectionProxyLayer::kProxyA);
-  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-
-  // At this point, there should be an overflow of tokens for the given geo. A
-  // 10 min delay should have been added (this is the delay configured in the
-  // impl).
+  // Due to the repeated triggers to refill tokens, the token limit exceeded
+  // delay would have prevented an additional call to get more tokens. Thus,
+  // this should return false.
+  ASSERT_FALSE(mock_.GotAllExpectedMockCalls());
   ASSERT_TRUE(ipp_proxy_a_token_cache_manager_
                       ->try_get_auth_tokens_after_for_testing() -
                   base::Time::Now() ==

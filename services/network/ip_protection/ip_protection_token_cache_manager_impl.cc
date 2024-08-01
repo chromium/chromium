@@ -114,7 +114,7 @@ void IpProtectionTokenCacheManagerImpl::MaybeRefillCache() {
     return;
   }
 
-  if (NeedsRefill()) {
+  if (NeedsRefill(current_geo_id_)) {
     fetching_auth_tokens_ = true;
     VLOG(2) << "IPPATC::MaybeRefillCache calling TryGetAuthTokens";
     config_getter_->TryGetAuthTokens(
@@ -146,7 +146,7 @@ void IpProtectionTokenCacheManagerImpl::SetCurrentGeo(
 
   current_geo_id_ = geo_id;
 
-  if (NeedsRefill() && !fetching_auth_tokens_) {
+  if (NeedsRefill(current_geo_id_) && !fetching_auth_tokens_) {
     MaybeRefillCache();
   }
 }
@@ -168,7 +168,7 @@ void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
   base::Time now = base::Time::Now();
   base::TimeDelta delay;
 
-  if (NeedsRefill()) {
+  if (NeedsRefill(current_geo_id_)) {
     if (try_get_auth_tokens_after_.is_null()) {
       delay = base::TimeDelta();
     } else {
@@ -192,8 +192,9 @@ void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
 
 // Returns true if the cache map does not contain the necessary geo or the
 // number of tokens in the latest geo is below the low water mark.
-bool IpProtectionTokenCacheManagerImpl::NeedsRefill() const {
-  auto it = cache_by_geo_.find(current_geo_id_);
+bool IpProtectionTokenCacheManagerImpl::NeedsRefill(
+    const std::string& geo_id) const {
+  auto it = cache_by_geo_.find(geo_id);
   if (it == cache_by_geo_.end()) {
     return true;
   }
@@ -280,7 +281,7 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
   // If a refill is still needed, we do not want to immediately re-request
   // tokens, lest we overwhelm the server. This is unlikely to happen in
   // practice, but exists as a safety check.
-  if (NeedsRefill()) {
+  if (NeedsRefill(geo_id_from_token)) {
     try_get_auth_tokens_after_ = base::Time::Now() + kImmediateTokenRefillDelay;
   }
 
