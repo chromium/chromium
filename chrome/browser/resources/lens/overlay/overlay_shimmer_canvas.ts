@@ -60,7 +60,7 @@ const STEADY_STATE_EASING_FUNCTION = new CubicBezier(0.05, 0.7, 0.1, 1.0);
 // INTERACTION STATE CONSTANTS: These are the values that the circles will have
 // the circles are interacting with the interaction the user is making (via
 // their cursor, on a post selection bounding box, etc).
-const INTERACTION_STATE_OPACITY_PERCENT = 0.4;
+const INTERACTION_STATE_OPACITY_PERCENT = 0.3;
 const INTERACTION_STATE_EASING_FUNCTION = new CubicBezier(0.2, 0.0, 0.0, 1.0);
 
 // CURSOR STATE CONSTANTS: These are the values that are only applied when the
@@ -87,11 +87,11 @@ const FADE_OUT_EASING_FUNCTION = new CubicBezier(0, 0, 1, 1);
 // when the shimmer is focusing on a selected region. In the region selection
 // state, these values are in relation to the bounding box smallest size, rather
 // than the entire viewport.
-const REGION_SELECTION_STATE_RADIUS_PERCENT = 45;
+const REGION_SELECTION_STATE_RADIUS_PERCENT = 30;
 const REGION_SELECTION_STATE_CIRCLE_BLUR = 1.8;
 const REGION_SELECTION_STATE_RADIUS_AMPLITUDE_PERCENT = 0;
-const REGION_SELECTION_STATE_CENTER_X_AMPLITUDE_PERCENT = 40;
-const REGION_SELECTION_STATE_CENTER_Y_AMPLITUDE_PERCENT = 40;
+const REGION_SELECTION_STATE_CENTER_X_AMPLITUDE_PERCENT = 20;
+const REGION_SELECTION_STATE_CENTER_Y_AMPLITUDE_PERCENT = 20;
 // The time it takes in MS to transition from a different state to the region
 // selection state.
 const REGION_SELECTION_TRANSITION_DURATION = 750;
