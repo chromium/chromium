@@ -49,7 +49,7 @@ TEST_F(AITextSessionTest, TestContextOperation_Overflow) {
 // Tests `GetContextString()` and `HasContextItem()` when the items overflow on
 // the first insertion.
 TEST_F(AITextSessionTest, TestContextOperation_OverflowOnFirstItem) {
-  context_.AddContextItem("test long long token", kTestMaxContextToken + 1u);
+  context_.AddContextItem("test very long token", kTestMaxContextToken + 1u);
   EXPECT_EQ(context_.GetContextString(), "");
   EXPECT_FALSE(context_.HasContextItem());
 }
