@@ -326,10 +326,9 @@ TEST_P(ProtoFetcherTest, AddsPayload) {
   TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
 
-  std::string header;
-  EXPECT_TRUE(pending_request->request.headers.GetHeader(
-      net::HttpRequestHeaders::kContentType, &header));
-  EXPECT_EQ(header, "application/x-protobuf");
+  EXPECT_EQ(pending_request->request.headers.GetHeader(
+                net::HttpRequestHeaders::kContentType),
+            "application/x-protobuf");
 }
 
 // Tests a default flow, where an empty (default) proto is received.
@@ -407,11 +406,10 @@ TEST_P(ProtoFetcherTest, CreatesToken) {
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   // Only check header format here.
-  std::string authorization_header;
-  ASSERT_TRUE(
+  EXPECT_EQ(
       test_url_loader_factory_.GetPendingRequest(0)->request.headers.GetHeader(
-          net::HttpRequestHeaders::kAuthorization, &authorization_header));
-  EXPECT_EQ(authorization_header, "Bearer access_token");
+          net::HttpRequestHeaders::kAuthorization),
+      "Bearer access_token");
 }
 
 // Tests a flow where the request couldn't be completed due to network
