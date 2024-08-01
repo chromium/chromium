@@ -679,10 +679,11 @@ union MemoryResult {
 
 // Memory information.
 //
-// NextMinVersion: 2, NextIndex: 5
+// NextMinVersion: 3, NextIndex: 16
 [Stable]
 struct MemoryInfo {
-  // Total memory, in KiB.
+  // Computed total memory including memory reserved for the kernel, etc.,
+  // in KiB.
   uint32 total_memory_kib@0;
   // Free memory, in KiB.
   uint32 free_memory_kib@1;
@@ -693,6 +694,39 @@ struct MemoryInfo {
   // Memory Encryption info.
   [MinVersion=1]
   MemoryEncryptionInfo? memory_encryption_info@4;
+  // Relatively temporary storage for raw disk blocks, in KiB.
+  [MinVersion=2]
+  uint64? buffers_kib@5;
+  // In-memory cache for files read from the disk, in KiB.
+  [MinVersion=2]
+  uint64? page_cache_kib@6;
+  // Shared memory, used in tmpfs, in KiB.
+  [MinVersion=2]
+  uint64? shared_memory_kib@7;
+  // More recently used memory, in KiB.
+  [MinVersion=2]
+  uint64? active_memory_kib@8;
+  // Less recently used memory, in KiB.
+  [MinVersion=2]
+  uint64? inactive_memory_kib@9;
+  // Total swap memory, in KiB.
+  [MinVersion=2]
+  uint64? total_swap_memory_kib@10;
+  // Free swap memory, in KiB.
+  [MinVersion=2]
+  uint64? free_swap_memory_kib@11;
+  // The swapped back memory in KiB, but is still in the swap.
+  [MinVersion=2]
+  uint64? cached_swap_memory_kib@12;
+  // Kernal-used memory, in KiB.
+  [MinVersion=2]
+  uint64? total_slab_memory_kib@13;
+  // Reclaimable slab memory, in KiB.
+  [MinVersion=2]
+  uint64? reclaimable_slab_memory_kib@14;
+  // Unreclaimable slab memory, in KiB.
+  [MinVersion=2]
+  uint64? unreclaimable_slab_memory_kib@15;
 };
 
 // NextMinVersion: 1, NextIndex: 4
