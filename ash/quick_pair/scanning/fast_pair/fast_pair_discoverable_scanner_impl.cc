@@ -50,11 +50,16 @@ bool IsMetadataPublished(const nearby::fastpair::Device& device) {
 }
 
 bool IsValidDeviceType(const nearby::fastpair::Device& device) {
-  if (ash::features::IsFastPairHIDEnabled() &&
-      // Fast Pair HID (including MOUSE) only works on Floss.
-      floss::features::IsFlossEnabled() &&
-      device.device_type() == nearby::fastpair::DeviceType::MOUSE) {
-    return true;
+  // Fast Pair HID only works on Floss.
+  if (floss::features::IsFlossEnabled()) {
+    if (ash::features::IsFastPairHIDEnabled() &&
+        device.device_type() == nearby::fastpair::DeviceType::MOUSE) {
+      return true;
+    }
+    if (ash::features::IsFastPairKeyboardsEnabled() &&
+        device.device_type() == nearby::fastpair::DeviceType::INPUT_DEVICE) {
+      return true;
+    }
   }
 
   // TODO: Filter out based on solidified Fast Pair configuration list once
