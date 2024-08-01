@@ -17,7 +17,7 @@ class TestContextData : public ContextData {
   ~TestContextData() override = default;
 
   std::unique_ptr<ContextData> Clone() const override;
-  bool IsIsolatedApplication() const override;
+  bool HasIsolatedContextCapability() const override;
 };
 
 }  // namespace extensions

@@ -21,7 +21,7 @@ BrowserFrameContextData::CloneFrameContextData() const {
   return std::make_unique<BrowserFrameContextData>(frame_);
 }
 
-bool BrowserFrameContextData::IsIsolatedApplication() const {
+bool BrowserFrameContextData::HasIsolatedContextCapability() const {
   return frame_ &&
          content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
              frame_->GetBrowserContext()) &&

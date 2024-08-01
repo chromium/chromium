@@ -20,7 +20,7 @@ BrowserProcessContextData::CloneProcessContextData() const {
   return std::make_unique<BrowserProcessContextData>(process_);
 }
 
-bool BrowserProcessContextData::IsIsolatedApplication() const {
+bool BrowserProcessContextData::HasIsolatedContextCapability() const {
   return content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
              process_->GetBrowserContext()) &&
          process_->GetWebExposedIsolationLevel() ==

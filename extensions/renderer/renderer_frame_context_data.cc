@@ -28,7 +28,7 @@ RendererFrameContextData::CloneFrameContextData() const {
   return std::make_unique<RendererFrameContextData>(frame_);
 }
 
-bool RendererFrameContextData::IsIsolatedApplication() const {
+bool RendererFrameContextData::HasIsolatedContextCapability() const {
   return RendererContextData::IsIsolatedWebAppContextAndEnabled();
 }
 

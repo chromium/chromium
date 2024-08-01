@@ -23,7 +23,7 @@ std::unique_ptr<ContextData> RendererContextData::Clone() const {
   return std::make_unique<RendererContextData>();
 }
 
-bool RendererContextData::IsIsolatedApplication() const {
+bool RendererContextData::HasIsolatedContextCapability() const {
   return RendererContextData::IsIsolatedWebAppContextAndEnabled();
 }
 
