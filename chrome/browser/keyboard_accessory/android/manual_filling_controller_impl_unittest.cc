@@ -4,12 +4,8 @@
 
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 
-#include <map>
-#include <memory>
 #include <string>
-#include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
@@ -18,9 +14,7 @@
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
-#include "chrome/test/base/testing_profile.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_contents_factory.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -62,11 +56,11 @@ constexpr autofill::FieldRendererId kFocusedFieldId(123);
 
 // Fixture that tests the manual filling experience with the most recent version
 // of the keyboard accessory and all its fallback sheets.
-class ManualFillingControllerTest : public testing::Test {
+class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
  public:
-  ManualFillingControllerTest() = default;
-
   void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
     ON_CALL(mock_pwd_controller_, RegisterFillingSourceObserver(_))
         .WillByDefault(SaveArg<0>(&pwd_source_observer_));
     ON_CALL(mock_payment_method_controller_, RegisterFillingSourceObserver(_))
@@ -91,8 +85,6 @@ class ManualFillingControllerTest : public testing::Test {
     return ManualFillingControllerImpl::FromWebContents(web_contents());
   }
 
-  content::WebContents* web_contents() { return web_contents_; }
-
   MockManualFillingView* view() {
     return static_cast<MockManualFillingView*>(controller()->view());
   }
@@ -111,12 +103,6 @@ class ManualFillingControllerTest : public testing::Test {
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
-  content::TestWebContentsFactory web_contents_factory_;
-  raw_ptr<content::WebContents> web_contents_ =
-      web_contents_factory_.CreateWebContents(&profile_);
-
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockPaymentMethodAccessoryController>
@@ -139,7 +125,7 @@ TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
 
   // Hiding autofill hides the accessory because fallbacks alone don't provide
   // sufficient value and might be confusing.
-  EXPECT_CALL(*view(), Hide()).Times(1);
+  EXPECT_CALL(*view(), Hide());
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/false);
 }
