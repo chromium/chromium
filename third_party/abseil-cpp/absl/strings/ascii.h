@@ -55,6 +55,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <string>
+#include <utility>
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
@@ -184,6 +185,16 @@ ABSL_MUST_USE_RESULT inline std::string AsciiStrToLower(absl::string_view s) {
   return result;
 }
 
+// Creates a lowercase string from a given std::string&&.
+//
+// (Template is used to lower priority of this overload.)
+template <int&... DoNotSpecify>
+ABSL_MUST_USE_RESULT inline std::string AsciiStrToLower(std::string&& s) {
+  std::string result = std::move(s);
+  absl::AsciiStrToLower(&result);
+  return result;
+}
+
 // ascii_toupper()
 //
 // Returns the ASCII character, converting to upper-case if lower-case is
@@ -200,6 +211,16 @@ ABSL_MUST_USE_RESULT inline std::string AsciiStrToUpper(absl::string_view s) {
   std::string result;
   strings_internal::STLStringResizeUninitialized(&result, s.size());
   ascii_internal::AsciiStrToUpper(&result[0], s.data(), s.size());
+  return result;
+}
+
+// Creates an uppercase string from a given std::string&&.
+//
+// (Template is used to lower priority of this overload.)
+template <int&... DoNotSpecify>
+ABSL_MUST_USE_RESULT inline std::string AsciiStrToUpper(std::string&& s) {
+  std::string result = std::move(s);
+  absl::AsciiStrToUpper(&result);
   return result;
 }
 

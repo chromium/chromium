@@ -487,6 +487,7 @@ endif()
 set(ABSL_INTERNAL_DLL_TARGETS
   "absl_check"
   "absl_log"
+  "absl_vlog_is_on"
   "algorithm"
   "algorithm_container"
   "any"
@@ -644,6 +645,7 @@ set(ABSL_INTERNAL_DLL_TARGETS
   "utility"
   "variant"
   "vlog_config_internal"
+  "vlog_is_on"
 )
 
 if(NOT MSVC)

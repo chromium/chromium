@@ -22,7 +22,7 @@ ABSL_NAMESPACE_BEGIN
 namespace base_internal {
 
 // Well known Abseil object types that have causality.
-enum class ObjectKind { kUnknown };
+enum class ObjectKind { kUnknown, kBlockingCounter, kNotification };
 
 // `TraceWait` and `TraceContinue` record the start and end of a potentially
 // blocking wait operation on `object`. `object` typically represents a higher
@@ -47,14 +47,14 @@ void TraceObserved(const void* object, ObjectKind kind);
 // ---------------------------------------------------------------------------
 extern "C" {
 
-void ABSL_INTERNAL_C_SYMBOL(AbslInternalTraceWait)(const void* object,
-                                                   ObjectKind kind);
-void ABSL_INTERNAL_C_SYMBOL(AbslInternalTraceContinue)(const void* object,
-                                                       ObjectKind kind);
-void ABSL_INTERNAL_C_SYMBOL(AbslInternalTraceSignal)(const void* object,
+  void ABSL_INTERNAL_C_SYMBOL(AbslInternalTraceWait)(const void* object,
                                                      ObjectKind kind);
-void ABSL_INTERNAL_C_SYMBOL(AbslInternalTraceObserved)(const void* object,
+  void ABSL_INTERNAL_C_SYMBOL(AbslInternalTraceContinue)(const void* object,
+                                                         ObjectKind kind);
+  void ABSL_INTERNAL_C_SYMBOL(AbslInternalTraceSignal)(const void* object,
                                                        ObjectKind kind);
+  void ABSL_INTERNAL_C_SYMBOL(AbslInternalTraceObserved)(const void* object,
+                                                         ObjectKind kind);
 
 }  // extern "C"
 

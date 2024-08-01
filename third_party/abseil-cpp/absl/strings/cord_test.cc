@@ -3278,6 +3278,26 @@ TEST_P(CordTest, ChecksummedEmptyCord) {
   EXPECT_EQ(absl::HashOf(c3), absl::HashOf(absl::string_view()));
 }
 
+// This must not be static to avoid aggressive optimizations.
+ABSL_ATTRIBUTE_WEAK
+size_t FalseReport(const absl::Cord& a, bool f);
+
+ABSL_ATTRIBUTE_NOINLINE
+size_t FalseReport(const absl::Cord& a, bool f) {
+  absl::Cord b;
+  const absl::Cord& ref = f ? b : a;
+  // Test that sanitizers report nothing here. Without
+  // InlineData::Rep::annotated_this() compiler can unconditionally load
+  // poisoned parts, assuming that local variable is fully accessible.
+  return ref.size();
+}
+
+TEST(CordSanitizerTest, SanitizesCordFalseReport) {
+  absl::Cord c;
+  for (int i = 0; i < 1000; ++i) c.Append("a");
+  FalseReport(c, false);
+}
+
 TEST(CrcCordTest, ChecksummedEmptyCordEstimateMemoryUsage) {
   absl::Cord cord;
   cord.SetExpectedChecksum(0);

@@ -427,6 +427,7 @@ cc_binary(
 cc_test(
     name = "stderr_log_sink_test",
     size = "small",
+    timeout = "moderate",
     srcs = ["stderr_log_sink_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
