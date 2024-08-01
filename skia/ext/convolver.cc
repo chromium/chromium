@@ -15,6 +15,7 @@
 #include "skia/ext/convolver_SSE2.h"
 #include "skia/ext/convolver_mips_dspr2.h"
 #include "skia/ext/convolver_neon.h"
+#include "skia/ext/convolver_LSX.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkTypes.h"
 
@@ -381,6 +382,11 @@ void SetupSIMD(ConvolveProcs *procs) {
   procs->convolve_vertically = &ConvolveVertically_Neon;
   procs->convolve_4rows_horizontally = &Convolve4RowsHorizontally_Neon;
   procs->convolve_horizontally = &ConvolveHorizontally_Neon;
+#elif defined SIMD_LSX
+  procs->extra_horizontal_reads = 3;
+  procs->convolve_vertically = &ConvolveVertically_LSX;
+  procs->convolve_4rows_horizontally = &Convolve4RowsHorizontally_LSX;
+  procs->convolve_horizontally = &ConvolveHorizontally_LSX;
 #endif
 }
 
